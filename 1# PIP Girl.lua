@@ -6,7 +6,37 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.1"
+local SCRIPT_VERSION = "0.0.0"
+
+-- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
+local status, auto_updater = pcall(require, "auto-updater")
+if not status then
+    local auto_update_complete = nil util.toast("Installing auto-updater...", TOAST_ALL)
+    async_http.init("raw.githubusercontent.com", "/hexarobi/stand-lua-auto-updater/main/auto-updater.lua",
+        function(result, headers, status_code)
+            local function parse_auto_update_result(result, headers, status_code)
+                local error_prefix = "Error downloading auto-updater: "
+                if status_code ~= 200 then util.toast(error_prefix..status_code, TOAST_ALL) return false end
+                if not result or result == "" then util.toast(error_prefix.."Found empty file.", TOAST_ALL) return false end
+                filesystem.mkdir(filesystem.scripts_dir() .. "lib")
+                local file = io.open(filesystem.scripts_dir() .. "lib\\auto-updater.lua", "wb")
+                if file == nil then util.toast(error_prefix.."Could not open file for writing.", TOAST_ALL) return false end
+                file:write(result) file:close() util.toast("Successfully installed auto-updater lib", TOAST_ALL) return true
+            end
+            auto_update_complete = parse_auto_update_result(result, headers, status_code)
+        end, function() util.toast("Error downloading auto-updater lib. Update failed to download.", TOAST_ALL) end)
+    async_http.dispatch() local i = 1 while (auto_update_complete == nil and i < 40) do util.yield(250) i = i + 1 end
+    if auto_update_complete == nil then error("Error downloading auto-updater lib. HTTP Request timeout") end
+    auto_updater = require("auto-updater")
+end
+if auto_updater == true then error("Invalid auto-updater lib. Please delete your Stand/Lua Scripts/lib/auto-updater.lua and try again") end
+
+auto_updater.run_auto_update({
+    source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/1%23%20PIP%20Girl.lua",
+    script_relpath=SCRIPT_RELPATH,
+    verify_file_begins_with="--"
+})
+
 util.require_natives(1663599433)
 local LOADING_START = util.current_time_millis()
 LOADING_SCRIPT = true
@@ -15,9 +45,7 @@ Script = {}
 local max_int = 2147483647
 local min_int = -2147483647
 local lua_path = "Stand>Lua Scripts>"..string.gsub(string.gsub(SCRIPT_RELPATH,".lua",""),"\\",">")
-
 local my = menu.my_root() 
-
 local Int_PTR = memory.alloc_int()
 
 local function getMPX()
@@ -105,7 +133,6 @@ function IS_HELP_MSG_DISPLAYED(label)
     return HUD.END_TEXT_COMMAND_IS_THIS_HELP_MESSAGE_BEING_DISPLAYED(0)
 end
 
-
 local PIP_Girl = menu.list(menu.my_root(), 'PIP Girl', {}, 'Personal Information Processor Girl', function(); end)
 local Stimpak = menu.list(menu.my_root(), 'Stimpak', {}, 'Take a Breath', function(); end)
 local Game = menu.list(menu.my_root(), 'Game', {}, '', function(); end)
@@ -143,6 +170,10 @@ menu.action(PIP_Girl, "The Open Road Screen", {}, "Your MC Management Screen.", 
     START_SCRIPT("MC", "appbikerbusiness")
 end)
 
+menu.action(PIP_Girl, "(Debug)(EWO) Unstuck Loading Screen, after start sell.", {}, "If you Use one of the screens above, And start a sell, You could get stuck.\nDo Suicide to Unstuck.", function()
+    menu.trigger_commands('ewo')
+end)
+
 menu.toggle_loop(PIP_Girl, 'Nightclub Party Never Stops!', {'ncpop'}, 'The hottest NC in whole LS.\nKeeps you pop at 90-100%', function ()
     if IsInSession() then
         local ncpop = math.floor(STAT_GET_INT('CLUB_POPULARITY') / 10)
@@ -154,9 +185,18 @@ menu.toggle_loop(PIP_Girl, 'Nightclub Party Never Stops!', {'ncpop'}, 'The hotte
     end
 end)
 
+local lastCheckedTime = 0
+local CHECK_INTERVAL = 30000 -- 30 seconds in milliseconds
 menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {}, "Auto Switches you to MC/CEO in most Situations needed.", function()
     if not util.is_session_started() then return end
-
+    local currentTime = SYSTEM.GET_GAME_TIMER()
+    if (currentTime - lastCheckedTime) >= CHECK_INTERVAL then
+        lastCheckedTime = currentTime
+        if players.get_boss(players.user()) == -1 then
+            menu.trigger_commands("ceostart")
+            notify("Turned you into CEO!")
+        end
+    end
     local CEOLabels = {
         "HIP_HELP_BBOSS",
         "HIP_HELP_BBOSS2",
@@ -207,6 +247,7 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {}, "Auto Switches you to MC/
             notify("Turned you into MC President!")
         end
     end
+    util.yield(1)
 end)
 
 menu.action(PIP_Girl, 'Cayo Preset (!)', {}, 'Set up the cayo heist with a Sweet Legit Like Preset.\nNOTE!: it will try to trigger a HC lua CMD to refreash the Planning screen.\nIf you have HC not active, go manually out and in again.', function (click_type)
