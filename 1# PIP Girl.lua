@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-
+local SCRIPT_VERSION = "0.0.1"
 util.require_natives(1663599433)
 local LOADING_START = util.current_time_millis()
 LOADING_SCRIPT = true
@@ -431,3 +431,5 @@ NC_TP = menu.action(my, 'Get Quick to NC Safe', {}, 'Get to the NC Safe\nThis us
 		menu.trigger_commands("tpncsafe")
 	end
 end)
+
+GIT = menu.hyperlink(my, "PIP Girl's GIT", "https://github.com/LeaLangley/PIP-Girl", "")
