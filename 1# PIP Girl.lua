@@ -426,10 +426,24 @@ menu.toggle_loop(Game, "Auto Accept Warning",{},"Auto Accepts most Warnings in g
     util.yield(50)
 end)
 
+menu.toggle_loop(Game, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join Invite only\nIf R* Admin Detected", function()
+    if util.is_session_started() then
+        for _, pid in players.list(false, true, true) do 
+            if players.is_marked_as_admin(pid) then 
+                notify("Admin Detected, We get you out of Here!")
+                menu.trigger_commands("quickbail")
+                util.yield(13)
+                menu.trigger_commands("go inviteonly")
+            end    
+        end
+    end
+    util.yield(13)
+end)
+
+GIT = menu.hyperlink(my, "PIP Girl's GIT", "https://github.com/LeaLangley/PIP-Girl", "")
+
 NC_TP = menu.action(my, 'Get Quick to NC Safe', {}, 'Get to the NC Safe\nThis use the Mussines Banager LUA.', function()
     if IsInSession() then
 		menu.trigger_commands("tpncsafe")
 	end
 end)
-
-GIT = menu.hyperlink(my, "PIP Girl's GIT", "https://github.com/LeaLangley/PIP-Girl", "")
