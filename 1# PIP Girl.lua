@@ -263,6 +263,7 @@ menu.action(PIP_Girl, "Teleport Pickups To Me", {}, "Teleports all Pickups To Yo
         local pos = players.get_position(players.user())
         for _, pickup in entities.get_all_pickups_as_handles() do
             ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
+            counter = counter + 1
             util.yield(1)
         end
         if counter == 0 then
