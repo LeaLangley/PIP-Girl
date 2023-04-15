@@ -136,6 +136,7 @@ end
 local PIP_Girl = menu.list(menu.my_root(), 'PIP Girl', {}, 'Personal Information Processor Girl', function(); end)
 local Stimpak = menu.list(menu.my_root(), 'Stimpak', {}, 'Take a Breath', function(); end)
 local Game = menu.list(menu.my_root(), 'Game', {}, '', function(); end)
+local Settings = menu.list(menu.my_root(), 'Settings', {}, '', function(); end)
 
 menu.action(PIP_Girl, "Master Control Terminal Screen", {}, "Your Master Control Terminal.", function()
     START_SCRIPT("CEO", "apparcadebusinesshub")
@@ -479,7 +480,13 @@ menu.toggle_loop(Game, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join Inv
     util.yield(13)
 end)
 
-GIT = menu.hyperlink(my, "PIP Girl's GIT", "https://github.com/LeaLangley/PIP-Girl", "")
+menu.hyperlink(Settings, "PIP Girl's GIT", "https://github.com/LeaLangley/PIP-Girl", "")
+
+menu.action(Settings, "Check for Update", {}, "The script will automatically check for updates at most daily, but you can manually check using this option anytime.", function()
+    auto_update_config.check_interval = 0
+    util.toast("Checking for updates")
+    auto_updater.run_auto_update(auto_update_config)
+end)
 
 NC_TP = menu.action(my, 'Get Quick to NC Safe', {}, 'Get to the NC Safe\nThis use the Mussines Banager LUA.', function()
     if IsInSession() then
