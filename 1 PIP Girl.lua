@@ -186,14 +186,12 @@ menu.toggle_loop(PIP_Girl, 'Nightclub Party Never Stops!', {'ncpop'}, 'The hotte
     end
 end)
 
-local lastCheckedTime = 0
-local CHECK_INTERVAL = 30000 -- 30 seconds in milliseconds
 menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {}, "Auto Switches you to MC/CEO in most Situations needed.", function()
     if not util.is_session_started() then return end
     if players.get_boss(players.user()) == -1 then
         menu.trigger_commands("ceostart")
         notify("Turned you into CEO!")
-        util.yield(30)
+        util.yield(30000)
     end
     local CEOLabels = {
         "HIP_HELP_BBOSS",
