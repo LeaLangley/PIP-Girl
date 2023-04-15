@@ -6,25 +6,25 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.0"
+local SCRIPT_VERSION = "0.0.1"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
 if not status then
-    local auto_update_complete = nil util.toast("Installing auto-updater...", TOAST_ALL)
+    local auto_update_complete = nil util.toast("<[Pip Girl]>: Installing auto-updater...", TOAST_ALL)
     async_http.init("raw.githubusercontent.com", "/hexarobi/stand-lua-auto-updater/main/auto-updater.lua",
         function(result, headers, status_code)
             local function parse_auto_update_result(result, headers, status_code)
-                local error_prefix = "Error downloading auto-updater: "
+                local error_prefix = "<[Pip Girl]>: Error downloading auto-updater: "
                 if status_code ~= 200 then util.toast(error_prefix..status_code, TOAST_ALL) return false end
                 if not result or result == "" then util.toast(error_prefix.."Found empty file.", TOAST_ALL) return false end
                 filesystem.mkdir(filesystem.scripts_dir() .. "lib")
                 local file = io.open(filesystem.scripts_dir() .. "lib\\auto-updater.lua", "wb")
                 if file == nil then util.toast(error_prefix.."Could not open file for writing.", TOAST_ALL) return false end
-                file:write(result) file:close() util.toast("Successfully installed auto-updater lib", TOAST_ALL) return true
+                file:write(result) file:close() util.toast("<[Pip Girl]>: Successfully installed auto-updater lib", TOAST_ALL) return true
             end
             auto_update_complete = parse_auto_update_result(result, headers, status_code)
-        end, function() util.toast("Error downloading auto-updater lib. Update failed to download.", TOAST_ALL) end)
+        end, function() util.toast("<[Pip Girl]>: Error downloading auto-updater lib. Update failed to download.", TOAST_ALL) end)
     async_http.dispatch() local i = 1 while (auto_update_complete == nil and i < 40) do util.yield(250) i = i + 1 end
     if auto_update_complete == nil then error("Error downloading auto-updater lib. HTTP Request timeout") end
     auto_updater = require("auto-updater")
@@ -248,7 +248,7 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {}, "Auto Switches you to MC/
     util.yield(1)
 end)
 
-menu.action(PIP_Girl, 'Cayo Preset (!)', {}, 'Set up the cayo heist with a Sweet Legit Like Preset.\nNOTE!: it will try to trigger a HC lua CMD to refreash the Planning screen.\nIf you have HC not active, go manually out and in again.', function (click_type)
+menu.action(PIP_Girl, 'Cayo Preset (!)', {}, 'Set up the cayo heist with a Sweet Legit Like Preset.\nNOTE!: it will try to trigger a HC lua CMD to refreash the Planning screen.\nIf you have HC not active, go manually out and in again.\nNote that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.', function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'Want to set up cayo?', function()
         if IsInSession() then
             STAT_SET_INT("H4_MISSIONS", -1)
@@ -288,8 +288,16 @@ menu.action(PIP_Girl, 'Cayo Preset (!)', {}, 'Set up the cayo heist with a Sweet
             STAT_SET_INT("H4LOOT_PAINT_V", 343863)
             STAT_SET_INT("H4LOOT_WEED_V", 229242)
             STAT_SET_INT("H4_PROGRESS", 131055)
-            menu.trigger_commands("fillinventory")
+            util.yield(1)
             menu.trigger_commands("hccprefreshboard")
+            util.yield(1)
+            menu.trigger_commands("fillinventory")
+            util.yield(1)
+            notify("Cayo Has been setup!")
+            util.yield(6000)
+            notify("Note that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.")
+            util.yield(2000)
+            notify("Note that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.")
         end
     end, function()
         notify("Aborted.")
@@ -442,7 +450,14 @@ menu.toggle_loop(Game, "Auto Skip Conversation",{},"Automatically skip all conve
 end)
 
 menu.toggle_loop(Game, "Auto Skip Cutscene (!)",{},"Automatically skip all cutscenes.\nNOTE!: Turn This of if playing heists as it could make you fail.\nKnown Heist are Cayo for now.",function()
-    CUTSCENE.STOP_CUTSCENE_IMMEDIATELY()
+    if CUTSCENE.IS_CUTSCENE_PLAYING() then
+        CUTSCENE.STOP_CUTSCENE_IMMEDIATELY()
+        local cutsceneName = CUTSCENE.GET_CUTSCENE_PLAYING()
+        if cutsceneName ~= "" then
+            notify("Cutscene: ".. tostring(cutsceneName) .." has been skiped")
+            error("<[Pip Girl]>: Cutscene: ".. tostring(cutsceneName) .." has been skiped")
+        end
+    end
     util.yield(100)
 end)
 
@@ -469,9 +484,9 @@ end)
 menu.toggle_loop(Game, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join Invite only\nIf R* Admin Detected", function()
     if util.is_session_started() then
         for _, pid in players.list(false, true, true) do 
-            if players.is_marked_as_admin(pid) then 
-                notify("Admin Detected, We get you out of Here!")
+            if players.is_marked_as_admin(pid) or players.is_marked_as_modder_or_admin(pid) then 
                 menu.trigger_commands("quickbail")
+                notify("Admin Detected, We get you out of Here!")
                 util.yield(13)
                 menu.trigger_commands("go inviteonly")
             end    
@@ -483,9 +498,12 @@ end)
 menu.hyperlink(Settings, "PIP Girl's GIT", "https://github.com/LeaLangley/PIP-Girl", "")
 
 menu.action(Settings, "Check for Update", {}, "The script will automatically check for updates at most daily, but you can manually check using this option anytime.", function()
-    auto_update_config.check_interval = 0
-    util.toast("Checking for updates")
-    auto_updater.run_auto_update(auto_update_config)
+    notify("Checking for Updates")
+    auto_updater.run_auto_update({
+        source_url="https://raw.githubusercontent.com/MyUsername/MyProjectName/main/MyScriptName.lua",
+        script_relpath=SCRIPT_RELPATH,
+        verify_file_begins_with="--"
+    })
 end)
 
 NC_TP = menu.action(my, 'Get Quick to NC Safe', {}, 'Get to the NC Safe\nThis use the Mussines Banager LUA.', function()
