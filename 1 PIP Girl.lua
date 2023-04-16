@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.3"
+local SCRIPT_VERSION = "0.0.4"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -503,10 +503,4 @@ menu.action(Settings, "Check for Update", {}, "The script will automatically che
         script_relpath=SCRIPT_RELPATH,
         verify_file_begins_with="--"
     })
-end)
-
-NC_TP = menu.action(my, 'Get Quick to NC Safe', {}, 'Get to the NC Safe\nThis use the Mussines Banager LUA.', function()
-    if IsInSession() then
-		menu.trigger_commands("tpncsafe")
-	end
 end)
