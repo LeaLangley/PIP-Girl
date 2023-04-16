@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.2"
+local SCRIPT_VERSION = "0.0.3"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -134,44 +134,45 @@ function IS_HELP_MSG_DISPLAYED(label)
 end
 
 local PIP_Girl = menu.list(menu.my_root(), 'PIP Girl', {}, 'Personal Information Processor Girl', function(); end)
+local PIP_Girl_APPS = menu.list(PIP_Girl, 'PIP Girl Apps', {}, 'Personal Information Processor Girl Apps', function(); end)
 local Stimpak = menu.list(menu.my_root(), 'Stimpak', {}, 'Take a Breath', function(); end)
 local Game = menu.list(menu.my_root(), 'Game', {}, '', function(); end)
 local Settings = menu.list(menu.my_root(), 'Settings', {}, '', function(); end)
 
-menu.action(PIP_Girl, "Master Control Terminal Screen", {}, "Your Master Control Terminal.", function()
+menu.action(PIP_Girl_APPS, "Master Control Terminal App", {}, "Your Master Control Terminal.", function()
     START_SCRIPT("CEO", "apparcadebusinesshub")
 end)
 
-menu.textslider(PIP_Girl, "Nightclub Screen", {}, "Your Nightclub Screen.", {
+menu.textslider(PIP_Girl_APPS, "Nightclub App", {}, "Your Nightclub Screen.", {
     "Open",
     "Close",
 }, function()
     START_SCRIPT("CEO", "appbusinesshub")
 end)
 
-menu.textslider(PIP_Girl, "Bunker Screen", {}, "Your Bunker Screen.", {
+menu.textslider(PIP_Girl_APPS, "Bunker App", {}, "Your Bunker Screen.", {
     "Open",
     "Close",
 }, function()
     START_SCRIPT("CEO", "appbunkerbusiness")
 end)
 
-menu.action(PIP_Girl, "Touchscreen Terminal Screen", {}, "Your Terrobyte Screen.", function()
+menu.action(PIP_Girl_APPS, "Touchscreen Terminal App", {}, "Your Terrobyte Screen.", function()
     START_SCRIPT("CEO", "apphackertruck")
 end)
 
-menu.textslider(PIP_Girl, "Air Cargo Screen", {}, "Your Air Cargo Screen.", {
+menu.textslider(PIP_Girl_APPS, "Air Cargo App", {}, "Your Air Cargo Screen.", {
     "Open",
     "Close",
 }, function()
     START_SCRIPT("CEO", "appsmuggler")
 end)
 
-menu.action(PIP_Girl, "The Open Road Screen", {}, "Your MC Management Screen.", function()
+menu.action(PIP_Girl_APPS, "The Open Road App", {}, "Your MC Management Screen.", function()
     START_SCRIPT("MC", "appbikerbusiness")
 end)
 
-menu.action(PIP_Girl, "(Debug)(EWO) Unstuck Loading Screen, after start sell.", {}, "If you Use one of the screens above, And start a sell, You could get stuck.\nDo Suicide to Unstuck.", function()
+menu.action(PIP_Girl_APPS, "(Unstuck) Unstuck after start sell.", {}, "If you Use one of the screens above, And start a sell, You could get stuck.\nDo Suicide to Unstuck.", function()
     menu.trigger_commands('ewo')
 end)
 
