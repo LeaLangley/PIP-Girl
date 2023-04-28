@@ -187,12 +187,20 @@ menu.toggle_loop(PIP_Girl, 'Nightclub Party Never Stops!', {'ncpop'}, 'The hotte
     end
 end)
 
-menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {}, "Auto Switches you to MC/CEO in most Situations needed.", function()
+menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {}, "Auto Register youself as CEO and Auto Switches you to MC/CEO in most Situations needed.", function()
     if not util.is_session_started() then return end
     if players.get_boss(players.user()) == -1 then
-        menu.trigger_commands("ceostart")
-        notify("Turned you into CEO!")
-        util.yield(30000)
+        util.yield(30666)
+        if players.get_boss(players.user()) == -1 then
+            menu.trigger_commands("ceostart")
+            util.yield(6666)
+            if players.get_boss(players.user()) == 0 then
+                notify("Turned you into CEO!")
+            else
+                notify("We could not turn u CEO :c")
+                util.yield(480000)
+            end
+        end
     end
     local CEOLabels = {
         "HIP_HELP_BBOSS",
@@ -492,6 +500,23 @@ menu.toggle_loop(Game, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join Inv
         end
     end
     util.yield(13)
+end)
+
+local saved_vehicle_id = nil
+
+menu.toggle_loop(Game, 'Blinkers', {'blinkers'}, 'Set the blinkers when entering vehicle.', function ()
+    local in_vehicle = is_user_driving_vehicle()
+    local vehicle = entities.get_user_vehicle_as_handle()
+
+    if in_vehicle and (saved_vehicle_id == nil or saved_vehicle_id ~= vehicle) then
+        saved_vehicle_id = vehicle
+        VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(saved_vehicle_id, 1, true)
+        VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(saved_vehicle_id, 0, true)
+    end
+    if not in_vehicle then
+        saved_vehicle_id = nil
+    end
+    util.yield(666)
 end)
 
 menu.hyperlink(Settings, "PIP Girl's GIT", "https://github.com/LeaLangley/PIP-Girl", "")
