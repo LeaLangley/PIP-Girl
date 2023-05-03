@@ -31,16 +31,82 @@ if not status then
 end
 if auto_updater == true then error("Invalid auto-updater lib. Please delete your Stand/Lua Scripts/lib/auto-updater.lua and try again") end
 
-auto_updater.run_auto_update({
+--auto_updater.run_auto_update({
+--    source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/1%20PIP%20Girl.lua",
+--    script_relpath=SCRIPT_RELPATH,
+--    verify_file_begins_with="--"
+--})
+
+local default_check_interval = 604800
+local auto_update_config = {
     source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/1%20PIP%20Girl.lua",
     script_relpath=SCRIPT_RELPATH,
-    verify_file_begins_with="--"
-})
+    switch_to_branch=selected_branch,
+    verify_file_begins_with="--",
+    check_interval=86400,
+    silent_updates=true,
+    dependencies={
+        {
+            name="logo",
+            source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/logo.png",
+            script_relpath="resources/1 PIP Girl/logo.png",
+            check_interval=default_check_interval,
+        },
+    }
+}
+auto_updater.run_auto_update(auto_update_config)
+
+-- Load required dependencies into global namespace
+for _, dependency in pairs(auto_update_config.dependencies) do
+    if dependency.is_required then
+        if dependency.loaded_lib == nil then
+            util.toast("<[Pip Girl]>: Error loading lib "..dependency.name, TOAST_ALL)
+        else
+            local var_name = dependency.name
+            _G[var_name] = dependency.loaded_lib
+        end
+    end
+end
 
 util.require_natives(1663599433)
 local LOADING_START = util.current_time_millis()
 LOADING_SCRIPT = true
 Script = {}
+
+resources_dir = filesystem.resources_dir() .. '/1 PIP Girl/'
+logo = directx.create_texture(resources_dir .. 'logo.png')
+if SCRIPT_MANUAL_START then
+    logo_alpha = 0
+    logo_alpha_incr = 0.01
+    logo_alpha_thread = util.create_thread(function (thr)
+        while true do
+            logo_alpha = logo_alpha + logo_alpha_incr
+            if logo_alpha > 1 then
+                logo_alpha = 1
+            elseif logo_alpha < 0 then 
+                logo_alpha = 0
+                util.stop_thread()
+            end
+            util.yield()
+        end
+    end)
+
+    logo_thread = util.create_thread(function (thr)
+        starttime = os.clock()
+        local alpha = 0
+        while true do
+            directx.draw_texture(logo, 0.06, 0.06, 0.5, 0.5, 0.5, 0.5, 0, 1, 1, 1, logo_alpha)
+            timepassed = os.clock() - starttime
+            if timepassed > 5 then
+                logo_alpha_incr = -0.01
+            end
+            if logo_alpha == 0 then
+                util.stop_thread()
+            end
+            util.yield()
+        end
+    end)
+end
 
 local max_int = 2147483647
 local min_int = -2147483647
@@ -189,16 +255,18 @@ end)
 
 menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {}, "Auto Register youself as CEO and Auto Switches you to MC/CEO in most Situations needed.", function()
     if not util.is_session_started() then return end
-    if players.get_boss(players.user()) == -1 then
-        util.yield(30666)
+    if not util.is_session_transition_active() then
         if players.get_boss(players.user()) == -1 then
-            menu.trigger_commands("ceostart")
-            util.yield(6666)
-            if players.get_boss(players.user()) == 0 then
-                notify("Turned you into CEO!")
-            else
-                notify("We could not turn u CEO :c")
-                util.yield(480000)
+            --util.yield(30666)
+            if players.get_boss(players.user()) == -1 then
+                menu.trigger_commands("ceostart")
+                util.yield(6666)
+                if players.get_boss(players.user()) == 0 then
+                    notify("Turned you into CEO!")
+                else
+                    notify("We could not turn u CEO :c")
+                    util.yield(480000)
+                end
             end
         end
     end
@@ -504,7 +572,7 @@ end)
 
 local saved_vehicle_id = nil
 
-menu.toggle_loop(Game, 'Blinkers', {'blinkers'}, 'Set the blinkers when entering vehicle.', function ()
+menu.toggle_loop(Game, 'Auto Blinkers', {'blinkers'}, 'Set the blinkers when entering vehicle.', function ()
     local in_vehicle = is_user_driving_vehicle()
     local vehicle = entities.get_user_vehicle_as_handle()
 
@@ -519,13 +587,43 @@ menu.toggle_loop(Game, 'Blinkers', {'blinkers'}, 'Set the blinkers when entering
     util.yield(666)
 end)
 
+
+local block_join_huh = nil
+local max_players = 13
+menu.slider(Game, 'Lucky 13', {'setmaxplayer'}, 'Let only up to a certain number of people join that are strangers.', 1, 32, max_players, 1, function (new_value)
+    if IsInSession() then
+        local numPlayers = 0
+        for _, pid in pairs(players.list()) do
+            numPlayers = numPlayers + 1
+        end
+        if numPlayers > 13 and block_join_huh ~= 1 then
+            menu.trigger_commands("blockjoinsstrangers on")
+            block_join_huh = 1
+            notify("More then 13 ppl in session, Closing joins now!")
+            util.yield(66666)
+        end
+        if numPlayers < 13 and block_join_huh ~= 0 then
+            menu.trigger_commands("blockjoinsstrangers off")
+            block_join_huh = 0
+            notify("Less then 13 ppl in session, Open joins now!")
+            util.yield(66666)
+        end
+    end
+    util.yield(66666)
+end)
+
 menu.hyperlink(Settings, "PIP Girl's GIT", "https://github.com/LeaLangley/PIP-Girl", "")
 
 menu.action(Settings, "Check for Update", {}, "The script will automatically check for updates at most daily, but you can manually check using this option anytime.", function()
-    notify("Checking for Updates")
-    auto_updater.run_auto_update({
-        source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/1%20PIP%20Girl.lua",
-        script_relpath=SCRIPT_RELPATH,
-        verify_file_begins_with="--"
-    })
+    auto_updater.run_auto_update(auto_update_config)
+end)
+
+players.add_command_hook(function(pid)
+    menu.divider(menu.player_root(pid), '1 PIP Girl')
+    local Bad_Modder = menu.list(menu.player_root(pid), 'Bad Modder?', {}, '', function(); end)
+    menu.action(Bad_Modder, "yea :'c", {}, "Kicks, Blacklist Note and Block the Target from Joining u again./nVia stand.", function ()
+        menu.trigger_commands("historynote".. players.get_name(pid) .." Blacklist")
+        menu.trigger_commands("historyblock".. players.get_name(pid) .." on")
+        menu.trigger_commands("ban".. players.get_name(pid))
+    end)
 end)
