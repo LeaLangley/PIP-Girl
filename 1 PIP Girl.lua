@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.5"
+local SCRIPT_VERSION = "0.0.6"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -589,8 +589,8 @@ end)
 
 
 local block_join_huh = 2
-local max_players = 13
-menu.slider(Game, 'Lucky 13', {'setmaxplayer'}, 'Let only up to a certain number of people join that are strangers.', 1, 32, max_players, 1, function (new_value)
+local max_players = 33
+menu.click_slider(Game, 'Session Player Limit', {'setmaxplayer'}, 'Let only up to a certain number of people join that are strangers.', 1, 32, max_players, 1, function (new_value)
     max_players = new_value
     if IsInSession() then
         local numPlayers = 0
@@ -601,14 +601,16 @@ menu.slider(Game, 'Lucky 13', {'setmaxplayer'}, 'Let only up to a certain number
             menu.trigger_commands("blockjoinsstrangers on")
             block_join_huh = 1
             notify("More than "..max_players.." players in session, closing joins now!")
+            util.yield(66666)
         end
         if numPlayers < max_players and block_join_huh ~= 0 then
             menu.trigger_commands("blockjoinsstrangers off")
             block_join_huh = 0
             notify("Less than "..max_players.." players in session, open joins now!")
+            util.yield(66666)
         end
     end
-    util.yield(66666)
+    util.yield(6666)
 end)
 
 menu.hyperlink(Settings, "PIP Girl's GIT", "https://github.com/LeaLangley/PIP-Girl", "")
