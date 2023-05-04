@@ -339,24 +339,24 @@ menu.action(PIP_Girl, 'Cayo Preset (!)', {}, 'Set up the cayo heist with a Sweet
             STAT_SET_INT("H4CNF_UNIFORM", 5256)
             STAT_SET_INT("H4CNF_GRAPPEL", 5156)
             STAT_SET_INT("H4CNF_TROJAN", 4)
-            STAT_SET_INT("H4LOOT_CASH_I", 2883912)
-            STAT_SET_INT("H4LOOT_CASH_I_SCOPED", 2883912)
-            STAT_SET_INT("H4LOOT_CASH_C", 34)
-            STAT_SET_INT("H4LOOT_CASH_C_SCOPED", 34)
-            STAT_SET_INT("H4LOOT_COKE_I", 0)
-            STAT_SET_INT("H4LOOT_COKE_I_SCOPED", 0)
+            STAT_SET_INT("H4LOOT_CASH_I", 1835011)
+            STAT_SET_INT("H4LOOT_CASH_I_SCOPED", 1835011)
+            STAT_SET_INT("H4LOOT_CASH_C", 2)
+            STAT_SET_INT("H4LOOT_CASH_C_SCOPED", 2)
+            STAT_SET_INT("H4LOOT_COKE_I", 200716)
+            STAT_SET_INT("H4LOOT_COKE_I_SCOPED", 200716)
             STAT_SET_INT("H4LOOT_COKE_C", 0)
             STAT_SET_INT("H4LOOT_COKE_C_SCOPED", 0)
             STAT_SET_INT("H4LOOT_GOLD_I", 0)
             STAT_SET_INT("H4LOOT_GOLD_I_SCOPED", 0)
-            STAT_SET_INT("H4LOOT_GOLD_C", 204)
-            STAT_SET_INT("H4LOOT_GOLD_C_SCOPED", 204)
-            STAT_SET_INT("H4LOOT_WEED_I", 5263361)
-            STAT_SET_INT("H4LOOT_WEED_I_SCOPED", 5263361)
+            STAT_SET_INT("H4LOOT_GOLD_C", 221)
+            STAT_SET_INT("H4LOOT_GOLD_C_SCOPED", 221)
+            STAT_SET_INT("H4LOOT_WEED_I", 4203696)
+            STAT_SET_INT("H4LOOT_WEED_I_SCOPED", 4203696)
             STAT_SET_INT("H4LOOT_WEED_C", 0)
             STAT_SET_INT("H4LOOT_WEED_C_SCOPED", 0)
-            STAT_SET_INT("H4LOOT_PAINT", 5)
-            STAT_SET_INT("H4LOOT_PAINT_SCOPED", 5)
+            STAT_SET_INT("H4LOOT_PAINT", 24)
+            STAT_SET_INT("H4LOOT_PAINT_SCOPED", 24)
             STAT_SET_INT("H4LOOT_CASH_V", 171931)
             STAT_SET_INT("H4LOOT_COKE_V", 343863)
             STAT_SET_INT("H4LOOT_GOLD_V", 458484)
@@ -588,25 +588,24 @@ menu.toggle_loop(Game, 'Auto Blinkers', {'blinkers'}, 'Set the blinkers when ent
 end)
 
 
-local block_join_huh = nil
+local block_join_huh = 2
 local max_players = 13
 menu.slider(Game, 'Lucky 13', {'setmaxplayer'}, 'Let only up to a certain number of people join that are strangers.', 1, 32, max_players, 1, function (new_value)
+    max_players = new_value
     if IsInSession() then
         local numPlayers = 0
         for _, pid in pairs(players.list()) do
             numPlayers = numPlayers + 1
         end
-        if numPlayers > 13 and block_join_huh ~= 1 then
+        if numPlayers > max_players and block_join_huh ~= 1 then
             menu.trigger_commands("blockjoinsstrangers on")
             block_join_huh = 1
-            notify("More then 13 ppl in session, Closing joins now!")
-            util.yield(66666)
+            notify("More than "..max_players.." players in session, closing joins now!")
         end
-        if numPlayers < 13 and block_join_huh ~= 0 then
+        if numPlayers < max_players and block_join_huh ~= 0 then
             menu.trigger_commands("blockjoinsstrangers off")
             block_join_huh = 0
-            notify("Less then 13 ppl in session, Open joins now!")
-            util.yield(66666)
+            notify("Less than "..max_players.." players in session, open joins now!")
         end
     end
     util.yield(66666)
