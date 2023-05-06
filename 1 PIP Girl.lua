@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.6"
+local SCRIPT_VERSION = "0.0.7"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -257,16 +257,13 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {}, "Auto Register youself as
     if not util.is_session_started() then return end
     if not util.is_session_transition_active() then
         if players.get_boss(players.user()) == -1 then
-            --util.yield(30666)
-            if players.get_boss(players.user()) == -1 then
-                menu.trigger_commands("ceostart")
-                util.yield(6666)
-                if players.get_boss(players.user()) == 0 then
-                    notify("Turned you into CEO!")
-                else
-                    notify("We could not turn u CEO :c")
-                    util.yield(480000)
-                end
+            menu.trigger_commands("ceostart")
+            util.yield(6666)
+            if players.get_org_type(players.user()) == 0
+                notify("Turned you into CEO!")
+            else
+                notify("We could not turn u CEO :c\nWe wait 10min and try again.")
+                util.yield(600000)
             end
         end
     end
@@ -357,11 +354,16 @@ menu.action(PIP_Girl, 'Cayo Preset (!)', {}, 'Set up the cayo heist with a Sweet
             STAT_SET_INT("H4LOOT_WEED_C_SCOPED", 0)
             STAT_SET_INT("H4LOOT_PAINT", 24)
             STAT_SET_INT("H4LOOT_PAINT_SCOPED", 24)
-            STAT_SET_INT("H4LOOT_CASH_V", 171931)
-            STAT_SET_INT("H4LOOT_COKE_V", 343863)
-            STAT_SET_INT("H4LOOT_GOLD_V", 458484)
-            STAT_SET_INT("H4LOOT_PAINT_V", 343863)
-            STAT_SET_INT("H4LOOT_WEED_V", 229242)
+            --STAT_SET_INT("H4LOOT_CASH_V", 171931)
+            --STAT_SET_INT("H4LOOT_COKE_V", 343863)
+            --STAT_SET_INT("H4LOOT_GOLD_V", 458484)
+            --STAT_SET_INT("H4LOOT_PAINT_V", 343863)
+            --STAT_SET_INT("H4LOOT_WEED_V", 229242)
+            STAT_SET_INT("H4LOOT_CASH_V", 474431)
+            STAT_SET_INT("H4LOOT_COKE_V", 948863)
+            STAT_SET_INT("H4LOOT_GOLD_V", 1265151)
+            STAT_SET_INT("H4LOOT_PAINT_V", 948863)
+            STAT_SET_INT("H4LOOT_WEED_V", 507945)
             STAT_SET_INT("H4_PROGRESS", 131055)
             util.yield(1)
             menu.trigger_commands("hccprefreshboard")
@@ -587,30 +589,34 @@ menu.toggle_loop(Game, 'Auto Blinkers', {'blinkers'}, 'Set the blinkers when ent
     util.yield(666)
 end)
 
-
-local block_join_huh = 2
 local max_players = 33
-menu.click_slider(Game, 'Session Player Limit', {'setmaxplayer'}, 'Let only up to a certain number of people join that are strangers.', 1, 32, max_players, 1, function (new_value)
+menu.slider(Game, 'Session Player Limit', {'setmaxplayer'}, 'Let only up to a certain number of people join that are strangers.', 1, 32, max_players, 1, function (new_value)
     max_players = new_value
+end)
+
+menu.toggle_loop(Game, 'Activate Session Player Limit', {'setmaxplayer'}, 'Let only up to a certain number of people join that are strangers.', function (new_value)
     if IsInSession() then
         local numPlayers = 0
+        local cmd_path = "Online>Session>Block Joins>From Strangers"
         for _, pid in pairs(players.list()) do
             numPlayers = numPlayers + 1
         end
-        if numPlayers > max_players and block_join_huh ~= 1 then
+        if numPlayers > max_players then
+            if menu.get_state(menu.ref_by_path(cmd_path)) == "Off" then
             menu.trigger_commands("blockjoinsstrangers on")
-            block_join_huh = 1
             notify("More than "..max_players.." players in session, closing joins now!")
-            util.yield(66666)
+            util.yield(666)
+            end
         end
-        if numPlayers < max_players and block_join_huh ~= 0 then
-            menu.trigger_commands("blockjoinsstrangers off")
-            block_join_huh = 0
-            notify("Less than "..max_players.." players in session, open joins now!")
-            util.yield(66666)
+        if numPlayers < max_players then
+            if menu.get_state(menu.ref_by_path(cmd_path)) == "On" then
+                menu.trigger_commands("blockjoinsstrangers off")
+                notify("Less than "..max_players.." players in session, open joins now!")
+                util.yield(666)
+            end
         end
     end
-    util.yield(6666)
+    util.yield(666)
 end)
 
 menu.hyperlink(Settings, "PIP Girl's GIT", "https://github.com/LeaLangley/PIP-Girl", "")
