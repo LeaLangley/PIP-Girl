@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.7"
+local SCRIPT_VERSION = "0.0.8"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -259,7 +259,7 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {}, "Auto Register youself as
         if players.get_boss(players.user()) == -1 then
             menu.trigger_commands("ceostart")
             util.yield(6666)
-            if players.get_org_type(players.user()) == 0
+            if players.get_org_type(players.user()) == 0 then
                 notify("Turned you into CEO!")
             else
                 notify("We could not turn u CEO :c\nWe wait 10min and try again.")
