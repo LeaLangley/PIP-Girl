@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.10"
+local SCRIPT_VERSION = "0.0.11"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -645,6 +645,7 @@ menu.toggle_loop(Game, "Auto Accept Warning",{},"Auto Accepts most Warnings in g
         PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
     elseif mess_hash == 379245697 then
         notify("Quiting Job.")
+        PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
     elseif mess_hash == 2053786350 then
         notify("Unable to Connect.")
         PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
@@ -695,12 +696,24 @@ menu.toggle_loop(Session, "Smart Script Host", {""}, "If the Script Host is not 
         for _, pid in ipairs(players.list(true, true, false, true)) do 
             if pid == script_host_id then
                 found = true
-                util.yield(6666)
-                break
+                util.yield(666)
             end
         end
         if not found and not CUTSCENE.IS_CUTSCENE_PLAYING() then
-            menu.trigger_commands("scripthost")
+            if players.user() == players.get_host() then
+                menu.trigger_commands("scripthost")
+            else
+                util.yield(1666)
+                for _, pid in ipairs(players.list(true, true, false, true)) do 
+                    if pid == script_host_id then
+                        found = true
+                        util.yield(666)
+                    end
+                end
+                if not found and not CUTSCENE.IS_CUTSCENE_PLAYING() then
+                    menu.trigger_commands("scripthost")
+                end
+            end
             util.yield(30013)
         end
         if script_host_id ~= players.user() then
