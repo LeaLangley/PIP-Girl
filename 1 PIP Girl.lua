@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.9"
+local SCRIPT_VERSION = "0.0.10"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -422,10 +422,12 @@ menu.action(PIP_Girl, "Teleport Pickups To Me", {}, "Teleports all Pickups To Yo
     end)
 end)
 
-local regen_all = Stimpak:action("Refill Health & Armor",{"newborn"},"Regenerate to max your health and armor.",function()
+local regen_all = Stimpak:action("Refill Health & Armour",{"newborn"},"Regenerate to max your health and armour.",function()
     if IsInSession() then
-        ENTITY.SET_ENTITY_HEALTH(players.user_ped(),ENTITY.GET_ENTITY_MAX_HEALTH(players.user_ped()))
-        PED.SET_PED_ARMOUR(players.user_ped(),PLAYER.GET_PLAYER_MAX_ARMOUR(players.user()))
+        --ENTITY.SET_ENTITY_HEALTH(players.user_ped(),ENTITY.GET_ENTITY_MAX_HEALTH(players.user_ped()))
+        --PED.SET_PED_ARMOUR(players.user_ped(),PLAYER.GET_PLAYER_MAX_ARMOUR(players.user()))
+        menu.trigger_commands("refillhealth")
+        menu.trigger_commands("refillarmour")
     end
 end)
 
@@ -454,13 +456,19 @@ menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehicle", {}, "Will Recharge
         local in_vehicle = is_user_driving_vehicle()
         local playerPed = players.user_ped()
         local isPlayerInCover = PED.IS_PED_IN_COVER(playerPed, false)
-        if isPlayerInCover or in_vehicle then
-            if menu.get_state(menu.ref_by_path(cmd_path)) ~= "6.66" then
-                menu.trigger_commands("healthrate 6.66")
+        if ENTITY.GET_ENTITY_HEALTH(players.user_ped()) == ENTITY.GET_ENTITY_MAX_HEALTH(players.user_ped()) then
+            if menu.get_state(menu.ref_by_path(cmd_path)) ~= "0.00" then
+                menu.trigger_commands("healthrate 0.00")
             end
         else
-            if menu.get_state(menu.ref_by_path(cmd_path)) ~= "0.01" then
-                menu.trigger_commands("healthrate 0.01")
+            if isPlayerInCover or in_vehicle then
+                if menu.get_state(menu.ref_by_path(cmd_path)) ~= "6.66" then
+                    menu.trigger_commands("healthrate 6.66")
+                end
+            else
+                if menu.get_state(menu.ref_by_path(cmd_path)) ~= "0.01" then
+                    menu.trigger_commands("healthrate 0.01")
+                end
             end
         end
         util.yield(666)
@@ -478,13 +486,19 @@ menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle", {}, "Will Recharge 
         local in_vehicle = is_user_driving_vehicle()
         local playerPed = players.user_ped()
         local isPlayerInCover = PED.IS_PED_IN_COVER(playerPed, false)
-        if isPlayerInCover or in_vehicle then
-            if menu.get_state(menu.ref_by_path(cmd_path)) ~= "0.90" then
-                menu.trigger_commands("armourrate 0.90")
+        if PED.GET_PED_ARMOUR(players.user_ped()) == PLAYER.GET_PLAYER_MAX_ARMOUR(players.user()) then
+            if menu.get_state(menu.ref_by_path(cmd_path)) ~= "0.00" then
+                menu.trigger_commands("armourrate 0.00")
             end
         else
-            if menu.get_state(menu.ref_by_path(cmd_path)) ~= "0.13" then
-                menu.trigger_commands("armourrate 0.13")
+            if isPlayerInCover or in_vehicle then
+                if menu.get_state(menu.ref_by_path(cmd_path)) ~= "0.90" then
+                    menu.trigger_commands("armourrate 0.90")
+                end
+            else
+                if menu.get_state(menu.ref_by_path(cmd_path)) ~= "0.13" then
+                    menu.trigger_commands("armourrate 0.13")
+                end
             end
         end
         util.yield(666)
@@ -623,8 +637,19 @@ menu.toggle_loop(Game, "Auto Accept Warning",{},"Auto Accepts most Warnings in g
     elseif mess_hash == 1446064540 then
         notify("You are already in the session.")
         PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
-    --          transaction error         transaction error (mb)   join session             join session            leave session           leave online                 full of ceo
-    elseif mess_hash == 991495373 or mess_hash == 675241754 or mess_hash == 587688989 or mess_hash == 15890625 or mess_hash == 99184332 or mess_hash == 1246147334 or mess_hash == 583244483 then
+    elseif mess_hash == 2053095241 then
+        notify("Session may no longer exist.")
+        PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
+    elseif mess_hash == 1285618746 then
+        notify("Starting Job.")
+        PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
+    elseif mess_hash == 379245697 then
+        notify("Quiting Job.")
+    elseif mess_hash == 2053786350 then
+        notify("Unable to Connect.")
+        PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
+    --          transaction error         transaction error (mb)   join session             join session            leave session           leave online                 full of ceo                 cancel cayo               set up cayo
+    elseif mess_hash == 991495373 or mess_hash == 675241754 or mess_hash == 587688989 or mess_hash == 15890625 or mess_hash == 99184332 or mess_hash == 1246147334 or mess_hash == 583244483 or mess_hash == 505844183 or mess_hash == 988273680 then
         PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
     elseif mess_hash ~= 0 then
         notify(mess_hash, TOAST_CONSOLE)
