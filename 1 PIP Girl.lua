@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.11"
+local SCRIPT_VERSION = "0.0.12"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -171,6 +171,10 @@ end
 
 local function notify(msg)
     util.toast("<[Pip Girl]>: " .. msg)
+end
+
+local function warnify(msg)
+    chat.send_message("<[Pip Girl]>: " .. msg, true, true, false)
 end
 
 function START_SCRIPT(ceo_mc, name)
@@ -626,34 +630,43 @@ menu.toggle_loop(Game, "Auto Skip Cutscene (!)",{},"Automatically skip all cutsc
     util.yield(100)
 end)
 
-menu.toggle_loop(Game, "Auto Accept Warning",{},"Auto Accepts most Warnings in game, such as:\nFailed Session Join, Session Timeout, Already in Session, Transaction Error, Join Session, Leave Session, Leave Online and Session Full CEO/MC",function()
+local warningMessages = {
+    [896436592] = "This player left the session.",
+    [1575023314] = "Session timeout.",
+    [1446064540] = "You are already in the session.",
+    [2053095241] = "Session may no longer exist.",
+    [997975234] = "Session may no longer exist.",
+    [1285618746] = "Starting Job.",
+    [379245697] = "Quitting Job.",
+    [2053786350] = "Unable to Connect.",
+    [1232128772] = "Player joining, please wait.",
+    [1736490464] = "No Connection to R* Service.",
+    [1270064450] = "Player has been invited in the Crew.",
+    [991495373] = "Transaction error.",
+    [675241754] = "Transaction error.",
+    [587688989] = "Joining session.",
+    [15890625] = "Joining session.",
+    [99184332] = "Leaveing session.",
+    [1246147334] = "Leaveing online.",
+    [583244483] = "Session Full of CEO, Joining anyways.",
+    [505844183] = "Canceling Cayo.",
+    [988273680] = "Seting up Cayo.",
+    [398982408] = "Targeting mode Changed.",
+    [1504249340] = "Unable to joing the game as you save game failed to load. The R* game services unavailable right now, please try again later."
+}
+
+menu.toggle_loop(Game, "Auto Accept Warning", {}, "Auto accepts most warnings in the game.", function()
     local mess_hash = math.abs(HUD.GET_WARNING_SCREEN_MESSAGE_HASH())
-    if mess_hash == 896436592 then
-        notify("This player left the session.")
-        PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
-    elseif mess_hash == 1575023314 then
-        notify("Session timeout.")
-        PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
-    elseif mess_hash == 1446064540 then
-        notify("You are already in the session.")
-        PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
-    elseif mess_hash == 2053095241 then
-        notify("Session may no longer exist.")
-        PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
-    elseif mess_hash == 1285618746 then
-        notify("Starting Job.")
-        PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
-    elseif mess_hash == 379245697 then
-        notify("Quiting Job.")
-        PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
-    elseif mess_hash == 2053786350 then
-        notify("Unable to Connect.")
-        PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
-    --          transaction error         transaction error (mb)   join session             join session            leave session           leave online                 full of ceo                 cancel cayo               set up cayo
-    elseif mess_hash == 991495373 or mess_hash == 675241754 or mess_hash == 587688989 or mess_hash == 15890625 or mess_hash == 99184332 or mess_hash == 1246147334 or mess_hash == 583244483 or mess_hash == 505844183 or mess_hash == 988273680 then
-        PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
-    elseif mess_hash ~= 0 then
-        notify(mess_hash, TOAST_CONSOLE)
+    if mess_hash ~= 0 then
+        local warning = warningMessages[mess_hash]
+        if warning then
+            notify(warning)
+            warnify(warning)
+            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
+            util.yield(666)
+        else
+            notify(mess_hash, TOAST_CONSOLE)
+        end
     end
     util.yield(50)
 end)
@@ -885,17 +898,19 @@ local function is_player_in_blacklist(player)
 end
 
 local function update_player_name(player)
-    local rid = players.get_rockstar_id(player)
-    if rid then
-        local player_data_g = data_g[tostring(rid)]
-        if player_data_g then
-            local name = players.get_player_name(player)
-            if player_data_g.Name ~= name then
-                player_data_g.Name = name
-                data_e[tostring(rid)] = {
-                    ["Name"] = name
-                }
-                save_data_e()
+    if player and type(player) == "number" then
+        local rid = players.get_rockstar_id(player)
+        if rid then
+            local player_data_g = data_g[tostring(rid)]
+            if player_data_g then
+                local name = players.get_player_name(player)
+                if player_data_g.Name ~= name then
+                    player_data_g.Name = name
+                    data_e[tostring(rid)] = {
+                        ["Name"] = name
+                    }
+                    save_data_e()
+                end
             end
         end
     end
@@ -930,6 +945,7 @@ menu.toggle_loop(Protection, 'Kick Blacklist on Join', {''}, 'Kick Blacklisted M
                 if tonumber(rid) == tonumber(rsid) then
                     update_player_name(pid)
                     notify("Matched Player ID: " .. rsid)
+                    notify("Kicking Player ID: " .. rsid)
                     if players.user() == players.get_host() then
                         menu.trigger_commands("kick " .. players.get_name(player_id))
                     else
@@ -939,8 +955,8 @@ menu.toggle_loop(Protection, 'Kick Blacklist on Join', {''}, 'Kick Blacklisted M
             end
             for rid, player in pairs(data_e) do
                 if tonumber(rid) == tonumber(rsid) then
-                    -- update_player_name(player)
                     notify("Matched Player ID: " .. rsid)
+                    notify("Kicking Player ID: " .. rsid)
                     if players.user() == players.get_host() then
                         menu.trigger_commands("kick " .. players.get_name(player_id))
                     else
