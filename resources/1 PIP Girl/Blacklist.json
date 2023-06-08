@@ -1,8 +1,503 @@
 {
-    "Version": "14/05/2023",
+    "Version": "06.06.2023",
     "Blacklist": {
         "565770": {
             "Name": "IIRaZ3rII"
+        },
+        "91340039": {
+            "Name": "IPaczey"
+        },
+        "177603528": {
+            "Name": "Mommy_Sarah"
+        },
+        "178792492": {
+            "Name": "Van_der_welde"
+        },
+        "217421515": {
+            "Name": "qweqeqweqw11111_"
+        },
+        "186998367": {
+            "Name": "theejhe925"
+        },
+        "207154873": {
+            "Name": "Sari81-"
+        },
+        "126638618": {
+            "Name": "Itz_Bengu"
+        },
+        "200817751": {
+            "Name": "KofuPanda"
+        },
+        "202565614": {
+            "Name": "Aris937"
+        },
+        "66824431": {
+            "Name": "Janab4u"
+        },
+        "208543725": {
+            "Name": "Trulan_17"
+        },
+        "228634605": {
+            "Name": "xX_LaviLas_Xx"
+        },
+        "228806950": {
+            "Name": "ManIamGerman"
+        },
+        "217328840": {
+            "Name": "IAnonymous13I"
+        },
+        "47643060": {
+            "Name": "RacoonBeer"
+        },
+        "207812459": {
+            "Name": "boymanX"
+        },
+        "198429916": {
+            "Name": "laiojinghongxuwe"
+        },
+        "222381554": {
+            "Name": "RigBlackjack"
+        },
+        "180823440": {
+            "Name": "44Nosferatu"
+        },
+        "49792862": {
+            "Name": "casey266"
+        },
+        "200765685": {
+            "Name": "pimp4yourmother"
+        },
+        "195314942": {
+            "Name": "8ucKecho1"
+        },
+        "137887998": {
+            "Name": "Zenzor666"
+        },
+        "219178779": {
+            "Name": "-___X___-"
+        },
+        "201183831": {
+            "Name": "TymbarkNike"
+        },
+        "213967026": {
+            "Name": "redx1337x"
+        },
+        "157532519": {
+            "Name": "The_Sith_72"
+        },
+        "211206268": {
+            "Name": "Riionn__"
+        },
+        "144147159": {
+            "Name": "DarkShark67200"
+        },
+        "204830285": {
+            "Name": "Skorpion_v1"
+        },
+        "151695117": {
+            "Name": "-Soldier-boy-"
+        },
+        "206618455": {
+            "Name": "DarkGirl28"
+        },
+        "156820074": {
+            "Name": "Kurt_Davidson"
+        },
+        "49858895": {
+            "Name": "Husky_Kay"
+        },
+        "197958250": {
+            "Name": "MrWernerrr"
+        },
+        "212272832": {
+            "Name": "ChristusMistus"
+        },
+        "216752341": {
+            "Name": "ImpxlsIIV"
+        },
+        "36027551": {
+            "Name": "iTzSchwuchtel"
+        },
+        "181825988": {
+            "Name": "Calabr0n3"
+        },
+        "198786511": {
+            "Name": "SpeedfreakFreddy"
+        },
+        "189373729": {
+            "Name": "MindOfOden"
+        },
+        "122782441": {
+            "Name": "Mooootannn"
+        },
+        "215205158": {
+            "Name": "III-FARTING-III"
+        },
+        "145653316": {
+            "Name": "NazzerXD_"
+        },
+        "223940881": {
+            "Name": "XmurCatZXC"
+        },
+        "201829512": {
+            "Name": "OreoKing7672"
+        },
+        "224885287": {
+            "Name": "SKADOOPER"
+        },
+        "215061836": {
+            "Name": "quirlzz"
+        },
+        "162641617": {
+            "Name": "Vanillaz_"
+        },
+        "121844242": {
+            "Name": "Solyom1987"
+        },
+        "221694583": {
+            "Name": "Rindsgulasch_"
+        },
+        "98516288": {
+            "Name": "Rusher69200"
+        },
+        "160272949": {
+            "Name": "_skyler_505_"
+        },
+        "178873580": {
+            "Name": "vikkedinasku"
+        },
+        "190853849": {
+            "Name": "esteban_011"
+        },
+        "172927333": {
+            "Name": "AggresiveHamster"
+        },
+        "191163317": {
+            "Name": "P-4-N-D-4"
+        },
+        "220838051": {
+            "Name": "lenchidot"
+        },
+        "123634033": {
+            "Name": "_Radfes_"
+        },
+        "209636669": {
+            "Name": "DaPlug123CA123"
+        },
+        "158846556": {
+            "Name": "callmedanieee"
+        },
+        "227392689": {
+            "Name": "Moreno02511"
+        },
+        "211889590": {
+            "Name": "TysonForever"
+        },
+        "176908016": {
+            "Name": "KINGFROZENN"
+        },
+        "150454090": {
+            "Name": "EvenHoney96"
+        },
+        "22795368": {
+            "Name": "viXelel"
+        },
+        "147554790": {
+            "Name": "Snaousarn"
+        },
+        "199894943": {
+            "Name": "goodbyegoa"
+        },
+        "214315907": {
+            "Name": "IllIllIllIIlIIll"
+        },
+        "193173091": {
+            "Name": "1686256945"
+        },
+        "53035478": {
+            "Name": "MrFrani900"
+        },
+        "148098578": {
+            "Name": "Mighty_Kebabus"
+        },
+        "117838913": {
+            "Name": "ki000000"
+        },
+        "202800134": {
+            "Name": "spookyMontgomery"
+        },
+        "138626168": {
+            "Name": "Lennsy37"
+        },
+        "199590306": {
+            "Name": "RuneOfRoses"
+        },
+        "80258886": {
+            "Name": "ReversicaI"
+        },
+        "212593877": {
+            "Name": "lirenhi3325"
+        },
+        "163711175": {
+            "Name": "Yoezzkiller"
+        },
+        "222113349": {
+            "Name": "atilun_"
+        },
+        "48437975": {
+            "Name": "___PH4NT0M___"
+        },
+        "33001459": {
+            "Name": "bettez"
+        },
+        "137708286": {
+            "Name": "FunkyCurt52"
+        },
+        "66469702": {
+            "Name": "HafenSohnBaron"
+        },
+        "154619314": {
+            "Name": "AntonelTitanGel"
+        },
+        "47352092": {
+            "Name": "CrazyMisterRogue"
+        },
+        "225178281": {
+            "Name": "zbg051123"
+        },
+        "217796108": {
+            "Name": "theoofficiels29"
+        },
+        "31604184": {
+            "Name": "val2869"
+        },
+        "188446411": {
+            "Name": "fauxlefxm"
+        },
+        "174561400": {
+            "Name": "rashamba__"
+        },
+        "220052430": {
+            "Name": "Nautiluz420"
+        },
+        "131524955": {
+            "Name": "T3NZUUU"
+        },
+        "130316592": {
+            "Name": "Tsos_94"
+        },
+        "59146883": {
+            "Name": "danieldapESP"
+        },
+        "222359884": {
+            "Name": "RandallDagger"
+        },
+        "151824527": {
+            "Name": "johyner_04"
+        },
+        "134291726": {
+            "Name": "Milangaming1901"
+        },
+        "205065755": {
+            "Name": "gummischraube"
+        },
+        "148172981": {
+            "Name": "Bachmann25"
+        },
+        "227239835": {
+            "Name": "lllIlIllIIIIlIlI"
+        },
+        "200551644": {
+            "Name": "Avan007"
+        },
+        "173247866": {
+            "Name": "higheHilde-"
+        },
+        "80471018": {
+            "Name": "Andres2597"
+        },
+        "77620190": {
+            "Name": "Arrived1444"
+        },
+        "212974256": {
+            "Name": "SantiFerr710"
+        },
+        "144820192": {
+            "Name": "SobaGirl"
+        },
+        "129163544": {
+            "Name": "JsuisUnShetland"
+        },
+        "172707093": {
+            "Name": "Haval12grade3783"
+        },
+        "84979019": {
+            "Name": "q981722811"
+        },
+        "227350832": {
+            "Name": "Damontapeur"
+        },
+        "76863527": {
+            "Name": "Super_Rabotnik"
+        },
+        "185015240": {
+            "Name": "XX-ZIEMO-XX"
+        },
+        "228008729": {
+            "Name": "CarlJack666666"
+        },
+        "121186750": {
+            "Name": "Floattofall"
+        },
+        "135521725": {
+            "Name": "lIllIlIllI9T"
+        },
+        "219133286": {
+            "Name": "Xyu2286pizda"
+        },
+        "22120014": {
+            "Name": "RAYTOP"
+        },
+        "223707589": {
+            "Name": "_auora"
+        },
+        "179120277": {
+            "Name": "AL_tikreety"
+        },
+        "225668144": {
+            "Name": "shalonemonk"
+        },
+        "167349451": {
+            "Name": "Erisi_cs"
+        },
+        "67663143": {
+            "Name": "Jalal_Aslan"
+        },
+        "131202893": {
+            "Name": "StumpGamers"
+        },
+        "212182664": {
+            "Name": "llllllllIIlllIII"
+        },
+        "151911507": {
+            "Name": "cookieboss13"
+        },
+        "207777833": {
+            "Name": "8mod__"
+        },
+        "218296930": {
+            "Name": "Aiqingqing0216"
+        },
+        "200230972": {
+            "Name": "BangoDzin"
+        },
+        "113621591": {
+            "Name": "JaCoBxgangster"
+        },
+        "217177783": {
+            "Name": "markwdw"
+        },
+        "211232925": {
+            "Name": "Rozwalaka69"
+        },
+        "178493408": {
+            "Name": "shadowghoost"
+        },
+        "224730078": {
+            "Name": "Lincarena78"
+        },
+        "184057587": {
+            "Name": "_NUroF3n_"
+        },
+        "111156988": {
+            "Name": "-kaosu"
+        },
+        "214339517": {
+            "Name": "MAJSTER_KLEPKAer"
+        },
+        "192369660": {
+            "Name": "votek22801"
+        },
+        "142006378": {
+            "Name": "gamekillerSocial"
+        },
+        "66899242": {
+            "Name": "NyctoDK"
+        },
+        "227359844": {
+            "Name": "milijasef"
+        },
+        "124935747": {
+            "Name": "iTz_-B4L4ZO_-HP"
+        },
+        "158011214": {
+            "Name": "Zuqp11"
+        },
+        "149836511": {
+            "Name": "Romchik1986"
+        },
+        "132287380": {
+            "Name": "Bubblewater74"
+        },
+        "227683646": {
+            "Name": "X-669-X"
+        },
+        "203719563": {
+            "Name": "Staeni92_Youtube"
+        },
+        "229275319": {
+            "Name": "Gshock07V3"
+        },
+        "227940644": {
+            "Name": "3impo9"
+        },
+        "120162637": {
+            "Name": "Firat-havin"
+        },
+        "228619984": {
+            "Name": "IlIIIIIIllII"
+        },
+        "70448200": {
+            "Name": "Speedmdv.nl"
+        },
+        "122318937": {
+            "Name": "DutchWetJeans82"
+        },
+        "217105517": {
+            "Name": "bhcjiabing"
+        },
+        "171942892": {
+            "Name": "Karma_Swinger"
+        },
+        "165634614": {
+            "Name": "Miss_Lexi_"
+        },
+        "39434670": {
+            "Name": "Mric_9"
+        },
+        "154449200": {
+            "Name": "Darth_Gigi"
+        },
+        "186921825": {
+            "Name": "IZIEKHA"
+        },
+        "168107106": {
+            "Name": "Catualus"
+        },
+        "203200345": {
+            "Name": "vovavasr"
+        },
+        "214485785": {
+            "Name": "Kaidoaucentbete"
+        },
+        "218476736": {
+            "Name": "SarahGirlX_"
+        },
+        "178248141": {
+            "Name": "wasp-nest"
+        },
+        "206604311": {
+            "Name": "Mr_Fresko"
         }
     }
 }

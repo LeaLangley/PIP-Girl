@@ -279,22 +279,35 @@ menu.toggle_loop(PIP_Girl, 'Nightclub Party Never Stops!', {'ncpop'}, 'The hotte
         if ncpop < 91 then
             menu.trigger_commands('clubpopularity 100')
             notify('New NC Gusts have Arived.')
-            util.yield(666)
+            util.yield(66666)
         end
-        util.yield(666)
+        util.yield(13666)
     end
     util.yield(6666)
 end)
 
-menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {}, "Auto Register youself as CEO and Auto Switches you to MC/CEO in most Situations needed.", function()
+local urceoname = ""
+
+local function on_change(input_str, click_type)
+    urceoname = input_str
+end
+
+menu.text_input(PIP_Girl, "CEO Name", {"pgceoname"}, "You can press Ctrl+U and Select Colours but no special GTA Icons sadly.", on_change)
+
+menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {}, "Auto Register yourself as CEO and Auto Switches you to MC/CEO in most situations needed.", function()
     if IsInSession() then
         if players.get_boss(players.user()) == -1 then
             menu.trigger_commands("ceostart")
+            util.yield(666)
+            if urceoname ~= "" then
+                menu.trigger_commands("ceoname " .. urceoname)
+            end
             util.yield(6666)
             if players.get_org_type(players.user()) == 0 then
                 notify("Turned you into CEO!")
+                util.yield(66666)
             else
-                notify("We could not turn u CEO :c\nWe wait 3min and try again.")
+                notify("We could not turn you into CEO :c\nWe will wait 3 minutes and try again.")
                 util.yield(200000)
             end
         end
@@ -332,6 +345,10 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {}, "Auto Register youself as
             if IS_HELP_MSG_DISPLAYED(label) then
                 if players.get_boss(players.user()) == -1 then menu.trigger_commands("ceostart") end
                 if players.get_org_type(players.user()) == 1 then menu.trigger_commands("ceotomc") end
+                util.yield(666)
+                if urceoname != "" then
+                    menu.trigger_commands("ceoname " .. urceoname)
+                end
                 notify("Turned you into CEO!")
             end
         end
@@ -345,6 +362,10 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {}, "Auto Register youself as
             if IS_HELP_MSG_DISPLAYED(label) then
                 if players.get_boss(players.user()) == -1 then menu.trigger_commands("mcstart") end
                 if players.get_org_type(players.user()) == 0 then menu.trigger_commands("ceotomc") end
+                util.yield(666)
+                if urceoname != "" then
+                    menu.trigger_commands("ceoname " .. urceoname)
+                end
                 notify("Turned you into MC President!")
             end
         end
@@ -932,6 +953,17 @@ menu.action(Protection, 'Open Export Folder', {'oef'}, '', function()
     util.open_folder(resources_dir .. 'Export')
 end)
 
+local function StandUser(pid) -- credit to sapphire for this
+    if players.exists(pid) and pid != players.user() then
+        for menu.player_root(pid):getChildren() as cmd do
+            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Stand User"):isValid() then
+                return true
+            end
+        end
+    end
+    return false
+end
+
 local joined_session = false
 
 menu.toggle_loop(Protection, 'Kick Blacklist on Join', {''}, 'Kick Blacklisted Modder if detected on Joining a Session.', function()
@@ -943,24 +975,32 @@ menu.toggle_loop(Protection, 'Kick Blacklist on Join', {''}, 'Kick Blacklisted M
             local rsid = players.get_rockstar_id(player_id)
             for rid, player in pairs(data_g) do
                 if tonumber(rid) == tonumber(rsid) then
-                    update_player_name(pid)
+                    update_player_name(player_id)
                     notify("Matched Player ID: " .. rsid)
-                    notify("Kicking Player ID: " .. rsid)
-                    if players.user() == players.get_host() then
-                        menu.trigger_commands("kick " .. players.get_name(player_id))
+                    if not StandUser(player_id) then
+                        notify("Kicking Player ID: " .. rsid)
+                        if players.user() == players.get_host() then
+                            menu.trigger_commands("kick " .. players.get_name(player_id))
+                        else
+                            menu.trigger_commands("ban " .. players.get_name(player_id))
+                        end
                     else
-                        menu.trigger_commands("ban " .. players.get_name(player_id))
+                        notify("This RID is a Stand User , we dont Kick them: " .. rsid)
                     end
                 end
             end
             for rid, player in pairs(data_e) do
                 if tonumber(rid) == tonumber(rsid) then
                     notify("Matched Player ID: " .. rsid)
-                    notify("Kicking Player ID: " .. rsid)
-                    if players.user() == players.get_host() then
-                        menu.trigger_commands("kick " .. players.get_name(player_id))
+                    if not StandUser(pid) then
+                        notify("Kicking Player ID: " .. rsid)
+                        if players.user() == players.get_host() then
+                            menu.trigger_commands("kick " .. players.get_name(player_id))
+                        else
+                            menu.trigger_commands("ban " .. players.get_name(player_id))
+                        end
                     else
-                        menu.trigger_commands("ban " .. players.get_name(player_id))
+                        notify("This RID is a Stand User , we dont Kick them: " .. rsid)
                     end
                 end
             end            
