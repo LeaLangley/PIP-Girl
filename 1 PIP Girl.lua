@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.13"
+local SCRIPT_VERSION = "0.0.14"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -457,20 +457,16 @@ local regen_all = Stimpak:action("Refill Health & Armour",{"newborn"},"Regenerat
 end)
 
 local dead = 0
-menu.toggle(Stimpak, "Auto Armor after Death",{},"A body armor will be applied automatically when respawning.",function()
+menu.toggle_loop(Stimpak, "Auto Armor after Death",{},"A body armor will be applied automatically when respawning.",function()
     if IsInSession() then
-        menu.trigger_command(regen_all)
-        local cmd_path = lua_path..">".."Stimpak"..">".."Auto Armor after Death"
-        while menu.get_state(menu.ref_by_path(cmd_path)) == "On" do
-            local health = ENTITY.GET_ENTITY_HEALTH(players.user_ped())
-            if health == 0 and dead == 0 then
-                dead = 1
-            elseif health == ENTITY.GET_ENTITY_MAX_HEALTH(players.user_ped()) and dead == 1 then
-                menu.trigger_command(regen_all)
-                dead = 0
-            end
-            util.yield(500)
+        local health = ENTITY.GET_ENTITY_HEALTH(players.user_ped())
+        if health == 0 and dead == 0 then
+            dead = 1
+        elseif health == ENTITY.GET_ENTITY_MAX_HEALTH(players.user_ped()) and dead == 1 then
+            menu.trigger_command(regen_all)
+            dead = 0
         end
+        util.yield(500)
     end
     util.yield(6666)
 end)
@@ -481,28 +477,17 @@ menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehicle", {}, "Will Recharge
         local in_vehicle = is_user_driving_vehicle()
         local playerPed = players.user_ped()
         local isPlayerInCover = PED.IS_PED_IN_COVER(playerPed, false)
-        if ENTITY.GET_ENTITY_HEALTH(players.user_ped()) == ENTITY.GET_ENTITY_MAX_HEALTH(players.user_ped()) then
-            if menu.get_state(menu.ref_by_path(cmd_path)) ~= "0.00" then
-                menu.trigger_commands("healthrate 0.00")
-            end
+        if isPlayerInCover or in_vehicle then
+            PLAYER.SET_PLAYER_HEALTH_RECHARGE_MAX_PERCENT(players.user(), 1.0)
+            PLAYER.SET_PLAYER_HEALTH_RECHARGE_MULTIPLIER(players.user(), 4.0)
         else
-            if isPlayerInCover or in_vehicle then
-                if menu.get_state(menu.ref_by_path(cmd_path)) ~= "6.66" then
-                    menu.trigger_commands("healthrate 6.66")
-                end
-            else
-                if menu.get_state(menu.ref_by_path(cmd_path)) ~= "0.01" then
-                    menu.trigger_commands("healthrate 0.01")
-                end
-            end
+            PLAYER.SET_PLAYER_HEALTH_RECHARGE_MAX_PERCENT(players.user(), 1.0)
+            PLAYER.SET_PLAYER_HEALTH_RECHARGE_MULTIPLIER(players.user(), 0.420)
         end
         util.yield(666)
     else
-        if menu.get_state(menu.ref_by_path(cmd_path)) ~= "0.00" then
-            menu.trigger_commands("healthrate 0.00")
-        end
+        util.yield(6666)
     end
-    util.yield(6666)
 end)
 
 menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle", {}, "Will Recharge Armor when in Cover or Vehicle quickly.\nBUT also slowly otherwise to 100%.", function()
@@ -514,15 +499,18 @@ menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle", {}, "Will Recharge 
         if PED.GET_PED_ARMOUR(players.user_ped()) == PLAYER.GET_PLAYER_MAX_ARMOUR(players.user()) then
             if menu.get_state(menu.ref_by_path(cmd_path)) ~= "0.00" then
                 menu.trigger_commands("armourrate 0.00")
+                util.yield(666)
             end
         else
             if isPlayerInCover or in_vehicle then
-                if menu.get_state(menu.ref_by_path(cmd_path)) ~= "0.90" then
-                    menu.trigger_commands("armourrate 0.90")
+                if menu.get_state(menu.ref_by_path(cmd_path)) ~= "2.13" then
+                    menu.trigger_commands("armourrate 2.13")
+                    util.yield(666)
                 end
             else
                 if menu.get_state(menu.ref_by_path(cmd_path)) ~= "0.13" then
                     menu.trigger_commands("armourrate 0.13")
+                    util.yield(666)
                 end
             end
         end
@@ -530,9 +518,10 @@ menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle", {}, "Will Recharge 
     else
         if menu.get_state(menu.ref_by_path(cmd_path)) ~= "0.00" then
             menu.trigger_commands("armourrate 0.00")
+            util.yield(666)
         end
+        util.yield(6666)
     end
-    util.yield(6666)
 end)
 
 menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {}, "Using your First Aid kit provided in you Vehicle.", function()
@@ -924,7 +913,7 @@ local function update_player_name(player)
         if rid then
             local player_data_g = data_g[tostring(rid)]
             if player_data_g then
-                local name = players.get_player_name(player)
+                local name = players.get_name(player)
                 if player_data_g.Name ~= name then
                     player_data_g.Name = name
                     data_e[tostring(rid)] = {
@@ -1083,3 +1072,5 @@ menu.hyperlink(Settings, "PIP Girl's GIT", "https://github.com/LeaLangley/PIP-Gi
 menu.action(Settings, "Check for Update", {}, "The script will automatically check for updates at most daily, but you can manually check using this option anytime.", function()
     auto_updater.run_auto_update(auto_update_config)
 end)
+
+util.keep_running()
