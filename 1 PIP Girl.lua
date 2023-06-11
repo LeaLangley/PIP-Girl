@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.14"
+local SCRIPT_VERSION = "0.0.15"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -175,6 +175,7 @@ end
 
 local function warnify(msg)
     chat.send_message("<[Pip Girl]>: " .. msg, true, true, false)
+    util.toast("<[Pip Girl]>: " .. msg)
 end
 
 function START_SCRIPT(ceo_mc, name)
@@ -670,7 +671,6 @@ menu.toggle_loop(Game, "Auto Accept Warning", {}, "Auto accepts most warnings in
     if mess_hash ~= 0 then
         local warning = warningMessages[mess_hash]
         if warning then
-            notify(warning)
             warnify(warning)
             PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
             util.yield(666)
@@ -976,7 +976,8 @@ menu.toggle_loop(Protection, 'Kick Blacklist on Join', {''}, 'Kick Blacklisted M
                             menu.trigger_commands("ban " .. players.get_name(player_id))
                         end
                     else
-                        notify("This RID is a Stand User , we dont Kick them: " .. rsid)
+                        warnify("This RID is a Stand User , we dont Kick them: " .. rsid)
+                        menu.trigger_commands("hellaa " .. players.get_name(player_id))
                     end
                 end
             end
@@ -991,7 +992,8 @@ menu.toggle_loop(Protection, 'Kick Blacklist on Join', {''}, 'Kick Blacklisted M
                             menu.trigger_commands("ban " .. players.get_name(player_id))
                         end
                     else
-                        notify("This RID is a Stand User , we dont Kick them: " .. rsid)
+                        warnify("This RID is a Stand User , we dont Kick them: " .. rsid)
+                        menu.trigger_commands("helaa " .. players.get_name(player_id))
                     end
                 end
             end            
@@ -1064,6 +1066,13 @@ players.add_command_hook(function(pid)
         if not is_player_in_blacklist(pid) then
             add_player_to_blacklist(pid)
         end
+    end)
+    menu.toggle_loop(Bad_Modder, "Kick on Atack", {"hellaa"}, "Auto kick if they atack you.", function()
+        if players.is_marked_as_attacker(pid) then
+            menu.trigger_commands("kick" .. players.get_name(pid))
+            warnify(players.get_name(pid) .. " has been kick bcs they atacked you.")
+        end
+        util.yield(13)
     end)
 end)
 
