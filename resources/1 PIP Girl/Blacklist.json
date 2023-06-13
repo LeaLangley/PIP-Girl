@@ -1,5 +1,5 @@
 {
-    "Version": "10.06.2023",
+    "Version": "13.06.2023",
     "Blacklist": {
         "565770": {
             "Name": "IIRaZ3rII"
@@ -558,6 +558,33 @@
         },
         "201860814": {
             "Name": "Lisa100607"
+        },
+        "226765693": {
+            "Name": "SmugsMalone"
+        },
+        "163584981": {
+            "Name": "loliHunter-Kaede"
+        },
+        "96372703": {
+            "Name": "SlamCat64"
+        },
+        "177162920": {
+            "Name": "BeJIukuu_DeZMoHD"
+        },
+        "62653963": {
+            "Name": "darklightuser"
+        },
+        "129770605": {
+            "Name": "Tsm_KimmoKuu"
+        },
+        "227959035": {
+            "Name": "SladkayaDevo4ka"
+        },
+        "116207469": {
+            "Name": "TommyShelllby"
+        },
+        "197250379": {
+            "Name": "YanThePlug"
         }
     }
 }

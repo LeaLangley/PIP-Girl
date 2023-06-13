@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.15"
+local SCRIPT_VERSION = "0.0.16"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -644,6 +644,7 @@ end)
 local warningMessages = {
     [896436592] = "This player left the session.",
     [1575023314] = "Session timeout.",
+    [396931869] = "Session timeout",
     [1446064540] = "You are already in the session.",
     [2053095241] = "Session may no longer exist.",
     [997975234] = "Session may no longer exist.",
@@ -663,7 +664,10 @@ local warningMessages = {
     [505844183] = "Canceling Cayo.",
     [988273680] = "Seting up Cayo.",
     [398982408] = "Targeting mode Changed.",
-    [1504249340] = "Unable to joing the game as you save game failed to load. The R* game services unavailable right now, please try again later."
+    [1504249340] = "Unable to joing the game as you save game failed to load. The R* game services unavailable right now, please try again later.",
+    [502833454] = "Connection to the session host has been lost. Unable to determine a new host. The GTA Online session will be terminated. Joining a new GTA Online session.",
+    [496145784] = "There has been an error with this session. Please return to Grand Theft Auto V and try again.",
+    [705668975] = "You have already been voted out of this game session. Joining a new GTA Online session."
 }
 
 menu.toggle_loop(Game, "Auto Accept Warning", {}, "Auto accepts most warnings in the game.", function()
@@ -673,9 +677,8 @@ menu.toggle_loop(Game, "Auto Accept Warning", {}, "Auto accepts most warnings in
         if warning then
             warnify(warning)
             PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
-            util.yield(666)
         else
-            notify(mess_hash, TOAST_CONSOLE)
+            notify(mess_hash)
         end
     end
     util.yield(50)
@@ -754,6 +757,28 @@ menu.toggle_loop(Session, "Smart Script Host", {""}, "If the Script Host is not 
             end
         end
         util.yield(666)
+    end
+    util.yield(6666)
+end)
+
+local My_Friends_are_the_BEST = true
+menu.toggle_loop(Session, '(Alpha) My Friends are the BEST!', {""}, '', function ()
+    if IsInSession() then
+        local player_you = players.user()
+        for _, pid in ipairs(players.list(false, false, false, true)) do
+            if pid ~= player_you then
+                if My_Friends_are_the_BEST then
+                    My_Friends_are_the_BEST = false
+                    menu.trigger_commands("commendhelpfull" .. players.get_name(pid))
+                    menu.trigger_commands("commendfriendly" .. players.get_name(pid))
+                else
+                    My_Friends_are_the_BEST = true
+                    menu.trigger_commands("commendfriendly" .. players.get_name(pid))
+                    menu.trigger_commands("commendhelpfull" .. players.get_name(pid))
+                end
+            end
+        end
+        util.yield(313666)
     end
     util.yield(6666)
 end)
@@ -928,6 +953,9 @@ end
 
 menu.action(Protection, 'Import Global Blacklist', {'imp'}, 'Import the Global Blacklist.', function()
     local player_importet = 0
+    menu.trigger_commands("anticrashcamera on")
+    menu.trigger_commands("norender on")
+    menu.trigger_commands("potatomode on")
     for rid, player in pairs(data_g) do
         local name = player.Name
         menu.trigger_commands("historyaddrid ".. rid)
@@ -938,13 +966,16 @@ menu.action(Protection, 'Import Global Blacklist', {'imp'}, 'Import the Global B
         util.yield(13)
     end
     notify(player_importet .. " Player Importet")
+    menu.trigger_commands("potatomode off")
+    menu.trigger_commands("norender off")
+    menu.trigger_commands("anticrashcamera off")
 end)
 
 menu.action(Protection, 'Open Export Folder', {'oef'}, '', function()
     util.open_folder(resources_dir .. 'Export')
 end)
 
-local function StandUser(pid) -- credit to sapphire for this
+local function StandUser(pid) -- credit to sapphire for this and jinx script
     if players.exists(pid) and pid != players.user() then
         for menu.player_root(pid):getChildren() as cmd do
             if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Stand User"):isValid() then
@@ -967,9 +998,9 @@ menu.toggle_loop(Protection, 'Kick Blacklist on Join', {''}, 'Kick Blacklisted M
             for rid, player in pairs(data_g) do
                 if tonumber(rid) == tonumber(rsid) then
                     update_player_name(player_id)
-                    notify("Matched Player ID: " .. rsid)
+                    warnify("Matched Player ID: " .. rsid)
                     if not StandUser(player_id) then
-                        notify("Kicking Player ID: " .. rsid)
+                        warnify("Kicking Player ID: " .. rsid)
                         if players.user() == players.get_host() then
                             menu.trigger_commands("kick " .. players.get_name(player_id))
                         else
@@ -983,9 +1014,9 @@ menu.toggle_loop(Protection, 'Kick Blacklist on Join', {''}, 'Kick Blacklisted M
             end
             for rid, player in pairs(data_e) do
                 if tonumber(rid) == tonumber(rsid) then
-                    notify("Matched Player ID: " .. rsid)
+                    warnify("Matched Player ID: " .. rsid)
                     if not StandUser(pid) then
-                        notify("Kicking Player ID: " .. rsid)
+                        warnify("Kicking Player ID: " .. rsid)
                         if players.user() == players.get_host() then
                             menu.trigger_commands("kick " .. players.get_name(player_id))
                         else
@@ -993,7 +1024,7 @@ menu.toggle_loop(Protection, 'Kick Blacklist on Join', {''}, 'Kick Blacklisted M
                         end
                     else
                         warnify("This RID is a Stand User , we dont Kick them: " .. rsid)
-                        menu.trigger_commands("helaa " .. players.get_name(player_id))
+                        menu.trigger_commands("hellaa " .. players.get_name(player_id))
                     end
                 end
             end            
