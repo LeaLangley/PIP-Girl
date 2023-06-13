@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.18"
+local SCRIPT_VERSION = "0.0.19"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -951,7 +951,7 @@ local function update_player_name(player)
     end
 end
 
-menu.action(Protection, 'Import Global Blacklist', {'imp'}, 'Import the Global Blacklist.', function()
+menu.action(Protection, 'Import Global Blacklist', {'imp'}, 'This can take up to 2min, be prepared.', function()
     local player_importet = 0
     menu.trigger_commands("anticrashcamera on")
     menu.trigger_commands("norender on")
@@ -960,6 +960,10 @@ menu.action(Protection, 'Import Global Blacklist', {'imp'}, 'Import the Global B
         local name = player.Name
         menu.trigger_commands("historyaddrid ".. rid)
         util.yield(13)
+    end
+    util.yield(60666)
+    for rid, player in pairs(data_g) do
+        local name = player.Name
         menu.trigger_commands("historynote ".. player.Name .." Blacklist")
         menu.trigger_commands("historyblock ".. player.Name .." on")
         player_importet += 1
