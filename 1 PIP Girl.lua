@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.16"
+local SCRIPT_VERSION = "0.0.17"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -769,12 +769,12 @@ menu.toggle_loop(Session, '(Alpha) My Friends are the BEST!', {""}, '', function
             if pid ~= player_you then
                 if My_Friends_are_the_BEST then
                     My_Friends_are_the_BEST = false
-                    menu.trigger_commands("commendhelpfull" .. players.get_name(pid))
+                    menu.trigger_commands("commendhelpful" .. players.get_name(pid))
                     menu.trigger_commands("commendfriendly" .. players.get_name(pid))
                 else
                     My_Friends_are_the_BEST = true
                     menu.trigger_commands("commendfriendly" .. players.get_name(pid))
-                    menu.trigger_commands("commendhelpfull" .. players.get_name(pid))
+                    menu.trigger_commands("commendhelpful" .. players.get_name(pid))
                 end
             end
         end
