@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.17"
+local SCRIPT_VERSION = "0.0.18"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -762,7 +762,7 @@ menu.toggle_loop(Session, "Smart Script Host", {""}, "If the Script Host is not 
 end)
 
 local My_Friends_are_the_BEST = true
-menu.toggle_loop(Session, '(Alpha) My Friends are the BEST!', {""}, '', function ()
+menu.toggle_loop(Session, '(Alpha) My Friends are the BEST!', {""}, 'Auto Commend u Friends , Crew and Org member <3', function ()
     if IsInSession() then
         local player_you = players.user()
         for _, pid in ipairs(players.list(false, false, false, true)) do
