@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.19"
+local SCRIPT_VERSION = "0.0.20"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1008,7 +1008,7 @@ menu.toggle_loop(Protection, 'Kick Blacklist on Join', {''}, 'Kick Blacklisted M
                         if players.user() == players.get_host() then
                             menu.trigger_commands("kick " .. players.get_name(player_id))
                         else
-                            menu.trigger_commands("ban " .. players.get_name(player_id))
+                            menu.trigger_commands("kick " .. players.get_name(player_id))
                         end
                     else
                         warnify("This RID is a Stand User , we dont Kick them: " .. rsid)
@@ -1024,7 +1024,7 @@ menu.toggle_loop(Protection, 'Kick Blacklist on Join', {''}, 'Kick Blacklisted M
                         if players.user() == players.get_host() then
                             menu.trigger_commands("kick " .. players.get_name(player_id))
                         else
-                            menu.trigger_commands("ban " .. players.get_name(player_id))
+                            menu.trigger_commands("kick " .. players.get_name(player_id))
                         end
                     else
                         warnify("This RID is a Stand User , we dont Kick them: " .. rsid)
@@ -1055,7 +1055,7 @@ players.add_command_hook(function(pid)
     end
     menu.divider(menu.player_root(pid), '1 PIP Girl')
     local Bad_Modder = menu.list(menu.player_root(pid), 'Bad Modder?', friendly_players, '', function() end)
-    menu.action(Bad_Modder, "Add Blacklist & Kick", {'hellk'}, "Blacklist Note, Ban Kick and Block the Target from Joining u again.", function ()
+    menu.action(Bad_Modder, "Add Blacklist & Kick", {'hellk'}, "Blacklist Note, Kick and Block the Target from Joining u again.", function ()
         menu.trigger_commands("historynote ".. players.get_name(pid) .." Blacklist")
         menu.trigger_commands("historyblock ".. players.get_name(pid) .." on")
         if not is_player_in_blacklist(pid) then
@@ -1064,10 +1064,10 @@ players.add_command_hook(function(pid)
         if players.user() == players.get_host() then
             menu.trigger_commands("kick ".. players.get_name(pid))
         else
-            menu.trigger_commands("ban ".. players.get_name(pid))
+            menu.trigger_commands("kick ".. players.get_name(pid))
         end
     end)
-    menu.action(Bad_Modder, "Add Blacklist ,Phone Call & Kick", {'hellp'}, "Blacklist Note, Crash, Ban Kick and Block the Target from Joining u again.", function ()
+    menu.action(Bad_Modder, "Add Blacklist ,Phone Call & Kick", {'hellp'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
         menu.trigger_commands("historynote ".. players.get_name(pid) .." Blacklist")
         menu.trigger_commands("historyblock ".. players.get_name(pid) .." on")
         if not is_player_in_blacklist(pid) then
@@ -1078,10 +1078,10 @@ players.add_command_hook(function(pid)
         if players.user() == players.get_host() then
             menu.trigger_commands("kick ".. players.get_name(pid))
         else
-            menu.trigger_commands("ban ".. players.get_name(pid))
+            menu.trigger_commands("kick ".. players.get_name(pid))
         end
     end)
-    menu.action(Bad_Modder, "Add Blacklist ,Crash & Kick", {'hellc'}, "Blacklist Note, Crash, Ban Kick and Block the Target from Joining u again.", function ()
+    menu.action(Bad_Modder, "Add Blacklist ,Crash & Kick", {'hellc'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
         menu.trigger_commands("historynote ".. players.get_name(pid) .." Blacklist")
         menu.trigger_commands("historyblock ".. players.get_name(pid) .." on")
         if not is_player_in_blacklist(pid) then
@@ -1092,7 +1092,7 @@ players.add_command_hook(function(pid)
         if players.user() == players.get_host() then
             menu.trigger_commands("kick ".. players.get_name(pid))
         else
-            menu.trigger_commands("ban ".. players.get_name(pid))
+            menu.trigger_commands("kick ".. players.get_name(pid))
         end
     end)
     menu.action(Bad_Modder, "Add Blacklist Only", {'helln'}, "Blacklist Note and Block the Target from Joining u again.", function ()
