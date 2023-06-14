@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.21"
+local SCRIPT_VERSION = "0.0.22"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -951,7 +951,7 @@ local function update_player_name(player)
     end
 end
 
-menu.action(Protection, '(!) Import Global Blacklist 1/2', {'imp'}, 'not recommended to use in current version! This can take up to 2min, be prepared.', function()
+menu.action(Protection, '(!) Import Global Blacklist 1/2', {'imp'}, '!Takes longer then usual! This can take up to 2min, be prepared.', function()
     local player_importet = 0
     menu.trigger_commands("anticrashcamera on")
     menu.trigger_commands("norender on")
@@ -969,7 +969,9 @@ menu.action(Protection, '(!) Import Global Blacklist 1/2', {'imp'}, 'not recomme
     notify(player_importet .. " Player's Importet")
 end)
 
-menu.action(Protection, '(!) Block Join Global Blacklist 2/2', {'impblock'}, 'not recommended to use in current version! Use it 20-30min after the first part. This can take up to 2min, be prepared.', function()
+menu.divider(Protection, 'Wait around 20min befor using next step.')
+
+menu.action(Protection, '(!) Block Join Global Blacklist 2/2', {'impblock'}, '!Takes longer then usual! Use it 20-30min after the first part. This can take up to 2min, be prepared.', function()
     local player_importet = 0
     menu.trigger_commands("anticrashcamera on")
     menu.trigger_commands("norender on")
@@ -1015,13 +1017,10 @@ menu.toggle_loop(Protection, 'Kick Blacklist on Join', {''}, 'Kick Blacklisted M
                 if tonumber(rid) == tonumber(rsid) then
                     update_player_name(player_id)
                     warnify("Matched Player ID: " .. rsid)
+                    menu.trigger_commands("ignore " .. players.get_name(pid))
                     if not StandUser(player_id) then
                         warnify("Kicking Player ID: " .. rsid)
-                        if players.user() == players.get_host() then
-                            menu.trigger_commands("kick " .. players.get_name(player_id))
-                        else
-                            menu.trigger_commands("kick " .. players.get_name(player_id))
-                        end
+                        menu.trigger_commands("kick " .. players.get_name(player_id))
                     else
                         warnify("This RID is a Stand User , we dont Kick them: " .. rsid)
                         menu.trigger_commands("hellaa " .. players.get_name(player_id))
@@ -1031,13 +1030,10 @@ menu.toggle_loop(Protection, 'Kick Blacklist on Join', {''}, 'Kick Blacklisted M
             for rid, player in pairs(data_e) do
                 if tonumber(rid) == tonumber(rsid) then
                     warnify("Matched Player ID: " .. rsid)
+                    menu.trigger_commands("ignore " .. players.get_name(pid))
                     if not StandUser(pid) then
                         warnify("Kicking Player ID: " .. rsid)
-                        if players.user() == players.get_host() then
-                            menu.trigger_commands("kick " .. players.get_name(player_id))
-                        else
-                            menu.trigger_commands("kick " .. players.get_name(player_id))
-                        end
+                        menu.trigger_commands("kick " .. players.get_name(player_id))
                     else
                         warnify("This RID is a Stand User , we dont Kick them: " .. rsid)
                         menu.trigger_commands("hellaa " .. players.get_name(player_id))
@@ -1073,11 +1069,8 @@ players.add_command_hook(function(pid)
         if not is_player_in_blacklist(pid) then
             add_player_to_blacklist(pid)
         end
-        if players.user() == players.get_host() then
-            menu.trigger_commands("kick ".. players.get_name(pid))
-        else
-            menu.trigger_commands("kick ".. players.get_name(pid))
-        end
+        menu.trigger_commands("kick ".. players.get_name(pid))
+        menu.trigger_commands("ignore " .. players.get_name(pid))
     end)
     menu.action(Bad_Modder, "Add Blacklist ,Phone Call & Kick", {'hellp'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
         menu.trigger_commands("historynote ".. players.get_name(pid) .." Blacklist")
@@ -1087,11 +1080,8 @@ players.add_command_hook(function(pid)
         end
         menu.trigger_commands("ring ".. players.get_name(pid))
         util.yield(666)
-        if players.user() == players.get_host() then
-            menu.trigger_commands("kick ".. players.get_name(pid))
-        else
-            menu.trigger_commands("kick ".. players.get_name(pid))
-        end
+        menu.trigger_commands("kick ".. players.get_name(pid))
+        menu.trigger_commands("ignore " .. players.get_name(pid))
     end)
     menu.action(Bad_Modder, "Add Blacklist ,Crash & Kick", {'hellc'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
         menu.trigger_commands("historynote ".. players.get_name(pid) .." Blacklist")
@@ -1101,11 +1091,8 @@ players.add_command_hook(function(pid)
         end
         menu.trigger_commands("choke ".. players.get_name(pid))
         util.yield(666)
-        if players.user() == players.get_host() then
-            menu.trigger_commands("kick ".. players.get_name(pid))
-        else
-            menu.trigger_commands("kick ".. players.get_name(pid))
-        end
+        menu.trigger_commands("kick ".. players.get_name(pid))
+        menu.trigger_commands("ignore " .. players.get_name(pid))
     end)
     menu.action(Bad_Modder, "Add Blacklist Only", {'helln'}, "Blacklist Note and Block the Target from Joining u again.", function ()
         menu.trigger_commands("historynote ".. players.get_name(pid) .." Blacklist")
@@ -1116,7 +1103,9 @@ players.add_command_hook(function(pid)
     end)
     menu.toggle_loop(Bad_Modder, "Kick on Atack", {"hellaa"}, "Auto kick if they atack you.", function()
         if players.is_marked_as_attacker(pid) then
-            menu.trigger_commands("kick" .. players.get_name(pid))
+            menu.trigger_commands("kick " .. players.get_name(pid))
+            menu.trigger_commands("timeout " .. players.get_name(pid))
+            menu.trigger_commands("ignore " .. players.get_name(pid))
             warnify(players.get_name(pid) .. " has been kick bcs they atacked you.")
         end
         util.yield(13)
