@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.24"
+local SCRIPT_VERSION = "0.0.25"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -573,29 +573,48 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"carleatech"}, "Slowly repairs your vehic
             local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle)
             local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
             local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
+            local getclass = VEHICLE.GET_VEHICLE_CLASS(vehicle)
             
-            if engineHealth < 1000 then
-                if heliTailHealth < 1000 or heliRotorHealth < 1000 then
-                    VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + 10)
-                else
+            if getclass == 15 or getclass == 16 then
+                if engineHealth < 1000 then
+                    VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + 13)
+                end
+
+                if petrolTankHealth < 1000 then
+                    VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + 13)
+                end
+
+                if bodyHealth < 1000 then
+                    VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + 13)
+                end
+
+                if heliTailHealth < 1000 then
+                    VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + 13)
+                end
+
+                if heliRotorHealth < 1000 then
+                    VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + 13)
+                end
+            else
+                if engineHealth < 1000 then
                     VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + 5)
                 end
-            end
 
-            if petrolTankHealth < 1000 then
-                VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + 5)
-            end
+                if petrolTankHealth < 1000 then
+                    VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + 5)
+                end
 
-            if bodyHealth < 1000 then
-                VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + 5)
-            end
+                if bodyHealth < 1000 then
+                    VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + 5)
+                end
 
-            if heliTailHealth < 1000 then
-                VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + 5)
-            end
+                if heliTailHealth < 1000 then
+                    VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + 5)
+                end
 
-            if heliRotorHealth < 1000 then
-                VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + 5)
+                if heliRotorHealth < 1000 then
+                    VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + 5)
+                end
             end
 
             if petrolTankHealth >= 1000 and engineHealth >= 1000 and bodyHealth >= 1000 then
