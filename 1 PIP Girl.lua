@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.22"
+local SCRIPT_VERSION = "0.0.23"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -219,6 +219,7 @@ end
 local PIP_Girl = menu.list(menu.my_root(), 'PIP Girl', {}, 'Personal Information Processor Girl', function(); end)
 local PIP_Girl_APPS = menu.list(PIP_Girl, 'PIP Girl Apps', {}, 'Personal Information Processor Girl Apps', function(); end)
 local Stimpak = menu.list(menu.my_root(), 'Stimpak', {}, 'Take a Breath', function(); end)
+local Outfit = menu.list(menu.my_root(), 'Outfit', {}, 'Look Pretty and nice.', function(); end)
 local Game = menu.list(menu.my_root(), 'Game', {}, '', function(); end)
 local Session = menu.list(menu.my_root(), 'Session', {}, 'Session', function(); end)
 local Protection = menu.list(menu.my_root(), 'Protection', {}, 'Protect yourself with our todays sponsor .....', function(); end)
@@ -283,8 +284,9 @@ menu.toggle_loop(PIP_Girl, 'Nightclub Party Never Stops!', {'ncpop'}, 'The hotte
             util.yield(66666)
         end
         util.yield(13666)
+    else
+        util.yield(66666)
     end
-    util.yield(6666)
 end)
 
 local urceoname = ""
@@ -371,8 +373,9 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {}, "Auto Register yourself a
             end
         end
         util.yield(666)
+    else
+        util.yield(13666)
     end
-    util.yield(6666)
 end)
 
 menu.action(PIP_Girl, 'Cayo Preset (!)', {}, 'Set up the cayo heist with a Sweet Legit Like Preset.\nNOTE!: it will try to trigger a HC lua CMD to refreash the Planning screen.\nIf you have HC not active, go manually out and in again.\nNote that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.', function (click_type)
@@ -431,6 +434,20 @@ menu.action(PIP_Girl, 'Cayo Preset (!)', {}, 'Set up the cayo heist with a Sweet
     end, true)
 end)
 
+menu.toggle_loop(PIP_Girl, "Carry Pickups", {}, "Carry all Pickups To You.\nNote this donst work in all Situations.", function()
+    if IsInSession() then
+        local pos = players.get_position(players.user())
+        for _, pickup in entities.get_all_pickups_as_handles() do
+            ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z + 1.2, false, false, false, false)
+            util.yield(13)
+        end
+        util.yield(13)
+    else
+        util.yield(6666)
+    end
+end)
+
+
 menu.action(PIP_Girl, "Teleport Pickups To Me", {}, "Teleports all Pickups To You.\nNote this donst work in all Situations.", function(click_type)
     menu.show_warning(PIP_Girl, click_type, 'You r about to Teleport Pickups!', function()
         local counter = 0
@@ -468,8 +485,9 @@ menu.toggle_loop(Stimpak, "Auto Armor after Death",{},"A body armor will be appl
             dead = 0
         end
         util.yield(500)
+    else
+        util.yield(13666)
     end
-    util.yield(6666)
 end)
 
 menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehicle", {}, "Will Recharge Healt when in Cover or Vehicle quickly.\nBUT also slowly almost legit like otherwise to 100%.", function()
@@ -487,7 +505,7 @@ menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehicle", {}, "Will Recharge
         end
         util.yield(666)
     else
-        util.yield(6666)
+        util.yield(13666)
     end
 end)
 
@@ -521,7 +539,7 @@ menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle", {}, "Will Recharge 
             menu.trigger_commands("armourrate 0.00")
             util.yield(666)
         end
-        util.yield(6666)
+        util.yield(13666)
     end
 end)
 
@@ -540,15 +558,125 @@ menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {}, "U
             end
         end
         util.yield(666)
+    else
+        util.yield(13666)
     end
-    util.yield(6666)
 end)
+
+menu.toggle_loop(Stimpak, "Lea Tech", {"carleatech"}, "Slowly repairs your vehicle", function()
+    if IsInSession() then
+        local in_vehicle = is_user_driving_vehicle()
+        local vehicle = entities.get_user_vehicle_as_handle()
+        if in_vehicle then
+            local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
+            local petrolTankHealth = VEHICLE.GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
+            local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle)
+            local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
+            local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
+            
+            if engineHealth < 1000 then
+                if heliTailHealth < 1000 or heliRotorHealth < 1000 then
+                    VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + 10)
+                else
+                    VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + 5)
+                end
+            end
+
+            if petrolTankHealth < 1000 then
+                VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + 5)
+            end
+
+            if bodyHealth < 1000 then
+                VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + 5)
+            end
+
+            if heliTailHealth < 1000 then
+                VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + 5)
+            end
+
+            if heliRotorHealth < 1000 then
+                VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + 5)
+            end
+
+            if petrolTankHealth <= 1000 and engineHealth <= 1000 and bodyHealth <= 1000 then
+                VEHICLE.SET_VEHICLE_DEFORMATION_FIXED(vehicle)
+                VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, 1000)
+                VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, 1000)
+                VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, 1000)
+                VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, 1000)
+                VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, 1000)
+            end
+
+            VEHICLE.SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
+            
+            util.yield(1000)
+        end
+    else
+        util.yield(13666)
+    end
+end)
+
+menu.toggle_loop(Stimpak, "(DEBUG) Lea Tech", {""}, "", function()
+    if IsInSession() then
+        local in_vehicle = is_user_driving_vehicle()
+        local vehicle = entities.get_user_vehicle_as_handle()
+        if in_vehicle then
+            local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
+            local petrolTankHealth = VEHICLE.GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
+            local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle)
+            local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
+            local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
+
+            if petrolTankHealth < 1000 or engineHealth < 1000 or bodyHealth < 1000 then
+                util.draw_debug_text("\nPetrol Health: " .. petrolTankHealth .. "\nEngine Health: " .. engineHealth .. "\nBody Health: " .. bodyHealth .. "\nHeli Tail Health: " .. heliTailHealth .. "\nHeli Rotor Health: " .. heliRotorHealth)
+            end
+        end
+    else
+        util.yield(13666)
+    end
+end)
+
 
 menu.action(Stimpak, "(DEBUG) Set Armor/Health to Low", {"dearmor"}, "This is for testing Purpose!\nTurn the options above on and Click this to test them out!", function()
     PED.SET_PED_ARMOUR(players.user_ped(), 0)
     local maxHealth = ENTITY.GET_ENTITY_MAX_HEALTH(players.user_ped())
     local newHealth = math.floor(maxHealth * 0.5)
     ENTITY.SET_ENTITY_HEALTH(players.user_ped(), newHealth)
+end)
+
+menu.action(Outfit, "Edit Outfit", {}, "", function()
+    menu.trigger_commands("outfit")
+end)
+
+menu.action(Outfit, "Wardrobe", {}, "", function()
+    menu.trigger_commands("wardrobe")
+end)
+
+menu.toggle_loop(Outfit, "Lock outfit if Iligal Clothing detected.", {"Smart Lock"}, "This will lock you outfit if a iligal clothing is detected, so it wont get removed.", function()
+    local cmd_path = "Self>Appearance>Outfit>Pants"
+    if menu.get_state(menu.ref_by_path(cmd_path)) == "21" then
+        menu.trigger_commands("lockoutfit on")
+    else
+        menu.trigger_commands("lockoutfit off")
+    end
+    util.yield(13)
+end)
+
+menu.action(Outfit, "Saves the Current O. as Restore O.", {}, "This will save you current Oufit as Restor Outfit.", function()
+    menu.trigger_commands("saveoutfit 1 Pip Girl")
+end)
+
+local outfit_restored = false
+menu.toggle_loop(Outfit, "Restor Outfit", {"restoreoutfit"}, "Auto Restore the Saved Outfit when Joining a session or (soon) entering a vehicle.", function()
+    if not outfit_restored and IsInSession() then
+        menu.trigger_commands("outfit1pipgirl")
+        outfit_restored = true
+        util.yield(13666)
+    end
+    if not IsInSession() then
+        outfit_restored = false
+        util.yield(13666)
+    end
 end)
 
 menu.action(Game, 'Super Cleanse No yacht fix', {"supercleanny"}, 'BCS R* is a mess.', function(click_type)
@@ -694,11 +822,17 @@ menu.toggle_loop(Game, 'Auto Blinkers', {'blinkers'}, 'Set the blinkers when ent
         saved_vehicle_id = vehicle
         VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(saved_vehicle_id, 1, true)
         VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(saved_vehicle_id, 0, true)
+        VEHICLE.SET_VEHICLE_LIGHTS(saved_vehicle_id, 2)
     end
     if not in_vehicle then
         saved_vehicle_id = nil
     end
     util.yield(666)
+end)
+
+menu.toggle_loop(Game, 'Test', {''}, 'Testing', function ()
+    local v = players.get_position(players.user())
+    GRAPHICS.DRAW_MARKER(1, v.x, v.y, v.z -1, 0, 0, 0, 0, 180, 0, 2, 2, 2, 255, 128, 0, 50, false, false, 180, 0, 0, 0, false)
 end)
 
 menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join Invite only\nIf R* Admin Detected", function()
@@ -713,6 +847,16 @@ menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join 
         end
     end
     util.yield(13)
+end)
+
+menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic around you.", function()
+    if IsInSession() then
+        MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19999.9, 0.0, 0.0, false, true)
+        MISC.CLEAR_AREA(1.1, 1.1, 1.1, 19999.9, true, false, false, true)
+        util.yield(6666)
+    else
+        util.yield(13666)
+    end
 end)
 
 menu.toggle_loop(Session, "Smart Script Host", {""}, "If the Script Host is not in your crew, friend list, or same CEO/MC, you will become Script Host.\nPrevent Atackers from obtaining script host.\nMakes u script host after a Cutscene if u are the host.", function()
@@ -757,12 +901,13 @@ menu.toggle_loop(Session, "Smart Script Host", {""}, "If the Script Host is not 
             end
         end
         util.yield(666)
+    else
+        util.yield(13666)
     end
-    util.yield(6666)
 end)
 
 local My_Friends_are_the_BEST = true
-menu.toggle_loop(Session, '(Alpha) My Friends are the BEST!', {""}, 'Auto Commend u Friends , Crew and Org member <3', function ()
+menu.toggle_loop(Session, 'My Friends are the BEST!', {""}, 'Auto Commend u Friends , Crew and Org member <3', function ()
     if IsInSession() then
         local player_you = players.user()
         for _, pid in ipairs(players.list(false, false, false, true)) do
@@ -778,9 +923,10 @@ menu.toggle_loop(Session, '(Alpha) My Friends are the BEST!', {""}, 'Auto Commen
                 end
             end
         end
-        util.yield(313666)
+        util.yield(788666)
+    else
+        util.yield(66666)
     end
-    util.yield(6666)
 end)
 
 menu.toggle_loop(Session, '(Alpha) Smart CEO Money loop', {'sceom'}, '', function ()
@@ -798,8 +944,9 @@ menu.toggle_loop(Session, '(Alpha) Smart CEO Money loop', {'sceom'}, '', functio
             end
         end
         util.yield(300000)
+    else
+        util.yield(13666)
     end
-    util.yield(6666)
 end)
 
 local max_players = 33
@@ -846,8 +993,9 @@ menu.toggle_loop(Session, '(Alpha) Activate Session Player Limit', {'maxplayer'}
             end
         end
         util.yield(666)    
+    else
+        util.yield(13666)
     end
-    util.yield(6666)
 end)
 
 local json = require('json')
@@ -1017,26 +1165,26 @@ menu.toggle_loop(Protection, 'Kick Blacklist on Join', {''}, 'Kick Blacklisted M
                 if tonumber(rid) == tonumber(rsid) then
                     update_player_name(player_id)
                     warnify("Matched Player ID: " .. rsid)
-                    menu.trigger_commands("ignore " .. players.get_name(pid))
+                    menu.trigger_commands("hellaa " .. players.get_name(player_id) .. " on")
+                    menu.trigger_commands("ignore " .. players.get_name(player_id))
                     if not StandUser(player_id) then
                         warnify("Kicking Player ID: " .. rsid)
                         menu.trigger_commands("kick " .. players.get_name(player_id))
                     else
                         warnify("This RID is a Stand User , we dont Kick them: " .. rsid)
-                        menu.trigger_commands("hellaa " .. players.get_name(player_id))
                     end
                 end
             end
             for rid, player in pairs(data_e) do
                 if tonumber(rid) == tonumber(rsid) then
                     warnify("Matched Player ID: " .. rsid)
-                    menu.trigger_commands("ignore " .. players.get_name(pid))
+                    menu.trigger_commands("hellaa " .. players.get_name(player_id) .. " on")
+                    menu.trigger_commands("ignore " .. players.get_name(player_id))
                     if not StandUser(pid) then
                         warnify("Kicking Player ID: " .. rsid)
                         menu.trigger_commands("kick " .. players.get_name(player_id))
                     else
                         warnify("This RID is a Stand User , we dont Kick them: " .. rsid)
-                        menu.trigger_commands("hellaa " .. players.get_name(player_id))
                     end
                 end
             end            
@@ -1069,8 +1217,9 @@ players.add_command_hook(function(pid)
         if not is_player_in_blacklist(pid) then
             add_player_to_blacklist(pid)
         end
+        menu.trigger_commands("ignore " .. players.get_name(pid) .. " on")
+        menu.trigger_commands("hellaa " .. players.get_name(pid) .. " on")
         menu.trigger_commands("kick ".. players.get_name(pid))
-        menu.trigger_commands("ignore " .. players.get_name(pid))
     end)
     menu.action(Bad_Modder, "Add Blacklist ,Phone Call & Kick", {'hellp'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
         menu.trigger_commands("historynote ".. players.get_name(pid) .." Blacklist")
@@ -1080,8 +1229,9 @@ players.add_command_hook(function(pid)
         end
         menu.trigger_commands("ring ".. players.get_name(pid))
         util.yield(666)
+        menu.trigger_commands("ignore " .. players.get_name(pid) .. " on")
+        menu.trigger_commands("hellaa " .. players.get_name(pid) .. " on")
         menu.trigger_commands("kick ".. players.get_name(pid))
-        menu.trigger_commands("ignore " .. players.get_name(pid))
     end)
     menu.action(Bad_Modder, "Add Blacklist ,Crash & Kick", {'hellc'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
         menu.trigger_commands("historynote ".. players.get_name(pid) .." Blacklist")
@@ -1091,8 +1241,9 @@ players.add_command_hook(function(pid)
         end
         menu.trigger_commands("choke ".. players.get_name(pid))
         util.yield(666)
+        menu.trigger_commands("ignore " .. players.get_name(pid) .. " on")
+        menu.trigger_commands("hellaa " .. players.get_name(pid) .. " on")
         menu.trigger_commands("kick ".. players.get_name(pid))
-        menu.trigger_commands("ignore " .. players.get_name(pid))
     end)
     menu.action(Bad_Modder, "Add Blacklist Only", {'helln'}, "Blacklist Note and Block the Target from Joining u again.", function ()
         menu.trigger_commands("historynote ".. players.get_name(pid) .." Blacklist")
@@ -1103,9 +1254,10 @@ players.add_command_hook(function(pid)
     end)
     menu.toggle_loop(Bad_Modder, "Kick on Atack", {"hellaa"}, "Auto kick if they atack you.", function()
         if players.is_marked_as_attacker(pid) then
+            menu.trigger_commands("timeout " .. players.get_name(pid) .. " on")
+            menu.trigger_commands("ignore " .. players.get_name(pid) .. " on")
+            menu.trigger_commands("hellaa " .. players.get_name(pid) .. " on")
             menu.trigger_commands("kick " .. players.get_name(pid))
-            menu.trigger_commands("timeout " .. players.get_name(pid))
-            menu.trigger_commands("ignore " .. players.get_name(pid))
             warnify(players.get_name(pid) .. " has been kick bcs they atacked you.")
         end
         util.yield(13)
