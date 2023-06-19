@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.23"
+local SCRIPT_VERSION = "0.0.24"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -598,7 +598,7 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"carleatech"}, "Slowly repairs your vehic
                 VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + 5)
             end
 
-            if petrolTankHealth <= 1000 and engineHealth <= 1000 and bodyHealth <= 1000 then
+            if petrolTankHealth >= 1000 and engineHealth >= 1000 and bodyHealth >= 1000 then
                 VEHICLE.SET_VEHICLE_DEFORMATION_FIXED(vehicle)
                 VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, 1000)
                 VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, 1000)
@@ -627,7 +627,7 @@ menu.toggle_loop(Stimpak, "(DEBUG) Lea Tech", {""}, "", function()
             local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
             local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
 
-            if petrolTankHealth < 1000 or engineHealth < 1000 or bodyHealth < 1000 then
+            if petrolTankHealth ~= 1000 or engineHealth ~= 1000 or bodyHealth ~= 1000 then
                 util.draw_debug_text("\nPetrol Health: " .. petrolTankHealth .. "\nEngine Health: " .. engineHealth .. "\nBody Health: " .. bodyHealth .. "\nHeli Tail Health: " .. heliTailHealth .. "\nHeli Rotor Health: " .. heliRotorHealth)
             end
         end

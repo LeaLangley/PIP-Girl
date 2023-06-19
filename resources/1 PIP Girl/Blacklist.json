@@ -1,5 +1,5 @@
 {
-    "Version": "14.06.2023",
+    "Version": "19.06.2023",
     "Blacklist": {
         "565770": {
             "Name": "IIRaZ3rII"
@@ -618,6 +618,48 @@
         },
         "53097623": {
             "Name": "ll-baguette-ll"
+        },
+        "229314162": {
+            "Name": "SecDet800"
+        },
+        "228398463": {
+            "Name": "ACG-Tokisaki"
+        },
+        "214073116": {
+            "Name": "Snackosaurus__"
+        },
+        "96740748": {
+            "Name": "Hamster_Pube"
+        },
+        "210524492": {
+            "Name": "Dec_Head20198"
+        },
+        "219905637": {
+            "Name": "ethamael2312"
+        },
+        "222243660": {
+            "Name": "Flyezz1"
+        },
+        "218745621": {
+            "Name": "HEHIHEHE"
+        },
+        "139910916": {
+            "Name": "-gamewadafaq-"
+        },
+        "129232957": {
+            "Name": "WaRMoDe63game"
+        },
+        "199624480": {
+            "Name": "_HarielAxel_"
+        },
+        "131265700": {
+            "Name": "-Shizue-"
+        },
+        "229690503": {
+            "Name": "MaxWantsToHelp"
+        },
+        "210748976": {
+            "Name": "Danibara1"
         }
     }
 }
