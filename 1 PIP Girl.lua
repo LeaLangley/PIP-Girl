@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.30"
+local SCRIPT_VERSION = "0.0.31"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1213,6 +1213,27 @@ menu.toggle_loop(Protection, 'Kick Blacklist on Join', {''}, 'Kick Blacklisted M
             util.yield(1666)
         else
             util.yield(6666)
+        end
+    else
+        util.yield(20666)
+    end
+end)
+
+menu.toggle_loop(Protection, "Dont Block Love Letter Kicks as Host.", {"pgbll"}, "New Meta.", function()
+    if IsInSession() then
+        local cmd_path = "Online>Protections>Love Letter & Desync Kicks>Block Love Letter Kicks"
+        if players.user() == players.get_host() then
+            if menu.get_state(menu.ref_by_path(cmd_path)) == "on" then
+                menu.trigger_commands("blockloveletters off")
+            else
+                util.yield(13666)
+            end
+        else
+            if menu.get_state(menu.ref_by_path(cmd_path)) == "off" then
+                menu.trigger_commands("blockloveletters on")
+            else
+                util.yield(13666)
+            end
         end
     else
         util.yield(20666)
