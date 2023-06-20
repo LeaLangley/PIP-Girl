@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.31"
+local SCRIPT_VERSION = "0.0.32"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1223,16 +1223,18 @@ menu.toggle_loop(Protection, "Dont Block Love Letter Kicks as Host.", {"pgbll"},
     if IsInSession() then
         local cmd_path = "Online>Protections>Love Letter & Desync Kicks>Block Love Letter Kicks"
         if players.user() == players.get_host() then
-            if menu.get_state(menu.ref_by_path(cmd_path)) == "on" then
+            if menu.get_state(menu.ref_by_path(cmd_path)) == "On" then
                 menu.trigger_commands("blockloveletters off")
+                util.yield(6666)
             else
-                util.yield(13666)
+                util.yield(6666)
             end
         else
-            if menu.get_state(menu.ref_by_path(cmd_path)) == "off" then
+            if menu.get_state(menu.ref_by_path(cmd_path)) == "Off" then
                 menu.trigger_commands("blockloveletters on")
+                util.yield(6666)
             else
-                util.yield(13666)
+                util.yield(6666)
             end
         end
     else
