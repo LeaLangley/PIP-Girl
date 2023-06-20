@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.29"
+local SCRIPT_VERSION = "0.0.30"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -488,7 +488,6 @@ menu.toggle_loop(Stimpak, "Auto Armor after Death",{},"A body armor will be appl
 end)
 
 menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehicle", {}, "Will Recharge Healt when in Cover or Vehicle quickly.\nBUT also slowly almost legit like otherwise to 100%.", function()
-    local cmd_path = "Self>Regeneration Rate>Armour"
     if IsInSession() then
         local in_vehicle = is_user_driving_vehicle()
         local playerPed = players.user_ped()
@@ -1274,9 +1273,9 @@ players.add_command_hook(function(pid)
         if players.is_marked_as_attacker(pid) then
             menu.trigger_commands("timeout " .. players.get_name(pid) .. " on")
             menu.trigger_commands("ignore " .. players.get_name(pid) .. " on")
-            menu.trigger_commands("hellaa " .. players.get_name(pid) .. " on")
             menu.trigger_commands("kick " .. players.get_name(pid))
             warnify(players.get_name(pid) .. " has been kick bcs they atacked you.")
+            util.yield(66666)
         end
         util.yield(13)
     end)
