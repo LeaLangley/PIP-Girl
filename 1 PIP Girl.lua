@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.25"
+local SCRIPT_VERSION = "0.0.26"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -563,18 +563,27 @@ menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {}, "U
     end
 end)
 
+local function LeaTech()
+    local vehicle = entities.get_user_vehicle_as_handle()
+    if vehicle then
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        util.yield(666)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+    else
+        util.yield(1000)
+    end
+end
+
 menu.toggle_loop(Stimpak, "Lea Tech", {"carleatech"}, "Slowly repairs your vehicle", function()
     if IsInSession() then
-        local in_vehicle = is_user_driving_vehicle()
         local vehicle = entities.get_user_vehicle_as_handle()
-        if in_vehicle then
+        if vehicle then
             local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
             local petrolTankHealth = VEHICLE.GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
             local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle)
             local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
             local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
             local getclass = VEHICLE.GET_VEHICLE_CLASS(vehicle)
-            
             if getclass == 15 or getclass == 16 then
                 if engineHealth < 1000 then
                     VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + 13)
@@ -624,6 +633,8 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"carleatech"}, "Slowly repairs your vehic
                 VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, 1000)
                 VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, 1000)
                 VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, 1000)
+            else
+                LeaTech()
             end
 
             VEHICLE.SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
@@ -637,9 +648,8 @@ end)
 
 menu.toggle_loop(Stimpak, "(DEBUG) Lea Tech", {""}, "", function()
     if IsInSession() then
-        local in_vehicle = is_user_driving_vehicle()
         local vehicle = entities.get_user_vehicle_as_handle()
-        if in_vehicle then
+        if vehicle then
             local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
             local petrolTankHealth = VEHICLE.GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
             local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle)
@@ -671,7 +681,7 @@ menu.action(Outfit, "Wardrobe", {}, "", function()
     menu.trigger_commands("wardrobe")
 end)
 
-menu.toggle_loop(Outfit, "Lock outfit if Iligal Clothing detected.", {"Smart Lock"}, "This will lock you outfit if a iligal clothing is detected, so it wont get removed.", function()
+menu.toggle_loop(Outfit, "Lock outfit if Iligal Clothing detected.", {"SmartLock"}, "This will lock you outfit if a iligal clothing is detected, so it wont get removed.", function()
     local cmd_path = "Self>Appearance>Outfit>Pants"
     if menu.get_state(menu.ref_by_path(cmd_path)) == "21" then
         menu.trigger_commands("lockoutfit on")
@@ -841,7 +851,7 @@ menu.toggle_loop(Game, 'Auto Blinkers', {'blinkers'}, 'Set the blinkers when ent
         saved_vehicle_id = vehicle
         VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(saved_vehicle_id, 1, true)
         VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(saved_vehicle_id, 0, true)
-        VEHICLE.SET_VEHICLE_LIGHTS(saved_vehicle_id, 2)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
     end
     if not in_vehicle then
         saved_vehicle_id = nil
@@ -868,11 +878,15 @@ menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join 
     util.yield(13)
 end)
 
+local ClearTraficSphere = 0
+
 menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic around you.", function()
     if IsInSession() then
-        MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19999.9, 0.0, 0.0, false, true)
-        MISC.CLEAR_AREA(1.1, 1.1, 1.1, 19999.9, true, false, false, true)
-        util.yield(6666)
+        if not MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(ClearTraficSphere) then
+            MISC.CLEAR_AREA(0.0, 0.0, 0.0, 19999.9, true, false, false, true)
+            ClearTraficSphere = MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19999.9, 0.0, 0.0, false, true)
+        end
+        util.yield(66666)
     else
         util.yield(13666)
     end
@@ -916,7 +930,9 @@ menu.toggle_loop(Session, "Smart Script Host", {""}, "If the Script Host is not 
                 util.yield(6666)
             end
             if players.is_marked_as_attacker(script_host_id) and not CUTSCENE.IS_CUTSCENE_PLAYING() then
+                menu.trigger_commands("ignore " .. players.get_name(script_host_id) .. " on")
                 menu.trigger_commands("scripthost")
+                util.yield(3666)
             end
         end
         util.yield(666)
@@ -1185,7 +1201,7 @@ menu.toggle_loop(Protection, 'Kick Blacklist on Join', {''}, 'Kick Blacklisted M
                     update_player_name(player_id)
                     warnify("Matched Player ID: " .. rsid)
                     menu.trigger_commands("hellaa " .. players.get_name(player_id) .. " on")
-                    menu.trigger_commands("ignore " .. players.get_name(player_id))
+                    menu.trigger_commands("ignore " .. players.get_name(player_id) .. " on")
                     if not StandUser(player_id) then
                         warnify("Kicking Player ID: " .. rsid)
                         menu.trigger_commands("kick " .. players.get_name(player_id))
@@ -1198,7 +1214,7 @@ menu.toggle_loop(Protection, 'Kick Blacklist on Join', {''}, 'Kick Blacklisted M
                 if tonumber(rid) == tonumber(rsid) then
                     warnify("Matched Player ID: " .. rsid)
                     menu.trigger_commands("hellaa " .. players.get_name(player_id) .. " on")
-                    menu.trigger_commands("ignore " .. players.get_name(player_id))
+                    menu.trigger_commands("ignore " .. players.get_name(player_id) .. " on")
                     if not StandUser(pid) then
                         warnify("Kicking Player ID: " .. rsid)
                         menu.trigger_commands("kick " .. players.get_name(player_id))
