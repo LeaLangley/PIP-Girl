@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.28"
+local SCRIPT_VERSION = "0.0.29"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -164,7 +164,6 @@ function STAT_SET_INT(stat, value)
     STATS.STAT_SET_INT(util.joaat(ADD_MP_INDEX(stat)), value, true)
 end
 
-local was_user_in_vehicle = false
 function is_user_driving_vehicle()
     return (PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true))
 end
@@ -290,28 +289,24 @@ menu.toggle_loop(PIP_Girl, 'Nightclub Party Never Stops!', {'ncpop'}, 'The hotte
 end)
 
 local urceoname = ""
-
 local function on_change(input_str, click_type)
     urceoname = input_str
 end
-
 menu.text_input(PIP_Girl, "CEO Name", {"pgceoname"}, "You can press Ctrl+U and Select Colours but no special GTA Icons sadly.", on_change)
-
 menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {}, "Auto Register yourself as CEO and Auto Switches you to MC/CEO in most situations needed.", function()
     if IsInSession() then
         if players.get_boss(players.user()) == -1 then
             menu.trigger_commands("ceostart")
-            util.yield(666)
-            if urceoname ~= "" then
-                menu.trigger_commands("ceoname " .. urceoname)
-            end
-            util.yield(6666)
+            util.yield(1666)
             if players.get_org_type(players.user()) == 0 then
                 notify("Turned you into CEO!")
-                util.yield(66666)
+                if urceoname ~= "" then
+                    menu.trigger_commands("ceoname " .. urceoname)
+                end
+                util.yield(6666)
             else
                 notify("We could not turn you into CEO :c\nWe will wait 3 minutes and try again.")
-                util.yield(200000)
+                util.yield(213666)
             end
         end
         local CEOLabels = {
@@ -348,14 +343,16 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {}, "Auto Register yourself a
             if IS_HELP_MSG_DISPLAYED(label) then
                 if players.get_boss(players.user()) == -1 then menu.trigger_commands("ceostart") end
                 if players.get_org_type(players.user()) == 1 then menu.trigger_commands("ceotomc") end
-                util.yield(666)
-                if urceoname != "" then
-                    menu.trigger_commands("ceoname " .. urceoname)
+                util.yield(1666)
+                if players.get_boss(players.user()) ~= -1 then
+                    if urceoname != "" then
+                        menu.trigger_commands("ceoname " .. urceoname)
+                    end
+                    notify("Turned you into CEO!")
+                    util.yield(666)
                 end
-                notify("Turned you into CEO!")
             end
         end
-
         local MCLabels = {
             "CLBHBKRREG",
             "ARC_HT_1",
@@ -365,11 +362,14 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {}, "Auto Register yourself a
             if IS_HELP_MSG_DISPLAYED(label) then
                 if players.get_boss(players.user()) == -1 then menu.trigger_commands("mcstart") end
                 if players.get_org_type(players.user()) == 0 then menu.trigger_commands("ceotomc") end
-                util.yield(666)
-                if urceoname != "" then
-                    menu.trigger_commands("ceoname " .. urceoname)
+                util.yield(1666)
+                if players.get_boss(players.user()) ~= -1 then
+                    if urceoname != "" then
+                        menu.trigger_commands("ceoname " .. urceoname)
+                    end
+                    notify("Turned you into MC President!")
+                    util.yield(666)
                 end
-                notify("Turned you into MC President!")
             end
         end
         util.yield(666)
@@ -434,7 +434,7 @@ menu.action(PIP_Girl, 'Cayo Preset (!)', {}, 'Set up the cayo heist with a Sweet
     end, true)
 end)
 
-menu.toggle_loop(PIP_Girl, "Carry Pickups", {}, "Carry all Pickups To You.\nNote this donst work in all Situations.", function()
+menu.toggle_loop(PIP_Girl, "Carry Pickups", {}, "Carry all Pickups on You.\nNote this donst work in all Situations.", function()
     if IsInSession() then
         local pos = players.get_position(players.user())
         for _, pickup in entities.get_all_pickups_as_handles() do
@@ -446,7 +446,6 @@ menu.toggle_loop(PIP_Girl, "Carry Pickups", {}, "Carry all Pickups To You.\nNote
         util.yield(6666)
     end
 end)
-
 
 menu.action(PIP_Girl, "Teleport Pickups To Me", {}, "Teleports all Pickups To You.\nNote this donst work in all Situations.", function(click_type)
     menu.show_warning(PIP_Girl, click_type, 'You r about to Teleport Pickups!', function()
@@ -467,8 +466,6 @@ end)
 
 local regen_all = Stimpak:action("Refill Health & Armour",{"newborn"},"Regenerate to max your health and armour.",function()
     if IsInSession() then
-        --ENTITY.SET_ENTITY_HEALTH(players.user_ped(),ENTITY.GET_ENTITY_MAX_HEALTH(players.user_ped()))
-        --PED.SET_PED_ARMOUR(players.user_ped(),PLAYER.GET_PLAYER_MAX_ARMOUR(players.user()))
         menu.trigger_commands("refillhealth")
         menu.trigger_commands("refillarmour")
     end
@@ -543,11 +540,11 @@ menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle", {}, "Will Recharge 
     end
 end)
 
+local was_user_in_vehicle = false
 menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {}, "Using your First Aid kit provided in you Vehicle.", function()
     if IsInSession() then
         local in_vehicle = is_user_driving_vehicle()
         local health = ENTITY.GET_ENTITY_HEALTH(players.user_ped())
-        
         if health ~= 0 then
             if in_vehicle and not was_user_in_vehicle then
                 was_user_in_vehicle = true
@@ -573,8 +570,8 @@ local function LeaTech()
         util.yield(1000)
     end
 end
-
-menu.toggle_loop(Stimpak, "Lea Tech", {"carleatech"}, "Slowly repairs your vehicle", function()
+local saved_vehicle_id = nil
+menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle", function()
     if IsInSession() then
         local vehicle = entities.get_user_vehicle_as_handle()
         if vehicle then
@@ -588,19 +585,15 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"carleatech"}, "Slowly repairs your vehic
                 if engineHealth < 1000 then
                     VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + 13)
                 end
-
                 if petrolTankHealth < 1000 then
                     VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + 13)
                 end
-
                 if bodyHealth < 1000 then
                     VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + 13)
                 end
-
                 if heliTailHealth < 1000 then
                     VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + 13)
                 end
-
                 if heliRotorHealth < 1000 then
                     VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + 13)
                 end
@@ -608,24 +601,19 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"carleatech"}, "Slowly repairs your vehic
                 if engineHealth < 1000 then
                     VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + 5)
                 end
-
                 if petrolTankHealth < 1000 then
                     VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + 5)
                 end
-
                 if bodyHealth < 1000 then
                     VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + 5)
                 end
-
                 if heliTailHealth < 1000 then
                     VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + 5)
                 end
-
                 if heliRotorHealth < 1000 then
                     VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + 5)
                 end
             end
-
             if petrolTankHealth >= 1000 and engineHealth >= 1000 and bodyHealth >= 1000 then
                 VEHICLE.SET_VEHICLE_DEFORMATION_FIXED(vehicle)
                 VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, 1000)
@@ -636,10 +624,18 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"carleatech"}, "Slowly repairs your vehic
             else
                 LeaTech()
             end
-
-            VEHICLE.SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
-            
+            if saved_vehicle_id == nil or saved_vehicle_id ~= vehicle then
+                saved_vehicle_id = vehicle
+                VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(saved_vehicle_id, 1, true)
+                VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(saved_vehicle_id, 0, true)
+                VEHICLE.SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
+                VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+            else
+                saved_vehicle_id = nil
+            end
             util.yield(1000)
+        else
+            util.yield(1666)
         end
     else
         util.yield(13666)
@@ -655,7 +651,6 @@ menu.toggle_loop(Stimpak, "(DEBUG) Lea Tech", {""}, "", function()
             local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle)
             local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
             local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
-
             if petrolTankHealth ~= 1000 or engineHealth ~= 1000 or bodyHealth ~= 1000 then
                 util.draw_debug_text("\nPetrol Health: " .. petrolTankHealth .. "\nEngine Health: " .. engineHealth .. "\nBody Health: " .. bodyHealth .. "\nHeli Tail Health: " .. heliTailHealth .. "\nHeli Rotor Health: " .. heliRotorHealth)
             end
@@ -664,7 +659,6 @@ menu.toggle_loop(Stimpak, "(DEBUG) Lea Tech", {""}, "", function()
         util.yield(13666)
     end
 end)
-
 
 menu.action(Stimpak, "(DEBUG) Set Armor/Health to Low", {"dearmor"}, "This is for testing Purpose!\nTurn the options above on and Click this to test them out!", function()
     PED.SET_PED_ARMOUR(players.user_ped(), 0)
@@ -736,7 +730,6 @@ menu.action(Game, 'Super Cleanse No yacht fix', {"supercleanny"}, 'BCS R* is a m
                 ct += 1
             end
         end
-
         menu.trigger_commands("deleteropes")
         notify('Done ' .. ct .. ' entities removed!')
     end, function()
@@ -772,7 +765,6 @@ menu.action(Game, 'Super Cleanse', {"superclean"}, 'BCS R* is a mess.', function
                 ct += 1
             end
         end
-
         menu.trigger_commands("deleteropes")
         notify('Done ' .. ct .. ' entities removed!')
         util.yield(666)
@@ -826,7 +818,6 @@ local warningMessages = {
     [496145784] = "There has been an error with this session. Please return to Grand Theft Auto V and try again.",
     [705668975] = "You have already been voted out of this game session. Joining a new GTA Online session."
 }
-
 menu.toggle_loop(Game, "Auto Accept Warning", {}, "Auto accepts most warnings in the game.", function()
     local mess_hash = math.abs(HUD.GET_WARNING_SCREEN_MESSAGE_HASH())
     if mess_hash ~= 0 then
@@ -841,20 +832,12 @@ menu.toggle_loop(Game, "Auto Accept Warning", {}, "Auto accepts most warnings in
     util.yield(50)
 end)
 
-local saved_vehicle_id = nil
-
-menu.toggle_loop(Game, 'Auto Blinkers', {'blinkers'}, 'Set the blinkers when entering vehicle.', function ()
-    local in_vehicle = is_user_driving_vehicle()
-    local vehicle = entities.get_user_vehicle_as_handle()
-
-    if in_vehicle and (saved_vehicle_id == nil or saved_vehicle_id ~= vehicle) then
-        saved_vehicle_id = vehicle
-        VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(saved_vehicle_id, 1, true)
-        VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(saved_vehicle_id, 0, true)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
-    end
-    if not in_vehicle then
-        saved_vehicle_id = nil
+menu.toggle_loop(Game, 'Auto Blinkers', {'blinkers'}, 'Blinkers are merged with "Lea Tech" now.', function ()
+    local cmd_path = "Stand>Lua Scripts>1 PIP Girl>Stimpak>Lea Tech"
+    if menu.get_state(menu.ref_by_path(cmd_path)) == "Off" then
+        menu.trigger_commands("leatech on")
+    else
+        menu.trigger_commands("blinkers off")
     end
     util.yield(666)
 end)
@@ -1048,15 +1031,13 @@ local function load_data_e()
         io.close(file)
         data_e = json.decode(contents) or {}
     else
-        -- Create a new JSON file with an empty table
         local new_file = io.open(resources_dir .. 'Export/Export_Blacklist.json', 'w')
         if new_file then
             new_file:write("{}")
             io.close(new_file)
             data_e = {}
         else
-            -- Failed to create the file
-            notify("Failed to create Blacklist.json")
+            warnify("Failed to create Blacklist.json")
         end
     end
 end
