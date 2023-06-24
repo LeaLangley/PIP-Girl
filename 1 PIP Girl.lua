@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.36"
+local SCRIPT_VERSION = "0.0.38"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -561,8 +561,11 @@ local function LeaTech()
     local vehicle = entities.get_user_vehicle_as_handle()
     if vehicle then
         VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, false)
         util.yield(666)
         VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+        VEHICLE.SET_VEHICLE_FULLBEAM(vehicle, true)
+        VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, true)
     else
         util.yield(1000)
     end
@@ -623,10 +626,13 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
             end
             if saved_vehicle_id == nil or saved_vehicle_id ~= vehicle then
                 saved_vehicle_id = vehicle
-                VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(saved_vehicle_id, 1, true)
-                VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(saved_vehicle_id, 0, true)
+                VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, true)
+                VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, true)
                 VEHICLE.SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
                 VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+                VEHICLE.SET_VEHICLE_FULLBEAM(vehicle, true)
+                VEHICLE.SET_DONT_PROCESS_VEHICLE_GLASS(vehicles, true)
+                VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, true)
             else
                 saved_vehicle_id = nil
             end
