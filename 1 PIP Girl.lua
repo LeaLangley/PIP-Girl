@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.39"
+local SCRIPT_VERSION = "0.0.38"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1349,7 +1349,7 @@ menu.toggle_loop(Protection, 'Kick Blacklist on Join', {''}, 'Kick Blacklisted M
                     if not StandUser(pid) then
                         StrategicKick(pid, name, rid)
                     else
-                        warnify("This Blacklist is a Stand User , we dont Kick them: " .. name .. " - " .. Lea)
+                        warnify("This Blacklist is a Stand User , we dont Kick them: " .. name .. " - " .. rid)
                         menu.trigger_commands("hellaa " .. name .. " on")
                     end
                 end
