@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.38"
+local SCRIPT_VERSION = "0.0.39"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -683,6 +683,17 @@ local positionsToCheck = {
     { x = 1459.58, y = 1112.80, z = 114.33 },--Vinewood Hills Ranch
     { x = 2580.91, y = 361.70, z = 108.47 },--Tataviam Gas Station
     { x = 2689.53, y = 1506.10, z = 24.57 },--Palmer Power Plant
+    { x = 2541.16, y = 2587.89, z = 37.94 },--Ron Alternates Wind Farm Gas Station
+    { x = 2676.75, y = 3265.67, z = 55.24 },--Senora Desert Gas Station
+    { x = 1732.06, y = 3307.77, z = 41.22 },--Senora Desert Air Port
+    { x = 1830.07, y = 3695.28, z = 34.22 },--Senora Desert Hostpital
+    { x = 2134.13, y = 4782.20, z = 40.97 },--Grapeseeds Air Port
+    { x = 1692.77, y = 4926.13, z = 42.08 },--Grapeseeds Gas Station
+    { x = 1705.08, y = 6419.58, z = 32.64 },--Mount Chiliard Gas Station
+    { x = 103.67, y = 6622.64, z = 31.83 },--Paleto Bay LSC
+    { x = 157.14, y = 6631.93, z = 31.67 },--Paleto Bay Gas Station
+    { x = -2171.11, y = 4277.93, z = 48.99 },--North Chumash Biker Stop
+    { x = -2555.66, y = 2341.88, z = 33.08 },--Zancudo Gas Station
 }
 local blipsCreated = false
 local blips = {}
@@ -1338,7 +1349,7 @@ menu.toggle_loop(Protection, 'Kick Blacklist on Join', {''}, 'Kick Blacklisted M
                     if not StandUser(pid) then
                         StrategicKick(pid, name, rid)
                     else
-                        warnify("This Blacklist is a Stand User , we dont Kick them: " .. name .. " - " .. rid)
+                        warnify("This Blacklist is a Stand User , we dont Kick them: " .. name .. " - " .. Lea)
                         menu.trigger_commands("hellaa " .. name .. " on")
                     end
                 end
