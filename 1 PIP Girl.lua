@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.32"
+local SCRIPT_VERSION = "0.0.34"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -580,7 +580,7 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
             local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
             local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
             local getclass = VEHICLE.GET_VEHICLE_CLASS(vehicle)
-            if getclass == 15 or getclass == 16 then
+            if getclass == 15 then
                 if engineHealth < 1000 then
                     VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + 13)
                 end
@@ -641,6 +641,155 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
     end
 end)
 
+local positionsToCheck = {
+    { x = -1650.71, y = -3140.19, z = 13.99 },--LSIA Hangar
+    { x = -1160.32, y = -2018.54, z = 13.18 },--LSIA LSC
+    { x = -1112.67, y = -2030.20, z = 13.28 },--LSIA LSC Outside
+    { x = -103.15, y = -2071.78, z = 17.56 },--ARENA Tunnel
+    { x = 34.49, y = -2670.82, z = 6.01 },--Elysian Island
+    { x = 712.19, y = -3207.33, z = 6.02 },--Buccaneer way
+    { x = 852.39, y = -2128.91, z = 30.33 },--Cypress flats
+    { x = 1544.56, y = -2107.09, z = 77.21 },--El Burro Oil
+    { x = 1182.45, y = -1550.03, z = 34.69 },--El Burro Hospital
+    { x = 733.94, y = -1081.11, z = 22.17 },--la Mesa LSC
+    { x = 792.78, y = -1113.03, z = 22.76 },--La Mesa LSC Outside
+    { x = 580.47, y = -1969.85, z = 17.78 },--Rancho Tram Loop
+    { x = 21.00, y = -1391.94, z = 29.33 },--Strawberry Car Washing
+    { x = 160.30, y = -702.04, z = 33.13 },--PILLBOX HILL Underground
+    { x = 479.48, y = -1021.61, z = 27.99 },--Mission Row Police
+    { x = -57.40, y = -1221.97, z = 28.70 },--Strawberry underground
+    { x = -525.17, y = -1211.20, z = 18.18 },--Little Sequl Shop
+    { x = -58.35, y = -1766.13, z = 28.97 },--Davis Ave Shop
+    { x = 293.39, y = -1244.25, z = 29.28 },--Strawberry Shop
+    { x = -699.89, y = -935.08, z = 19.01 },--Little Seoul Shop and Car Washing
+    { x = -1154.47, y = -1563.28, z = 4.37 },--Beach
+    { x = -1544.14, y = -881.18, z = 10.28 },--Beach Pier
+    { x = -1024.44, y = -538.61, z = 35.70 },--Film Studios
+    { x = -324.74, y = -135.20, z = 39.01 },--City Center LSC
+    { x = -365.09, y = -46.38, z = 54.62 },--City Center LSC TOP
+    { x = 67.29, y = 123.24, z = 79.15 },--Downtown Vinewood
+    { x = 1130.05, y = 62.45, z = 80.76 },--Casino Tracks
+    { x = 1129.11, y = -668.14, z = 56.74 },--Mirror Park
+    { x = -401.76, y = 1207.75, z = 325.95 },--Vinewood Hills
+    { x = -1797.02, y = 806.56, z = 138.51 },--Richman Gas Station
+    { x = -3170.51, y = 1107.03, z = 20.80 },--CHUMASH
+    { x = -1821.36, y = 2971.17, z = 32.81 },--Army Base
+    { x = -1151.08, y = 2675.79, z = 18.09 },--Zancudo River
+    { x = 1038.79, y = 2670.92, z = 39.55 },--Senora Desert Cafe
+    { x = 1459.58, y = 1112.80, z = 114.33 },--Vinewood Hills Ranch
+    { x = 2580.91, y = 361.70, z = 108.47 },--Tataviam Gas Station
+    { x = 2689.53, y = 1506.10, z = 24.57 },--Palmer Power Plant
+}
+local blipsCreated = false
+local blips = {}
+local function CreateBlips(positionsToCheck)
+    for _, position in ipairs(positionsToCheck) do
+        local blip = HUD.ADD_BLIP_FOR_COORD(position.x, position.y, position.z)
+        HUD.SET_BLIP_SPRITE(blip, "402")
+        HUD.SET_BLIP_COLOUR(blip, 48)
+        HUD.SET_BLIP_AS_MINIMAL_ON_EDGE(blip, true)
+        HUD.SET_RADIUS_BLIP_EDGE(blip, true)
+        HUD.SET_BLIP_AS_SHORT_RANGE(blip, true)
+        HUD.SET_BLIP_DISPLAY(blip, 2)
+        table.insert(blips, blip)
+    end
+    blipsCreated = true
+end
+local function remove_blips()
+    for blips as blip do
+        util.remove_blip(blip)
+        blips = {}
+    end
+end
+util.on_stop(function()
+    remove_blips()
+end)
+remove_blips()
+local radius = 2
+local closestMarker = nil
+local closestDistance = math.huge
+local wasInZone = false
+local function SetInZoneTimer()
+    wasInZone = true
+    for blips as blip do
+        HUD.SET_BLIP_COLOUR(blip, 1)
+    end
+    util.yield(187666)
+    for blips as blip do
+        HUD.SET_BLIP_COLOUR(blip, 48)
+    end
+    wasInZone = false
+end
+menu.toggle_loop(Stimpak, "Lea's Repair Stop", {}, "", function()
+    if IsInSession() then
+        local playerPosition = players.get_position(players.user())
+        if not blipsCreated then
+            remove_blips()
+            CreateBlips(positionsToCheck)
+        end
+        closestMarker = nil
+        closestDistance = math.huge
+        for _, position in ipairs(positionsToCheck) do
+            local distance = math.sqrt((playerPosition.x - position.x) ^ 2 + (playerPosition.y - position.y) ^ 2 + (playerPosition.z - position.z) ^ 2)
+
+            if distance < closestDistance then
+                closestMarker = position
+                closestDistance = distance
+            end
+        end
+        if closestMarker then
+            local markerPosition = closestMarker
+            if not wasInZone then
+                --GRAPHICS.DRAW_MARKER(1, markerPosition.x, markerPosition.y, markerPosition.z - 1, 0, 0, 0, 0, 180, 0, 2, 2, 2, 255, 0, 128, 66, false, false, 180, 0, 0, 0, false)
+                GRAPHICS.DRAW_MARKER(1, markerPosition.x, markerPosition.y, markerPosition.z - 1, 0, 0, 0, 0, 180, 0, 5, 5, 1, 255, 0, 128, 255, false, false, 180, 0, 0, 0, false)
+                GRAPHICS.DRAW_SPOT_LIGHT(markerPosition.x, markerPosition.y, markerPosition.z + 0.6, 0, 0, -1, 255, 0, 128, 5, 5, 0, 200, 1)
+            else
+                GRAPHICS.DRAW_MARKER(1, markerPosition.x, markerPosition.y, markerPosition.z - 1, 0, 0, 0, 0, 180, 0, 5, 5, 1, 255, 0, 0, 255, false, false, 180, 0, 0, 0, false)
+                GRAPHICS.DRAW_SPOT_LIGHT(markerPosition.x, markerPosition.y, markerPosition.z + 0.6, 0, 0, -1, 255, 0, 0, 5, 5, 0, 200, 1)
+            end
+            if closestDistance <= radius then
+                if not wasInZone then
+                    wasInZone = true
+                    menu.trigger_commands("fillammo")
+                    menu.trigger_commands("wanted 0")
+                    menu.trigger_commands("refillhealth")
+                    menu.trigger_commands("refillarmour")
+                    menu.trigger_commands("performance")
+                    menu.trigger_commands("fixvehicle")
+                    menu.trigger_commands("fillinventory")
+                    menu.trigger_commands("clubpopularity 100")
+                    menu.trigger_commands("mentalstate 0")
+                    menu.trigger_commands("removebounty")
+                    menu.trigger_commands("resetheadshots")
+                    notify("Come back in 3min for the next Supply.")
+                    util.create_thread(SetInZoneTimer)
+                end
+            end
+        else
+
+            closestMarker = nil
+            closestDistance = math.huge
+        end
+    else
+        closestMarker = nil
+        closestDistance = math.huge
+        blipsCreated = false
+        util.yield(13666)
+    end
+end, function()
+    remove_blips()
+    closestMarker = nil
+    closestDistance = math.huge
+    blipsCreated = false
+end)
+
+menu.action(Stimpak, "Copy Position to Clipboard", {}, "", function()
+    local playerPosition = players.get_position(players.user())
+    local positionString = string.format("{ x = %.2f, y = %.2f, z = %.2f },", playerPosition.x, playerPosition.y, playerPosition.z)
+    util.copy_to_clipboard(positionString, false)
+    notify("Position copied to clipboard!")
+end)
+
 menu.toggle_loop(Stimpak, "(DEBUG) Lea Tech", {""}, "", function()
     if IsInSession() then
         local vehicle = entities.get_user_vehicle_as_handle()
@@ -674,14 +823,20 @@ menu.action(Outfit, "Wardrobe", {}, "", function()
     menu.trigger_commands("wardrobe")
 end)
 
-menu.toggle_loop(Outfit, "Lock outfit if Iligal Clothing detected.", {"SmartLock"}, "This will lock you outfit if a iligal clothing is detected, so it wont get removed.", function()
+menu.toggle_loop(Outfit, "(Alpha) Lock outfit if Iligal Clothing detected.", {"SmartLock"}, "This will lock you outfit if a iligal clothing is detected, so it wont get removed.", function()
     local cmd_path = "Self>Appearance>Outfit>Pants"
-    if menu.get_state(menu.ref_by_path(cmd_path)) == "21" then
-        menu.trigger_commands("lockoutfit on")
+    if not util.is_interaction_menu_open() then
+        if menu.get_state(menu.ref_by_path(cmd_path)) == "21" then
+            menu.trigger_commands("lockoutfit on")
+        else
+            menu.trigger_commands("lockoutfit off")
+        end
     else
         menu.trigger_commands("lockoutfit off")
     end
     util.yield(13)
+end, function()
+    menu.trigger_commands("lockoutfit off")
 end)
 
 menu.action(Outfit, "Saves the Current O. as Restore O.", {}, "This will save you current Oufit as Restor Outfit.", function()
@@ -709,6 +864,7 @@ menu.action(Game, 'Super Cleanse No yacht fix', {"supercleanny"}, 'BCS R* is a m
             if not PED.IS_PED_A_PLAYER(driver) then
                 entities.delete_by_handle(ent)
                 ct += 1
+                util.yield(1)
             end
         end
         for k,ent in pairs(entities.get_all_peds_as_handles()) do
@@ -716,10 +872,12 @@ menu.action(Game, 'Super Cleanse No yacht fix', {"supercleanny"}, 'BCS R* is a m
                 entities.delete_by_handle(ent)
             end
             ct += 1
+            util.yield(1)
         end
         for k,ent in pairs(entities.get_all_objects_as_handles()) do
             entities.delete_by_handle(ent)
             ct += 1
+            util.yield(1)
         end
         local rope_alloc = memory.alloc(4)
         for i=0, 100 do 
@@ -728,6 +886,7 @@ menu.action(Game, 'Super Cleanse No yacht fix', {"supercleanny"}, 'BCS R* is a m
                 PHYSICS.DELETE_ROPE(rope_alloc)
                 ct += 1
             end
+            util.yield(1)
         end
         menu.trigger_commands("deleteropes")
         notify('Done ' .. ct .. ' entities removed!')
@@ -744,6 +903,7 @@ menu.action(Game, 'Super Cleanse', {"superclean"}, 'BCS R* is a mess.', function
             if not PED.IS_PED_A_PLAYER(driver) then
                 entities.delete_by_handle(ent)
                 ct += 1
+                util.yield(1)
             end
         end
         for k,ent in pairs(entities.get_all_peds_as_handles()) do
@@ -751,18 +911,12 @@ menu.action(Game, 'Super Cleanse', {"superclean"}, 'BCS R* is a mess.', function
                 entities.delete_by_handle(ent)
             end
             ct += 1
+            util.yield(1)
         end
         for k,ent in pairs(entities.get_all_objects_as_handles()) do
             entities.delete_by_handle(ent)
             ct += 1
-        end
-        local rope_alloc = memory.alloc(4)
-        for i=0, 100 do 
-            memory.write_int(rope_alloc, i)
-            if PHYSICS.DOES_ROPE_EXIST(rope_alloc) then
-                PHYSICS.DELETE_ROPE(rope_alloc)
-                ct += 1
-            end
+            util.yield(1)
         end
         menu.trigger_commands("deleteropes")
         notify('Done ' .. ct .. ' entities removed!')
@@ -831,6 +985,25 @@ menu.toggle_loop(Game, "Auto Accept Warning", {}, "Auto accepts most warnings in
     util.yield(50)
 end)
 
+--local thermal_command = menu.ref_by_path('Game>Rendering>Thermal Vision')
+--menu.toggle_loop(Game, "Thermal Scope",{},"Press E while aiming to activate.",function() -- From mehScript <3 /but respects if u use another hotkey for thermal.
+--local aiming = PLAYER.IS_PLAYER_FREE_AIMING(players.user())
+--    if GRAPHICS.GET_USINGSEETHROUGH() and not aiming then
+--        if not menu.get_value(thermal_command) then
+--            menu.trigger_command(thermal_command,'off')
+--            GRAPHICS.SEETHROUGH_SET_MAX_THICKNESS(1)
+--        end
+--    elseif PAD.IS_CONTROL_JUST_PRESSED(38,38) then
+--        if menu.get_value(thermal_command) or not aiming then
+--            menu.trigger_command(thermal_command,"off")
+--            GRAPHICS.SEETHROUGH_SET_MAX_THICKNESS(1)
+--        else
+--            menu.trigger_command(thermal_command,"on")
+--            GRAPHICS.SEETHROUGH_SET_MAX_THICKNESS(50)
+--        end
+--    end
+--end)
+
 menu.toggle_loop(Game, 'Auto Blinkers', {'blinkers'}, 'Blinkers are merged with "Lea Tech" now.', function ()
     local cmd_path = "Stand>Lua Scripts>1 PIP Girl>Stimpak>Lea Tech"
     if menu.get_state(menu.ref_by_path(cmd_path)) == "Off" then
@@ -839,11 +1012,6 @@ menu.toggle_loop(Game, 'Auto Blinkers', {'blinkers'}, 'Blinkers are merged with 
         menu.trigger_commands("blinkers off")
     end
     util.yield(666)
-end)
-
-menu.toggle_loop(Game, 'Test', {''}, 'Testing', function ()
-    local v = players.get_position(players.user())
-    GRAPHICS.DRAW_MARKER(1, v.x, v.y, v.z -1, 0, 0, 0, 0, 180, 0, 2, 2, 2, 255, 128, 0, 50, false, false, 180, 0, 0, 0, false)
 end)
 
 menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join Invite only\nIf R* Admin Detected", function()
@@ -872,150 +1040,154 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic a
         MISC.CLEAR_AREA_OF_PEDS(0, 0, 0, 19999.9, 1)
         util.yield(6666)
     else
+        local ClearTraficSphere = 0
         util.yield(13666)
     end
 end)
 
-menu.toggle_loop(Session, "Smart Script Host", {""}, "If the Script Host is not in your crew, friend list, or same CEO/MC, you will become Script Host.\nPrevent Atackers from obtaining script host.\nMakes u script host after a Cutscene if u are the host.", function()
-    if IsInSession() then
-        local script_host_id = players.get_script_host()
-        local found = false
-        for _, pid in ipairs(players.list(true, true, false, true)) do 
-            if pid == script_host_id then
-                found = true
-                util.yield(666)
-            end
-        end
-        if not found and not CUTSCENE.IS_CUTSCENE_PLAYING() then
-            if players.user() == players.get_host() then
-                menu.trigger_commands("scripthost")
-            else
-                util.yield(1666)
-                for _, pid in ipairs(players.list(true, true, false, true)) do 
-                    if pid == script_host_id then
-                        found = true
-                        util.yield(666)
-                    end
-                end
-                if not found and not CUTSCENE.IS_CUTSCENE_PLAYING() then
-                    menu.trigger_commands("scripthost")
-                end
-            end
-            util.yield(30013)
-        end
-        if script_host_id ~= players.user() then
-            if CUTSCENE.IS_CUTSCENE_PLAYING() and players.user() == players.get_host() then
-                util.yield(666)
-                while CUTSCENE.IS_CUTSCENE_PLAYING() do
-                    util.yield(666)
-                end
-                util.yield(666)
-                menu.trigger_commands("scripthost")
-                util.yield(6666)
-            end
-            if players.is_marked_as_attacker(script_host_id) and not CUTSCENE.IS_CUTSCENE_PLAYING() then
-                menu.trigger_commands("ignore " .. players.get_name(script_host_id) .. " on")
-                menu.trigger_commands("scripthost")
-                util.yield(3666)
-            end
-        end
-        util.yield(666)
-    else
-        util.yield(13666)
-    end
+local script_session = 0
+menu.toggle(Session, "Smart Script Host", {""}, "If the Script Host is not in your crew, friend list, or same CEO/MC, you will become Script Host.\nPrevent Atackers from obtaining script host.\nMakes u script host after a Cutscene if u are the host.", function()
+--    if IsInSession() then
+--        local script_host_id = players.get_script_host()
+--        local found = false
+--        for _, pid in players.list(true, true, false, true) do 
+--            if pid == script_host_id then
+--                found = true
+--                util.yield(666)
+--            end
+--        end
+--        if not found and not CUTSCENE.IS_CUTSCENE_PLAYING() then
+--            if players.user() == players.get_host() then
+--                menu.trigger_commands("scripthost")
+--            else
+--                util.yield(1666)
+--                for _, pid in players.list(true, true, false, true) do 
+--                    if pid == script_host_id then
+--                        found = true
+--                        util.yield(666)
+--                    end
+--                end
+--                if not found and not CUTSCENE.IS_CUTSCENE_PLAYING() then
+--                    menu.trigger_commands("scripthost")
+--                end
+--            end
+--            util.yield(30013)
+--        end
+--        if script_host_id ~= players.user() then
+--            if CUTSCENE.IS_CUTSCENE_PLAYING() and players.user() == players.get_host() then
+--                util.yield(666)
+--                while CUTSCENE.IS_CUTSCENE_PLAYING() do
+--                    util.yield(666)
+--                end
+--                util.yield(666)
+--                menu.trigger_commands("scripthost")
+--                util.yield(6666)
+--            end
+--            if players.is_marked_as_attacker(script_host_id) and not CUTSCENE.IS_CUTSCENE_PLAYING() then
+--                menu.trigger_commands("ignore " .. players.get_name(script_host_id) .. " on")
+--                menu.trigger_commands("scripthost")
+--                util.yield(3666)
+--            end
+--        end
+--        util.yield(6666)
+--    else
+--        util.yield(13666)
+--    end
 end)
 
-local My_Friends_are_the_BEST = true
-menu.toggle_loop(Session, 'My Friends are the BEST!', {""}, 'Auto Commend u Friends , Crew and Org member <3', function ()
-    if IsInSession() then
-        local player_you = players.user()
-        for _, pid in ipairs(players.list(false, false, false, true)) do
-            if pid ~= player_you then
-                if My_Friends_are_the_BEST then
-                    My_Friends_are_the_BEST = false
-                    menu.trigger_commands("commendhelpful" .. players.get_name(pid))
-                    menu.trigger_commands("commendfriendly" .. players.get_name(pid))
-                else
-                    My_Friends_are_the_BEST = true
-                    menu.trigger_commands("commendfriendly" .. players.get_name(pid))
-                    menu.trigger_commands("commendhelpful" .. players.get_name(pid))
-                end
-            end
-        end
-        util.yield(788666)
-    else
-        util.yield(66666)
-    end
-end)
-
-menu.toggle_loop(Session, '(Alpha) Smart CEO Money loop', {'sceom'}, '', function ()
-    if IsInSession() then
-        local player_you = players.user()
-        for _, pid in ipairs(players.list(false, false, false, true)) do
-            if pid ~= player_you then
-                menu.trigger_commands("ceopay".. players.get_name(pid) .." on")
-            end
-        end
-        util.yield(1666)
-        for _, pid in ipairs(players.list(false, false, false, true)) do
-            if pid ~= player_you then
-                menu.trigger_commands("ceopay".. players.get_name(pid) .." off")
-            end
-        end
-        util.yield(300000)
-    else
-        util.yield(13666)
-    end
-end)
-
-local max_players = 33
-menu.slider(Session, '(Alpha) Session Player Limit', {'setmaxplayer'}, 'Let only up to a certain number of people join that are strangers.', 1, 32, max_players, 1, function (new_value)
-    max_players = new_value
-end)
-
-local session_limit = 0
-menu.toggle_loop(Session, '(Alpha) Activate Session Player Limit', {'maxplayer'}, 'Let only up to a certain number of people join that are strangers.', function (new_value)
-    if IsInSession() then
-        local numPlayers = 0
-        local cmd_path = "Online>Session>Block Joins>From Strangers"
-        for _, pid in pairs(players.list()) do
-            numPlayers = numPlayers + 1
-        end
-        if numPlayers > max_players then
-            if session_limit ~= 1 then
-                if players.user() == players.get_host() then
-                    menu.trigger_commands("setsessiontype inviteonly")
-                    if menu.get_state(menu.ref_by_path(cmd_path)) == "On" then
-                        menu.trigger_commands("blockjoinsstrangers off")
-                    end
-                else
-                    if menu.get_state(menu.ref_by_path(cmd_path)) == "Off" then
-                        menu.trigger_commands("blockjoinsstrangers on")
-                    end
-                end
-                session_limit = 1
-                notify("More than "..max_players.." players in session, closing joins now!")
-                util.yield(666)
-            end
-        end
-        if numPlayers < max_players then
-            if session_limit ~= 2 then
-                if players.user() == players.get_host() then
-                    menu.trigger_commands("setsessiontype public")
-                end
-                if menu.get_state(menu.ref_by_path(cmd_path)) == "On" then
-                    menu.trigger_commands("blockjoinsstrangers off")
-                end
-                session_limit = 2
-                notify("Less than "..max_players.." players in session, open joins now!")
-                util.yield(666)
-            end
-        end
-        util.yield(666)    
-    else
-        util.yield(13666)
-    end
-end)
+--local My_Friends_are_the_BEST = true
+--menu.toggle_loop(Session, 'My Friends are the BEST!', {""}, 'Auto Commend u Friends , Crew and Org member <3', function ()
+--    if IsInSession() then
+--        local player_you = players.user()
+--        local session = players.list(false, true, false)
+--        for _, pid in ipairs(session) do
+--            if pid ~= player_you then
+--                if My_Friends_are_the_BEST then
+--                    My_Friends_are_the_BEST = false
+--                    menu.trigger_commands("commendhelpful" .. players.get_name(pid))
+--                    menu.trigger_commands("commendfriendly" .. players.get_name(pid))
+--                else
+--                    My_Friends_are_the_BEST = true
+--                    menu.trigger_commands("commendfriendly" .. players.get_name(pid))
+--                    menu.trigger_commands("commendhelpful" .. players.get_name(pid))
+--                end
+--            end
+--        end
+--        util.yield(788666)
+--    else
+--        util.yield(66666)
+--    end
+--end)
+--
+--menu.toggle_loop(Session, '(Alpha) Smart CEO Money loop', {'sceom'}, '', function ()
+--    if IsInSession() then
+--        local player_you = players.user()
+--        local session = players.list(false, true, false)
+--        for _, pid in ipairs(session) do
+--            if pid ~= player_you then
+--                menu.trigger_commands("ceopay".. players.get_name(pid) .." on")
+--            end
+--        end
+--        util.yield(1666)
+--        for _, pid in ipairs(session) do
+--            if pid ~= player_you then
+--                menu.trigger_commands("ceopay".. players.get_name(pid) .." off")
+--            end
+--        end
+--        util.yield(300000)
+--    else
+--        util.yield(13666)
+--    end
+--end)
+--
+--local max_players = 33
+--menu.slider(Session, '(Alpha) Session Player Limit', {'setmaxplayer'}, 'Let only up to a certain number of people join that are strangers.', 1, 32, max_players, 1, function (new_value)
+--    max_players = new_value
+--end)
+--
+--local session_limit = 0
+--menu.toggle_loop(Session, '(Alpha) Activate Session Player Limit', {'maxplayer'}, 'Let only up to a certain number of people join that are strangers.', function (new_value)
+--    if IsInSession() then
+--        local numPlayers = 0
+--        local cmd_path = "Online>Session>Block Joins>From Strangers"
+--        for _, pid in pairs(players.list()) do
+--            numPlayers = numPlayers + 1
+--        end
+--        if numPlayers > max_players then
+--            if session_limit ~= 1 then
+--                if players.user() == players.get_host() then
+--                    menu.trigger_commands("setsessiontype inviteonly")
+--                    if menu.get_state(menu.ref_by_path(cmd_path)) == "On" then
+--                        menu.trigger_commands("blockjoinsstrangers off")
+--                    end
+--                else
+--                    if menu.get_state(menu.ref_by_path(cmd_path)) == "Off" then
+--                        menu.trigger_commands("blockjoinsstrangers on")
+--                    end
+--                end
+--                session_limit = 1
+--                notify("More than "..max_players.." players in session, closing joins now!")
+--                util.yield(666)
+--            end
+--        end
+--        if numPlayers < max_players then
+--            if session_limit ~= 2 then
+--                if players.user() == players.get_host() then
+--                    menu.trigger_commands("setsessiontype public")
+--                end
+--                if menu.get_state(menu.ref_by_path(cmd_path)) == "On" then
+--                    menu.trigger_commands("blockjoinsstrangers off")
+--                end
+--                session_limit = 2
+--                notify("Less than "..max_players.." players in session, open joins now!")
+--                util.yield(666)
+--            end
+--        end
+--        util.yield(666)    
+--    else
+--        util.yield(13666)
+--    end
+--end)
 
 local json = require('json')
 
@@ -1063,9 +1235,18 @@ load_data_e()
 
 load_data_g()
 
-local function add_player_to_blacklist(player)
-    local rid = players.get_rockstar_id(player)
-    local name = players.get_name(player)
+local function StandUser(pid) -- credit to sapphire for this and jinx script
+    if players.exists(pid) and pid != players.user() then
+        for menu.player_root(pid):getChildren() as cmd do
+            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Stand User"):isValid() then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+local function add_player_to_blacklist(player, name, rid)
     if rid and name then
         data_e[tostring(rid)] = {
             ["Name"] = name
@@ -1074,14 +1255,25 @@ local function add_player_to_blacklist(player)
     end
 end
 
-local function is_player_in_blacklist(player)
-    local rid = players.get_rockstar_id(player)
+local function update_player_name(player, name, rid)
+    local player_data_g = data_g[tostring(rid)]
+    if player_data_g then
+        if player_data_g.Name ~= name then
+            player_data_g.Name = name
+            data_e[tostring(rid)] = {
+                ["Name"] = name
+            }
+            save_data_e()
+        end
+    end
+end
+
+local function is_player_in_blacklist(player, name, rid)
     if rid then
         local player_data_g = data_g[tostring(rid)]
         if player_data_g then
-            local name = players.get_player_name(player)
             if player_data_g.Name ~= name then
-                update_player_name(player)
+                update_player_name(player, name, rid)
             end
             return true
         else
@@ -1097,22 +1289,14 @@ local function is_player_in_blacklist(player)
     end
 end
 
-local function update_player_name(player)
-    if player and type(player) == "number" then
-        local rid = players.get_rockstar_id(player)
-        if rid then
-            local player_data_g = data_g[tostring(rid)]
-            if player_data_g then
-                local name = players.get_name(player)
-                if player_data_g.Name ~= name then
-                    player_data_g.Name = name
-                    data_e[tostring(rid)] = {
-                        ["Name"] = name
-                    }
-                    save_data_e()
-                end
-            end
-        end
+local function StrategicKick(pid, name, rid) --TODO , make it actually smart , not bare bones.
+    menu.trigger_commands("ignore " .. name .. " on")
+    menu.trigger_commands("desync " .. name .. " on")
+    if players.user() == players.get_host() then
+        menu.trigger_commands("blocksync " .. name .. " on")
+        menu.trigger_commands("loveletterkick " .. name)
+    else
+        menu.trigger_commands("kick " .. name)
     end
 end
 
@@ -1158,50 +1342,33 @@ menu.action(Protection, 'Open Export Folder', {'oef'}, '', function()
     util.open_folder(resources_dir .. 'Export')
 end)
 
-local function StandUser(pid) -- credit to sapphire for this and jinx script
-    if players.exists(pid) and pid != players.user() then
-        for menu.player_root(pid):getChildren() as cmd do
-            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Stand User"):isValid() then
-                return true
-            end
-        end
-    end
-    return false
-end
-
 local joined_session = false
-
 menu.toggle_loop(Protection, 'Kick Blacklist on Join', {''}, 'Kick Blacklisted Modder if detected on Joining a Session.', function()
     if not joined_session and util.is_session_started() then
         joined_session = true
-        local player_ids = players.list(false, false, true)
-        
-        for _, player_id in ipairs(player_ids) do
-            local rsid = players.get_rockstar_id(player_id)
-            for rid, player in pairs(data_g) do
-                if tonumber(rid) == tonumber(rsid) then
-                    update_player_name(player_id)
-                    warnify("Matched Player ID: " .. rsid)
-                    menu.trigger_commands("hellaa " .. players.get_name(player_id) .. " on")
-                    menu.trigger_commands("ignore " .. players.get_name(player_id) .. " on")
-                    if not StandUser(player_id) then
-                        warnify("Kicking Player ID: " .. rsid)
-                        menu.trigger_commands("kick " .. players.get_name(player_id))
+        for _, pid in players.list() do
+            local rid = players.get_rockstar_id(pid)
+            local name = players.get_name(pid)
+            for id, player in pairs(data_g) do
+                if tonumber(id) == tonumber(rid) then
+                    update_player_name(pid)
+                    warnify("Matched Player: " .. name .. " - " .. rid)
+                    if not StandUser(pid) then
+                        StrategicKick(pid, name, rid)
                     else
-                        warnify("This RID is a Stand User , we dont Kick them: " .. rsid)
+                        warnify("This Blacklist is a Stand User , we dont Kick them: " .. name .. " - " .. rid)
+                        menu.trigger_commands("hellaa " .. name .. " on")
                     end
                 end
             end
-            for rid, player in pairs(data_e) do
-                if tonumber(rid) == tonumber(rsid) then
-                    warnify("Matched Player ID: " .. rsid)
-                    menu.trigger_commands("hellaa " .. players.get_name(player_id) .. " on")
-                    menu.trigger_commands("ignore " .. players.get_name(player_id) .. " on")
+            for id, player in pairs(data_e) do
+                if tonumber(id) == tonumber(rid) then
+                    warnify("Matched Player: " .. name .. " - " .. rid)
                     if not StandUser(pid) then
-                        warnify("Kicking Player ID: " .. rsid)
-                        menu.trigger_commands("kick " .. players.get_name(player_id))
+                        StrategicKick(pid, name, rid)
                     else
-                        warnify("This RID is a Stand User , we dont Kick them: " .. rsid)
+                        warnify("This Blacklist is a Stand User , we dont Kick them: " .. name .. " - " .. rid)
+                        menu.trigger_commands("hellaa " .. name .. " on")
                     end
                 end
             end            
@@ -1243,61 +1410,50 @@ menu.toggle_loop(Protection, "Dont Block Love Letter Kicks as Host.", {"pgbll"},
 end)
 
 players.add_command_hook(function(pid)
-    local friendly_players = players.list(true, false, false, false, true)
-    for _, id in ipairs(friendly_players) do
-        if pid == id then
-            return
-        end
-    end
-    menu.divider(menu.player_root(pid), '1 PIP Girl')
-    local Bad_Modder = menu.list(menu.player_root(pid), 'Bad Modder?', friendly_players, '', function() end)
+    local name = players.get_name(pid)
+    local rid = players.get_rockstar_id(pid)
+    menu.player_root(pid):divider('1 PIP Girl')
+    local Bad_Modder = menu.list(menu.player_root(pid), 'Bad Modder?', {""}, '', function() end)
     menu.action(Bad_Modder, "Add Blacklist & Kick", {'hellk'}, "Blacklist Note, Kick and Block the Target from Joining u again.", function ()
-        menu.trigger_commands("historynote ".. players.get_name(pid) .." Blacklist")
-        menu.trigger_commands("historyblock ".. players.get_name(pid) .." on")
-        if not is_player_in_blacklist(pid) then
-            add_player_to_blacklist(pid)
+        menu.trigger_commands("historynote ".. name .." Blacklist")
+        menu.trigger_commands("historyblock ".. name .." on")
+        if not is_player_in_blacklist(pid, name, rid) then
+            add_player_to_blacklist(pid, name, rid)
         end
-        menu.trigger_commands("ignore " .. players.get_name(pid) .. " on")
-        menu.trigger_commands("hellaa " .. players.get_name(pid) .. " on")
-        menu.trigger_commands("kick ".. players.get_name(pid))
+        StrategicKick(pid, name, rid)
     end)
     menu.action(Bad_Modder, "Add Blacklist ,Phone Call & Kick", {'hellp'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
-        menu.trigger_commands("historynote ".. players.get_name(pid) .." Blacklist")
-        menu.trigger_commands("historyblock ".. players.get_name(pid) .." on")
-        if not is_player_in_blacklist(pid) then
-            add_player_to_blacklist(pid)
+        menu.trigger_commands("historynote ".. name .." Blacklist")
+        menu.trigger_commands("historyblock ".. name .." on")
+        if not is_player_in_blacklist(pid, name, rid) then
+            add_player_to_blacklist(pid, name, rid)
         end
-        menu.trigger_commands("ring ".. players.get_name(pid))
+        menu.trigger_commands("ring " .. name)
         util.yield(666)
-        menu.trigger_commands("ignore " .. players.get_name(pid) .. " on")
-        menu.trigger_commands("hellaa " .. players.get_name(pid) .. " on")
-        menu.trigger_commands("kick ".. players.get_name(pid))
+        StrategicKick(pid, name, rid)
     end)
     menu.action(Bad_Modder, "Add Blacklist ,Crash & Kick", {'hellc'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
-        menu.trigger_commands("historynote ".. players.get_name(pid) .." Blacklist")
-        menu.trigger_commands("historyblock ".. players.get_name(pid) .." on")
-        if not is_player_in_blacklist(pid) then
-            add_player_to_blacklist(pid)
+        menu.trigger_commands("historynote ".. name .." Blacklist")
+        menu.trigger_commands("historyblock ".. name .." on")
+        if not is_player_in_blacklist(pid, name, rid) then
+            add_player_to_blacklist(pid, name, rid)
         end
-        menu.trigger_commands("choke ".. players.get_name(pid))
+        menu.trigger_commands("choke ".. name)
         util.yield(666)
-        menu.trigger_commands("ignore " .. players.get_name(pid) .. " on")
-        menu.trigger_commands("hellaa " .. players.get_name(pid) .. " on")
-        menu.trigger_commands("kick ".. players.get_name(pid))
+        StrategicKick(pid, name, rid)
     end)
     menu.action(Bad_Modder, "Add Blacklist Only", {'helln'}, "Blacklist Note and Block the Target from Joining u again.", function ()
-        menu.trigger_commands("historynote ".. players.get_name(pid) .." Blacklist")
-        menu.trigger_commands("historyblock ".. players.get_name(pid) .." on")
-        if not is_player_in_blacklist(pid) then
-            add_player_to_blacklist(pid)
+        menu.trigger_commands("historynote ".. name .." Blacklist")
+        menu.trigger_commands("historyblock ".. name .." on")
+        if not is_player_in_blacklist(pid, name, rid) then
+            add_player_to_blacklist(pid, name, rid)
         end
     end)
     menu.toggle_loop(Bad_Modder, "Kick on Atack", {"hellaa"}, "Auto kick if they atack you.", function()
         if players.is_marked_as_attacker(pid) then
-            menu.trigger_commands("timeout " .. players.get_name(pid) .. " on")
-            menu.trigger_commands("ignore " .. players.get_name(pid) .. " on")
-            menu.trigger_commands("kick " .. players.get_name(pid))
-            warnify(players.get_name(pid) .. " has been kick bcs they atacked you.")
+            menu.trigger_commands("ignore " .. name .. " on")
+            StrategicKick(pid, name, rid)
+            warnify(name .. " has been kick bcs they atacked you.")
             util.yield(66666)
         end
         util.yield(13)
