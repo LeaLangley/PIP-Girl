@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.34"
+local SCRIPT_VERSION = "0.0.35"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -448,20 +448,18 @@ menu.toggle_loop(PIP_Girl, "Carry Pickups", {}, "Carry all Pickups on You.\nNote
 end)
 
 menu.action(PIP_Girl, "Teleport Pickups To Me", {}, "Teleports all Pickups To You.\nNote this donst work in all Situations.", function(click_type)
-    menu.show_warning(PIP_Girl, click_type, 'You r about to Teleport Pickups!', function()
-        local counter = 0
-        local pos = players.get_position(players.user())
-        for _, pickup in entities.get_all_pickups_as_handles() do
-            ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
-            counter = counter + 1
-            util.yield(1)
-        end
-        if counter == 0 then
-            notify("No Pickups Found. :c")
-        else
-            notify("Teleported ".. tostring(counter) .." Pickups. :D")
-        end
-    end)
+    local counter = 0
+    local pos = players.get_position(players.user())
+    for _, pickup in entities.get_all_pickups_as_handles() do
+        ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
+        counter = counter + 1
+        util.yield(1)
+    end
+    if counter == 0 then
+        notify("No Pickups Found. :c")
+    else
+        notify("Teleported ".. tostring(counter) .." Pickups. :D")
+    end
 end)
 
 local regen_all = Stimpak:action("Refill Health & Armour",{"newborn"},"Regenerate to max your health and armour.",function()
@@ -857,76 +855,68 @@ menu.toggle_loop(Outfit, "Restor Outfit", {"restoreoutfit"}, "Auto Restore the S
 end)
 
 menu.action(Game, 'Super Cleanse No yacht fix', {"supercleanny"}, 'BCS R* is a mess.', function(click_type)
-    menu.show_warning(Game, click_type, 'Really wanna do it huh?', function()
-        local ct = 0
-        for k,ent in pairs(entities.get_all_vehicles_as_handles()) do
-            local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
-            if not PED.IS_PED_A_PLAYER(driver) then
-                entities.delete_by_handle(ent)
-                ct += 1
-                util.yield(1)
-            end
-        end
-        for k,ent in pairs(entities.get_all_peds_as_handles()) do
-            if not PED.IS_PED_A_PLAYER(ent) then
-                entities.delete_by_handle(ent)
-            end
-            ct += 1
-            util.yield(1)
-        end
-        for k,ent in pairs(entities.get_all_objects_as_handles()) do
+    local ct = 0
+    for k,ent in pairs(entities.get_all_vehicles_as_handles()) do
+        local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
+        if not PED.IS_PED_A_PLAYER(driver) then
             entities.delete_by_handle(ent)
             ct += 1
             util.yield(1)
         end
-        local rope_alloc = memory.alloc(4)
-        for i=0, 100 do 
-            memory.write_int(rope_alloc, i)
-            if PHYSICS.DOES_ROPE_EXIST(rope_alloc) then
-                PHYSICS.DELETE_ROPE(rope_alloc)
-                ct += 1
-            end
-            util.yield(1)
+    end
+    for k,ent in pairs(entities.get_all_peds_as_handles()) do
+        if not PED.IS_PED_A_PLAYER(ent) then
+            entities.delete_by_handle(ent)
         end
-        menu.trigger_commands("deleteropes")
-        notify('Done ' .. ct .. ' entities removed!')
-    end, function()
-        notify("Aborted.")
-    end, true)
+        ct += 1
+        util.yield(1)
+    end
+    for k,ent in pairs(entities.get_all_objects_as_handles()) do
+        entities.delete_by_handle(ent)
+        ct += 1
+        util.yield(1)
+    end
+    local rope_alloc = memory.alloc(4)
+    for i=0, 100 do 
+        memory.write_int(rope_alloc, i)
+        if PHYSICS.DOES_ROPE_EXIST(rope_alloc) then
+            PHYSICS.DELETE_ROPE(rope_alloc)
+            ct += 1
+        end
+        util.yield(1)
+    end
+    menu.trigger_commands("deleteropes")
+    notify('Done ' .. ct .. ' entities removed!')
 end)
 
 menu.action(Game, 'Super Cleanse', {"superclean"}, 'BCS R* is a mess.', function(click_type)
-    menu.show_warning(Game, click_type, 'Really wanna do it huh?', function()
-        local ct = 0
-        for k,ent in pairs(entities.get_all_vehicles_as_handles()) do
-            local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
-            if not PED.IS_PED_A_PLAYER(driver) then
-                entities.delete_by_handle(ent)
-                ct += 1
-                util.yield(1)
-            end
-        end
-        for k,ent in pairs(entities.get_all_peds_as_handles()) do
-            if not PED.IS_PED_A_PLAYER(ent) then
-                entities.delete_by_handle(ent)
-            end
-            ct += 1
-            util.yield(1)
-        end
-        for k,ent in pairs(entities.get_all_objects_as_handles()) do
+    local ct = 0
+    for k,ent in pairs(entities.get_all_vehicles_as_handles()) do
+        local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
+        if not PED.IS_PED_A_PLAYER(driver) then
             entities.delete_by_handle(ent)
             ct += 1
             util.yield(1)
         end
-        menu.trigger_commands("deleteropes")
-        notify('Done ' .. ct .. ' entities removed!')
-        util.yield(666)
-        menu.trigger_commands("lockstreamingfocus on")
-        util.yield(13)
-        menu.trigger_commands("lockstreamingfocus off")
-    end, function()
-        notify("Aborted.")
-    end, true)
+    end
+    for k,ent in pairs(entities.get_all_peds_as_handles()) do
+        if not PED.IS_PED_A_PLAYER(ent) then
+            entities.delete_by_handle(ent)
+        end
+        ct += 1
+        util.yield(1)
+    end
+    for k,ent in pairs(entities.get_all_objects_as_handles()) do
+        entities.delete_by_handle(ent)
+        ct += 1
+        util.yield(1)
+    end
+    menu.trigger_commands("deleteropes")
+    notify('Done ' .. ct .. ' entities removed!')
+    util.yield(666)
+    menu.trigger_commands("lockstreamingfocus on")
+    util.yield(13)
+    menu.trigger_commands("lockstreamingfocus off")
 end)
 
 menu.toggle_loop(Game, "Auto Skip Conversation",{},"Automatically skip all conversations.",function()
