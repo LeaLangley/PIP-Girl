@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.35"
+local SCRIPT_VERSION = "0.0.36"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1035,54 +1035,29 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic a
     end
 end)
 
-local script_session = 0
-menu.toggle(Session, "Smart Script Host", {""}, "If the Script Host is not in your crew, friend list, or same CEO/MC, you will become Script Host.\nPrevent Atackers from obtaining script host.\nMakes u script host after a Cutscene if u are the host.", function()
---    if IsInSession() then
---        local script_host_id = players.get_script_host()
---        local found = false
---        for _, pid in players.list(true, true, false, true) do 
---            if pid == script_host_id then
---                found = true
---                util.yield(666)
---            end
---        end
---        if not found and not CUTSCENE.IS_CUTSCENE_PLAYING() then
---            if players.user() == players.get_host() then
---                menu.trigger_commands("scripthost")
---            else
---                util.yield(1666)
---                for _, pid in players.list(true, true, false, true) do 
---                    if pid == script_host_id then
---                        found = true
---                        util.yield(666)
---                    end
---                end
---                if not found and not CUTSCENE.IS_CUTSCENE_PLAYING() then
---                    menu.trigger_commands("scripthost")
---                end
---            end
---            util.yield(30013)
---        end
---        if script_host_id ~= players.user() then
---            if CUTSCENE.IS_CUTSCENE_PLAYING() and players.user() == players.get_host() then
---                util.yield(666)
---                while CUTSCENE.IS_CUTSCENE_PLAYING() do
---                    util.yield(666)
---                end
---                util.yield(666)
---                menu.trigger_commands("scripthost")
---                util.yield(6666)
---            end
---            if players.is_marked_as_attacker(script_host_id) and not CUTSCENE.IS_CUTSCENE_PLAYING() then
---                menu.trigger_commands("ignore " .. players.get_name(script_host_id) .. " on")
---                menu.trigger_commands("scripthost")
---                util.yield(3666)
---            end
---        end
---        util.yield(6666)
---    else
---        util.yield(13666)
---    end
+menu.toggle(Session, "Smart Script Host", {""}, "Turns", function()
+    if IsInSession() then
+        local script_host_id = players.get_script_host()
+        if script_host_id ~= players.user() then
+            if CUTSCENE.IS_CUTSCENE_PLAYING() and players.user() == players.get_host() then
+                util.yield(666)
+                while CUTSCENE.IS_CUTSCENE_PLAYING() do
+                    util.yield(666)
+                end
+                util.yield(666)
+                menu.trigger_commands("scripthost")
+                util.yield(6666)
+            end
+            if players.is_marked_as_attacker(script_host_id) and not CUTSCENE.IS_CUTSCENE_PLAYING() then
+                menu.trigger_commands("ignore " .. players.get_name(script_host_id) .. " on")
+                menu.trigger_commands("scripthost")
+                util.yield(3666)
+            end
+        end
+        util.yield(6666)
+    else
+        util.yield(13666)
+    end
 end)
 
 --local My_Friends_are_the_BEST = true
