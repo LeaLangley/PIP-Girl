@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.38"
+local SCRIPT_VERSION = "0.0.39"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -729,7 +729,7 @@ local function SetInZoneTimer()
     for blips as blip do
         HUD.SET_BLIP_COLOUR(blip, 1)
     end
-    util.yield(187666)
+    util.yield(369666)
     for blips as blip do
         HUD.SET_BLIP_COLOUR(blip, 48)
     end
@@ -776,7 +776,7 @@ menu.toggle_loop(Stimpak, "Lea's Repair Stop", {}, "", function()
                     menu.trigger_commands("mentalstate 0")
                     menu.trigger_commands("removebounty")
                     menu.trigger_commands("resetheadshots")
-                    notify("Come back in 3min for the next Supply.")
+                    notify("Come back in 6min for the next Supply.")
                     util.create_thread(SetInZoneTimer)
                 end
             end
@@ -1282,27 +1282,122 @@ local function StrategicKick(pid, name, rid) --TODO , make it actually smart , n
     end
 end
 
-menu.action(Protection, '(!) Import Global Blacklist 1/2', {'imp'}, '!Takes longer then usual! This can take up to 2min, be prepared.', function()
-    local player_importet = 0
-    menu.trigger_commands("anticrashcamera on")
-    menu.trigger_commands("norender on")
-    menu.trigger_commands("potatomode on")
+local function SessionCheck(pid, name, rid)
+    if not rid then
+        local rid = players.get_rockstar_id(pid)
+    end
+    if not name then
+        local name = players.get_name(pid)
+    end
+    for id, player in pairs(data_g) do
+        if tonumber(id) == tonumber(rid) then
+            update_player_name(pid)
+            warnify("Matched Player: " .. name .. " - " .. rid)
+            if StandUser(pid) then
+                warnify("This Blacklist is a Stand User , we dont Kick them: " .. name .. " - " .. rid)
+                menu.trigger_commands("hellaa " .. name .. " on")
+            else
+                StrategicKick(pid, name, rid)
+            end
+        end
+    end
+    for id, player in pairs(data_e) do
+        if tonumber(id) == tonumber(rid) then
+            warnify("Matched Player: " .. name .. " - " .. rid)
+            if StandUser(pid) then
+                warnify("This Blacklist is a Stand User , we dont Kick them: " .. name .. " - " .. rid)
+                menu.trigger_commands("hellaa " .. name .. " on")
+            else
+                StrategicKick(pid, name, rid)
+            end
+        end
+    end 
+end
+
+players.on_join(SessionCheck)
+
+menu.action(Protection, '(Alpha) Import Global Blacklist', {'bimp'}, 'This can take up some time, be prepared.\nRecommended to start befor going afk or etc.', function()
+    local player_imported = 0
+    local player_processed = 0
+    local player_in_list = 0
+    for rid, player in pairs(data_g) do
+        player_in_list = player_in_list + 1
+    end
+
+    local commandPaths = {
+        "[Offline]",
+        "[Public]",
+        "[Invite]",
+        "[Friends Only]",
+        "[Story Mode]",
+        "[Other]"
+    }
+    
+    local maxRetries = 4
+    
     for rid, player in pairs(data_g) do
         local name = player.Name
         menu.trigger_commands("historyaddrid ".. rid)
-        menu.trigger_commands("historyadd ".. player.Name)
-        player_importet += 1
-        util.yield(13)
+        
+        local ValidRef = nil
+        local retryCount = 0
+        local pathSuffix = ""
+        
+        repeat
+            for i, suffix in ipairs(commandPaths) do
+                pathSuffix = suffix
+
+                local commandPath = "Online>Player History>" .. name .. " " .. pathSuffix .. ">Note"
+                ValidRef = menu.ref_by_path(commandPath)
+                if ValidRef:isValid() then
+                    local Note = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Note")
+                    local Notification = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Notification")
+                    local BlockJoin = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Join")
+                    local Timeout = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Timeout")
+                    local BlockTheirNetworkEvents = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Their Network Events")
+                    local BlockIncomingSyncs = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Incoming Syncs")
+                    local BlockOutgoingSyncs = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Outgoing Syncs")
+
+                    menu.trigger_commands("historynote ".. name .." Blacklist")
+                    menu.set_value(Notification, true)
+                    menu.set_value(BlockJoin, true)
+                    menu.set_value(Timeout, true)
+                    menu.set_value(BlockTheirNetworkEvents, true)
+                    menu.set_value(BlockIncomingSyncs, true)
+                    menu.set_value(BlockOutgoingSyncs, true)
+                    
+                    notify("\nBlacklisted:\n" .. name .. " " .. pathSuffix .. " | " .. rid .. "\n:D\nPlayers Processed: " .. player_processed + 1 .. " / " .. player_in_list .. "\nPlayers Added: " .. player_imported)
+                    pathSuffix = ""
+                    retryCount = 0
+                    util.yield(1666)
+                    player_imported = player_imported + 1
+                    player_processed = player_processed + 1
+                    break
+                else
+                    pathSuffix = ""
+                    retryCount = retryCount + 1
+                    notify("\nRetry: " .. retryCount .. "\n" .. name .. " | " .. rid .. "\n:s\nPlayers Processed: " .. player_processed + 1 .. " / " .. player_in_list .. "\nPlayers Added: " .. player_imported)
+                    util.yield(13666)
+                end
+                if retryCount >= maxRetries then
+                    break
+                end
+            end
+        until ValidRef:isValid() or retryCount >= maxRetries
+        
+        if not ValidRef:isValid() then
+            pathSuffix = nil
+            player_processed = player_processed + 1
+            warnify("\nNo valid player reference found for player:\n" .. name .. " | " .. rid .. "\n:c\nPlayers Processed: " .. player_processed + 1 .. " / " .. player_in_list .. "\nPlayers Added: " .. player_imported)
+            util.yield(6666)
+        end
+        util.yield(666)
     end
-    menu.trigger_commands("potatomode off")
-    menu.trigger_commands("norender off")
-    menu.trigger_commands("anticrashcamera off")
-    notify(player_importet .. " Player's Importet")
+    
+    notify(player_imported .. " Players Imported")
 end)
 
-menu.divider(Protection, 'Wait around 20min befor using next step.')
-
-menu.action(Protection, '(!) Block Join Global Blacklist 2/2', {'impblock'}, '!Takes longer then usual! Use it 20-30min after the first part. This can take up to 2min, be prepared.', function()
+menu.action(Protection, '(!) Block Join Global Blacklist', {'impblock'}, 'Only works for Players in the History!.', function()
     local player_importet = 0
     menu.trigger_commands("anticrashcamera on")
     menu.trigger_commands("norender on")
@@ -1331,29 +1426,7 @@ menu.toggle_loop(Protection, 'Kick Blacklist on Join', {''}, 'Kick Blacklisted M
         for _, pid in players.list() do
             local rid = players.get_rockstar_id(pid)
             local name = players.get_name(pid)
-            for id, player in pairs(data_g) do
-                if tonumber(id) == tonumber(rid) then
-                    update_player_name(pid)
-                    warnify("Matched Player: " .. name .. " - " .. rid)
-                    if not StandUser(pid) then
-                        StrategicKick(pid, name, rid)
-                    else
-                        warnify("This Blacklist is a Stand User , we dont Kick them: " .. name .. " - " .. rid)
-                        menu.trigger_commands("hellaa " .. name .. " on")
-                    end
-                end
-            end
-            for id, player in pairs(data_e) do
-                if tonumber(id) == tonumber(rid) then
-                    warnify("Matched Player: " .. name .. " - " .. rid)
-                    if not StandUser(pid) then
-                        StrategicKick(pid, name, rid)
-                    else
-                        warnify("This Blacklist is a Stand User , we dont Kick them: " .. name .. " - " .. rid)
-                        menu.trigger_commands("hellaa " .. name .. " on")
-                    end
-                end
-            end            
+            SessionCheck(pid, name, rid)         
         end
     end
     if not util.is_session_started() or util.is_session_transition_active()then
