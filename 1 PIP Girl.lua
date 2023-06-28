@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.42"
+local SCRIPT_VERSION = "0.0.43"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -775,6 +775,7 @@ menu.toggle_loop(Stimpak, "Lea's Repair Stop", {}, "", function()
                     menu.trigger_commands("clubpopularity 100")
                     menu.trigger_commands("mentalstate 0")
                     menu.trigger_commands("removebounty")
+                    menu.trigger_commands("helibackup")
                     menu.trigger_commands("resetheadshots")
                     notify("Come back in 6min for the next Supply.")
                     util.create_thread(SetInZoneTimer)
