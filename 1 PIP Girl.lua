@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.40"
+local SCRIPT_VERSION = "0.0.41"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1250,8 +1250,14 @@ local function update_player_name(player, name, rid)
     end
 end
 
+local function add_in_stand(pid, name, rid)
+    menu.trigger_commands("historynote ".. name .." Blacklist")
+    menu.trigger_commands("historyblock ".. name .." on")
+end
+
 local function is_player_in_blacklist(player, name, rid)
     if rid then
+        add_in_stand(pid, name, rid)
         local player_data_g = data_g[tostring(rid)]
         if player_data_g then
             if player_data_g.Name ~= name then
@@ -1293,6 +1299,7 @@ local function SessionCheck(pid, name, rid)
         if tonumber(id) == tonumber(rid) then
             update_player_name(pid)
             warnify("Matched Player: " .. name .. " - " .. rid)
+            add_in_stand(pid, name, rid)
             if StandUser(pid) then
                 warnify("This Blacklist is a Stand User , we dont Kick them: " .. name .. " - " .. rid)
                 menu.trigger_commands("hellaa " .. name .. " on")
@@ -1304,6 +1311,7 @@ local function SessionCheck(pid, name, rid)
     for id, player in pairs(data_e) do
         if tonumber(id) == tonumber(rid) then
             warnify("Matched Player: " .. name .. " - " .. rid)
+            add_in_stand(pid, name, rid)
             if StandUser(pid) then
                 warnify("This Blacklist is a Stand User , we dont Kick them: " .. name .. " - " .. rid)
                 menu.trigger_commands("hellaa " .. name .. " on")
@@ -1343,48 +1351,38 @@ menu.action(Protection, '(Alpha) Import Global Blacklist', {'bimp'}, 'This can t
         local retryCount = 0
         local pathSuffix = ""
         
-        repeat
-            for i, suffix in ipairs(commandPaths) do
-                pathSuffix = suffix
+        for i, suffix in ipairs(commandPaths) do
+            pathSuffix = suffix
 
-                local commandPath = "Online>Player History>" .. name .. " " .. pathSuffix .. ">Note"
-                ValidRef = menu.ref_by_path(commandPath)
-                if ValidRef:isValid() then
-                    local Note = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Note")
-                    local Notification = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Notification")
-                    local BlockJoin = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Join")
-                    local Timeout = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Timeout")
-                    local BlockTheirNetworkEvents = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Their Network Events")
-                    local BlockIncomingSyncs = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Incoming Syncs")
-                    local BlockOutgoingSyncs = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Outgoing Syncs")
+            local commandPath = "Online>Player History>" .. name .. " " .. pathSuffix .. ">Note"
+            ValidRef = menu.ref_by_path(commandPath)
+            util.yield(666)
+            if ValidRef:isValid() then
+                local Note = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Note")
+                local Notification = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Notification")
+                local BlockJoin = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Join")
+                local Timeout = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Timeout")
+                local BlockTheirNetworkEvents = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Their Network Events")
+                local BlockIncomingSyncs = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Incoming Syncs")
+                local BlockOutgoingSyncs = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Outgoing Syncs")
 
-                    menu.trigger_commands("historynote ".. name .." Blacklist")
-                    menu.set_value(Notification, true)
-                    menu.set_value(BlockJoin, true)
-                    menu.set_value(Timeout, true)
-                    menu.set_value(BlockTheirNetworkEvents, true)
-                    menu.set_value(BlockIncomingSyncs, true)
-                    menu.set_value(BlockOutgoingSyncs, true)
-                    
-                    notify("\nBlacklisted:\n" .. name .. " " .. pathSuffix .. " | " .. rid .. "\n:D\nPlayers Processed: " .. player_processed + 1 .. " / " .. player_in_list .. "\nPlayers Added: " .. player_imported)
-                    pathSuffix = ""
-                    retryCount = 0
-                    util.yield(1666)
-                    player_imported = player_imported + 1
-                    player_processed = player_processed + 1
-                    break
-                else
-                    pathSuffix = ""
-                    retryCount = retryCount + 1
-                    notify("\nRetry: " .. retryCount .. "\n" .. name .. " | " .. rid .. "\n:s\nPlayers Processed: " .. player_processed + 1 .. " / " .. player_in_list .. "\nPlayers Added: " .. player_imported)
-                    util.yield(13666)
-                end
-                if retryCount >= maxRetries then
-                    break
-                end
+                menu.trigger_commands("historynote ".. name .." Blacklist")
+                menu.set_value(Notification, true)
+                menu.set_value(BlockJoin, true)
+                menu.set_value(Timeout, true)
+                menu.set_value(BlockTheirNetworkEvents, true)
+                menu.set_value(BlockIncomingSyncs, true)
+                menu.set_value(BlockOutgoingSyncs, true)
+                
+                notify("\nBlacklisted:\n" .. name .. " " .. pathSuffix .. " | " .. rid .. "\n:D\nPlayers Processed: " .. player_processed + 1 .. " / " .. player_in_list .. "\nPlayers Added: " .. player_imported)
+                pathSuffix = ""
+                retryCount = 0
+                util.yield(1666)
+                player_imported = player_imported + 1
+                player_processed = player_processed + 1
+                break
             end
-        until ValidRef:isValid() or retryCount >= maxRetries
-        
+        end
         if not ValidRef:isValid() then
             pathSuffix = nil
             player_processed = player_processed + 1
@@ -1407,8 +1405,7 @@ menu.action(Protection, '(!) Block Join Global Blacklist', {'impblock'}, '', fun
         local name = player.Name
         menu.trigger_commands("historyaddrid ".. rid)
         util.yield(4666)
-        menu.trigger_commands("historynote ".. player.Name .." Blacklist")
-        menu.trigger_commands("historyblock ".. player.Name .." on")
+        add_in_stand(player, name, rid)
         player_processed += 1
         notify("\nProcessed:\n" .. name .. " | " .. rid .. "\nPlayers Processed: " .. player_processed .. " / " .. player_in_list)
         util.yield(13)
