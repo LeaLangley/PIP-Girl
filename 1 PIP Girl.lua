@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.41"
+local SCRIPT_VERSION = "0.0.42"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1404,11 +1404,11 @@ menu.action(Protection, '(!) Block Join Global Blacklist', {'impblock'}, '', fun
     for rid, player in pairs(data_g) do
         local name = player.Name
         menu.trigger_commands("historyaddrid ".. rid)
-        util.yield(4666)
+        util.yield(13666)
         add_in_stand(player, name, rid)
         player_processed += 1
         notify("\nProcessed:\n" .. name .. " | " .. rid .. "\nPlayers Processed: " .. player_processed .. " / " .. player_in_list)
-        util.yield(13)
+        util.yield(666)
     end
     notify("\nPlayers Processed: " .. player_processed)
 end)
@@ -1468,16 +1468,14 @@ players.add_command_hook(function(pid)
     menu.player_root(pid):divider('1 PIP Girl')
     local Bad_Modder = menu.list(menu.player_root(pid), 'Bad Modder?', {""}, '', function() end)
     menu.action(Bad_Modder, "Add Blacklist & Kick", {'hellk'}, "Blacklist Note, Kick and Block the Target from Joining u again.", function ()
-        menu.trigger_commands("historynote ".. name .." Blacklist")
-        menu.trigger_commands("historyblock ".. name .." on")
+        add_in_stand(pid, name, rid)
         if not is_player_in_blacklist(pid, name, rid) then
             add_player_to_blacklist(pid, name, rid)
         end
         StrategicKick(pid, name, rid)
     end)
     menu.action(Bad_Modder, "Add Blacklist ,Phone Call & Kick", {'hellp'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
-        menu.trigger_commands("historynote ".. name .." Blacklist")
-        menu.trigger_commands("historyblock ".. name .." on")
+        add_in_stand(pid, name, rid)
         if not is_player_in_blacklist(pid, name, rid) then
             add_player_to_blacklist(pid, name, rid)
         end
@@ -1486,8 +1484,7 @@ players.add_command_hook(function(pid)
         StrategicKick(pid, name, rid)
     end)
     menu.action(Bad_Modder, "Add Blacklist ,Crash & Kick", {'hellc'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
-        menu.trigger_commands("historynote ".. name .." Blacklist")
-        menu.trigger_commands("historyblock ".. name .." on")
+        add_in_stand(pid, name, rid)
         if not is_player_in_blacklist(pid, name, rid) then
             add_player_to_blacklist(pid, name, rid)
         end
@@ -1496,8 +1493,7 @@ players.add_command_hook(function(pid)
         StrategicKick(pid, name, rid)
     end)
     menu.action(Bad_Modder, "Add Blacklist Only", {'helln'}, "Blacklist Note and Block the Target from Joining u again.", function ()
-        menu.trigger_commands("historynote ".. name .." Blacklist")
-        menu.trigger_commands("historyblock ".. name .." on")
+        add_in_stand(pid, name, rid)
         if not is_player_in_blacklist(pid, name, rid) then
             add_player_to_blacklist(pid, name, rid)
         end
