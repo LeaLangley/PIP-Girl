@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.39"
+local SCRIPT_VERSION = "0.0.40"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1397,22 +1397,23 @@ menu.action(Protection, '(Alpha) Import Global Blacklist', {'bimp'}, 'This can t
     notify(player_imported .. " Players Imported")
 end)
 
-menu.action(Protection, '(!) Block Join Global Blacklist', {'impblock'}, 'Only works for Players in the History!.', function()
-    local player_importet = 0
-    menu.trigger_commands("anticrashcamera on")
-    menu.trigger_commands("norender on")
-    menu.trigger_commands("potatomode on")
+menu.action(Protection, '(!) Block Join Global Blacklist', {'impblock'}, '', function()
+    local player_processed = 0
+    local player_in_list = 0
+    for rid, player in pairs(data_g) do
+        player_in_list = player_in_list + 1
+    end
     for rid, player in pairs(data_g) do
         local name = player.Name
+        menu.trigger_commands("historyaddrid ".. rid)
+        util.yield(4666)
         menu.trigger_commands("historynote ".. player.Name .." Blacklist")
         menu.trigger_commands("historyblock ".. player.Name .." on")
-        player_importet += 1
+        player_processed += 1
+        notify("\nProcessed:\n" .. name .. " | " .. rid .. "\nPlayers Processed: " .. player_processed .. " / " .. player_in_list)
         util.yield(13)
     end
-    menu.trigger_commands("potatomode off")
-    menu.trigger_commands("norender off")
-    menu.trigger_commands("anticrashcamera off")
-    notify(player_importet .. " Player's Blocked")
+    notify("\nPlayers Processed: " .. player_processed)
 end)
 
 menu.action(Protection, 'Open Export Folder', {'oef'}, '', function()
