@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.49"
+local SCRIPT_VERSION = "0.0.50"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -610,22 +610,22 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
             local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle)
             local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
             local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
-            local getclass = VEHICLE.GET_VEHICLE_CLASS(vehicle)
-            if getclass == 15 or getclass == 16 then
-                if engineHealth < 1000 then
-                    VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + 13)
-                end
-                if petrolTankHealth < 1000 then
-                    VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + 13)
-                end
-            else
-                if engineHealth < 1000 then
-                    VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + 5)
-                end
-                if petrolTankHealth < 1000 then
-                    VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + 5)
-                end
+            --local getclass = VEHICLE.GET_VEHICLE_CLASS(vehicle)
+            --if getclass == 15 or getclass == 16 then
+            --    if engineHealth < 1000 then
+            --        VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + 13)
+            --    end
+            --    if petrolTankHealth < 1000 then
+            --        VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + 13)
+            --    end
+            --else
+            if engineHealth < 1000 then
+                VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + 5)
             end
+            if petrolTankHealth < 1000 then
+                VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + 5)
+            end
+            --end
             if bodyHealth < 1000 then
                 VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + 5)
             end
@@ -656,6 +656,8 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
                 VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, true)
                 VEHICLE.SET_HELI_TAIL_BOOM_CAN_BREAK_OFF(vehicle, false)
                 VEHICLE.CAN_SHUFFLE_SEAT(vehicle, true)
+                VEHICLE.SET_VEHICLE_CAN_ENGINE_MISSFIRE(vehicle, false)
+                VEHICLE.SET_VEHICLE_ENGINE_CAN_DEGRADE(vehicle, false)
             else
                 saved_vehicle_id = nil
             end
@@ -1169,76 +1171,6 @@ end)
 --        util.yield(788666)
 --    else
 --        util.yield(66666)
---    end
---end)
---
---menu.toggle_loop(Session, '(Alpha) Smart CEO Money loop', {'sceom'}, '', function ()
---    if IsInSession() then
---        local player_you = players.user()
---        local session = players.list(false, true, false)
---        for _, pid in ipairs(session) do
---            if pid ~= player_you then
---                menu.trigger_commands("ceopay".. players.get_name(pid) .." on")
---            end
---        end
---        util.yield(1666)
---        for _, pid in ipairs(session) do
---            if pid ~= player_you then
---                menu.trigger_commands("ceopay".. players.get_name(pid) .." off")
---            end
---        end
---        util.yield(300000)
---    else
---        util.yield(13666)
---    end
---end)
---
---local max_players = 33
---menu.slider(Session, '(Alpha) Session Player Limit', {'setmaxplayer'}, 'Let only up to a certain number of people join that are strangers.', 1, 32, max_players, 1, function (new_value)
---    max_players = new_value
---end)
---
---local session_limit = 0
---menu.toggle_loop(Session, '(Alpha) Activate Session Player Limit', {'maxplayer'}, 'Let only up to a certain number of people join that are strangers.', function (new_value)
---    if IsInSession() then
---        local numPlayers = 0
---        local cmd_path = "Online>Session>Block Joins>From Strangers"
---        for _, pid in pairs(players.list()) do
---            numPlayers = numPlayers + 1
---        end
---        if numPlayers > max_players then
---            if session_limit ~= 1 then
---                if players.user() == players.get_host() then
---                    menu.trigger_commands("setsessiontype inviteonly")
---                    if menu.get_state(menu.ref_by_path(cmd_path)) == "On" then
---                        menu.trigger_commands("blockjoinsstrangers off")
---                    end
---                else
---                    if menu.get_state(menu.ref_by_path(cmd_path)) == "Off" then
---                        menu.trigger_commands("blockjoinsstrangers on")
---                    end
---                end
---                session_limit = 1
---                notify("More than "..max_players.." players in session, closing joins now!")
---                util.yield(666)
---            end
---        end
---        if numPlayers < max_players then
---            if session_limit ~= 2 then
---                if players.user() == players.get_host() then
---                    menu.trigger_commands("setsessiontype public")
---                end
---                if menu.get_state(menu.ref_by_path(cmd_path)) == "On" then
---                    menu.trigger_commands("blockjoinsstrangers off")
---                end
---                session_limit = 2
---                notify("Less than "..max_players.." players in session, open joins now!")
---                util.yield(666)
---            end
---        end
---        util.yield(666)    
---    else
---        util.yield(13666)
 --    end
 --end)
 
