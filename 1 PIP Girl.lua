@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.47"
+local SCRIPT_VERSION = "0.0.48"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1079,24 +1079,48 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic a
     end
 end)
 
-menu.toggle_loop(Session, "Smart Script Host", {""}, "Turns", function()
+
+local ssh_notify = false
+menu.toggle_loop(Session, "Notify for Smart Scirpt Host", {}, "Notifications for Smart Script Host.", function()
+    ssh_notify = true
+    util.yield(13666)
+end, function()
+    ssh_notify = false
+end)
+
+menu.toggle_loop(Session, "Smart Script Host", {}, "A Smart Script host that will help YOU and EVERYONE ELSE that is stuck in loading screens etc.", function()
     if IsInSession() then
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
-            local script_host_id = players.get_script_host()
             if players.user() != players.get_host() then
                 util.yield(1666)
             end
+            local script_host_id = players.get_script_host()
             if not isLoading(script_host_id) then
                 local Player_List = players.list()
-                for _, pid in pairs(Player_List) do 
-                    if isLoading(pid) and players.exists(pid) and script_host_id != pid and players.get_name(pid) != "undiscoveredplayer" then
+                for _, pid in pairs(Player_List) do
+                    local name = players.get_name(pid)
+                    if isLoading(pid) and players.exists(pid) and players.get_script_host() != pid and players.get_name(pid) != "undiscoveredplayer" then
                         util.yield(6666)
-                        if isLoading(pid) and players.exists(pid) and script_host_id != pid and players.get_name(pid) != "undiscoveredplayer" then
-                            menu.trigger_commands("givesh " .. players.get_name(pid))
-                            while isLoading(pid) and players.exists(pid) and players.get_name(pid) != "undiscoveredplayer" do
+                        if isLoading(pid) and players.exists(pid) and players.get_script_host() != pid and players.get_name(pid) != "undiscoveredplayer" then
+                            menu.trigger_commands("givesh " .. name)
+                            if ssh_notify then
+                                notify(name .. " is Loading too Long.")
+                            end
+                            while isLoading(pid) and players.exists(pid) and name != "undiscoveredplayer" do
                                 util.yield(6666)
-                                if script_host_id != pid and isLoading(pid) and players.exists(pid) and players.get_name(pid) != "undiscoveredplayer" then
-                                    menu.trigger_commands("givesh " .. players.get_name(pid))
+                                if players.get_script_host() != pid and isLoading(pid) and players.exists(pid) and players.get_name(pid) != "undiscoveredplayer" then
+                                    menu.trigger_commands("givesh " .. name)
+                                    if ssh_notify then
+                                        notify(name .. " is Still Loading too Long.")
+                                    end
+                                    util.yield(13666)
+                                end
+                            end
+                            if ssh_notify then
+                                if players.get_name(pid) != "undiscoveredplayer" then
+                                    notify(name .. " Finished Loading.")
+                                else
+                                    notify(name .. " got Lost in the Void.")
                                 end
                             end
                             util.yield(6666)
@@ -1117,7 +1141,7 @@ menu.toggle_loop(Session, "Smart Script Host", {""}, "Turns", function()
                 util.yield(6666)
             end
         end
-        util.yield(6666)
+        util.yield(13666)
     else
         util.yield(13666)
     end
