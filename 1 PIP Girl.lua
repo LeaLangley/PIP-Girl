@@ -1082,48 +1082,28 @@ menu.toggle_loop(Session, "Smart Script Host", {""}, "Turns", function()
     if IsInSession() then
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
             local script_host_id = players.get_script_host()
-            --if isLoading(players.user()) and not Loading_Long then
-            --    util.create_thread(Loading_Long_Display)
-            --    util.yield(6666)
-            --    if isLoading(players.user()) then
-            --        Loading_Long = true
-            --    end
-            --end
-            --if isLoading(players.user()) and Loading_Long then
-            --    if script_host_id ~= players.user() then
-            --        menu.trigger_commands("scripthost")
-            --        util.yield(6666)
-            --    end
-            --    Loading_Long = false
-            --end
-            --if script_host_id ~= players.user() then
-            --    if players.is_marked_as_attacker(script_host_id) then
-            --        menu.trigger_commands("ignore " .. players.get_name(script_host_id) .. " on")
-            --        menu.trigger_commands("scripthost")
-            --        util.yield(6666)
-            --    end
-            --end
             if players.user() != players.get_host() then
                 util.yield(1666)
             end
             if not isLoading(script_host_id) then
                 local Player_List = players.list()
                 for _, pid in pairs(Player_List) do 
-                    if isLoading(pid) and players.exists(pid) and script_host_id != pid then
+                    if isLoading(pid) and players.exists(pid) and script_host_id != pid and players.get_name(pid) != "undiscoveredplayer" then
+                        notify(players.get_name(pid) .. " Is Loading.")
                         util.yield(6666)
-                        if isLoading(pid) and players.exists(pid) and script_host_id != pid then
+                        if isLoading(pid) and players.exists(pid) and script_host_id != pid and players.get_name(pid) != "undiscoveredplayer" then
+                            notify(players.get_name(pid) .. " Is Loading too Long.")
                             menu.trigger_commands("givesh " .. players.get_name(pid))
-                            while isLoading(pid) and players.exists(pid) do
+                            while isLoading(pid) and players.exists(pid) and players.get_name(pid) != "undiscoveredplayer" do
                                 util.yield(6666)
-                                if script_host_id != pid then
+                                if script_host_id != pid and isLoading(pid) and players.exists(pid) and players.get_name(pid) != "undiscoveredplayer" then
                                     menu.trigger_commands("givesh " .. players.get_name(pid))
                                 end
                             end
+                            util.yield(6666)
                         else
                             break
                         end
-                    else
-                        break
                     end
                 end
             end
@@ -1607,6 +1587,9 @@ players.add_command_hook(function(pid)
 end)
 
 menu.hyperlink(Settings, "PIP Girl's GIT", "https://github.com/LeaLangley/PIP-Girl", "")
+
+local commandPath = "Online>Player History>" .. name .. " " .. pathSuffix .. ">Note"
+ValidRef = menu.ref_by_path(commandPath)
 
 menu.action(Settings, "Check for Update", {}, "The script will automatically check for updates at most daily, but you can manually check using this option anytime.", function()
     auto_updater.run_auto_update(auto_update_config)
