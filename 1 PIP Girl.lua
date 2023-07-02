@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.44"
+local SCRIPT_VERSION = "0.0.45"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1103,20 +1103,27 @@ menu.toggle_loop(Session, "Smart Script Host", {""}, "Turns", function()
             --        util.yield(6666)
             --    end
             --end
-            local Player_List = players.list()
-            for _, pid in pairs(Player_List) do 
-                if isLoading(pid) and players.exists(pid) and script_host_id != pid then
-                    util.yield(6666)
+            if players.user() != players.get_host() then
+                util.yield(1666)
+            end
+            if not isLoading(script_host_id) then
+                local Player_List = players.list()
+                for _, pid in pairs(Player_List) do 
                     if isLoading(pid) and players.exists(pid) and script_host_id != pid then
-                        menu.trigger_commands("givesh " .. players.get_name(pid))
-                        while isLoading(pid) and players.exists(pid) do
-                            util.yield(6666)
-                            if script_host_id != pid then
-                                menu.trigger_commands("givesh " .. players.get_name(pid))
+                        util.yield(6666)
+                        if isLoading(pid) and players.exists(pid) and script_host_id != pid then
+                            menu.trigger_commands("givesh " .. players.get_name(pid))
+                            while isLoading(pid) and players.exists(pid) do
+                                util.yield(6666)
+                                if script_host_id != pid then
+                                    menu.trigger_commands("givesh " .. players.get_name(pid))
+                                end
                             end
                         else
-                            return
+                            break
                         end
+                    else
+                        break
                     end
                 end
             end
@@ -1311,8 +1318,35 @@ local function update_player_name(player, name, rid)
 end
 
 local function add_in_stand(pid, name, rid)
+    local commandPaths = {
+        "[Offline]",
+        "[Public]",
+        "[Invite]",
+        "[Friends Only]",
+        "[Story Mode]",
+        "[Other]"
+    }
     menu.trigger_commands("historynote ".. name .." Blacklist")
     menu.trigger_commands("historyblock ".. name .." on")
+    for i, suffix in ipairs(commandPaths) do
+        pathSuffix = suffix
+        util.yield(666)
+        local Note = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Note")
+        local Notification = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Notification")
+        local BlockJoin = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Join")
+        local Timeout = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Timeout")
+        local BlockTheirNetworkEvents = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Their Network Events")
+        local BlockIncomingSyncs = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Incoming Syncs")
+        local BlockOutgoingSyncs = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Outgoing Syncs")
+
+        menu.trigger_commands("historynote ".. name .." Blacklist")
+        menu.set_value(Notification, true)
+        menu.set_value(BlockJoin, true)
+        menu.set_value(Timeout, true)
+        menu.set_value(BlockTheirNetworkEvents, true)
+        menu.set_value(BlockIncomingSyncs, true)
+        menu.set_value(BlockOutgoingSyncs, true)
+    end
 end
 
 local function is_player_in_blacklist(player, name, rid)
