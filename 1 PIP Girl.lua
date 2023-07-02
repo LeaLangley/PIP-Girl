@@ -1089,10 +1089,8 @@ menu.toggle_loop(Session, "Smart Script Host", {""}, "Turns", function()
                 local Player_List = players.list()
                 for _, pid in pairs(Player_List) do 
                     if isLoading(pid) and players.exists(pid) and script_host_id != pid and players.get_name(pid) != "undiscoveredplayer" then
-                        notify(players.get_name(pid) .. " Is Loading.")
                         util.yield(6666)
                         if isLoading(pid) and players.exists(pid) and script_host_id != pid and players.get_name(pid) != "undiscoveredplayer" then
-                            notify(players.get_name(pid) .. " Is Loading too Long.")
                             menu.trigger_commands("givesh " .. players.get_name(pid))
                             while isLoading(pid) and players.exists(pid) and players.get_name(pid) != "undiscoveredplayer" do
                                 util.yield(6666)
