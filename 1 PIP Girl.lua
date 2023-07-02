@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.48"
+local SCRIPT_VERSION = "0.0.49"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1106,6 +1106,7 @@ menu.toggle_loop(Session, "Smart Script Host", {}, "A Smart Script host that wil
                             if ssh_notify then
                                 notify(name .. " is Loading too Long.")
                             end
+                            util.yield(13666)
                             while isLoading(pid) and players.exists(pid) and name != "undiscoveredplayer" do
                                 util.yield(6666)
                                 if players.get_script_host() != pid and isLoading(pid) and players.exists(pid) and players.get_name(pid) != "undiscoveredplayer" then
@@ -1113,7 +1114,7 @@ menu.toggle_loop(Session, "Smart Script Host", {}, "A Smart Script host that wil
                                     if ssh_notify then
                                         notify(name .. " is Still Loading too Long.")
                                     end
-                                    util.yield(13666)
+                                    util.yield(31666)
                                 end
                             end
                             if ssh_notify then
