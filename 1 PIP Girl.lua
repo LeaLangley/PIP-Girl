@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.46"
+local SCRIPT_VERSION = "0.0.47"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -968,11 +968,12 @@ menu.toggle_loop(Game, "Auto Skip Conversation",{},"Automatically skip all conve
     util.yield(1)
 end)
 
-menu.toggle_loop(Game, "Auto Skip Cutscene (!)",{},"Automatically skip all cutscenes.\nNOTE!: Turn This of if playing heists as it could make you fail.\nKnown Heist are Cayo for now.",function()
-    if CUTSCENE.IS_CUTSCENE_PLAYING() then
+menu.toggle_loop(Game, "Auto Skip Cutscene",{},"Automatically skip all cutscenes.",function()
+    if IsInSession() and not isLoading(players.user()) and CUTSCENE.IS_CUTSCENE_PLAYING() then
         CUTSCENE.STOP_CUTSCENE_IMMEDIATELY()
+        util.yield(6666)
     end
-    util.yield(100)
+    util.yield(666)
 end)
 
 local warningMessages = {
