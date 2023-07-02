@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.43"
+local SCRIPT_VERSION = "0.0.44"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -177,6 +177,11 @@ local function warnify(msg)
     util.toast("<[Pip Girl]>: " .. msg)
 end
 
+local function warnify_net(msg)
+    chat.send_message("<[Pip Girl]>: " .. msg, true, true, true)
+    util.toast("<[Pip Girl]>: " .. msg)
+end
+
 function START_SCRIPT(ceo_mc, name)
     if HUD.IS_PAUSE_MENU_ACTIVE() then
         notify("Close any open Game Menu first!")
@@ -213,6 +218,31 @@ end
 function IS_HELP_MSG_DISPLAYED(label)
     HUD.BEGIN_TEXT_COMMAND_IS_THIS_HELP_MESSAGE_BEING_DISPLAYED(label)
     return HUD.END_TEXT_COMMAND_IS_THIS_HELP_MESSAGE_BEING_DISPLAYED(0)
+end
+
+local function isLoading(pid)
+    if not pid then
+        pid = players.user()
+    end
+    if not util.is_session_started() then
+        return false
+    end
+    local pPos = players.get_position(pid)
+    if pPos.x == 0 and pPos.y == 0 and pPos.z == 0 then
+        return true
+    end
+    if ENTITY.GET_ENTITY_SPEED(pid) < 1 then
+        if players.get_rank(pid) == 0 then
+            return true
+        end
+        if players.get_money(pid) == 0 and players.get_kd(pid) == 0 then
+            return true
+        end
+    end
+    if NETWORK.IS_PLAYER_IN_CUTSCENE(pid) then
+        return true
+    end
+    return false
 end
 
 local PIP_Girl = menu.list(menu.my_root(), 'PIP Girl', {}, 'Personal Information Processor Girl', function(); end)
@@ -581,21 +611,12 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
             local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
             local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
             local getclass = VEHICLE.GET_VEHICLE_CLASS(vehicle)
-            if getclass == 15 then
+            if getclass == 15 or getclass == 16 then
                 if engineHealth < 1000 then
                     VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + 13)
                 end
                 if petrolTankHealth < 1000 then
                     VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + 13)
-                end
-                if bodyHealth < 1000 then
-                    VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + 13)
-                end
-                if heliTailHealth < 1000 then
-                    VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + 13)
-                end
-                if heliRotorHealth < 1000 then
-                    VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + 13)
                 end
             else
                 if engineHealth < 1000 then
@@ -604,15 +625,15 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
                 if petrolTankHealth < 1000 then
                     VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + 5)
                 end
-                if bodyHealth < 1000 then
-                    VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + 5)
-                end
-                if heliTailHealth < 1000 then
-                    VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + 5)
-                end
-                if heliRotorHealth < 1000 then
-                    VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + 5)
-                end
+            end
+            if bodyHealth < 1000 then
+                VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + 5)
+            end
+            if heliTailHealth < 1000 then
+                VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + 5)
+            end
+            if heliRotorHealth < 1000 then
+                VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + 5)
             end
             if petrolTankHealth >= 1000 and engineHealth >= 1000 and bodyHealth >= 1000 then
                 VEHICLE.SET_VEHICLE_DEFORMATION_FIXED(vehicle)
@@ -633,6 +654,8 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
                 VEHICLE.SET_VEHICLE_FULLBEAM(vehicle, true)
                 VEHICLE.SET_DONT_PROCESS_VEHICLE_GLASS(vehicles, true)
                 VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, true)
+                VEHICLE.SET_HELI_TAIL_BOOM_CAN_BREAK_OFF(vehicle, false)
+                VEHICLE.CAN_SHUFFLE_SEAT(vehicle, true)
             else
                 saved_vehicle_id = nil
             end
@@ -694,6 +717,7 @@ local positionsToCheck = {
     { x = 157.14, y = 6631.93, z = 31.67 },--Paleto Bay Gas Station
     { x = -2171.11, y = 4277.93, z = 48.99 },--North Chumash Biker Stop
     { x = -2555.66, y = 2341.88, z = 33.08 },--Zancudo Gas Station
+    { x = 215.40, y = -939.40, z = 24.14 },--Cube Park
 }
 local blipsCreated = false
 local blips = {}
@@ -1024,7 +1048,8 @@ end)
 
 menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join Invite only\nIf R* Admin Detected", function()
     if util.is_session_started() then
-        for _, pid in players.list(false, true, true) do 
+        local Player_List = players.list(false, true, true)
+        for _, pid in pairs(Player_List) do 
             if players.is_marked_as_admin(pid) or players.is_marked_as_modder_or_admin(pid) then 
                 menu.trigger_commands("quickbail")
                 notify("Admin Detected, We get you out of Here!")
@@ -1053,11 +1078,50 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic a
     end
 end)
 
-menu.toggle(Session, "Smart Script Host", {""}, "Turns", function()
+menu.toggle_loop(Session, "Smart Script Host", {""}, "Turns", function()
     if IsInSession() then
-        local script_host_id = players.get_script_host()
-        if script_host_id ~= players.user() then
-            if CUTSCENE.IS_CUTSCENE_PLAYING() and players.user() == players.get_host() then
+        if not CUTSCENE.IS_CUTSCENE_PLAYING() then
+            local script_host_id = players.get_script_host()
+            --if isLoading(players.user()) and not Loading_Long then
+            --    util.create_thread(Loading_Long_Display)
+            --    util.yield(6666)
+            --    if isLoading(players.user()) then
+            --        Loading_Long = true
+            --    end
+            --end
+            --if isLoading(players.user()) and Loading_Long then
+            --    if script_host_id ~= players.user() then
+            --        menu.trigger_commands("scripthost")
+            --        util.yield(6666)
+            --    end
+            --    Loading_Long = false
+            --end
+            --if script_host_id ~= players.user() then
+            --    if players.is_marked_as_attacker(script_host_id) then
+            --        menu.trigger_commands("ignore " .. players.get_name(script_host_id) .. " on")
+            --        menu.trigger_commands("scripthost")
+            --        util.yield(6666)
+            --    end
+            --end
+            local Player_List = players.list()
+            for _, pid in pairs(Player_List) do 
+                if isLoading(pid) and players.exists(pid) and script_host_id != pid then
+                    util.yield(6666)
+                    if isLoading(pid) and players.exists(pid) and script_host_id != pid then
+                        menu.trigger_commands("givesh " .. players.get_name(pid))
+                        while isLoading(pid) and players.exists(pid) do
+                            util.yield(6666)
+                            if script_host_id != pid then
+                                menu.trigger_commands("givesh " .. players.get_name(pid))
+                            end
+                        else
+                            return
+                        end
+                    end
+                end
+            end
+        else
+            if players.user() == players.get_host() then
                 util.yield(666)
                 while CUTSCENE.IS_CUTSCENE_PLAYING() do
                     util.yield(666)
@@ -1065,11 +1129,6 @@ menu.toggle(Session, "Smart Script Host", {""}, "Turns", function()
                 util.yield(666)
                 menu.trigger_commands("scripthost")
                 util.yield(6666)
-            end
-            if players.is_marked_as_attacker(script_host_id) and not CUTSCENE.IS_CUTSCENE_PLAYING() then
-                menu.trigger_commands("ignore " .. players.get_name(script_host_id) .. " on")
-                menu.trigger_commands("scripthost")
-                util.yield(3666)
             end
         end
         util.yield(6666)
@@ -1405,7 +1464,7 @@ menu.action(Protection, '(!) Block Join Global Blacklist', {'impblock'}, '', fun
     for rid, player in pairs(data_g) do
         local name = player.Name
         menu.trigger_commands("historyaddrid ".. rid)
-        util.yield(13666)
+        util.yield(6666)
         add_in_stand(player, name, rid)
         player_processed += 1
         notify("\nProcessed:\n" .. name .. " | " .. rid .. "\nPlayers Processed: " .. player_processed .. " / " .. player_in_list)
@@ -1416,28 +1475,6 @@ end)
 
 menu.action(Protection, 'Open Export Folder', {'oef'}, '', function()
     util.open_folder(resources_dir .. 'Export')
-end)
-
-local joined_session = false
-menu.toggle_loop(Protection, 'Kick Blacklist on Join', {''}, 'Kick Blacklisted Modder if detected on Joining a Session.', function()
-    if not joined_session and util.is_session_started() then
-        joined_session = true
-        for _, pid in players.list() do
-            local rid = players.get_rockstar_id(pid)
-            local name = players.get_name(pid)
-            SessionCheck(pid, name, rid)         
-        end
-    end
-    if not util.is_session_started() or util.is_session_transition_active()then
-        joined_session = false
-        if util.is_session_transition_active() and not util.is_session_started() then
-            util.yield(1666)
-        else
-            util.yield(6666)
-        end
-    else
-        util.yield(20666)
-    end
 end)
 
 menu.toggle_loop(Protection, "Dont Block Love Letter Kicks as Host.", {"pgbll"}, "New Meta.", function()
@@ -1499,11 +1536,36 @@ players.add_command_hook(function(pid)
             add_player_to_blacklist(pid, name, rid)
         end
     end)
+    menu.toggle_loop(Bad_Modder, "(Alpha) Report Bot", {"hellrp"}, "Weak menu? Spamm report them >:D", function()
+        if players.exists(pid) then
+            menu.trigger_commands("reportgriefing " .. name)
+            menu.trigger_commands("reportexploits " .. name)
+            menu.trigger_commands("reportbugabuse " .. name)
+            menu.trigger_commands("reportannoying " .. name)
+            menu.trigger_commands("reporthate " .. name)
+            menu.trigger_commands("reportvcannoying " .. name)
+            menu.trigger_commands("reportvchate " .. name)
+            util.yield(66666)
+        end
+    end)
+    menu.toggle_loop(Bad_Modder, "Blacklist Kick on Atack", {"hellaab"}, "Auto kick if they atack you, and add them to blacklist.", function()
+        if players.is_marked_as_attacker(pid) then
+            menu.trigger_commands("ignore " .. name .. " on")
+            add_in_stand(pid, name, rid)
+            if not is_player_in_blacklist(pid, name, rid) then
+                add_player_to_blacklist(pid, name, rid)
+            end
+            StrategicKick(pid, name, rid)
+            warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
+            util.yield(66666)
+        end
+        util.yield(13)
+    end)
     menu.toggle_loop(Bad_Modder, "Kick on Atack", {"hellaa"}, "Auto kick if they atack you.", function()
         if players.is_marked_as_attacker(pid) then
             menu.trigger_commands("ignore " .. name .. " on")
             StrategicKick(pid, name, rid)
-            warnify(name .. " has been kick bcs they atacked you.")
+            warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
             util.yield(66666)
         end
         util.yield(13)
