@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.45"
+local SCRIPT_VERSION = "0.0.46"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1318,35 +1318,35 @@ local function update_player_name(player, name, rid)
 end
 
 local function add_in_stand(pid, name, rid)
-    local commandPaths = {
-        "[Offline]",
-        "[Public]",
-        "[Invite]",
-        "[Friends Only]",
-        "[Story Mode]",
-        "[Other]"
-    }
+    --local commandPaths = {
+    --    "[Offline]",
+    --    "[Public]",
+    --    "[Invite]",
+    --    "[Friends Only]",
+    --    "[Story Mode]",
+    --    "[Other]"
+    --}
     menu.trigger_commands("historynote ".. name .." Blacklist")
     menu.trigger_commands("historyblock ".. name .." on")
-    for i, suffix in ipairs(commandPaths) do
-        pathSuffix = suffix
-        util.yield(666)
-        local Note = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Note")
-        local Notification = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Notification")
-        local BlockJoin = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Join")
-        local Timeout = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Timeout")
-        local BlockTheirNetworkEvents = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Their Network Events")
-        local BlockIncomingSyncs = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Incoming Syncs")
-        local BlockOutgoingSyncs = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Outgoing Syncs")
-
-        menu.trigger_commands("historynote ".. name .." Blacklist")
-        menu.set_value(Notification, true)
-        menu.set_value(BlockJoin, true)
-        menu.set_value(Timeout, true)
-        menu.set_value(BlockTheirNetworkEvents, true)
-        menu.set_value(BlockIncomingSyncs, true)
-        menu.set_value(BlockOutgoingSyncs, true)
-    end
+    --for i, suffix in ipairs(commandPaths) do
+    --    pathSuffix = suffix
+    --    util.yield(666)
+    --    local Note = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Note")
+    --    local Notification = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Notification")
+    --    local BlockJoin = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Join")
+    --    local Timeout = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Timeout")
+    --    local BlockTheirNetworkEvents = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Their Network Events")
+    --    local BlockIncomingSyncs = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Incoming Syncs")
+    --    local BlockOutgoingSyncs = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Outgoing Syncs")
+--
+    --    menu.trigger_commands("historynote ".. name .." Blacklist")
+    --    menu.set_value(Notification, true)
+    --    menu.set_value(BlockJoin, true)
+    --    menu.set_value(Timeout, true)
+    --    menu.set_value(BlockTheirNetworkEvents, true)
+    --    menu.set_value(BlockIncomingSyncs, true)
+    --    menu.set_value(BlockOutgoingSyncs, true)
+    --end
 end
 
 local function is_player_in_blacklist(player, name, rid)
