@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.50"
+local SCRIPT_VERSION = "0.0.51"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -30,12 +30,6 @@ if not status then
     auto_updater = require("auto-updater")
 end
 if auto_updater == true then error("Invalid auto-updater lib. Please delete your Stand/Lua Scripts/lib/auto-updater.lua and try again") end
-
---auto_updater.run_auto_update({
---    source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/1%20PIP%20Girl.lua",
---    script_relpath=SCRIPT_RELPATH,
---    verify_file_begins_with="--"
---})
 
 local default_check_interval = 604800
 local auto_update_config = {
@@ -1116,7 +1110,7 @@ menu.toggle_loop(Session, "Smart Script Host", {}, "A Smart Script host that wil
                                     if ssh_notify then
                                         notify(name .. " is Still Loading too Long.")
                                     end
-                                    util.yield(31666)
+                                    util.yield(13666)
                                 end
                             end
                             if ssh_notify then
@@ -1149,30 +1143,6 @@ menu.toggle_loop(Session, "Smart Script Host", {}, "A Smart Script host that wil
         util.yield(13666)
     end
 end)
-
---local My_Friends_are_the_BEST = true
---menu.toggle_loop(Session, 'My Friends are the BEST!', {""}, 'Auto Commend u Friends , Crew and Org member <3', function ()
---    if IsInSession() then
---        local player_you = players.user()
---        local session = players.list(false, true, false)
---        for _, pid in ipairs(session) do
---            if pid ~= player_you then
---                if My_Friends_are_the_BEST then
---                    My_Friends_are_the_BEST = false
---                    menu.trigger_commands("commendhelpful" .. players.get_name(pid))
---                    menu.trigger_commands("commendfriendly" .. players.get_name(pid))
---                else
---                    My_Friends_are_the_BEST = true
---                    menu.trigger_commands("commendfriendly" .. players.get_name(pid))
---                    menu.trigger_commands("commendhelpful" .. players.get_name(pid))
---                end
---            end
---        end
---        util.yield(788666)
---    else
---        util.yield(66666)
---    end
---end)
 
 local json = require('json')
 
