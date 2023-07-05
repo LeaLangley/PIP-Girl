@@ -1126,7 +1126,7 @@ menu.toggle_loop(Session, "Smart Script Host", {}, "A Smart Script host that wil
         --                end
         --            end
         --        end
-            end
+            util.yield(666)
         else
             if players.user() == players.get_host() then
                 util.yield(666)
