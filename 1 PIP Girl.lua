@@ -1087,45 +1087,46 @@ end)
 menu.toggle_loop(Session, "Smart Script Host", {}, "A Smart Script host that will help YOU and EVERYONE ELSE that is stuck in loading screens etc.", function()
     if IsInSession() then
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
-        --    if players.user() != players.get_host() then
-        --        util.yield(1666)
-        --    end
-        --    local script_host_id = players.get_script_host()
-        --    if not isLoading(script_host_id) then
-        --        local Player_List = players.list()
-        --        for _, pid in pairs(Player_List) do
-        --            local name = players.get_name(pid)
-        --            if isLoading(pid) and players.exists(pid) and players.get_script_host() != pid and players.get_name(pid) != "undiscoveredplayer" then
-        --                util.yield(6666)
-        --                if isLoading(pid) and players.exists(pid) and players.get_script_host() != pid and players.get_name(pid) != "undiscoveredplayer" then
-        --                    menu.trigger_commands("givesh " .. name)
-        --                    if ssh_notify then
-        --                        notify(name .. " is Loading too Long.")
-        --                    end
-        --                    util.yield(13666)
-        --                    while isLoading(pid) and players.exists(pid) and name != "undiscoveredplayer" do
-        --                        util.yield(6666)
-        --                        if players.get_script_host() != pid and isLoading(pid) and players.exists(pid) and players.get_name(pid) != "undiscoveredplayer" then
-        --                            menu.trigger_commands("givesh " .. name)
-        --                            if ssh_notify then
-        --                                notify(name .. " is Still Loading too Long.")
-        --                            end
-        --                            util.yield(13666)
-        --                        end
-        --                    end
-        --                    if ssh_notify then
-        --                        if players.get_name(pid) != "undiscoveredplayer" then
-        --                            notify(name .. " Finished Loading.")
-        --                        else
-        --                            notify(name .. " got Lost in the Void.")
-        --                        end
-        --                    end
-        --                    util.yield(6666)
-        --                else
-        --                    break
-        --                end
-        --            end
-        --        end
+            if players.user() != players.get_host() then
+                util.yield(1666)
+            end
+            local script_host_id = players.get_script_host()
+            if not isLoading(script_host_id) then
+                --local Player_List = players.list()
+                --for _, pid in pairs(Player_List) do
+                local pid = players.user()
+                local name = players.get_name(pid)
+                if isLoading(pid) and players.exists(pid) and players.get_script_host() != pid and players.get_name(pid) != "undiscoveredplayer" then
+                    util.yield(6666)
+                    if isLoading(pid) and players.exists(pid) and players.get_script_host() != pid and players.get_name(pid) != "undiscoveredplayer" then
+                        menu.trigger_commands("givesh " .. name)
+                        if ssh_notify then
+                            notify(name .. " is Loading too Long.")
+                        end
+                        util.yield(13666)
+                        while isLoading(pid) and players.exists(pid) and name != "undiscoveredplayer" do
+                            util.yield(6666)
+                            if players.get_script_host() != pid and isLoading(pid) and players.exists(pid) and players.get_name(pid) != "undiscoveredplayer" then
+                                menu.trigger_commands("givesh " .. name)
+                                if ssh_notify then
+                                    notify(name .. " is Still Loading too Long.")
+                                end
+                                util.yield(13666)
+                            end
+                        end
+                        if ssh_notify then
+                            if players.get_name(pid) != "undiscoveredplayer" then
+                                notify(name .. " Finished Loading.")
+                            else
+                                notify(name .. " got Lost in the Void.")
+                            end
+                        end
+                        util.yield(6666)
+                    --else
+                    --    break
+                    end
+                end
+            end
             util.yield(666)
         else
             if players.user() == players.get_host() then
