@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.52"
+local SCRIPT_VERSION = "0.0.53"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -317,7 +317,7 @@ local function on_change(input_str, click_type)
     urceoname = input_str
 end
 menu.text_input(PIP_Girl, "CEO Name", {"pgceoname"}, "You can press Ctrl+U and Select Colours but no special GTA Icons sadly.", on_change)
-menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {}, "Auto Register yourself as CEO and Auto Switches you to MC/CEO in most situations needed.", function()
+menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yourself as CEO and Auto Switches you to MC/CEO in most situations needed.", function()
     if IsInSession() then
         if players.get_boss(players.user()) == -1 then
             menu.trigger_commands("ceostart")
@@ -494,7 +494,7 @@ local regen_all = Stimpak:action("Refill Health & Armour",{"newborn"},"Regenerat
 end)
 
 local dead = 0
-menu.toggle_loop(Stimpak, "Auto Armor after Death",{},"A body armor will be applied automatically when respawning.",function()
+menu.toggle_loop(Stimpak, "Auto Armor after Death",{"pgblessing"},"A body armor will be applied automatically when respawning.",function()
     if IsInSession() then
         local health = ENTITY.GET_ENTITY_HEALTH(players.user_ped())
         if health == 0 and dead == 0 then
@@ -509,7 +509,7 @@ menu.toggle_loop(Stimpak, "Auto Armor after Death",{},"A body armor will be appl
     end
 end)
 
-menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehicle", {}, "Will Recharge Healt when in Cover or Vehicle quickly.\nBUT also slowly almost legit like otherwise to 100%.", function()
+menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehicle", {"pghealth"}, "Will Recharge Healt when in Cover or Vehicle quickly.\nBUT also slowly almost legit like otherwise to 100%.", function()
     if IsInSession() then
         local in_vehicle = is_user_driving_vehicle()
         local playerPed = players.user_ped()
@@ -527,7 +527,7 @@ menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehicle", {}, "Will Recharge
     end
 end)
 
-menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle", {}, "Will Recharge Armor when in Cover or Vehicle quickly.\nBUT also slowly otherwise to 100%.", function()
+menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle", {"pgarmor"}, "Will Recharge Armor when in Cover or Vehicle quickly.\nBUT also slowly otherwise to 100%.", function()
     local cmd_path = "Self>Regeneration Rate>Armour"
     if IsInSession() then
         local in_vehicle = is_user_driving_vehicle()
@@ -562,7 +562,7 @@ menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle", {}, "Will Recharge 
 end)
 
 local was_user_in_vehicle = false
-menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {}, "Using your First Aid kit provided in you Vehicle.", function()
+menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {"pgvaid"}, "Using your First Aid kit provided in you Vehicle.", function()
     if IsInSession() then
         local in_vehicle = is_user_driving_vehicle()
         local health = ENTITY.GET_ENTITY_HEALTH(players.user_ped())
@@ -755,7 +755,7 @@ local function SetInZoneTimer()
     end
     wasInZone = false
 end
-menu.toggle_loop(Stimpak, "Lea's Repair Stop", {}, "", function()
+menu.toggle_loop(Stimpak, "Lea's Repair Stop", {"lears"}, "", function()
     if IsInSession() then
         local playerPosition = players.get_position(players.user())
         if not blipsCreated then
@@ -957,14 +957,14 @@ menu.action(Game, 'Super Cleanse', {"superclean"}, 'BCS R* is a mess.', function
     menu.trigger_commands("lockstreamingfocus off")
 end)
 
-menu.toggle_loop(Game, "Auto Skip Conversation",{},"Automatically skip all conversations.",function()
+menu.toggle_loop(Game, "Auto Skip Conversation",{"pgascon"},"Automatically skip all conversations.",function()
     if AUDIO.IS_SCRIPTED_CONVERSATION_ONGOING() then
         AUDIO.SKIP_TO_NEXT_SCRIPTED_CONVERSATION_LINE()
     end
     util.yield(1)
 end)
 
-menu.toggle_loop(Game, "Auto Skip Cutscene",{},"Automatically skip all cutscenes.",function()
+menu.toggle_loop(Game, "Auto Skip Cutscene",{"pgascut"},"Automatically skip all cutscenes.",function()
     if IsInSession() and not isLoading(players.user()) and CUTSCENE.IS_CUTSCENE_PLAYING() then
         CUTSCENE.STOP_CUTSCENE_IMMEDIATELY()
         util.yield(6666)
@@ -1000,7 +1000,7 @@ local warningMessages = {
     [496145784] = "There has been an error with this session. Please return to Grand Theft Auto V and try again.",
     [705668975] = "You have already been voted out of this game session. Joining a new GTA Online session."
 }
-menu.toggle_loop(Game, "Auto Accept Warning", {}, "Auto accepts most warnings in the game.", function()
+menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warnings in the game.", function()
     local mess_hash = math.abs(HUD.GET_WARNING_SCREEN_MESSAGE_HASH())
     if mess_hash ~= 0 then
         local warning = warningMessages[mess_hash]
@@ -1075,16 +1075,7 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic a
     end
 end)
 
-
-local ssh_notify = false
-menu.toggle_loop(Session, "Notify for Smart Scirpt Host", {}, "Notifications for Smart Script Host.", function()
-    ssh_notify = true
-    util.yield(13666)
-end, function()
-    ssh_notify = false
-end)
-
-menu.toggle_loop(Session, "Smart Script Host", {}, "A Smart Script host that will help YOU and EVERYONE ELSE that is stuck in loading screens etc.", function()
+menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU and EVERYONE ELSE that is stuck in loading screens etc.", function()
     if IsInSession() then
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
             if players.user() != players.get_host() then
@@ -1096,30 +1087,24 @@ menu.toggle_loop(Session, "Smart Script Host", {}, "A Smart Script host that wil
                 --for _, pid in pairs(Player_List) do
                 local pid = players.user()
                 local name = players.get_name(pid)
-                if isLoading(pid) and players.exists(pid) and players.get_script_host() != pid and players.get_name(pid) != "undiscoveredplayer" then
+                if IsInSession() and isLoading(pid) and players.exists(pid) and players.get_script_host() != pid and players.get_name(pid) != "undiscoveredplayer" then
                     util.yield(6666)
-                    if isLoading(pid) and players.exists(pid) and players.get_script_host() != pid and players.get_name(pid) != "undiscoveredplayer" then
+                    if IsInSession() and isLoading(pid) and players.exists(pid) and players.get_script_host() != pid and players.get_name(pid) != "undiscoveredplayer" then
                         menu.trigger_commands("givesh " .. name)
-                        if ssh_notify then
-                            notify(name .. " is Loading too Long.")
-                        end
+                        notify(name .. " is Loading too Long.")
                         util.yield(13666)
-                        while isLoading(pid) and players.exists(pid) and name != "undiscoveredplayer" do
+                        while IsInSession() and isLoading(pid) and players.exists(pid) and name != "undiscoveredplayer" do
                             util.yield(6666)
                             if players.get_script_host() != pid and isLoading(pid) and players.exists(pid) and players.get_name(pid) != "undiscoveredplayer" then
                                 menu.trigger_commands("givesh " .. name)
-                                if ssh_notify then
-                                    notify(name .. " is Still Loading too Long.")
-                                end
+                                notify(name .. " is Still Loading too Long.")
                                 util.yield(13666)
                             end
                         end
-                        if ssh_notify then
-                            if players.get_name(pid) != "undiscoveredplayer" then
-                                notify(name .. " Finished Loading.")
-                            else
-                                notify(name .. " got Lost in the Void.")
-                            end
+                        if players.get_name(pid) != "undiscoveredplayer" then
+                            notify(name .. " Finished Loading.")
+                        else
+                            notify(name .. " got Lost in the Void.")
                         end
                         util.yield(6666)
                     --else
@@ -1127,7 +1112,6 @@ menu.toggle_loop(Session, "Smart Script Host", {}, "A Smart Script host that wil
                     end
                 end
             end
-            util.yield(666)
         else
             if players.user() == players.get_host() then
                 util.yield(666)
@@ -1139,7 +1123,7 @@ menu.toggle_loop(Session, "Smart Script Host", {}, "A Smart Script host that wil
                 util.yield(6666)
             end
         end
-        util.yield(13666)
+        util.yield(666)
     else
         util.yield(13666)
     end
@@ -1325,94 +1309,94 @@ end
 
 players.on_join(SessionCheck)
 
-menu.action(Protection, '(Alpha) Import Global Blacklist', {'bimp'}, 'This can take up some time, be prepared.\nRecommended to start befor going afk or etc.', function()
-    local player_imported = 0
-    local player_processed = 0
-    local player_in_list = 0
-    for rid, player in pairs(data_g) do
-        player_in_list = player_in_list + 1
-    end
-
-    local commandPaths = {
-        "[Offline]",
-        "[Public]",
-        "[Invite]",
-        "[Friends Only]",
-        "[Story Mode]",
-        "[Other]"
-    }
-    
-    local maxRetries = 4
-    
-    for rid, player in pairs(data_g) do
-        local name = player.Name
-        menu.trigger_commands("historyaddrid ".. rid)
-        
-        local ValidRef = nil
-        local retryCount = 0
-        local pathSuffix = ""
-        
-        for i, suffix in ipairs(commandPaths) do
-            pathSuffix = suffix
-
-            local commandPath = "Online>Player History>" .. name .. " " .. pathSuffix .. ">Note"
-            ValidRef = menu.ref_by_path(commandPath)
-            util.yield(666)
-            if ValidRef:isValid() then
-                local Note = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Note")
-                local Notification = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Notification")
-                local BlockJoin = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Join")
-                local Timeout = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Timeout")
-                local BlockTheirNetworkEvents = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Their Network Events")
-                local BlockIncomingSyncs = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Incoming Syncs")
-                local BlockOutgoingSyncs = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Outgoing Syncs")
-
-                menu.trigger_commands("historynote ".. name .." Blacklist")
-                menu.set_value(Notification, true)
-                menu.set_value(BlockJoin, true)
-                menu.set_value(Timeout, true)
-                menu.set_value(BlockTheirNetworkEvents, true)
-                menu.set_value(BlockIncomingSyncs, true)
-                menu.set_value(BlockOutgoingSyncs, true)
-                
-                notify("\nBlacklisted:\n" .. name .. " " .. pathSuffix .. " | " .. rid .. "\n:D\nPlayers Processed: " .. player_processed + 1 .. " / " .. player_in_list .. "\nPlayers Added: " .. player_imported)
-                pathSuffix = ""
-                retryCount = 0
-                util.yield(1666)
-                player_imported = player_imported + 1
-                player_processed = player_processed + 1
-                break
-            end
-        end
-        if not ValidRef:isValid() then
-            pathSuffix = nil
-            player_processed = player_processed + 1
-            warnify("\nNo valid player reference found for player:\n" .. name .. " | " .. rid .. "\n:c\nPlayers Processed: " .. player_processed + 1 .. " / " .. player_in_list .. "\nPlayers Added: " .. player_imported)
-            util.yield(6666)
-        end
-        util.yield(666)
-    end
-    
-    notify(player_imported .. " Players Imported")
-end)
-
-menu.action(Protection, '(!) Block Join Global Blacklist', {'impblock'}, '', function()
-    local player_processed = 0
-    local player_in_list = 0
-    for rid, player in pairs(data_g) do
-        player_in_list = player_in_list + 1
-    end
-    for rid, player in pairs(data_g) do
-        local name = player.Name
-        menu.trigger_commands("historyaddrid ".. rid)
-        util.yield(6666)
-        add_in_stand(player, name, rid)
-        player_processed += 1
-        notify("\nProcessed:\n" .. name .. " | " .. rid .. "\nPlayers Processed: " .. player_processed .. " / " .. player_in_list)
-        util.yield(666)
-    end
-    notify("\nPlayers Processed: " .. player_processed)
-end)
+--menu.action(Protection, '(Alpha) Import Global Blacklist', {'bimp'}, 'This can take up some time, be prepared.\nRecommended to start befor going afk or etc.', function()
+--    local player_imported = 0
+--    local player_processed = 0
+--    local player_in_list = 0
+--    for rid, player in pairs(data_g) do
+--        player_in_list = player_in_list + 1
+--    end
+--
+--    local commandPaths = {
+--        "[Offline]",
+--        "[Public]",
+--        "[Invite]",
+--        "[Friends Only]",
+--        "[Story Mode]",
+--        "[Other]"
+--    }
+--    
+--    local maxRetries = 4
+--    
+--    for rid, player in pairs(data_g) do
+--        local name = player.Name
+--        menu.trigger_commands("historyaddrid ".. rid)
+--        
+--        local ValidRef = nil
+--        local retryCount = 0
+--        local pathSuffix = ""
+--        
+--        for i, suffix in ipairs(commandPaths) do
+--            pathSuffix = suffix
+--
+--            local commandPath = "Online>Player History>" .. name .. " " .. pathSuffix .. ">Note"
+--            ValidRef = menu.ref_by_path(commandPath)
+--            util.yield(666)
+--            if ValidRef:isValid() then
+--                local Note = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Note")
+--                local Notification = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Notification")
+--                local BlockJoin = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Join")
+--                local Timeout = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Timeout")
+--                local BlockTheirNetworkEvents = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Their Network Events")
+--                local BlockIncomingSyncs = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Incoming Syncs")
+--                local BlockOutgoingSyncs = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Outgoing Syncs")
+--
+--                menu.trigger_commands("historynote ".. name .." Blacklist")
+--                menu.set_value(Notification, true)
+--                menu.set_value(BlockJoin, true)
+--                menu.set_value(Timeout, true)
+--                menu.set_value(BlockTheirNetworkEvents, true)
+--                menu.set_value(BlockIncomingSyncs, true)
+--                menu.set_value(BlockOutgoingSyncs, true)
+--                
+--                notify("\nBlacklisted:\n" .. name .. " " .. pathSuffix .. " | " .. rid .. "\n:D\nPlayers Processed: " .. player_processed + 1 .. " / " .. player_in_list .. "\nPlayers Added: " .. player_imported)
+--                pathSuffix = ""
+--                retryCount = 0
+--                util.yield(1666)
+--                player_imported = player_imported + 1
+--                player_processed = player_processed + 1
+--                break
+--            end
+--        end
+--        if not ValidRef:isValid() then
+--            pathSuffix = nil
+--            player_processed = player_processed + 1
+--            warnify("\nNo valid player reference found for player:\n" .. name .. " | " .. rid .. "\n:c\nPlayers Processed: " .. player_processed + 1 .. " / " .. player_in_list .. "\nPlayers Added: " .. player_imported)
+--            util.yield(6666)
+--        end
+--        util.yield(666)
+--    end
+--    
+--    notify(player_imported .. " Players Imported")
+--end)
+--
+--menu.action(Protection, '(!) Block Join Global Blacklist', {'impblock'}, '', function()
+--    local player_processed = 0
+--    local player_in_list = 0
+--    for rid, player in pairs(data_g) do
+--        player_in_list = player_in_list + 1
+--    end
+--    for rid, player in pairs(data_g) do
+--        local name = player.Name
+--        menu.trigger_commands("historyaddrid ".. rid)
+--        util.yield(6666)
+--        add_in_stand(player, name, rid)
+--        player_processed += 1
+--        notify("\nProcessed:\n" .. name .. " | " .. rid .. "\nPlayers Processed: " .. player_processed .. " / " .. player_in_list)
+--        util.yield(666)
+--    end
+--    notify("\nPlayers Processed: " .. player_processed)
+--end)
 
 menu.action(Protection, 'Open Export Folder', {'oef'}, '', function()
     util.open_folder(resources_dir .. 'Export')
@@ -1517,6 +1501,24 @@ menu.hyperlink(Settings, "PIP Girl's GIT", "https://github.com/LeaLangley/PIP-Gi
 
 menu.action(Settings, "Check for Update", {}, "The script will automatically check for updates at most daily, but you can manually check using this option anytime.", function()
     auto_updater.run_auto_update(auto_update_config)
+end)
+
+menu.action(Settings, "Activate Everyday Goodies", {"pggoodies"}, "Activates all the Everyday Goodies.", function()
+    menu.trigger_commands("ncpop on")
+    menu.trigger_commands("pgaceo on")
+    menu.trigger_commands("pgblessing on")
+    menu.trigger_commands("pghealth on")
+    menu.trigger_commands("pgarmor on")
+    menu.trigger_commands("pgvaid on")
+    menu.trigger_commands("leatech on")
+    menu.trigger_commands("lears on")
+    menu.trigger_commands("pgascon on")
+    menu.trigger_commands("pgascut on")
+    menu.trigger_commands("pgaaw on")
+    menu.trigger_commands("antiadmin on")
+    menu.trigger_commands("antitrafic on")
+    menu.trigger_commands("pgssh on")
+    menu.trigger_commands("pgbll on")    
 end)
 
 util.keep_running()
