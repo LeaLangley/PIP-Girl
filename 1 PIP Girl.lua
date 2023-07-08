@@ -1135,8 +1135,8 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
 end)
 
 menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisible for the whole session, but with a nice effect for ppl close by.", function()
-    if IsInSession() then
-        menu.show_warning(Session, click_type, 'Really want to start a Race?', function()
+    menu.show_warning(Session, click_type, 'Really want to start a Race?', function()
+        if IsInSession() then
             warnify_ses("T-10 sec. Start on ;GO;")
             for i=1, 13 do
                 PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
