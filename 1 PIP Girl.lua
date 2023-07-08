@@ -1134,77 +1134,81 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
     end
 end)
 
-menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.", function()
+menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisible for the whole session, but with a nice effect for ppl close by.", function()
     if IsInSession() then
-        warnify_ses("T-10 sec. Start on ;GO;")
-        for i=1, 13 do
-            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-            util.yield(1)
+        menu.show_warning(Session, click_type, 'Really want to start a Race?', function()
+            warnify_ses("T-10 sec. Start on ;GO;")
+            for i=1, 13 do
+                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+                util.yield(1)
+            end
+            util.yield(859)
+            for i=1, 13 do
+                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+                util.yield(1)
+            end
+            util.yield(859)
+            for i=1, 13 do
+                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+                util.yield(1)
+            end
+            util.yield(859)
+            for i=1, 13 do
+                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+                util.yield(1)
+            end
+            util.yield(859)
+            for i=1, 13 do
+                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+                util.yield(1)
+            end
+            util.yield(859)
+            warnify_ses("5")
+            for i=1, 13 do
+                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+                util.yield(1)
+            end
+            util.yield(859)
+            for i=1, 13 do
+                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+                util.yield(1)
+            end
+            util.yield(859)
+            warnify_ses("3")
+            for i=1, 13 do
+                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+                util.yield(1)
+            end
+            util.yield(859)
+            warnify_ses("2")
+            for i=1, 13 do
+                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+                util.yield(1)
+            end
+            util.yield(859)
+            warnify_ses("1")
+            for i=1, 13 do
+                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+                util.yield(1)
+            end
+            util.yield(859)
+            warnify_ses("GO!")
+            local cmd_path = "Vehicle>Countermeasures>Only In Aircraft"
+            if menu.get_state(menu.ref_by_path(cmd_path)) == "On" then
+                menu.trigger_commands("onlyaircraft off")
+                menu.trigger_commands("deployboth")
+                menu.trigger_commands("onlyaircraft on")
+            else
+                menu.trigger_commands("deployboth")
+            end
+            for i=1, 111 do
+                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+                util.yield(6)
+            end
         end
-        util.yield(859)
-        for i=1, 13 do
-            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-            util.yield(1)
-        end
-        util.yield(859)
-        for i=1, 13 do
-            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-            util.yield(1)
-        end
-        util.yield(859)
-        for i=1, 13 do
-            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-            util.yield(1)
-        end
-        util.yield(859)
-        for i=1, 13 do
-            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-            util.yield(1)
-        end
-        util.yield(859)
-        warnify_ses("5")
-        for i=1, 13 do
-            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-            util.yield(1)
-        end
-        util.yield(859)
-        for i=1, 13 do
-            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-            util.yield(1)
-        end
-        util.yield(859)
-        warnify_ses("3")
-        for i=1, 13 do
-            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-            util.yield(1)
-        end
-        util.yield(859)
-        warnify_ses("2")
-        for i=1, 13 do
-            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-            util.yield(1)
-        end
-        util.yield(859)
-        warnify_ses("1")
-        for i=1, 13 do
-            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-            util.yield(1)
-        end
-        util.yield(859)
-        warnify_ses("GO!")
-        local cmd_path = "Vehicle>Countermeasures>Only In Aircraft"
-        if menu.get_state(menu.ref_by_path(cmd_path)) == "On" then
-            menu.trigger_commands("onlyaircraft off")
-            menu.trigger_commands("deployboth")
-            menu.trigger_commands("onlyaircraft on")
-        else
-            menu.trigger_commands("deployboth")
-        end
-        for i=1, 111 do
-            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-            util.yield(6)
-        end
-    end
+    end, function()
+        notify("Aborted.")
+    end, true)
 end)
 
 local json = require('json')
