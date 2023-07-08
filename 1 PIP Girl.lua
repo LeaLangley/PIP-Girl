@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.53"
+local SCRIPT_VERSION = "0.0.54"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -173,6 +173,11 @@ end
 
 local function warnify_net(msg)
     chat.send_message("<[Pip Girl]>: " .. msg, true, true, true)
+    util.toast("<[Pip Girl]>: " .. msg)
+end
+
+local function warnify_ses(msg)
+    chat.send_message(msg, false, true, true)
     util.toast("<[Pip Girl]>: " .. msg)
 end
 
@@ -1126,6 +1131,79 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
         util.yield(666)
     else
         util.yield(13666)
+    end
+end)
+
+menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.", function()
+    if IsInSession() then
+        warnify_ses("T-10 sec. Start on ;GO;")
+        for i=1, 13 do
+            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            util.yield(1)
+        end
+        util.yield(859)
+        for i=1, 13 do
+            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            util.yield(1)
+        end
+        util.yield(859)
+        for i=1, 13 do
+            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            util.yield(1)
+        end
+        util.yield(859)
+        for i=1, 13 do
+            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            util.yield(1)
+        end
+        util.yield(859)
+        for i=1, 13 do
+            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            util.yield(1)
+        end
+        util.yield(859)
+        warnify_ses("5")
+        for i=1, 13 do
+            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            util.yield(1)
+        end
+        util.yield(859)
+        for i=1, 13 do
+            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            util.yield(1)
+        end
+        util.yield(859)
+        warnify_ses("3")
+        for i=1, 13 do
+            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            util.yield(1)
+        end
+        util.yield(859)
+        warnify_ses("2")
+        for i=1, 13 do
+            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            util.yield(1)
+        end
+        util.yield(859)
+        warnify_ses("1")
+        for i=1, 13 do
+            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            util.yield(1)
+        end
+        util.yield(859)
+        warnify_ses("GO!")
+        local cmd_path = "Vehicle>Countermeasures>Only In Aircraft"
+        if menu.get_state(menu.ref_by_path(cmd_path)) == "On" then
+            menu.trigger_commands("onlyaircraft off")
+            menu.trigger_commands("deployboth")
+            menu.trigger_commands("onlyaircraft on")
+        else
+            menu.trigger_commands("deployboth")
+        end
+        for i=1, 111 do
+            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            util.yield(6)
+        end
     end
 end)
 
