@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.54"
+local SCRIPT_VERSION = "0.0.55"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1135,80 +1135,76 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
 end)
 
 menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisible for the whole session, but with a nice effect for ppl close by.", function()
-    menu.show_warning(Session, click_type, 'Really want to start a Race?', function()
-        if IsInSession() then
-            warnify_ses("T-10 sec. Start on ;GO;")
-            for i=1, 13 do
-                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-                util.yield(1)
-            end
-            util.yield(859)
-            for i=1, 13 do
-                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-                util.yield(1)
-            end
-            util.yield(859)
-            for i=1, 13 do
-                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-                util.yield(1)
-            end
-            util.yield(859)
-            for i=1, 13 do
-                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-                util.yield(1)
-            end
-            util.yield(859)
-            for i=1, 13 do
-                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-                util.yield(1)
-            end
-            util.yield(859)
-            warnify_ses("5")
-            for i=1, 13 do
-                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-                util.yield(1)
-            end
-            util.yield(859)
-            for i=1, 13 do
-                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-                util.yield(1)
-            end
-            util.yield(859)
-            warnify_ses("3")
-            for i=1, 13 do
-                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-                util.yield(1)
-            end
-            util.yield(859)
-            warnify_ses("2")
-            for i=1, 13 do
-                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-                util.yield(1)
-            end
-            util.yield(859)
-            warnify_ses("1")
-            for i=1, 13 do
-                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-                util.yield(1)
-            end
-            util.yield(859)
-            warnify_ses("GO!")
-            local cmd_path = "Vehicle>Countermeasures>Only In Aircraft"
-            if menu.get_state(menu.ref_by_path(cmd_path)) == "On" then
-                menu.trigger_commands("onlyaircraft off")
-                menu.trigger_commands("deployboth")
-                menu.trigger_commands("onlyaircraft on")
-            else
-                menu.trigger_commands("deployboth")
-            end
-            for i=1, 111 do
-                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-                util.yield(6)
-            end
+    if IsInSession() then
+        warnify_ses("T-10 sec. Start on ;GO;")
+        for i=1, 13 do
+            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            util.yield(1)
         end
-    end, function()
-        notify("Aborted.")
-    end, true)
+        util.yield(859)
+        for i=1, 13 do
+            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            util.yield(1)
+        end
+        util.yield(859)
+        for i=1, 13 do
+            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            util.yield(1)
+        end
+        util.yield(859)
+        for i=1, 13 do
+            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            util.yield(1)
+        end
+        util.yield(859)
+        for i=1, 13 do
+            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            util.yield(1)
+        end
+        util.yield(859)
+        warnify_ses("5")
+        for i=1, 13 do
+            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            util.yield(1)
+        end
+        util.yield(859)
+        for i=1, 13 do
+            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            util.yield(1)
+        end
+        util.yield(859)
+        warnify_ses("3")
+        for i=1, 13 do
+            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            util.yield(1)
+        end
+        util.yield(859)
+        warnify_ses("2")
+        for i=1, 13 do
+            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            util.yield(1)
+        end
+        util.yield(859)
+        warnify_ses("1")
+        for i=1, 13 do
+            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            util.yield(1)
+        end
+        util.yield(859)
+        warnify_ses("GO!")
+        local cmd_path = "Vehicle>Countermeasures>Only In Aircraft"
+        if menu.get_state(menu.ref_by_path(cmd_path)) == "On" then
+            menu.trigger_commands("onlyaircraft off")
+            menu.trigger_commands("deployboth")
+            menu.trigger_commands("onlyaircraft on")
+        else
+            menu.trigger_commands("deployboth")
+        end
+        for i=1, 111 do
+            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            util.yield(6)
+        end
+    end
 end)
 
 local json = require('json')
@@ -1347,21 +1343,17 @@ end
 local function StrategicKick(pid, name, rid) --TODO , make it actually smart , not bare bones.
     menu.trigger_commands("ignore " .. name .. " on")
     menu.trigger_commands("desync " .. name .. " on")
+    menu.trigger_commands("blocksync " .. name .. " on")
     if players.user() == players.get_host() then
-        menu.trigger_commands("blocksync " .. name .. " on")
         menu.trigger_commands("loveletterkick " .. name)
     else
         menu.trigger_commands("kick " .. name)
     end
 end
 
-local function SessionCheck(pid, name, rid)
-    if not rid then
-        local rid = players.get_rockstar_id(pid)
-    end
-    if not name then
-        local name = players.get_name(pid)
-    end
+local function SessionCheck(pid)
+    local rid = players.get_rockstar_id(pid)
+    local name = players.get_name(pid)
     for id, player in pairs(data_g) do
         if tonumber(id) == tonumber(rid) then
             update_player_name(pid)
