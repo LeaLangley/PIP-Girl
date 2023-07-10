@@ -1556,11 +1556,20 @@ players.add_command_hook(function(pid)
             rbpe = false
             util.yield(13666)
         else
-            break
+            util.yield(66666)
         end
     end)
     menu.toggle_loop(Bad_Modder, "Blacklist Kick on Atack", {"hellaab"}, "Auto kick if they atack you, and add them to blacklist.", function()
-        if players.is_marked_as_attacker(pid) then
+        local Player_List = players.list()
+        local bkoape = false
+        for _, plid in pairs(Player_List) do
+            util.yield(13)
+            if pid == plid then
+                bkoape = true
+                break
+            end
+        end
+        if players.is_marked_as_attacker(pid) and bkoape then
             menu.trigger_commands("ignore " .. name .. " on")
             add_in_stand(pid, name, rid)
             if not is_player_in_blacklist(pid, name, rid) then
@@ -1568,16 +1577,31 @@ players.add_command_hook(function(pid)
             end
             StrategicKick(pid, name, rid)
             warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
+            bkoape = false
             util.yield(66666)
+        else
+            util.yield(1666)
         end
         util.yield(13)
     end)
     menu.toggle_loop(Bad_Modder, "Kick on Atack", {"hellaa"}, "Auto kick if they atack you.", function()
-        if players.is_marked_as_attacker(pid) then
+        local Player_List = players.list()
+        local boape = false
+        for _, plid in pairs(Player_List) do
+            util.yield(13)
+            if pid == plid then
+                boape = true
+                break
+            end
+        end
+        if players.is_marked_as_attacker(pid) and boape then
             menu.trigger_commands("ignore " .. name .. " on")
             StrategicKick(pid, name, rid)
             warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
+            boape = false
             util.yield(66666)
+        else
+            util.yield(1666)
         end
         util.yield(13)
     end)
