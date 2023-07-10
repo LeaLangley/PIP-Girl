@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.55"
+local SCRIPT_VERSION = "0.0.56"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1536,7 +1536,8 @@ players.add_command_hook(function(pid)
         end
     end)
     menu.toggle_loop(Bad_Modder, "(Alpha) Report Bot", {"hellrp"}, "Weak menu? Spamm report them >:D", function()
-        if players.exists(pid) then
+        local Player_List = players.list(false, true, true)
+        if players.exists(pid) and pid in Player_List then
             menu.trigger_commands("reportgriefing " .. name)
             menu.trigger_commands("reportexploits " .. name)
             menu.trigger_commands("reportbugabuse " .. name)
@@ -1544,7 +1545,9 @@ players.add_command_hook(function(pid)
             menu.trigger_commands("reporthate " .. name)
             menu.trigger_commands("reportvcannoying " .. name)
             menu.trigger_commands("reportvchate " .. name)
-            util.yield(66666)
+            util.yield(13666)
+        else
+            menu.trigger_commands("hellrp " .. name .. " off")
         end
     end)
     menu.toggle_loop(Bad_Modder, "Blacklist Kick on Atack", {"hellaab"}, "Auto kick if they atack you, and add them to blacklist.", function()
