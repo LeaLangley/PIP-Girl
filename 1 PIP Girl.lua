@@ -1536,8 +1536,16 @@ players.add_command_hook(function(pid)
         end
     end)
     menu.toggle_loop(Bad_Modder, "(Alpha) Report Bot", {"hellrp"}, "Weak menu? Spamm report them >:D", function()
-        local Player_List = players.list(false, true, true)
-        if players.exists(pid) and pid in Player_List then
+        local Player_List = players.list()
+        local rbpe = false
+        for _, plid in pairs(Player_List) do
+            util.yield(13)
+            if pid == plid then
+                rbpe = true
+                break
+            end
+        end
+        if players.exists(pid) and rbpe then
             menu.trigger_commands("reportgriefing " .. name)
             menu.trigger_commands("reportexploits " .. name)
             menu.trigger_commands("reportbugabuse " .. name)
@@ -1545,9 +1553,10 @@ players.add_command_hook(function(pid)
             menu.trigger_commands("reporthate " .. name)
             menu.trigger_commands("reportvcannoying " .. name)
             menu.trigger_commands("reportvchate " .. name)
+            rbpe = false
             util.yield(13666)
         else
-            menu.trigger_commands("hellrp " .. name .. " off")
+            break
         end
     end)
     menu.toggle_loop(Bad_Modder, "Blacklist Kick on Atack", {"hellaab"}, "Auto kick if they atack you, and add them to blacklist.", function()
