@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.57"
+local SCRIPT_VERSION = "0.0.58"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -242,6 +242,17 @@ local function isLoading(pid)
         return true
     end
     return false
+end
+
+local function StrategicKick(pid, name, rid) --TODO , make it actually smart , not bare bones.
+    menu.trigger_commands("ignore " .. name .. " on")
+    menu.trigger_commands("desync " .. name .. " on")
+    menu.trigger_commands("blocksync " .. name .. " on")
+    if players.user() == players.get_host() then
+        menu.trigger_commands("loveletterkick " .. name)
+    else
+        menu.trigger_commands("kick " .. name)
+    end
 end
 
 local PIP_Girl = menu.list(menu.my_root(), 'PIP Girl', {}, 'Personal Information Processor Girl', function(); end)
@@ -1061,23 +1072,29 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         menu.trigger_commands("pgaaw on")
         temp_auto_warning = true
     end
+
     while not util.is_session_started() do
-        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
+        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
+            util.yield(13666)
             notify("U r in Story Mode, Getting u online first.")
             menu.trigger_commands("go inviteonly")
         end
         util.yield(666)
     end
+
     if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
         menu.trigger_commands("bealone")
     end
+
     while not util.is_session_started() do
-        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
+        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
+            util.yield(13666)
             notify("U r in Story Mode ? Getting u online first.")
             menu.trigger_commands("go inviteonly")
         end
         util.yield(666)
     end
+
     if util.is_session_started() then
         if session_claimer_players >= 30 and menu.get_state(menu.ref_by_path(magnet_path)) ~= "30" then
             menu.trigger_commands("playermagnet 30")
@@ -1089,25 +1106,18 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         menu.trigger_commands("go public")
         util.yield(666)
     end
+
     while not util.is_session_started() do
-        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
+        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
+            util.yield(13666)
             notify("U r in Story Mode ? Getting u online first.")
             menu.trigger_commands("go inviteonly")
         end
         util.yield(666)
     end
+
     if util.is_session_started() then
         if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players then
-            warnify("good session?")
-            --menu.trigger_commands("claimsession off")
-            while not IsInSession() do
-                if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
-                    notify("U r in Story Mode ? Getting u online first.")
-                    menu.trigger_commands("go inviteonly")
-                end
-                util.yield(666)
-            end
-            menu.trigger_commands("superclean")
             local isHostFriendly = false
             for _, pid in pairs(players.list(false, true, false)) do
                 if pid == players.get_host() then
@@ -1116,29 +1126,43 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 end
             end
             if not players.is_marked_as_modder(players.get_host()) and players.get_host_queue_position(players.user()) == 1 and not isHostFriendly then
-                isHostFriendly = false
-                menu.trigger_commands("givecollectibles " .. players.get_name(players.get_host()))
-                util.yield(1666)
-                menu.trigger_commands("kick " .. players.get_name(players.get_host()))
-                util.yield(13666)
-                if players.get_host() == players.user() then
-                    warnify("Found u a new Home <3")
-                    if players.user() != players.get_script_host() then
-                        menu.trigger_commands("scripthost")
+                warnify("Might found something.")
+                while not IsInSession() do
+                    if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
+                        util.yield(13666)
+                        notify("U r in Story Mode ? Getting u online first.")
+                        menu.trigger_commands("go inviteonly")
                     end
-                    if temp_admin then
-                        menu.trigger_commands("antiadmin off")
-                        temp_admin = false
+                    util.yield(666)
+                end
+                if not players.is_marked_as_modder(players.get_host()) and players.get_host_queue_position(players.user()) == 1 and not isHostFriendly then
+                    util.yield(666)
+                    menu.trigger_commands("superclean")
+                    isHostFriendly = false
+                    util.yield(666)
+                    menu.trigger_commands("givecollectibles " .. players.get_name(players.get_host()))
+                    util.yield(666)
+                    StrategicKick(players.get_host(), players.get_name(players.get_host()), players.get_rockstar_id(players.get_host()))
+                    util.yield(13666)
+                    if players.get_host() == players.user() then
+                        warnify("Found u a new Home <3")
+                        if players.user() != players.get_script_host() then
+                            menu.trigger_commands("scripthost")
+                        end
+                        if temp_admin then
+                            menu.trigger_commands("antiadmin off")
+                            temp_admin = false
+                        end
+                        if temp_auto_warning then
+                            menu.trigger_commands("pgaaw off")
+                            temp_auto_warning = false
+                        end
+                        menu.trigger_commands("claimsession off")
+                        util.yield(6666)
                     end
-                    if temp_auto_warning then
-                        menu.trigger_commands("pgaaw off")
-                        temp_auto_warning = false
-                    end
-                    menu.trigger_commands("claimsession off")
-                    util.yield(6666)
                 end
             end
-            util.yield(2666)
+            util.yield(666)
         end
     end
 end)
@@ -1431,17 +1455,6 @@ local function is_player_in_blacklist(player, name, rid)
         end
     else
         return false
-    end
-end
-
-local function StrategicKick(pid, name, rid) --TODO , make it actually smart , not bare bones.
-    menu.trigger_commands("ignore " .. name .. " on")
-    menu.trigger_commands("desync " .. name .. " on")
-    menu.trigger_commands("blocksync " .. name .. " on")
-    if players.user() == players.get_host() then
-        menu.trigger_commands("loveletterkick " .. name)
-    else
-        menu.trigger_commands("kick " .. name)
     end
 end
 
