@@ -1735,11 +1735,4 @@ menu.action(Settings, "Activate Everyday Goodies", {"pggoodies"}, "Activates all
     menu.trigger_commands("pgbll on")    
 end)
 
-menu.action(Settings, "Chette", {}, "The script will automatically check fousing this option anytime.", function()
-    for _, plid in pairs(players.list(true, true, false)) do
-        util.yield(13)
-        notify(players.get_name(plid))
-    end
-end)
-
 util.keep_running()
