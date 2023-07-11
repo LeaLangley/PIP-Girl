@@ -1,5 +1,5 @@
 {
-    "Version": "10.07.2023",
+    "Version": "11.07.2023",
     "Blacklist": {
         "565770": {
             "Name": "IIRaZ3rII"
@@ -1416,6 +1416,15 @@
         },
         "89018173": {
             "Name": "FamoussQuint"
+        },
+        "229571005": {
+            "Name": "cacho072"
+        },
+        "183352623": {
+            "Name": "vMAFIOZNIKvz"
+        },
+        "189779149": {
+            "Name": "cornbreadryedog"
         }
     }
 }

@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.56"
+local SCRIPT_VERSION = "0.0.57"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -996,14 +996,19 @@ local warningMessages = {
     [15890625] = "Joining session.",
     [99184332] = "Leaveing session.",
     [1246147334] = "Leaveing online.",
+    [427588031] = "Save failed. Quiting anyways.",
     [583244483] = "Session Full of CEO, Joining anyways.",
     [505844183] = "Canceling Cayo.",
     [988273680] = "Seting up Cayo.",
     [398982408] = "Targeting mode Changed.",
-    [1504249340] = "Unable to joing the game as you save game failed to load. The R* game services unavailable right now, please try again later.",
+    [1767925417] = "Currently unavaiable.",
+    [1504249340] = "Close ur game, load Backup of ur game and Start again. :c\nUnable to joing the game as you save game failed to load. The R* game services unavailable right now, please try again later.",
+    [141301462] = "Restart u game. :s\nYour save data could not be loaded form the R* cloud servers at this time. Please try again later. Returning to Grand Theft Auto V.",
     [502833454] = "Connection to the session host has been lost. Unable to determine a new host. The GTA Online session will be terminated. Joining a new GTA Online session.",
+    [2113044399] = "Connection to the active GTA Online session lost due to an unknown network error. Please return to Grand Theft Auto V and try again later.",
     [496145784] = "There has been an error with this session. Please return to Grand Theft Auto V and try again.",
-    [705668975] = "You have already been voted out of this game session. Joining a new GTA Online session."
+    [705668975] = "You have already been voted out of this game session. Joining a new GTA Online session.",
+    [2055607490] = "XD\nUsing more then your allotted graphics card memory can result in serious performance drops and stability issues. Proceed with caution. :clown:"
 }
 menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warnings in the game.", function()
     local mess_hash = math.abs(HUD.GET_WARNING_SCREEN_MESSAGE_HASH())
@@ -1038,23 +1043,113 @@ end)
 --    end
 --end)
 
-menu.toggle_loop(Game, 'Auto Blinkers', {'blinkers'}, 'Blinkers are merged with "Lea Tech" now.', function ()
-    local cmd_path = "Stand>Lua Scripts>1 PIP Girl>Stimpak>Lea Tech"
-    if menu.get_state(menu.ref_by_path(cmd_path)) == "Off" then
-        menu.trigger_commands("leatech on")
-    else
-        menu.trigger_commands("blinkers off")
+local session_claimer_players = 32
+menu.slider(Session, 'Session Claimer Size', {'claimsessionsize'}, 'Select the Size of a Session u want to claim.\nThis Value can be saved in a Profile!^^\n(!) Size 31-32 is very rare to reach, so its only use would be filling the Player History.', 1, 32, session_claimer_players, 1, function (new_value)
+    session_claimer_players = new_value
+end)
+menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session with Selcted Size.\nChecks if the host is not a Modder or Friend.\nClaims the Host if all clear and next as host.\nElse looks for a better place to stay.\n\nAdmin Bailing & Auto Accept Warning included.", function()
+    local magnet_path = "Online>Transitions>Matchmaking>Player Magnet"
+    local admin_path = "Stand>Lua Scripts>1 PIP Girl>Session>Admin Bail"
+    local temp_admin = false
+    local auto_warning_path = "Stand>Lua Scripts>1 PIP Girl>Game>Auto Accept Warning"
+    local temp_auto_warning = false
+    if menu.get_state(menu.ref_by_path(admin_path)) ~= "Off" then
+        menu.trigger_commands("antiadmin on")
+        temp_admin = true
     end
-    util.yield(666)
+    if menu.get_state(menu.ref_by_path(auto_warning_path)) ~= "Off" then
+        menu.trigger_commands("pgaaw on")
+        temp_auto_warning = true
+    end
+    while not util.is_session_started() do
+        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
+            notify("U r in Story Mode, Getting u online first.")
+            menu.trigger_commands("go inviteonly")
+        end
+        util.yield(666)
+    end
+    if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
+        menu.trigger_commands("bealone")
+    end
+    while not util.is_session_started() do
+        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
+            notify("U r in Story Mode ? Getting u online first.")
+            menu.trigger_commands("go inviteonly")
+        end
+        util.yield(666)
+    end
+    if util.is_session_started() then
+        if session_claimer_players >= 30 and menu.get_state(menu.ref_by_path(magnet_path)) ~= "30" then
+            menu.trigger_commands("playermagnet 30")
+        end
+        if session_claimer_players < 30 and menu.get_state(menu.ref_by_path(magnet_path)) ~= session_claimer_players then
+            notify("player mangent " .. session_claimer_players)
+            menu.trigger_commands("playermagnet " .. session_claimer_players)
+        end
+        menu.trigger_commands("go public")
+        util.yield(666)
+    end
+    while not util.is_session_started() do
+        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
+            notify("U r in Story Mode ? Getting u online first.")
+            menu.trigger_commands("go inviteonly")
+        end
+        util.yield(666)
+    end
+    if util.is_session_started() then
+        if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players then
+            warnify("good session?")
+            --menu.trigger_commands("claimsession off")
+            while not IsInSession() do
+                if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
+                    notify("U r in Story Mode ? Getting u online first.")
+                    menu.trigger_commands("go inviteonly")
+                end
+                util.yield(666)
+            end
+            menu.trigger_commands("superclean")
+            local isHostFriendly = false
+            for _, pid in pairs(players.list(false, true, false)) do
+                if pid == players.get_host() then
+                    isHostFriendly = true
+                    break
+                end
+            end
+            if not players.is_marked_as_modder(players.get_host()) and players.get_host_queue_position(players.user()) == 1 and not isHostFriendly then
+                isHostFriendly = false
+                menu.trigger_commands("givecollectibles " .. players.get_name(players.get_host()))
+                util.yield(1666)
+                menu.trigger_commands("kick " .. players.get_name(players.get_host()))
+                util.yield(13666)
+                if players.get_host() == players.user() then
+                    warnify("Found u a new Home <3")
+                    if players.user() != players.get_script_host() then
+                        menu.trigger_commands("scripthost")
+                    end
+                    if temp_admin then
+                        menu.trigger_commands("antiadmin off")
+                        temp_admin = false
+                    end
+                    if temp_auto_warning then
+                        menu.trigger_commands("pgaaw off")
+                        temp_auto_warning = false
+                    end
+                    menu.trigger_commands("claimsession off")
+                    util.yield(6666)
+                end
+            end
+            util.yield(2666)
+        end
+    end
 end)
 
 menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join Invite only\nIf R* Admin Detected", function()
     if util.is_session_started() then
-        local Player_List = players.list(false, true, true)
-        for _, pid in pairs(Player_List) do 
+        --local Player_List = players.list(false, true, true)
+        for _, pid in pairs(players.list(false, true, true)) do 
             if players.is_marked_as_admin(pid) or players.is_marked_as_modder_or_admin(pid) then 
                 menu.trigger_commands("quickbail")
-                notify("Admin Detected, We get you out of Here!")
+                warnify("Admin Detected, We get you out of Here!")
                 util.yield(13)
                 menu.trigger_commands("go inviteonly")
             end    
@@ -1064,7 +1159,6 @@ menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join 
 end)
 
 local ClearTraficSphere = 0
-
 menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic around you.", function()
     if IsInSession() then
         if not MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(ClearTraficSphere) then
@@ -1080,7 +1174,7 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic a
     end
 end)
 
-menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU and EVERYONE ELSE that is stuck in loading screens etc.", function()
+menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
     if IsInSession() then
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
             if players.user() != players.get_host() then
@@ -1536,9 +1630,8 @@ players.add_command_hook(function(pid)
         end
     end)
     menu.toggle_loop(Bad_Modder, "(Alpha) Report Bot", {"hellrp"}, "Weak menu? Spamm report them >:D", function()
-        local Player_List = players.list()
         local rbpe = false
-        for _, plid in pairs(Player_List) do
+        for _, plid in pairs(players.list()) do
             util.yield(13)
             if pid == plid then
                 rbpe = true
@@ -1560,9 +1653,8 @@ players.add_command_hook(function(pid)
         end
     end)
     menu.toggle_loop(Bad_Modder, "Blacklist Kick on Atack", {"hellaab"}, "Auto kick if they atack you, and add them to blacklist.", function()
-        local Player_List = players.list()
         local bkoape = false
-        for _, plid in pairs(Player_List) do
+        for _, plid in pairs(players.list()) do
             util.yield(13)
             if pid == plid then
                 bkoape = true
@@ -1585,9 +1677,8 @@ players.add_command_hook(function(pid)
         util.yield(13)
     end)
     menu.toggle_loop(Bad_Modder, "Kick on Atack", {"hellaa"}, "Auto kick if they atack you.", function()
-        local Player_List = players.list()
         local boape = false
-        for _, plid in pairs(Player_List) do
+        for _, plid in pairs(players.list()) do
             util.yield(13)
             if pid == plid then
                 boape = true
@@ -1629,6 +1720,13 @@ menu.action(Settings, "Activate Everyday Goodies", {"pggoodies"}, "Activates all
     menu.trigger_commands("antitrafic on")
     menu.trigger_commands("pgssh on")
     menu.trigger_commands("pgbll on")    
+end)
+
+menu.action(Settings, "Chette", {}, "The script will automatically check fousing this option anytime.", function()
+    for _, plid in pairs(players.list(true, true, false)) do
+        util.yield(13)
+        notify(players.get_name(plid))
+    end
 end)
 
 util.keep_running()
