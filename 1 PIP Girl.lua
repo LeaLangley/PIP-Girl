@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.58"
+local SCRIPT_VERSION = "0.0.59"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1064,18 +1064,24 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
     local temp_admin = false
     local auto_warning_path = "Stand>Lua Scripts>1 PIP Girl>Game>Auto Accept Warning"
     local temp_auto_warning = false
-    if menu.get_state(menu.ref_by_path(admin_path)) ~= "Off" then
+    local first_run = true
+    if menu.get_state(menu.ref_by_path(admin_path)) == "Off" then
         menu.trigger_commands("antiadmin on")
         temp_admin = true
     end
-    if menu.get_state(menu.ref_by_path(auto_warning_path)) ~= "Off" then
+    if menu.get_state(menu.ref_by_path(auto_warning_path)) == "Off" then
         menu.trigger_commands("pgaaw on")
         temp_auto_warning = true
     end
 
     while not util.is_session_started() do
         if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
-            util.yield(13666)
+            if first_run then
+                util.yield(1666)
+                first_run = false
+            else
+                util.yield(13666)
+            end
             notify("U r in Story Mode, Getting u online first.")
             menu.trigger_commands("go inviteonly")
         end
