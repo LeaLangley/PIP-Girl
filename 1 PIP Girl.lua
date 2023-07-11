@@ -1106,7 +1106,6 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             menu.trigger_commands("playermagnet 30")
         end
         if session_claimer_players < 30 and menu.get_state(menu.ref_by_path(magnet_path)) ~= session_claimer_players then
-            notify("player mangent " .. session_claimer_players)
             menu.trigger_commands("playermagnet " .. session_claimer_players)
         end
         menu.trigger_commands("go public")
@@ -1142,14 +1141,14 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     util.yield(666)
                 end
                 if not players.is_marked_as_modder(players.get_host()) and players.get_host_queue_position(players.user()) == 1 and not isHostFriendly then
-                    util.yield(666)
-                    menu.trigger_commands("superclean")
                     isHostFriendly = false
                     util.yield(666)
                     menu.trigger_commands("givecollectibles " .. players.get_name(players.get_host()))
                     util.yield(666)
                     StrategicKick(players.get_host(), players.get_name(players.get_host()), players.get_rockstar_id(players.get_host()))
-                    util.yield(13666)
+                    util.yield(6666)
+                    menu.trigger_commands("superclean")
+                    util.yield(6666)
                     if players.get_host() == players.user() then
                         warnify("Found u a new Home <3")
                         if players.user() != players.get_script_host() then
