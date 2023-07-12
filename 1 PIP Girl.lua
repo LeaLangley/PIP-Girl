@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.60"
+local SCRIPT_VERSION = "0.0.61"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1464,10 +1464,10 @@ local function SessionCheck(pid)
     for id, player in pairs(data_g) do
         if tonumber(id) == tonumber(rid) then
             update_player_name(pid)
-            warnify("Matched Player: " .. name .. " - " .. rid)
+            warnify("Detected Blacklisted Player:\n" .. name .. " - " .. rid)
             add_in_stand(pid, name, rid)
             if StandUser(pid) then
-                warnify("This Blacklist is a Stand User , we dont Kick them: " .. name .. " - " .. rid)
+                warnify("This Blacklist is a Stand User , we dont Kick them until they atack:\n" .. name .. " - " .. rid)
                 menu.trigger_commands("hellaa " .. name .. " on")
             else
                 StrategicKick(pid, name, rid)
@@ -1476,10 +1476,10 @@ local function SessionCheck(pid)
     end
     for id, player in pairs(data_e) do
         if tonumber(id) == tonumber(rid) then
-            warnify("Matched Player: " .. name .. " - " .. rid)
+            warnify("Detected Blacklisted Player:\n" .. name .. " - " .. rid)
             add_in_stand(pid, name, rid)
             if StandUser(pid) then
-                warnify("This Blacklist is a Stand User , we dont Kick them: " .. name .. " - " .. rid)
+                warnify("This Blacklist is a Stand User , we dont Kick them until they atack:\n" .. name .. " - " .. rid)
                 menu.trigger_commands("hellaa " .. name .. " on")
             else
                 StrategicKick(pid, name, rid)
