@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.59"
+local SCRIPT_VERSION = "0.0.60"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -680,7 +680,7 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
     end
 end)
 
-local positionsToCheck = {
+local repairStops = {
     { x = -1650.71, y = -3140.19, z = 13.99 },--LSIA Hangar
     { x = -1160.32, y = -2018.54, z = 13.18 },--LSIA LSC
     { x = -1112.67, y = -2030.20, z = 13.28 },--LSIA LSC Outside
@@ -733,8 +733,8 @@ local positionsToCheck = {
 }
 local blipsCreated = false
 local blips = {}
-local function CreateBlips(positionsToCheck)
-    for _, position in ipairs(positionsToCheck) do
+local function CreateBlips(repairStops)
+    for _, position in ipairs(repairStops) do
         local blip = HUD.ADD_BLIP_FOR_COORD(position.x, position.y, position.z)
         HUD.SET_BLIP_SPRITE(blip, "402")
         HUD.SET_BLIP_COLOUR(blip, 48)
@@ -776,11 +776,11 @@ menu.toggle_loop(Stimpak, "Lea's Repair Stop", {"lears"}, "", function()
         local playerPosition = players.get_position(players.user())
         if not blipsCreated then
             remove_blips()
-            CreateBlips(positionsToCheck)
+            CreateBlips(repairStops)
         end
         closestMarker = nil
         closestDistance = math.huge
-        for _, position in ipairs(positionsToCheck) do
+        for _, position in ipairs(repairStops) do
             local distance = math.sqrt((playerPosition.x - position.x) ^ 2 + (playerPosition.y - position.y) ^ 2 + (playerPosition.z - position.z) ^ 2)
 
             if distance < closestDistance then
@@ -980,8 +980,13 @@ menu.toggle_loop(Game, "Auto Skip Conversation",{"pgascon"},"Automatically skip 
     util.yield(1)
 end)
 
+local avoidCutsceneSkipHere = {
+    { x = 4989.31, y = -5717.63, z = 19.69 },--cayo gate exit
+}
 menu.toggle_loop(Game, "Auto Skip Cutscene",{"pgascut"},"Automatically skip all cutscenes.",function()
     if IsInSession() and not isLoading(players.user()) and CUTSCENE.IS_CUTSCENE_PLAYING() then
+        --local playerPosition = players.get_position(players.user())
+        --local radius = 2
         CUTSCENE.STOP_CUTSCENE_IMMEDIATELY()
         util.yield(6666)
     end
@@ -1074,6 +1079,17 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         temp_auto_warning = true
     end
 
+    if session_claimer_players >= 30 and menu.get_state(menu.ref_by_path(magnet_path)) ~= "30" then
+        menu.trigger_commands("playermagnet 30")
+    elseif session_claimer_players < 30 and menu.get_state(menu.ref_by_path(magnet_path)) ~= session_claimer_players then
+        menu.trigger_commands("playermagnet " .. session_claimer_players)
+    end
+    if util.is_session_started() then
+        menu.trigger_commands("go public")
+        first_run = false
+    end
+    util.yield(666)
+
     while not util.is_session_started() do
         if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
             if first_run then
@@ -1082,41 +1098,8 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             else
                 util.yield(13666)
             end
-            notify("U r in Story Mode, Getting u online first.")
-            menu.trigger_commands("go inviteonly")
-        end
-        util.yield(666)
-    end
-
-    if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
-        menu.trigger_commands("bealone")
-    end
-
-    while not util.is_session_started() do
-        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
-            util.yield(13666)
-            notify("U r in Story Mode ? Getting u online first.")
-            menu.trigger_commands("go inviteonly")
-        end
-        util.yield(666)
-    end
-
-    if util.is_session_started() then
-        if session_claimer_players >= 30 and menu.get_state(menu.ref_by_path(magnet_path)) ~= "30" then
-            menu.trigger_commands("playermagnet 30")
-        end
-        if session_claimer_players < 30 and menu.get_state(menu.ref_by_path(magnet_path)) ~= session_claimer_players then
-            menu.trigger_commands("playermagnet " .. session_claimer_players)
-        end
-        menu.trigger_commands("go public")
-        util.yield(666)
-    end
-
-    while not util.is_session_started() do
-        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
-            util.yield(13666)
-            notify("U r in Story Mode ? Getting u online first.")
-            menu.trigger_commands("go inviteonly")
+            notify("U r in Story Mode, Getting u online.")
+            menu.trigger_commands("go public")
         end
         util.yield(666)
     end
@@ -1135,8 +1118,8 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 while not IsInSession() do
                     if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
                         util.yield(13666)
-                        notify("U r in Story Mode ? Getting u online first.")
-                        menu.trigger_commands("go inviteonly")
+                        notify("U r in Story Mode ? Getting u online.")
+                        menu.trigger_commands("go public")
                     end
                     util.yield(666)
                 end
@@ -1165,11 +1148,23 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                         menu.trigger_commands("claimsession off")
                         util.yield(6666)
                     end
+                else
+                    if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
+                        menu.trigger_commands("bealone")
+                    end
+                end
+            else
+                if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
+                    menu.trigger_commands("bealone")
                 end
             end
-            util.yield(666)
+        else
+            if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
+                menu.trigger_commands("bealone")
+            end
         end
     end
+    util.yield(666)
 end)
 
 menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join Invite only\nIf R* Admin Detected", function()
@@ -1588,28 +1583,28 @@ menu.action(Protection, 'Open Export Folder', {'oef'}, '', function()
     util.open_folder(resources_dir .. 'Export')
 end)
 
-menu.toggle_loop(Protection, "Dont Block Love Letter Kicks as Host.", {"pgbll"}, "New Meta.", function()
-    if IsInSession() then
-        local cmd_path = "Online>Protections>Love Letter & Desync Kicks>Block Love Letter Kicks"
-        if players.user() == players.get_host() then
-            if menu.get_state(menu.ref_by_path(cmd_path)) == "On" then
-                menu.trigger_commands("blockloveletters off")
-                util.yield(6666)
-            else
-                util.yield(6666)
-            end
-        else
-            if menu.get_state(menu.ref_by_path(cmd_path)) == "Off" then
-                menu.trigger_commands("blockloveletters on")
-                util.yield(6666)
-            else
-                util.yield(6666)
-            end
-        end
-    else
-        util.yield(20666)
-    end
-end)
+--menu.toggle_loop(Protection, "Dont Block Love Letter Kicks as Host.", {"pgbll"}, "New Meta.", function()
+--    if IsInSession() then
+--        local cmd_path = "Online>Protections>Love Letter & Desync Kicks>Block Love Letter Kicks"
+--        if players.user() == players.get_host() then
+--            if menu.get_state(menu.ref_by_path(cmd_path)) == "On" then
+--                menu.trigger_commands("blockloveletters off")
+--                util.yield(6666)
+--            else
+--                util.yield(6666)
+--            end
+--        else
+--            if menu.get_state(menu.ref_by_path(cmd_path)) == "Off" then
+--                menu.trigger_commands("blockloveletters on")
+--                util.yield(6666)
+--            else
+--                util.yield(6666)
+--            end
+--        end
+--    else
+--        util.yield(20666)
+--    end
+--end)
 
 players.add_command_hook(function(pid)
     local name = players.get_name(pid)

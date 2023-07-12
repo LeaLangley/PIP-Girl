@@ -1,5 +1,5 @@
 {
-    "Version": "11.07.2023",
+    "Version": "12.07.2023",
     "Blacklist": {
         "565770": {
             "Name": "IIRaZ3rII"
@@ -1428,6 +1428,24 @@
         },
         "119959621": {
             "Name": "PudgeEternal"
+        },
+        "221774427": {
+            "Name": "mmmihooo"
+        },
+        "147017146": {
+            "Name": "Scary_Scouser"
+        },
+        "231605976": {
+            "Name": "Sp0ngeBob_SP"
+        },
+        "165378144": {
+            "Name": "StavrosPs"
+        },
+        "127932576": {
+            "Name": "Alpoll0"
+        },
+        "84938333": {
+            "Name": "SirBuforPC"
         }
     }
 }
