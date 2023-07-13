@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.63"
+local SCRIPT_VERSION = "0.0.64"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1146,7 +1146,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 local players_with_kd = 0
                 local kdChecksPassed = false
                 for _, pid in pairs(players.list(false, false, true)) do
-                    while players.get_money(pid) == 0 or not IsInSession() do
+                    while not IsInSession() do
                         if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
                             util.yield(16666)
                             notify("U r in Story Mode ? Getting u online.")
@@ -1168,7 +1168,6 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     fucking_failure = true
                 end
             end
-            util.yield(666)
             if not fucking_failure then
                 if (not players.is_marked_as_modder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
                     warnify("Might found something.")
@@ -1180,13 +1179,12 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                         end
                         util.yield(666)
                     end
-                    util.yield(666)
                     if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 then
                         menu.trigger_commands("givecollectibles " .. players.get_name(players.get_host()))
-                        util.yield(3666)
+                        util.yield(6666)
                         StrategicKick(players.get_host(), players.get_name(players.get_host()), players.get_rockstar_id(players.get_host()))
                     end
-                    util.yield(13666)
+                    util.yield(6666)
                     if players.get_host() == players.user() or isHostFriendly then
                         warnify("Found u a new Home <3")
                         if players.user() != players.get_script_host() then
