@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.61"
+local SCRIPT_VERSION = "0.0.62"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -261,6 +261,7 @@ local Stimpak = menu.list(menu.my_root(), 'Stimpak', {}, 'Take a Breath', functi
 local Outfit = menu.list(menu.my_root(), 'Outfit', {}, 'Look Pretty and nice.', function(); end)
 local Game = menu.list(menu.my_root(), 'Game', {}, '', function(); end)
 local Session = menu.list(menu.my_root(), 'Session', {}, 'Session', function(); end)
+local SessionClaimer = menu.list(Session, 'Session Claimer Settings', {}, 'Session Claimer Settings', function(); end)
 local Protection = menu.list(menu.my_root(), 'Protection', {}, 'Protect yourself with our todays sponsor .....', function(); end)
 local Settings = menu.list(menu.my_root(), 'Settings', {}, '', function(); end)
 
@@ -1059,9 +1060,27 @@ end)
 --    end
 --end)
 
+menu.divider(SessionClaimer, "Player Amount Filter")
 local session_claimer_players = 32
-menu.slider(Session, 'Session Claimer Size', {'claimsessionsize'}, 'Select the Size of a Session u want to claim.\nThis Value can be saved in a Profile!^^\n(!) Size 31-32 is very rare to reach, so its only use would be filling the Player History.', 1, 32, session_claimer_players, 1, function (new_value)
+menu.slider(SessionClaimer, 'Session Size', {'claimsessionsize'}, 'Select the Size of a Session u want to claim.\nThis Value can be saved in a Profile!^^\n(!) Size 31-32 is very rare to reach, so its only use would be filling the Player History.', 1, 32, session_claimer_players, 1, function (new_value)
     session_claimer_players = new_value
+end)
+menu.divider(SessionClaimer, "K/D Filter")
+local session_claimer_kd = false
+menu.toggle(SessionClaimer, "Seartch K/D On/Off", {""}, "Toggle the Seartch for K/D.", function(on)
+    if on then
+        session_claimer_kd = true
+    else
+        session_claimer_kd = false
+    end
+end)
+local session_claimer_kd_target = 0
+menu.slider(SessionClaimer, 'Player K/D Target', {''}, 'Enter the K/D u wish to Seartch for.', 1, 10, session_claimer_kd_target, 1, function (new_value)
+    session_claimer_kd_target = new_value
+end)
+local session_claimer_kd_target_players = 0
+menu.slider(SessionClaimer, 'Players With K/D Target', {''}, 'Enther the amount of Players that should Match the K/D.', 1, 10, session_claimer_kd_target_players, 1, function (new_value)
+    session_claimer_kd_target_players = new_value
 end)
 menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session with Selcted Size.\nChecks if the host is not a Modder or Friend.\nClaims the Host if all clear and next as host.\nElse looks for a better place to stay.\n\nAdmin Bailing & Auto Accept Warning included.", function()
     local magnet_path = "Online>Transitions>Matchmaking>Player Magnet"
@@ -1070,6 +1089,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
     local auto_warning_path = "Stand>Lua Scripts>1 PIP Girl>Game>Auto Accept Warning"
     local temp_auto_warning = false
     local first_run = true
+    local fucking_failure = false
     if menu.get_state(menu.ref_by_path(admin_path)) == "Off" then
         menu.trigger_commands("antiadmin on")
         temp_admin = true
@@ -1105,7 +1125,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
     end
 
     if util.is_session_started() then
-        if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players then
+        if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players and not players.is_marked_as_modder(players.get_host()) and players.get_host_queue_position(players.user()) == 1 then
             local isHostFriendly = false
             for _, pid in pairs(players.list(false, true, false)) do
                 if pid == players.get_host() then
@@ -1113,40 +1133,73 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     break
                 end
             end
-            if not players.is_marked_as_modder(players.get_host()) and players.get_host_queue_position(players.user()) == 1 and not isHostFriendly then
-                warnify("Might found something.")
-                while not IsInSession() do
-                    if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
-                        util.yield(13666)
-                        notify("U r in Story Mode ? Getting u online.")
-                        menu.trigger_commands("go public")
+            if session_claimer_kd then
+                local players_with_kd = 0
+                local kdChecksPassed = false
+                for _, pid in pairs(players.list(false, false, true)) do
+                    while not IsInSession() do
+                        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
+                            util.yield(13666)
+                            notify("U r in Story Mode ? Getting u online.")
+                            menu.trigger_commands("go public")
+                        end
+                        util.yield(666)
                     end
-                    util.yield(666)
+                    if (players_with_kd < session_claimer_kd_target_players) then
+                        if not players.is_marked_as_modder(pid) then
+                            local kd = players.get_kd(pid) -- Get the K/D value
+                            local kd_integer = math.floor(kd) -- Extract the integer part
+                            if kd_integer >= session_claimer_kd_target then
+                                players_with_kd = players_with_kd + 1
+                            end
+                        end
+                    end
+                end                
+                if players_with_kd < session_claimer_kd_target_players then
+                    fucking_failure = true
                 end
+            end
+            util.yield(666)
+            if not fucking_failure then
                 if not players.is_marked_as_modder(players.get_host()) and players.get_host_queue_position(players.user()) == 1 and not isHostFriendly then
-                    isHostFriendly = false
-                    util.yield(666)
-                    menu.trigger_commands("givecollectibles " .. players.get_name(players.get_host()))
-                    util.yield(666)
-                    StrategicKick(players.get_host(), players.get_name(players.get_host()), players.get_rockstar_id(players.get_host()))
-                    util.yield(6666)
-                    menu.trigger_commands("superclean")
-                    util.yield(6666)
-                    if players.get_host() == players.user() then
-                        warnify("Found u a new Home <3")
-                        if players.user() != players.get_script_host() then
-                            menu.trigger_commands("scripthost")
+                    warnify("Might found something.")
+                    while not IsInSession() do
+                        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
+                            util.yield(13666)
+                            notify("U r in Story Mode ? Getting u online.")
+                            menu.trigger_commands("go public")
                         end
-                        if temp_admin then
-                            menu.trigger_commands("antiadmin off")
-                            temp_admin = false
+                        util.yield(666)
+                    end
+                    if not players.is_marked_as_modder(players.get_host()) and players.get_host_queue_position(players.user()) == 1 and not isHostFriendly then
+                        isHostFriendly = false
+                        util.yield(666)
+                        menu.trigger_commands("givecollectibles " .. players.get_name(players.get_host()))
+                        util.yield(666)
+                        StrategicKick(players.get_host(), players.get_name(players.get_host()), players.get_rockstar_id(players.get_host()))
+                        util.yield(13666)
+                        if players.get_host() == players.user() then
+                            warnify("Found u a new Home <3")
+                            if players.user() != players.get_script_host() then
+                                menu.trigger_commands("scripthost")
+                            end
+                            if temp_admin then
+                                menu.trigger_commands("antiadmin off")
+                                temp_admin = false
+                            end
+                            if temp_auto_warning then
+                                menu.trigger_commands("pgaaw off")
+                                temp_auto_warning = false
+                            end
+                            menu.trigger_commands("resetheadshots")
+                            menu.trigger_commands("superclean")
+                            menu.trigger_commands("claimsession off")
+                            util.yield(6666)
                         end
-                        if temp_auto_warning then
-                            menu.trigger_commands("pgaaw off")
-                            temp_auto_warning = false
+                    else
+                        if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
+                            menu.trigger_commands("bealone")
                         end
-                        menu.trigger_commands("claimsession off")
-                        util.yield(6666)
                     end
                 else
                     if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
@@ -1154,6 +1207,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     end
                 end
             else
+                warnify("bruh")
                 if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
                     menu.trigger_commands("bealone")
                 end
@@ -1164,6 +1218,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             end
         end
     end
+    fucking_failure = false
     util.yield(666)
 end)
 

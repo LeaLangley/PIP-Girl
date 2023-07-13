@@ -1,5 +1,5 @@
 {
-    "Version": "12.07.2023",
+    "Version": "13.07.2023",
     "Blacklist": {
         "565770": {
             "Name": "IIRaZ3rII"
@@ -1446,6 +1446,18 @@
         },
         "84938333": {
             "Name": "SirBuforPC"
+        },
+        "49998167": {
+            "Name": "psznuzio"
+        },
+        "225631690": {
+            "Name": "AllukaFX"
+        },
+        "98509436": {
+            "Name": "EasYCSMC"
+        },
+        "206336493": {
+            "Name": "InfernoIsTaken"
         }
     }
 }
