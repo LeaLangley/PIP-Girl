@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.62"
+local SCRIPT_VERSION = "0.0.63"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -217,6 +217,12 @@ end
 function IS_HELP_MSG_DISPLAYED(label)
     HUD.BEGIN_TEXT_COMMAND_IS_THIS_HELP_MESSAGE_BEING_DISPLAYED(label)
     return HUD.END_TEXT_COMMAND_IS_THIS_HELP_MESSAGE_BEING_DISPLAYED(0)
+end
+
+handle_ptr = memory.alloc(13*8)
+local function pid_to_handle(pid)
+    NETWORK.NETWORK_HANDLE_FROM_PLAYER(pid, handle_ptr, 13)
+    return handle_ptr
 end
 
 local function isLoading(pid)
@@ -1116,7 +1122,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 util.yield(1666)
                 first_run = false
             else
-                util.yield(13666)
+                util.yield(16666)
             end
             notify("U r in Story Mode, Getting u online.")
             menu.trigger_commands("go public")
@@ -1125,21 +1131,24 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
     end
 
     if util.is_session_started() then
-        if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players and not players.is_marked_as_modder(players.get_host()) and players.get_host_queue_position(players.user()) == 1 then
-            local isHostFriendly = false
-            for _, pid in pairs(players.list(false, true, false)) do
-                if pid == players.get_host() then
+        local isHostFriendly = false
+        for _, pid in players.list(true, true, true) do 
+            if pid == players.get_host() then
+                local hdl = pid_to_handle(pid)
+                if NETWORK.NETWORK_IS_FRIEND(hdl) and not players.user() == pid then 
                     isHostFriendly = true
                     break
                 end
             end
+        end
+        if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players and (not players.is_marked_as_modder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
             if session_claimer_kd then
                 local players_with_kd = 0
                 local kdChecksPassed = false
                 for _, pid in pairs(players.list(false, false, true)) do
-                    while not IsInSession() do
+                    while players.get_money(pid) == 0 or not IsInSession() do
                         if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
-                            util.yield(13666)
+                            util.yield(16666)
                             notify("U r in Story Mode ? Getting u online.")
                             menu.trigger_commands("go public")
                         end
@@ -1161,46 +1170,42 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             end
             util.yield(666)
             if not fucking_failure then
-                if not players.is_marked_as_modder(players.get_host()) and players.get_host_queue_position(players.user()) == 1 and not isHostFriendly then
+                if (not players.is_marked_as_modder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
                     warnify("Might found something.")
                     while not IsInSession() do
                         if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
-                            util.yield(13666)
+                            util.yield(16666)
                             notify("U r in Story Mode ? Getting u online.")
                             menu.trigger_commands("go public")
                         end
                         util.yield(666)
                     end
-                    if not players.is_marked_as_modder(players.get_host()) and players.get_host_queue_position(players.user()) == 1 and not isHostFriendly then
-                        isHostFriendly = false
-                        util.yield(666)
+                    util.yield(666)
+                    if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 then
                         menu.trigger_commands("givecollectibles " .. players.get_name(players.get_host()))
-                        util.yield(666)
+                        util.yield(3666)
                         StrategicKick(players.get_host(), players.get_name(players.get_host()), players.get_rockstar_id(players.get_host()))
-                        util.yield(13666)
-                        if players.get_host() == players.user() then
-                            warnify("Found u a new Home <3")
-                            if players.user() != players.get_script_host() then
-                                menu.trigger_commands("scripthost")
-                            end
-                            if temp_admin then
-                                menu.trigger_commands("antiadmin off")
-                                temp_admin = false
-                            end
-                            if temp_auto_warning then
-                                menu.trigger_commands("pgaaw off")
-                                temp_auto_warning = false
-                            end
-                            menu.trigger_commands("resetheadshots")
-                            menu.trigger_commands("superclean")
-                            menu.trigger_commands("claimsession off")
-                            util.yield(6666)
-                        end
-                    else
-                        if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
-                            menu.trigger_commands("bealone")
-                        end
                     end
+                    util.yield(13666)
+                    if players.get_host() == players.user() or isHostFriendly then
+                        warnify("Found u a new Home <3")
+                        if players.user() != players.get_script_host() then
+                            menu.trigger_commands("scripthost")
+                        end
+                        if temp_admin then
+                            menu.trigger_commands("antiadmin off")
+                            temp_admin = false
+                        end
+                        if temp_auto_warning then
+                            menu.trigger_commands("pgaaw off")
+                            temp_auto_warning = false
+                        end
+                        menu.trigger_commands("resetheadshots")
+                        menu.trigger_commands("superclean")
+                        menu.trigger_commands("claimsession off")
+                        util.yield(6666)
+                    end
+                    isHostFriendly = false
                 else
                     if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
                         menu.trigger_commands("bealone")
@@ -1544,95 +1549,6 @@ local function SessionCheck(pid)
 end
 
 players.on_join(SessionCheck)
-
---menu.action(Protection, '(Alpha) Import Global Blacklist', {'bimp'}, 'This can take up some time, be prepared.\nRecommended to start befor going afk or etc.', function()
---    local player_imported = 0
---    local player_processed = 0
---    local player_in_list = 0
---    for rid, player in pairs(data_g) do
---        player_in_list = player_in_list + 1
---    end
---
---    local commandPaths = {
---        "[Offline]",
---        "[Public]",
---        "[Invite]",
---        "[Friends Only]",
---        "[Story Mode]",
---        "[Other]"
---    }
---    
---    local maxRetries = 4
---    
---    for rid, player in pairs(data_g) do
---        local name = player.Name
---        menu.trigger_commands("historyaddrid ".. rid)
---        
---        local ValidRef = nil
---        local retryCount = 0
---        local pathSuffix = ""
---        
---        for i, suffix in ipairs(commandPaths) do
---            pathSuffix = suffix
---
---            local commandPath = "Online>Player History>" .. name .. " " .. pathSuffix .. ">Note"
---            ValidRef = menu.ref_by_path(commandPath)
---            util.yield(666)
---            if ValidRef:isValid() then
---                local Note = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Note")
---                local Notification = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Notification")
---                local BlockJoin = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Join")
---                local Timeout = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Timeout")
---                local BlockTheirNetworkEvents = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Their Network Events")
---                local BlockIncomingSyncs = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Incoming Syncs")
---                local BlockOutgoingSyncs = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Outgoing Syncs")
---
---                menu.trigger_commands("historynote ".. name .." Blacklist")
---                menu.set_value(Notification, true)
---                menu.set_value(BlockJoin, true)
---                menu.set_value(Timeout, true)
---                menu.set_value(BlockTheirNetworkEvents, true)
---                menu.set_value(BlockIncomingSyncs, true)
---                menu.set_value(BlockOutgoingSyncs, true)
---                
---                notify("\nBlacklisted:\n" .. name .. " " .. pathSuffix .. " | " .. rid .. "\n:D\nPlayers Processed: " .. player_processed + 1 .. " / " .. player_in_list .. "\nPlayers Added: " .. player_imported)
---                pathSuffix = ""
---                retryCount = 0
---                util.yield(1666)
---                player_imported = player_imported + 1
---                player_processed = player_processed + 1
---                break
---            end
---        end
---        if not ValidRef:isValid() then
---            pathSuffix = nil
---            player_processed = player_processed + 1
---            warnify("\nNo valid player reference found for player:\n" .. name .. " | " .. rid .. "\n:c\nPlayers Processed: " .. player_processed + 1 .. " / " .. player_in_list .. "\nPlayers Added: " .. player_imported)
---            util.yield(6666)
---        end
---        util.yield(666)
---    end
---    
---    notify(player_imported .. " Players Imported")
---end)
---
---menu.action(Protection, '(!) Block Join Global Blacklist', {'impblock'}, '', function()
---    local player_processed = 0
---    local player_in_list = 0
---    for rid, player in pairs(data_g) do
---        player_in_list = player_in_list + 1
---    end
---    for rid, player in pairs(data_g) do
---        local name = player.Name
---        menu.trigger_commands("historyaddrid ".. rid)
---        util.yield(6666)
---        add_in_stand(player, name, rid)
---        player_processed += 1
---        notify("\nProcessed:\n" .. name .. " | " .. rid .. "\nPlayers Processed: " .. player_processed .. " / " .. player_in_list)
---        util.yield(666)
---    end
---    notify("\nPlayers Processed: " .. player_processed)
---end)
 
 menu.action(Protection, 'Open Export Folder', {'oef'}, '', function()
     util.open_folder(resources_dir .. 'Export')
