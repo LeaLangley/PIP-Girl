@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.66"
+local SCRIPT_VERSION = "0.0.67"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -422,7 +422,6 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yo
     else
         util.yield(13666)
     end
-    menu.trigger_commands("resetheadshots")
 end)
 
 menu.action(PIP_Girl, 'Cayo Preset (!)', {}, 'Set up the cayo heist with a Sweet Legit Like Preset.\nIf you inside the Submarine, go manually out and in again to refreash the board.\nNote that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.', function (click_type)
@@ -1262,7 +1261,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
     if IsInSession() then
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
             if players.user() != players.get_host() then
-                util.yield(1666)
+                util.yield(13666)
             end
             local script_host_id = players.get_script_host()
             if not isLoading(script_host_id) then
@@ -1546,7 +1545,6 @@ local function SessionCheck(pid)
             end
         end
     end
-    menu.trigger_commands("resetheadshots") 
 end
 
 players.on_join(SessionCheck)
