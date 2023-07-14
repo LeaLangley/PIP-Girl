@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.65"
+local SCRIPT_VERSION = "0.0.66"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -268,7 +268,6 @@ local Outfit = menu.list(menu.my_root(), 'Outfit', {}, 'Look Pretty and nice.', 
 local Game = menu.list(menu.my_root(), 'Game', {}, '', function(); end)
 local Session = menu.list(menu.my_root(), 'Session', {}, 'Session', function(); end)
 local SessionClaimer = menu.list(Session, 'Session Claimer Settings', {}, 'Session Claimer Settings', function(); end)
-local Protection = menu.list(menu.my_root(), 'Protection', {}, 'Protect yourself with our todays sponsor .....', function(); end)
 local Settings = menu.list(menu.my_root(), 'Settings', {}, '', function(); end)
 
 menu.action(PIP_Girl_APPS, "Master Control Terminal App", {}, "Your Master Control Terminal.", function()
@@ -326,10 +325,10 @@ menu.toggle_loop(PIP_Girl, 'Nightclub Party Never Stops!', {'ncpop'}, 'The hotte
         local ncpop = math.floor(STAT_GET_INT('CLUB_POPULARITY') / 10)
         if ncpop < 91 then
             menu.trigger_commands('clubpopularity 100')
-            notify('New NC Gusts have Arived.')
+            menu.trigger_commands("resetheadshots")
             util.yield(66666)
         end
-        util.yield(13666)
+        util.yield(66666)
     else
         util.yield(66666)
     end
@@ -423,9 +422,10 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yo
     else
         util.yield(13666)
     end
+    menu.trigger_commands("resetheadshots")
 end)
 
-menu.action(PIP_Girl, 'Cayo Preset (!)', {}, 'Set up the cayo heist with a Sweet Legit Like Preset.\nNOTE!: it will try to trigger a HC lua CMD to refreash the Planning screen.\nIf you have HC not active, go manually out and in again.\nNote that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.', function (click_type)
+menu.action(PIP_Girl, 'Cayo Preset (!)', {}, 'Set up the cayo heist with a Sweet Legit Like Preset.\nIf you inside the Submarine, go manually out and in again to refreash the board.\nNote that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.', function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'Want to set up cayo?', function()
         if IsInSession() then
             STAT_SET_INT("H4_MISSIONS", -1)
@@ -466,13 +466,11 @@ menu.action(PIP_Girl, 'Cayo Preset (!)', {}, 'Set up the cayo heist with a Sweet
             STAT_SET_INT("H4LOOT_WEED_V", 420908)
             STAT_SET_INT("H4_PROGRESS", 131055)
             util.yield(1)
-            menu.trigger_commands("hccprefreshboard")
-            util.yield(1)
             menu.trigger_commands("fillinventory")
             util.yield(1)
-            notify("Cayo Has been setup!")
+            warnify("Cayo Has been setup!")
             util.yield(6000)
-            notify("Note that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.")
+            warnify("Note that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.")
             util.yield(2000)
             notify("Note that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.")
         end
@@ -1547,14 +1545,11 @@ local function SessionCheck(pid)
                 StrategicKick(pid, name, rid)
             end
         end
-    end 
+    end
+    menu.trigger_commands("resetheadshots") 
 end
 
 players.on_join(SessionCheck)
-
-menu.action(Protection, 'Open Export Folder', {'oef'}, '', function()
-    util.open_folder(resources_dir .. 'Export')
-end)
 
 --menu.toggle_loop(Protection, "Dont Block Love Letter Kicks as Host.", {"pgbll"}, "New Meta.", function()
 --    if IsInSession() then
@@ -1682,6 +1677,10 @@ players.add_command_hook(function(pid)
         end
         util.yield(13)
     end)
+end)
+
+menu.action(Settings, 'Open Export Blacklist Folder', {'oef'}, '', function()
+    util.open_folder(resources_dir .. 'Export')
 end)
 
 menu.hyperlink(Settings, "PIP Girl's GIT", "https://github.com/LeaLangley/PIP-Girl", "")
