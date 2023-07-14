@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.64"
+local SCRIPT_VERSION = "0.0.65"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -637,20 +637,24 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
             --    end
             --else
             if engineHealth < 1000 then
-                VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + 5)
+                local randomValue = math.random(1, 6)
+                VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + randomValue)
             end
             if petrolTankHealth < 1000 then
-                VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + 5)
+                local randomValue = math.random(1, 6)
+                VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + randomValue)
             end
-            --end
             if bodyHealth < 1000 then
-                VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + 5)
+                local randomValue = math.random(1, 6)
+                VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + randomValue)
             end
             if heliTailHealth < 1000 then
-                VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + 5)
+                local randomValue = math.random(1, 6)
+                VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + randomValue)
             end
             if heliRotorHealth < 1000 then
-                VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + 5)
+                local randomValue = math.random(1, 6)
+                VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + randomValue)
             end
             if petrolTankHealth >= 1000 and engineHealth >= 1000 and bodyHealth >= 1000 then
                 VEHICLE.SET_VEHICLE_DEFORMATION_FIXED(vehicle)
