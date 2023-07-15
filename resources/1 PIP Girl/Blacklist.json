@@ -1,5 +1,5 @@
 {
-    "Version": "14.07.2023",
+    "Version": "15.07.2023",
     "Blacklist": {
         "565770": {
             "Name": "IIRaZ3rII"
@@ -1485,6 +1485,24 @@
         },
         "118271861": {
             "Name": "RiiCoo-84"
+        },
+        "92315917": {
+            "Name": "Humannan"
+        },
+        "146564674": {
+            "Name": "Ablat673"
+        },
+        "209883308": {
+            "Name": "zll-CRIS-llz"
+        },
+        "194259282": {
+            "Name": "IlIIIIlllIlI"
+        },
+        "187277306": {
+            "Name": "RealBills"
+        },
+        "89961781": {
+            "Name": "HIGHESTINT3ER00M"
         }
     }
 }
