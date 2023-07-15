@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.67"
+local SCRIPT_VERSION = "0.0.68"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -843,13 +843,6 @@ end, function()
     blipsCreated = false
 end)
 
-menu.action(Stimpak, "Copy Position to Clipboard", {}, "", function()
-    local playerPosition = players.get_position(players.user())
-    local positionString = string.format("{ x = %.2f, y = %.2f, z = %.2f },", playerPosition.x, playerPosition.y, playerPosition.z)
-    util.copy_to_clipboard(positionString, false)
-    notify("Position copied to clipboard!")
-end)
-
 menu.toggle_loop(Stimpak, "(DEBUG) Lea Tech", {""}, "", function()
     if IsInSession() then
         local vehicle = entities.get_user_vehicle_as_handle()
@@ -985,18 +978,34 @@ menu.toggle_loop(Game, "Auto Skip Conversation",{"pgascon"},"Automatically skip 
     if AUDIO.IS_SCRIPTED_CONVERSATION_ONGOING() then
         AUDIO.SKIP_TO_NEXT_SCRIPTED_CONVERSATION_LINE()
     end
-    util.yield(1)
+    util.yield()
 end)
 
 local avoidCutsceneSkipHere = {
-    { x = 4989.31, y = -5717.63, z = 19.69 },--cayo gate exit
+    { x = 4989.31, y = -5717.63, z = 19.69 }, -- Cayo gate exit
+    { x = 4991.81, y = -5715.11, z = 19.88 },
+    { x = 4982.63, y = -5710.30, z = 19.73 }, -- Cayo gate enter
+    { x = 4975.27, y = -5708.02, z = 19.89 },
 }
-menu.toggle_loop(Game, "Auto Skip Cutscene",{"pgascut"},"Automatically skip all cutscenes.",function()
-    if IsInSession() and not isLoading(players.user()) and CUTSCENE.IS_CUTSCENE_PLAYING() then
-        --local playerPosition = players.get_position(players.user())
-        --local radius = 2
-        CUTSCENE.STOP_CUTSCENE_IMMEDIATELY()
-        util.yield(6666)
+menu.toggle_loop(Game, "Auto Skip Cutscene", {"pgascut"}, "Automatically skip all cutscenes.", function()
+    if IsInSession() and CUTSCENE.IS_CUTSCENE_PLAYING() then
+        local playerPosition = players.get_position(players.user())
+        local skipCutscene = true
+
+        for i, position in ipairs(avoidCutsceneSkipHere) do
+            local distance = math.sqrt((playerPosition.x - position.x) ^ 2 + (playerPosition.y - position.y) ^ 2 + (playerPosition.z - position.z) ^ 2)
+            local radius = 6
+
+            if distance <= radius then
+                skipCutscene = false
+                break
+            end
+        end
+
+        if skipCutscene then
+            CUTSCENE.STOP_CUTSCENE_IMMEDIATELY()
+            util.yield(6666)
+        end
     end
     util.yield(666)
 end)
@@ -1034,19 +1043,42 @@ local warningMessages = {
     [705668975] = "You have already been voted out of this game session. Joining a new GTA Online session.",
     [2055607490] = "XD\nUsing more then your allotted graphics card memory can result in serious performance drops and stability issues. Proceed with caution. :clown:"
 }
+local avoidWarningSkipHere = {
+    { x = 1561.00, y = 385.89, z = -49.69 }, -- Cayo Planning Room
+    { x = 1561.05, y = 385.90, z = -49.69 }, -- Cayo Board
+    { x = 1561.05, y = 385.90, z = -49.69 }, -- Cayo Outfit Selection
+}
 menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warnings in the game.", function()
+    local playerPosition = players.get_position(players.user())
     local mess_hash = math.abs(HUD.GET_WARNING_SCREEN_MESSAGE_HASH())
+
     if mess_hash ~= 0 then
-        local warning = warningMessages[mess_hash]
-        if warning then
-            warnify(warning)
-            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
-        else
-            notify(mess_hash)
+        local skipWarning = true
+
+        for i, position in ipairs(avoidWarningSkipHere) do
+            local distance = math.sqrt((playerPosition.x - position.x) ^ 2 + (playerPosition.y - position.y) ^ 2 + (playerPosition.z - position.z) ^ 2)
+            local radius = 3
+
+            if distance <= radius then
+                skipWarning = false
+                break
+            end
+        end
+
+        if skipWarning then
+            local warning = warningMessages[mess_hash]
+            if warning then
+                warnify(warning)
+                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
+            else
+                notify(mess_hash)
+            end
         end
     end
-    util.yield(50)
+
+    util.yield(13)
 end)
+
 
 --local thermal_command = menu.ref_by_path('Game>Rendering>Thermal Vision')
 --menu.toggle_loop(Game, "Thermal Scope",{},"Press E while aiming to activate.",function() -- From mehScript <3 /but respects if u use another hotkey for thermal.
@@ -1679,6 +1711,13 @@ end)
 
 menu.action(Settings, 'Open Export Blacklist Folder', {'oef'}, '', function()
     util.open_folder(resources_dir .. 'Export')
+end)
+
+menu.action(Settings, "Copy Position to Clipboard", {}, "", function()
+    local playerPosition = players.get_position(players.user())
+    local positionString = string.format("{ x = %.2f, y = %.2f, z = %.2f },", playerPosition.x, playerPosition.y, playerPosition.z)
+    util.copy_to_clipboard(positionString, false)
+    notify("Position copied to clipboard!")
 end)
 
 menu.hyperlink(Settings, "PIP Girl's GIT", "https://github.com/LeaLangley/PIP-Girl", "")
