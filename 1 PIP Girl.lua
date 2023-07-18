@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.69"
+local SCRIPT_VERSION = "0.0.71"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1100,8 +1100,8 @@ end)
 --end)
 
 menu.divider(SessionClaimer, "Player Amount Filter")
-local session_claimer_players = 32
-menu.slider(SessionClaimer, 'Session Size', {'claimsessionsize'}, 'Select the Size of a Session u want to claim.\nThis Value can be saved in a Profile!^^\n(!) Size 31-32 is very rare to reach, so its only use would be filling the Player History.', 1, 32, session_claimer_players, 1, function (new_value)
+local session_claimer_players = 0
+menu.slider(SessionClaimer, 'Session Size', {'claimsessionsize'}, 'Select the Size of a Session u want to claim.\nThis Value can be saved in a Profile!^^\n(!) Size 31-32 is very rare to reach, so its only use would be filling the Player History.', 0, 32, session_claimer_players, 1, function (new_value)
     session_claimer_players = new_value
 end)
 menu.divider(SessionClaimer, "K/D Filter")
@@ -1114,13 +1114,32 @@ menu.toggle(SessionClaimer, "Seartch K/D On/Off", {""}, "Toggle the Seartch for 
     end
 end)
 local session_claimer_kd_target = 0
-menu.slider(SessionClaimer, 'Player K/D Target', {''}, 'Enter the K/D u wish to Seartch for.', 1, 10, session_claimer_kd_target, 1, function (new_value)
+menu.slider(SessionClaimer, 'Player K/D Target', {'scpkdt'}, 'Enter the K/D u wish to Seartch for.', 0, 10, session_claimer_kd_target, 1, function (new_value)
     session_claimer_kd_target = new_value
 end)
 local session_claimer_kd_target_players = 0
-menu.slider(SessionClaimer, 'Players With K/D Target', {''}, 'Enther the amount of Players that should Match the K/D.', 1, 10, session_claimer_kd_target_players, 1, function (new_value)
+menu.slider(SessionClaimer, 'Players With K/D Target', {'scpwkdt'}, 'Enther the amount of Players that should Match the K/D.', 0, 10, session_claimer_kd_target_players, 1, function (new_value)
     session_claimer_kd_target_players = new_value
 end)
+
+menu.divider(SessionClaimer, "lvl Filter")
+local session_claimer_lvl = false
+menu.toggle(SessionClaimer, "Seartch lvl On/Off", {""}, "Toggle the Seartch for lvl.", function(on)
+    if on then
+        session_claimer_lvl = true
+    else
+        session_claimer_lvl = false
+    end
+end)
+local session_claimer_lvl_target = 0
+menu.slider(SessionClaimer, 'Player lvl Target', {'scplvlt'}, 'Enter the lvl u wish to Seartch for.', 0, 1000, session_claimer_lvl_target, 1, function (new_value)
+    session_claimer_lvl_target = new_value
+end)
+local session_claimer_lvl_target_players = 0
+menu.slider(SessionClaimer, 'Players With lvl Target', {'scpwlvlt'}, 'Enther the amount of Players that should Match the lvl.', 0, 10, session_claimer_lvl_target_players, 1, function (new_value)
+    session_claimer_lvl_target_players = new_value
+end)
+
 menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session with Selcted Size.\nChecks if the host is not a Modder or Friend.\nClaims the Host if all clear and next as host.\nElse looks for a better place to stay.\n\nAdmin Bailing & Auto Accept Warning included.", function()
     local magnet_path = "Online>Transitions>Matchmaking>Player Magnet"
     local admin_path = "Stand>Lua Scripts>1 PIP Girl>Session>Admin Bail"
@@ -1177,7 +1196,6 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players and (not players.is_marked_as_modder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
             if session_claimer_kd then
                 local players_with_kd = 0
-                local kdChecksPassed = false
                 for _, pid in pairs(players.list(false, false, true)) do
                     while not IsInSession() do
                         if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
@@ -1201,6 +1219,32 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     fucking_failure = true
                 end
             end
+
+            if session_claimer_lvl then
+                local players_with_lvl = 0
+                for _, pid in pairs(players.list(false, false, true)) do
+                    while not IsInSession() do
+                        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
+                            util.yield(16666)
+                            notify("U r in Story Mode ? Getting u online.")
+                            menu.trigger_commands("go public")
+                        end
+                        util.yield(666)
+                    end
+                    if (players_with_lvl < session_claimer_lvl_target_players) then
+                        if not players.is_marked_as_modder(pid) then
+                            local lvl = players.get_rank(pid)
+                            if lvl >= session_claimer_lvl_target then
+                                players_with_lvl = players_with_lvl + 1
+                            end
+                        end
+                    end
+                end                
+                if players_with_lvl < session_claimer_lvl_target_players then
+                    fucking_failure = true
+                end
+            end
+
             if not fucking_failure then
                 if (not players.is_marked_as_modder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
                     warnify("Might found something.")
@@ -1215,10 +1259,16 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 then
                         menu.trigger_commands("givecollectibles " .. players.get_name(players.get_host()))
                         util.yield(6666)
-                        StrategicKick(players.get_host(), players.get_name(players.get_host()), players.get_rockstar_id(players.get_host()))
+                        if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 then
+                            StrategicKick(players.get_host(), players.get_name(players.get_host()), players.get_rockstar_id(players.get_host()))
+                        else
+                            if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
+                                menu.trigger_commands("bealone")
+                            end
+                        end
                     end
                     util.yield(6666)
-                    if players.get_host() == players.user() or isHostFriendly then
+                    if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 and (players.get_host() == players.user() or isHostFriendly) then
                         warnify("Found u a new Home <3")
                         if players.user() != players.get_script_host() then
                             menu.trigger_commands("scripthost")
@@ -1235,6 +1285,10 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                         menu.trigger_commands("superclean")
                         menu.trigger_commands("claimsession off")
                         util.yield(6666)
+                    else
+                        if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
+                            menu.trigger_commands("bealone")
+                        end
                     end
                     isHostFriendly = false
                 else
