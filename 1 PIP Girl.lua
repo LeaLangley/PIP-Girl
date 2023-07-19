@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.71"
+local SCRIPT_VERSION = "0.0.72"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1251,7 +1251,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             if session_claimer_players == 0 then
                 util.yield(6666)
             end
-            if not fucking_failure and not session_claimer_players == 0 then
+            if not fucking_failure and session_claimer_players ~= 0 then
                 if (not players.is_marked_as_modder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
                     warnify("Might found something.")
                     while not IsInSession() do
