@@ -1159,9 +1159,12 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
 
     if session_claimer_players >= 30 and menu.get_state(menu.ref_by_path(magnet_path)) ~= "30" then
         menu.trigger_commands("playermagnet 30")
+    elseif session_claimer_players == 0 then
+        local random_number = math.random(1, 32)
+        menu.trigger_commands("playermagnet " .. random_number)
     elseif session_claimer_players < 30 and menu.get_state(menu.ref_by_path(magnet_path)) ~= session_claimer_players then
         menu.trigger_commands("playermagnet " .. session_claimer_players)
-    end
+    end    
     if util.is_session_started() then
         menu.trigger_commands("go public")
         first_run = false
@@ -1245,7 +1248,10 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 end
             end
 
-            if not fucking_failure then
+            if session_claimer_players == 0 then
+                util.yield(6666)
+            end
+            if not fucking_failure and not session_claimer_players == 0 then
                 if (not players.is_marked_as_modder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
                     warnify("Might found something.")
                     while not IsInSession() do
@@ -1297,7 +1303,6 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     end
                 end
             else
-                warnify("bruh")
                 if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
                     menu.trigger_commands("bealone")
                 end
