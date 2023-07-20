@@ -1404,7 +1404,7 @@ end)
 
 menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisible for the whole session, but with a nice effect for ppl close by.", function()
     if IsInSession() then
-        warnify_ses("T-10 sec. Start on ;GO;")
+        warnify_ses("T-5 sec. Start on ;GO;")
         for i=1, 13 do
             PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
