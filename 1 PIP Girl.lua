@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.72"
+local SCRIPT_VERSION = "0.0.73"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1405,32 +1405,6 @@ end)
 menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisible for the whole session, but with a nice effect for ppl close by.", function()
     if IsInSession() then
         warnify_ses("T-10 sec. Start on ;GO;")
-        for i=1, 13 do
-            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-            util.yield(1)
-        end
-        util.yield(859)
-        for i=1, 13 do
-            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-            util.yield(1)
-        end
-        util.yield(859)
-        for i=1, 13 do
-            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-            util.yield(1)
-        end
-        util.yield(859)
-        for i=1, 13 do
-            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-            util.yield(1)
-        end
-        util.yield(859)
-        for i=1, 13 do
-            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
-            util.yield(1)
-        end
-        util.yield(859)
-        warnify_ses("5")
         for i=1, 13 do
             PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
