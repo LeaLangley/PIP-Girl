@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.73"
+local SCRIPT_VERSION = "0.0.74"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -596,6 +596,20 @@ menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {"pgva
             end
         end
         util.yield(666)
+    else
+        util.yield(13666)
+    end
+end)
+
+menu.toggle_loop(Stimpak, "Oxygen", {"pgbreath"}, "Just breath.", function()
+    if IsInSession() then
+        local air = PLAYER.GET_PLAYER_UNDERWATER_TIME_REMAINING(players.user())
+        if 13 >= air then
+            PLAYER.SET_PLAYER_UNDERWATER_BREATH_PERCENT_REMAINING(players.user(), 100)
+            util.yield(666)
+        else
+            util.yield(13)
+        end
     else
         util.yield(13666)
     end
@@ -1768,6 +1782,7 @@ menu.action(Settings, "Activate Everyday Goodies", {"pggoodies"}, "Activates all
     menu.trigger_commands("pgblessing on")
     menu.trigger_commands("pghealth on")
     menu.trigger_commands("pgarmor on")
+    menu.trigger_commands("pgbreath on")
     menu.trigger_commands("pgvaid on")
     menu.trigger_commands("leatech on")
     menu.trigger_commands("lears on")
