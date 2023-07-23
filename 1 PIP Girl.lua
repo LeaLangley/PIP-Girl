@@ -623,11 +623,10 @@ end)
 local function LeaTech()
     local vehicle = entities.get_user_vehicle_as_handle()
     if vehicle then
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, true)
+        VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, true)
         VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, false)
         util.yield(666)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
-        VEHICLE.SET_VEHICLE_FULLBEAM(vehicle, true)
         VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, true)
     else
         util.yield(1000)
@@ -679,13 +678,13 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
                 VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, 1000)
                 VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, 1000)
                 VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, 1000)
+                VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, false)
+                VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, false)
             else
                 LeaTech()
             end
             if saved_vehicle_id == nil or saved_vehicle_id ~= vehicle then
                 saved_vehicle_id = vehicle
-                VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, true)
-                VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, true)
                 VEHICLE.SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
                 VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
                 VEHICLE.SET_VEHICLE_FULLBEAM(vehicle, true)
