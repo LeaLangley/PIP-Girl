@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.74"
+local SCRIPT_VERSION = "0.0.75"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1276,18 +1276,20 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                         end
                         util.yield(666)
                     end
-                    if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 then
+                    menu.trigger_commands("superclean")
+                    util.yield(13666)
+                    if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 and not players.is_marked_as_modder(players.get_host()) then
                         menu.trigger_commands("givecollectibles " .. players.get_name(players.get_host()))
                         util.yield(6666)
-                        if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 then
+                        if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 and not players.is_marked_as_modder(players.get_host())then
                             StrategicKick(players.get_host(), players.get_name(players.get_host()), players.get_rockstar_id(players.get_host()))
                         else
                             if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
-                                menu.trigger_commands("bealone")
+                                menu.trigger_commands("unstuck")
                             end
                         end
                     end
-                    util.yield(6666)
+                    util.yield(13666)
                     if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 and (players.get_host() == players.user() or isHostFriendly) then
                         warnify("Found u a new Home <3")
                         if players.user() != players.get_script_host() then
@@ -1302,28 +1304,27 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                             temp_auto_warning = false
                         end
                         menu.trigger_commands("resetheadshots")
-                        menu.trigger_commands("superclean")
                         menu.trigger_commands("claimsession off")
                         util.yield(6666)
                     else
-                        if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
-                            menu.trigger_commands("bealone")
+                        if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
+                            menu.trigger_commands("unstuck")
                         end
                     end
                     isHostFriendly = false
                 else
-                    if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
-                        menu.trigger_commands("bealone")
+                    if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
+                        menu.trigger_commands("unstuck")
                     end
                 end
             else
-                if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
-                    menu.trigger_commands("bealone")
+                if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
+                    menu.trigger_commands("unstuck")
                 end
             end
         else
-            if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
-                menu.trigger_commands("bealone")
+            if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
+                menu.trigger_commands("unstuck")
             end
         end
     end
