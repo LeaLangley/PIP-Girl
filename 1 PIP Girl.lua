@@ -482,8 +482,13 @@ menu.toggle_loop(PIP_Girl, "Carry Pickups", {}, "Carry all Pickups on You.\nNote
     if IsInSession() then
         local pos = players.get_position(players.user())
         for _, pickup in entities.get_all_pickups_as_handles() do
-            ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z + 1.2, false, false, false, false)
-            util.yield(13)
+            local in_vehicle = is_user_driving_vehicle()
+            if in_vehicle then
+                ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z - 0.3, false, false, false, false)
+            else
+                ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z + 1.2, false, false, false, false)
+            end
+            util.yield(1)
         end
         util.yield(13)
     else
