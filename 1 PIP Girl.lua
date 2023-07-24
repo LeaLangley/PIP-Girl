@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.76"
+local SCRIPT_VERSION = "0.0.77"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -634,7 +634,11 @@ local function LeaTech()
 end
 local saved_vehicle_id = nil
 menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle", function()
+    local cmd_path = "Vehicle>Light Signals>Use Brake Lights When Stopped"
     if IsInSession() then
+        if menu.get_state(menu.ref_by_path(cmd_path)) ~= "On" then
+            menu.trigger_commands("brakelights on")
+        end
         local vehicle = entities.get_user_vehicle_as_handle()
         if vehicle then
             local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
@@ -1360,7 +1364,7 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic a
         end
         MISC.CLEAR_AREA_OF_VEHICLES(0.0, 0.0, 0.0, 19999.9, false, false, false, false, false, false)
         MISC.CLEAR_AREA_OF_PEDS(0, 0, 0, 19999.9, 1)
-        util.yield(6666)
+        util.yield(3666)
     else
         local ClearTraficSphere = 0
         util.yield(13666)
