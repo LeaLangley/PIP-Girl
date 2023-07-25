@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.77"
+local SCRIPT_VERSION = "0.0.78"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1101,6 +1101,91 @@ menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warn
     util.yield(13)
 end)
 
+local getEntityCoords = ENTITY.GET_ENTITY_COORDS
+local getPlayerPed = PLAYER.GET_PLAYER_PED
+
+local function getLocalPed()
+    return PLAYER.PLAYER_PED_ID()
+end
+
+local function drawESPText(coord, Yoffset, text, scale, color)
+    directx.draw_text(coord.x, coord.y + Yoffset, text, ALIGN_CENTRE, scale, color.r, color.g, color.b, 1)
+end
+
+local function worldToScreen(coords)
+    local sx = memory.alloc()
+    local sy = memory.alloc()
+    local success = GRAPHICS.GET_SCREEN_COORD_FROM_WORLD_COORD(coords.x, coords.y, coords.z, sx, sy)
+    local screenx = memory.read_float(sx) local screeny = memory.read_float(sy) --memory.free(sx) memory.free(sy)
+    return {x = screenx, y = screeny, success = success}
+end
+
+local r, g, b, a = memory.alloc(1), memory.alloc(1), memory.alloc(1), memory.alloc(1)
+function getOrgColor(pid)
+    pid = pid or Player.getUserPlayer()
+    local orgColorIdx = players.get_org_colour(pid)
+    if orgColorIdx == -1 then
+        return -1
+    end
+    HUD.GET_HUD_COLOUR(orgColorIdx + 192, r, g, b, a)
+    local color = {
+        r = memory.read_ubyte(r) / 255,
+        g = memory.read_ubyte(g) / 255,
+        b = memory.read_ubyte(b) / 255,
+        a = 1
+    }
+    return color
+end
+
+local function espOnPlayer(pid, namesync)
+    local targetped = getPlayerPed(pid)
+    local ppos = getEntityCoords(targetped)
+    --coordinate stuff
+    local mypos = getEntityCoords(getLocalPed())
+    local playerHeadOffset = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(targetped, 0, 0, 1.0)
+    local centerPlayer = getEntityCoords(targetped)
+    local vdist = SYSTEM.VDIST2(mypos.x, mypos.y, mypos.z, ppos.x, ppos.y, ppos.z)
+
+    --color settings
+    local blipColor = getOrgColor(pid)
+    local colText
+    if blipColor == -1 then
+        colText = { r = 1.0, g = 1.0, b = 1.0, a = 1.0 } -- Default color if no organization blip color available
+    else
+        colText = {
+            r = blipColor.r,
+            g = blipColor.g,
+            b = blipColor.b,
+            a = blipColor.a
+        }
+    end
+    --head offset for all texts
+    local screenName = worldToScreen(playerHeadOffset)
+    local txtscale = 0.5
+
+    -- Maximum distance at which to draw the ESP (adjust this value as needed)
+    local maxDrawDistance = 313666 -- Change this value to your desired maximum distance.
+
+    if screenName.success and vdist <= maxDrawDistance then -- Check if it should be drawn based on distance and screen position.
+        --name ESP
+        drawESPText(screenName, -0.02, players.get_name_with_tags(pid), txtscale, colText)
+        local health = ENTITY.GET_ENTITY_HEALTH(targetped) - 100
+        local maxhealth = ENTITY.GET_ENTITY_MAX_HEALTH(targetped) - 100
+        local armour = PED.GET_PED_ARMOUR(targetped)
+        local maxarmour = PLAYER.GET_PLAYER_MAX_ARMOUR(pid)
+        drawESPText(screenName, -0.02 * 2, "(" .. health .. " / " .. maxhealth .. ")HP | (" .. armour .. " / " .. maxarmour .. ")AP", txtscale, colText)
+        
+        -- Draw other ESP elements with the appropriate color
+        -- (Add your code here to draw other ESP elements if needed)
+    end
+end
+
+menu.toggle_loop(Game, "ESP", {"pgesp"}, "ESP", function ()
+    local playerlist = players.list(false, true, true)
+    for i = 1, #playerlist do
+        espOnPlayer(playerlist[i])
+    end
+end)
 
 --local thermal_command = menu.ref_by_path('Game>Rendering>Thermal Vision')
 --menu.toggle_loop(Game, "Thermal Scope",{},"Press E while aiming to activate.",function() -- From mehScript <3 /but respects if u use another hotkey for thermal.
