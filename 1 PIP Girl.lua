@@ -1314,43 +1314,45 @@ end
 local function espOnPlayer(pid, namesync)
     local targetped = getPlayerPed(pid)
     local ppos = getEntityCoords(targetped)
-    --coordinate stuff
-    local mypos = getEntityCoords(getLocalPed())
-    local playerHeadOffset = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(targetped, 0, 0, 1.0)
-    local centerPlayer = getEntityCoords(targetped)
-    local vdist = SYSTEM.VDIST2(mypos.x, mypos.y, mypos.z, ppos.x, ppos.y, ppos.z)
+    if ppos.z < -10 or ENTITY.HAS_ENTITY_CLEAR_LOS_TO_ENTITY(players.user_ped(), targetped, 256) then
+        --coordinate stuff
+        local mypos = getEntityCoords(getLocalPed())
+        local playerHeadOffset = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(targetped, 0, 0, 1.0)
+        local centerPlayer = getEntityCoords(targetped)
+        local vdist = SYSTEM.VDIST2(mypos.x, mypos.y, mypos.z, ppos.x, ppos.y, ppos.z)
 
-    --color settings
-    local blipColor = getOrgColor(pid)
-    local colText
-    if blipColor == -1 then
-        colText = { r = 1.0, g = 1.0, b = 1.0, a = 1.0 } -- Default color if no organization blip color available
-    else
-        colText = {
-            r = blipColor.r,
-            g = blipColor.g,
-            b = blipColor.b,
-            a = blipColor.a
-        }
-    end
-    --head offset for all texts
-    local screenName = worldToScreen(playerHeadOffset)
-    local txtscale = 0.5
+        --color settings
+        local blipColor = getOrgColor(pid)
+        local colText
+        if blipColor == -1 then
+            colText = { r = 1.0, g = 1.0, b = 1.0, a = 1.0 } -- Default color if no organization blip color available
+        else
+            colText = {
+                r = blipColor.r,
+                g = blipColor.g,
+                b = blipColor.b,
+                a = blipColor.a
+            }
+        end
+        --head offset for all texts
+        local screenName = worldToScreen(playerHeadOffset)
+        local txtscale = 0.5
 
-    -- Maximum distance at which to draw the ESP (adjust this value as needed)
-    local maxDrawDistance = 313666 -- Change this value to your desired maximum distance.
+        -- Maximum distance at which to draw the ESP (adjust this value as needed)
+        local maxDrawDistance = 313666 -- Change this value to your desired maximum distance.
 
-    if screenName.success and vdist <= maxDrawDistance then -- Check if it should be drawn based on distance and screen position.
-        --name ESP
-        drawESPText(screenName, -0.06, players.get_name_with_tags(pid), txtscale, colText)
-        local health = ENTITY.GET_ENTITY_HEALTH(targetped) - 100
-        local maxhealth = ENTITY.GET_ENTITY_MAX_HEALTH(targetped) - 100
-        local armour = PED.GET_PED_ARMOUR(targetped)
-        local maxarmour = PLAYER.GET_PLAYER_MAX_ARMOUR(pid)
-        drawESPText(screenName, -0.06 * 1.3, "(" .. health .. " / " .. maxhealth .. ")HP | (" .. armour .. " / " .. maxarmour .. ")AP", txtscale, colText)
-        
-        -- Draw other ESP elements with the appropriate color
-        -- (Add your code here to draw other ESP elements if needed)
+        if screenName.success and vdist <= maxDrawDistance then -- Check if it should be drawn based on distance and screen position.
+            --name ESP
+            drawESPText(screenName, -0.06, players.get_name_with_tags(pid), txtscale, colText)
+            local health = ENTITY.GET_ENTITY_HEALTH(targetped) - 100
+            local maxhealth = ENTITY.GET_ENTITY_MAX_HEALTH(targetped) - 100
+            local armour = PED.GET_PED_ARMOUR(targetped)
+            local maxarmour = PLAYER.GET_PLAYER_MAX_ARMOUR(pid)
+            drawESPText(screenName, -0.06 * 1.3, "(" .. health .. " / " .. maxhealth .. ")HP | (" .. armour .. " / " .. maxarmour .. ")AP", txtscale, colText)
+            
+            -- Draw other ESP elements with the appropriate color
+            -- (Add your code here to draw other ESP elements if needed)
+        end
     end
 end
 
