@@ -1936,9 +1936,9 @@ players.add_command_hook(function(pid)
         end
     end)
     menu.toggle_loop(Bad_Modder, "Kick when Fully Loaded", {"hellabl"}, "Auto kick if u are fully loaded in the game.", function()
-        if IsInSession()
+        if IsInSession() then
             StrategicKick(pid, name, rid)
-            warnify_net("Attempting to kick " .. name ..)
+            warnify_net("Attempting to kick " .. name)
             util.yield(66666)
         else
             util.yield(1666)
