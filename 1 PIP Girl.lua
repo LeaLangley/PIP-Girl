@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.81"
+local SCRIPT_VERSION = "0.0.82"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -479,7 +479,7 @@ menu.action(PIP_Girl_Heist, 'Cayo 1 Player Preset (!)', {}, 'Set up the cayo hei
     end, true)
 end)
 
-menu.action(PIP_Girl_Heist, 'Cayo 2 Player Preset (!)', {}, 'Set up the cayo heist with a Sweet Legit Like Preset.\nIf you inside the Submarine, go manually out and in again to refreash the board.\nNote that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.', function (click_type)
+menu.action(PIP_Girl_Heist, 'Cayo 2 Player 50/50 Preset (!)', {}, 'Set up the cayo heist with a Sweet Legit Like Preset.\nIf you inside the Submarine, go manually out and in again to refreash the board.\nNote that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.', function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'Want to set up cayo?', function()
         if IsInSession() then
             STAT_SET_INT("H4_MISSIONS", -1)
@@ -533,7 +533,7 @@ menu.action(PIP_Girl_Heist, 'Cayo 2 Player Preset (!)', {}, 'Set up the cayo hei
     end, true)
 end)
 
-menu.action(PIP_Girl_Heist, 'Cayo 3 Player Preset (!)', {}, 'Set up the cayo heist with a Sweet Legit Like Preset.\nIf you inside the Submarine, go manually out and in again to refreash the board.\nNote that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.', function (click_type)
+menu.action(PIP_Girl_Heist, 'Cayo 3 Player 30/35/35 Preset (!)', {}, 'Set up the cayo heist with a Sweet Legit Like Preset.\nIf you inside the Submarine, go manually out and in again to refreash the board.\nNote that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.', function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'Want to set up cayo?', function()
         if IsInSession() then
             STAT_SET_INT("H4_MISSIONS", -1)
@@ -572,6 +572,60 @@ menu.action(PIP_Girl_Heist, 'Cayo 3 Player Preset (!)', {}, 'Set up the cayo hei
             STAT_SET_INT("H4LOOT_GOLD_V", 1024040)
             STAT_SET_INT("H4LOOT_PAINT_V", 768030)
             STAT_SET_INT("H4LOOT_WEED_V", 512020)
+            STAT_SET_INT("H4_PROGRESS", 131055)         
+            util.yield(1)
+            menu.trigger_commands("fillinventory")
+            util.yield(1)
+            warnify("Cayo Has been setup!")
+            util.yield(6000)
+            warnify("Note that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.")
+            util.yield(2000)
+            notify("Note that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.")
+        end
+    end, function()
+        notify("Aborted.")
+    end, true)
+end)
+
+menu.action(PIP_Girl_Heist, 'Cayo 4 Player 25/25/25/25 Preset (!)', {}, 'Set up the cayo heist with a Sweet Legit Like Preset.\nIf you inside the Submarine, go manually out and in again to refreash the board.\nNote that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.', function (click_type)
+    menu.show_warning(PIP_Girl, click_type, 'Want to set up cayo?', function()
+        if IsInSession() then
+            STAT_SET_INT("H4_MISSIONS", -1)
+            STAT_SET_INT("H4CNF_APPROACH", -1)
+            STAT_SET_INT("H4CNF_BS_ENTR", 63)
+            STAT_SET_INT("H4CNF_BS_GEN", 126975)
+            STAT_SET_INT("H4CNF_WEAPONS", 2)
+            STAT_SET_INT("H4CNF_WEP_DISRP", 3)
+            STAT_SET_INT("H4CNF_ARM_DISRP", 3)
+            STAT_SET_INT("H4CNF_HEL_DISRP", 3)
+            STAT_SET_INT("H4CNF_TARGET", 5)
+            STAT_SET_INT("H4CNF_BOLTCUT", 4424)
+            STAT_SET_INT("H4CNF_UNIFORM", 5256)
+            STAT_SET_INT("H4CNF_GRAPPEL", 5156)
+            STAT_SET_INT("H4CNF_TROJAN", 5)
+            STAT_SET_INT("H4LOOT_CASH_I", 7080066)
+            STAT_SET_INT("H4LOOT_CASH_I_SCOPED", 7080066)
+            STAT_SET_INT("H4LOOT_CASH_C", 0)
+            STAT_SET_INT("H4LOOT_CASH_C_SCOPED", 0)
+            STAT_SET_INT("H4LOOT_COKE_I", 33040)
+            STAT_SET_INT("H4LOOT_COKE_I_SCOPED", 33040)
+            STAT_SET_INT("H4LOOT_COKE_C", 0)
+            STAT_SET_INT("H4LOOT_COKE_C_SCOPED", 0)
+            STAT_SET_INT("H4LOOT_GOLD_I", 0)
+            STAT_SET_INT("H4LOOT_GOLD_I_SCOPED", 0)
+            STAT_SET_INT("H4LOOT_GOLD_C", 255)
+            STAT_SET_INT("H4LOOT_GOLD_C_SCOPED", 255)
+            STAT_SET_INT("H4LOOT_WEED_I", 24584)
+            STAT_SET_INT("H4LOOT_WEED_I_SCOPED", 24584)
+            STAT_SET_INT("H4LOOT_WEED_C", 0)
+            STAT_SET_INT("H4LOOT_WEED_C_SCOPED", 0)
+            STAT_SET_INT("H4LOOT_PAINT", 127)
+            STAT_SET_INT("H4LOOT_PAINT_SCOPED", 127)
+            STAT_SET_INT("H4LOOT_CASH_V", 444261)
+            STAT_SET_INT("H4LOOT_COKE_V", 888522)
+            STAT_SET_INT("H4LOOT_GOLD_V", 1184696)
+            STAT_SET_INT("H4LOOT_PAINT_V", 888522)
+            STAT_SET_INT("H4LOOT_WEED_V", 592348)
             STAT_SET_INT("H4_PROGRESS", 131055)         
             util.yield(1)
             menu.trigger_commands("fillinventory")
@@ -1278,12 +1332,12 @@ local function espOnPlayer(pid, namesync)
 
     if screenName.success and vdist <= maxDrawDistance then -- Check if it should be drawn based on distance and screen position.
         --name ESP
-        drawESPText(screenName, -0.02, players.get_name_with_tags(pid), txtscale, colText)
+        drawESPText(screenName, -0.04, players.get_name_with_tags(pid), txtscale, colText)
         local health = ENTITY.GET_ENTITY_HEALTH(targetped) - 100
         local maxhealth = ENTITY.GET_ENTITY_MAX_HEALTH(targetped) - 100
         local armour = PED.GET_PED_ARMOUR(targetped)
         local maxarmour = PLAYER.GET_PLAYER_MAX_ARMOUR(pid)
-        drawESPText(screenName, -0.02 * 2, "(" .. health .. " / " .. maxhealth .. ")HP | (" .. armour .. " / " .. maxarmour .. ")AP", txtscale, colText)
+        drawESPText(screenName, -0.04 * 1.5, "(" .. health .. " / " .. maxhealth .. ")HP | (" .. armour .. " / " .. maxarmour .. ")AP", txtscale, colText)
         
         -- Draw other ESP elements with the appropriate color
         -- (Add your code here to draw other ESP elements if needed)
