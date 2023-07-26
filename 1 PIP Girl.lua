@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.79"
+local SCRIPT_VERSION = "0.0.80"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1200,13 +1200,14 @@ menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warn
             local warning = warningMessages[mess_hash]
             if warning then
                 warnify(warning)
+                util.yield(13)
                 PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
             else
                 notify(mess_hash)
+                util.yield(666)
             end
         end
     end
-
     util.yield(13)
 end)
 
@@ -1809,11 +1810,20 @@ local function SessionCheck(pid)
                 update_player_name(pid)
                 warnify("Detected Blacklisted Player:\n" .. name .. " - " .. rid)
                 add_in_stand(pid, name, rid)
-                if StandUser(pid) then
-                    warnify("This Blacklist is a Stand User , we dont Kick them until they atack:\n" .. name .. " - " .. rid)
-                    menu.trigger_commands("hellaa " .. name .. " on")
+                if IsInSession() then
+                    if StandUser(pid) then
+                        warnify("This Blacklist is a Stand User , we dont Kick them until they atack:\n" .. name .. " - " .. rid)
+                        menu.trigger_commands("hellaa " .. name .. " on")
+                    else
+                        StrategicKick(pid, name, rid)
+                    end
                 else
-                    StrategicKick(pid, name, rid)
+                    if StandUser(pid) then
+                        warnify("This Blacklist is a Stand User , we dont Kick them until they atack:\n" .. name .. " - " .. rid)
+                        menu.trigger_commands("hellaa " .. name .. " on")
+                    else
+                        menu.trigger_commands("hellabl " .. name .. " on")
+                    end
                 end
             end
         end
@@ -1821,11 +1831,20 @@ local function SessionCheck(pid)
             if tonumber(id) == tonumber(rid) then
                 warnify("Detected Blacklisted Player:\n" .. name .. " - " .. rid)
                 add_in_stand(pid, name, rid)
-                if StandUser(pid) then
-                    warnify("This Blacklist is a Stand User , we dont Kick them until they atack:\n" .. name .. " - " .. rid)
-                    menu.trigger_commands("hellaa " .. name .. " on")
+                if IsInSession() then
+                    if StandUser(pid) then
+                        warnify("This Blacklist is a Stand User , we dont Kick them until they atack:\n" .. name .. " - " .. rid)
+                        menu.trigger_commands("hellaa " .. name .. " on")
+                    else
+                        StrategicKick(pid, name, rid)
+                    end
                 else
-                    StrategicKick(pid, name, rid)
+                    if StandUser(pid) then
+                        warnify("This Blacklist is a Stand User , we dont Kick them until they atack:\n" .. name .. " - " .. rid)
+                        menu.trigger_commands("hellaa " .. name .. " on")
+                    else
+                        menu.trigger_commands("hellabl " .. name .. " on")
+                    end
                 end
             end
         end
@@ -1915,6 +1934,16 @@ players.add_command_hook(function(pid)
         else
             util.yield(66666)
         end
+    end)
+    menu.toggle_loop(Bad_Modder, "Kick when Fully Loaded", {"hellabl"}, "Auto kick if u are fully loaded in the game.", function()
+        if IsInSession()
+            StrategicKick(pid, name, rid)
+            warnify_net("Attempting to kick " .. name ..)
+            util.yield(66666)
+        else
+            util.yield(1666)
+        end
+        util.yield(13)
     end)
     menu.toggle_loop(Bad_Modder, "Blacklist Kick on Atack", {"hellaab"}, "Auto kick if they atack you, and add them to blacklist.", function()
         local bkoape = false
