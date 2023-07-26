@@ -1342,12 +1342,12 @@ local function espOnPlayer(pid, namesync)
 
     if screenName.success and vdist <= maxDrawDistance then -- Check if it should be drawn based on distance and screen position.
         --name ESP
-        drawESPText(screenName, -0.04, players.get_name_with_tags(pid), txtscale, colText)
+        drawESPText(screenName, -0.06, players.get_name_with_tags(pid), txtscale, colText)
         local health = ENTITY.GET_ENTITY_HEALTH(targetped) - 100
         local maxhealth = ENTITY.GET_ENTITY_MAX_HEALTH(targetped) - 100
         local armour = PED.GET_PED_ARMOUR(targetped)
         local maxarmour = PLAYER.GET_PLAYER_MAX_ARMOUR(pid)
-        drawESPText(screenName, -0.04 * 1.5, "(" .. health .. " / " .. maxhealth .. ")HP | (" .. armour .. " / " .. maxarmour .. ")AP", txtscale, colText)
+        drawESPText(screenName, -0.06 * 1.3, "(" .. health .. " / " .. maxhealth .. ")HP | (" .. armour .. " / " .. maxarmour .. ")AP", txtscale, colText)
         
         -- Draw other ESP elements with the appropriate color
         -- (Add your code here to draw other ESP elements if needed)
