@@ -1643,17 +1643,17 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                 local pid = players.user()
                 local name = players.get_name(pid)
                 if IsInSession() and isLoading(pid) and players.exists(pid) and players.get_script_host() != pid and players.get_name(pid) != "undiscoveredplayer" then
-                    util.yield(6666)
+                    util.yield(9666)
                     if IsInSession() and isLoading(pid) and players.exists(pid) and players.get_script_host() != pid and players.get_name(pid) != "undiscoveredplayer" then
                         menu.trigger_commands("givesh " .. name)
                         notify(name .. " is Loading too Long.")
-                        util.yield(13666)
+                        util.yield(9666)
                         while IsInSession() and isLoading(pid) and players.exists(pid) and name != "undiscoveredplayer" do
-                            util.yield(6666)
+                            util.yield(9666)
                             if players.get_script_host() != pid and isLoading(pid) and players.exists(pid) and players.get_name(pid) != "undiscoveredplayer" then
                                 menu.trigger_commands("givesh " .. name)
                                 notify(name .. " is Still Loading too Long.")
-                                util.yield(13666)
+                                util.yield(9666)
                             end
                         end
                         if players.get_name(pid) != "undiscoveredplayer" then
