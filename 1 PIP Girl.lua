@@ -251,13 +251,23 @@ local function isLoading(pid)
 end
 
 local function StrategicKick(pid, name, rid) --TODO , make it actually smart , not bare bones.
-    menu.trigger_commands("ignore " .. name .. " on")
-    menu.trigger_commands("desync " .. name .. " on")
-    menu.trigger_commands("blocksync " .. name .. " on")
-    if players.user() == players.get_host() then
-        menu.trigger_commands("loveletterkick " .. name)
-    else
-        menu.trigger_commands("kick " .. name)
+    local StartegicKick = false
+    for _, plid in pairs(players.list()) do
+        util.yield(13)
+        if pid == plid then
+            StartegicKick = true
+            break
+        end
+    end
+    if StartegicKick then
+        menu.trigger_commands("ignore " .. name .. " on")
+        menu.trigger_commands("desync " .. name .. " on")
+        menu.trigger_commands("blocksync " .. name .. " on")
+        if players.user() == players.get_host() then
+            menu.trigger_commands("loveletterkick " .. name)
+        else
+            menu.trigger_commands("kick " .. name)
+        end
     end
 end
 
