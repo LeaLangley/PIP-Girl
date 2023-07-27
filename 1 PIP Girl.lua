@@ -196,9 +196,11 @@ end
 local function NetWatch_msg(pid, first)
     if not StandUser(pid) then
         if first then
-            chat.send_targeted_message(pid, players.user(), "\n<[NetWatch]>:\nYou have been added to the Global Blacklist for suspected Modded disturbance.\nRemoval is highly unlikely.\nYou will be unable to join or participate in any session protected by NetWatch user.", true)
+            chat.send_targeted_message(pid, players.user(), "\n<[NetWatch]>:\nYou have been added to the Global Blacklist for suspected Modded disturbance.Ω\nRemoval is highly unlikely.\nYou will be unable to join or participate in any session protected by NetWatch user.", true)
+            warnify("\n<[NetWatch]>:\n Added:\n" .. players.get_name(pid) .. " | " .. players.get_rockstar_id(pid))
         else
-            chat.send_targeted_message(pid, players.user(), "\n<[NetWatch]>:\nYou are currently on the Global Blacklist for suspected Modded disturbance.\nYou are not allowed to participate in this session protected by NetWatch user.", true)
+            chat.send_targeted_message(pid, players.user(), "\n<[NetWatch]>:\nYou are currently on the Global Blacklist for suspected Modded disturbance.Ω\nYou are not allowed to participate in this session protected by NetWatch user.", true)
+            warnify("\n<[NetWatch]>:\n Notifyed:\n" .. players.get_name(pid) .. " | " .. players.get_rockstar_id(pid))
         end
     end
 end
@@ -356,109 +358,6 @@ menu.action(PIP_Girl_APPS, "(Unstuck) Unstuck after start sell.", {}, "If you Us
     menu.trigger_commands('ewo')
 end)
 
-menu.toggle_loop(PIP_Girl, 'Nightclub Party Never Stops!', {'ncpop'}, 'The hottest NC in whole LS.\nKeeps you pop at 90-100%', function ()
-    if IsInSession() then
-        local ncpop = math.floor(STAT_GET_INT('CLUB_POPULARITY') / 10)
-        if ncpop < 91 then
-            menu.trigger_commands('clubpopularity 100')
-            menu.trigger_commands("resetheadshots")
-            util.yield(66666)
-        end
-        util.yield(66666)
-    else
-        util.yield(66666)
-    end
-end)
-
-local urceoname = ""
-local function on_change(input_str, click_type)
-    urceoname = input_str
-end
-menu.text_input(PIP_Girl, "CEO Name", {"pgceoname"}, "You can press Ctrl+U and Select Colours but no special GTA Icons sadly.", on_change)
-menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yourself as CEO and Auto Switches you to MC/CEO in most situations needed.", function()
-    if IsInSession() then
-        if players.get_boss(players.user()) == -1 then
-            menu.trigger_commands("ceostart")
-            util.yield(1666)
-            if players.get_org_type(players.user()) == 0 then
-                notify("Turned you into CEO!")
-                if urceoname ~= "" then
-                    menu.trigger_commands("ceoname " .. urceoname)
-                end
-                util.yield(6666)
-            else
-                notify("We could not turn you into CEO :c\nWe will wait 3 minutes and try again.")
-                util.yield(213666)
-            end
-        end
-        local CEOLabels = {
-            "HIP_HELP_BBOSS",
-            "HIP_HELP_BBOSS2",
-            "HPBOARD_REG",
-            "HPBOARD_REGB",
-            "HT_NOT_BOSS",
-            "HUB_PC_BLCK",
-            "NHPG_HELP_BBOSS",
-            "OFF_COMP_REG",
-            "TRUCK_PC_BLCK",
-            "TUN_HELP_BBOSS",
-            "BUNK_PC_BLCK",
-            "CH_FINALE_REG",
-            "CH_PREP_REG",
-            "CH_SETUP_REG",
-            "FHQ_PC_BLCK",
-            "HANG_PC_BLCK",
-            "HFBOARD_REG",
-            "HIBOARD_REG",
-            "HIBOARD_REGB",
-            "MP_OFF_LAP_1",
-            "MP_OFF_LAP_PC",
-            "OFF_COMP_REG",
-            "ARC_PC_BLCK",
-            "ARC_HT_0",
-            "ARC_HT_0B",
-            "ACID_SLL_HLP2",
-            "HRBOARD_REG",
-            "HRBOARD_REGB",
-        }
-        for _, label in pairs(CEOLabels) do
-            if IS_HELP_MSG_DISPLAYED(label) then
-                if players.get_boss(players.user()) == -1 then menu.trigger_commands("ceostart") end
-                if players.get_org_type(players.user()) == 1 then menu.trigger_commands("ceotomc") end
-                util.yield(1666)
-                if players.get_boss(players.user()) ~= -1 then
-                    if urceoname != "" then
-                        menu.trigger_commands("ceoname " .. urceoname)
-                    end
-                    notify("Turned you into CEO!")
-                    util.yield(666)
-                end
-            end
-        end
-        local MCLabels = {
-            "CLBHBKRREG",
-            "ARC_HT_1",
-            "ARC_HT_1B",
-        }
-        for _, label in pairs(MCLabels) do
-            if IS_HELP_MSG_DISPLAYED(label) then
-                if players.get_boss(players.user()) == -1 then menu.trigger_commands("mcstart") end
-                if players.get_org_type(players.user()) == 0 then menu.trigger_commands("ceotomc") end
-                util.yield(1666)
-                if players.get_boss(players.user()) ~= -1 then
-                    if urceoname != "" then
-                        menu.trigger_commands("ceoname " .. urceoname)
-                    end
-                    notify("Turned you into MC President!")
-                    util.yield(666)
-                end
-            end
-        end
-        util.yield(666)
-    else
-        util.yield(13666)
-    end
-end)
 
 menu.action(PIP_Girl_Heist, 'Cayo 1 Player Preset (!)', {}, 'Set up the cayo heist with a Sweet Legit Like Preset.\nIf you inside the Submarine, go manually out and in again to refreash the board.\nNote that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.', function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'Want to set up cayo?', function()
@@ -676,6 +575,113 @@ menu.action(PIP_Girl_Heist, 'Cayo 4 Player 25/25/25/25 Preset (!)', {}, 'Set up 
     end, true)
 end)
 
+menu.toggle_loop(PIP_Girl, 'Nightclub Party Never Stops!', {'ncpop'}, 'The hottest NC in whole LS.\nKeeps you pop at 90-100%', function ()
+    if IsInSession() then
+        local ncpop = math.floor(STAT_GET_INT('CLUB_POPULARITY') / 10)
+        if ncpop < 91 then
+            menu.trigger_commands('clubpopularity 100')
+            util.yield(66666)
+        end
+        util.yield(66666)
+    else
+        util.yield(66666)
+    end
+end)
+
+menu.divider(PIP_Girl, "CEO Options")
+
+local urceoname = ""
+local function on_change(input_str, click_type)
+    urceoname = input_str
+end
+menu.text_input(PIP_Girl, "CEO Name", {"pgceoname"}, "You can press Ctrl+U and Select Colours but no special GTA Icons sadly.", on_change)
+menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yourself as CEO and Auto Switches you to MC/CEO in most situations needed.", function()
+    if IsInSession() then
+        if players.get_boss(players.user()) == -1 then
+            menu.trigger_commands("ceostart")
+            util.yield(1666)
+            if players.get_org_type(players.user()) == 0 then
+                notify("Turned you into CEO!")
+                if urceoname ~= "" then
+                    menu.trigger_commands("ceoname " .. urceoname)
+                end
+                util.yield(6666)
+            else
+                notify("We could not turn you into CEO :c\nWe will wait 3 minutes and try again.")
+                util.yield(213666)
+            end
+        end
+        local CEOLabels = {
+            "HIP_HELP_BBOSS",
+            "HIP_HELP_BBOSS2",
+            "HPBOARD_REG",
+            "HPBOARD_REGB",
+            "HT_NOT_BOSS",
+            "HUB_PC_BLCK",
+            "NHPG_HELP_BBOSS",
+            "OFF_COMP_REG",
+            "TRUCK_PC_BLCK",
+            "TUN_HELP_BBOSS",
+            "BUNK_PC_BLCK",
+            "CH_FINALE_REG",
+            "CH_PREP_REG",
+            "CH_SETUP_REG",
+            "FHQ_PC_BLCK",
+            "HANG_PC_BLCK",
+            "HFBOARD_REG",
+            "HIBOARD_REG",
+            "HIBOARD_REGB",
+            "MP_OFF_LAP_1",
+            "MP_OFF_LAP_PC",
+            "OFF_COMP_REG",
+            "ARC_PC_BLCK",
+            "ARC_HT_0",
+            "ARC_HT_0B",
+            "ACID_SLL_HLP2",
+            "HRBOARD_REG",
+            "HRBOARD_REGB",
+        }
+        for _, label in pairs(CEOLabels) do
+            if IS_HELP_MSG_DISPLAYED(label) then
+                if players.get_boss(players.user()) == -1 then menu.trigger_commands("ceostart") end
+                if players.get_org_type(players.user()) == 1 then menu.trigger_commands("ceotomc") end
+                util.yield(1666)
+                if players.get_boss(players.user()) ~= -1 then
+                    if urceoname != "" then
+                        menu.trigger_commands("ceoname " .. urceoname)
+                    end
+                    notify("Turned you into CEO!")
+                    util.yield(666)
+                end
+            end
+        end
+        local MCLabels = {
+            "CLBHBKRREG",
+            "ARC_HT_1",
+            "ARC_HT_1B",
+        }
+        for _, label in pairs(MCLabels) do
+            if IS_HELP_MSG_DISPLAYED(label) then
+                if players.get_boss(players.user()) == -1 then menu.trigger_commands("mcstart") end
+                if players.get_org_type(players.user()) == 0 then menu.trigger_commands("ceotomc") end
+                util.yield(1666)
+                if players.get_boss(players.user()) ~= -1 then
+                    if urceoname != "" then
+                        menu.trigger_commands("ceoname " .. urceoname)
+                    end
+                    notify("Turned you into MC President!")
+                    util.yield(666)
+                end
+            end
+        end
+        util.yield(666)
+    else
+        util.yield(13666)
+    end
+end)
+
+menu.divider(PIP_Girl, "Pickup Options")
+
 menu.toggle_loop(PIP_Girl, "Carry Pickups", {}, "Carry all Pickups on You.\nNote this donst work in all Situations.", function()
     if IsInSession() then
         local pos = players.get_position(players.user())
@@ -708,6 +714,8 @@ menu.action(PIP_Girl, "Teleport Pickups To Me", {}, "Teleports all Pickups To Yo
         notify("Teleported ".. tostring(counter) .." Pickups. :D")
     end
 end)
+
+menu.divider(Stimpak, "Player Related Health")
 
 local regen_all = Stimpak:action("Refill Health & Armour",{"newborn"},"Regenerate to max your health and armour.",function()
     if IsInSession() then
@@ -817,6 +825,8 @@ menu.toggle_loop(Stimpak, "Oxygen", {"pgbreath"}, "Just breath.", function()
         util.yield(13666)
     end
 end)
+
+menu.divider(Stimpak, "Vehicle Related Health")
 
 local function LeaTech()
     local vehicle = entities.get_user_vehicle_as_handle()
@@ -1040,7 +1050,6 @@ menu.toggle_loop(Stimpak, "Lea's Repair Stop", {"lears"}, "", function()
                     menu.trigger_commands("mentalstate 0")
                     menu.trigger_commands("removebounty")
                     menu.trigger_commands("helibackup")
-                    menu.trigger_commands("resetheadshots")
                     notify("Come back in 6min for the next Supply.")
                     util.create_thread(SetInZoneTimer)
                 end
@@ -1062,6 +1071,8 @@ end, function()
     closestDistance = math.huge
     blipsCreated = false
 end)
+
+menu.divider(Stimpak, "Testing Stuff")
 
 menu.toggle_loop(Stimpak, "(DEBUG) Lea Tech", {""}, "", function()
     if IsInSession() then
@@ -1194,6 +1205,8 @@ menu.action(Game, 'Super Cleanse', {"superclean"}, 'BCS R* is a mess.', function
     menu.trigger_commands("lockstreamingfocus off")
 end)
 
+menu.divider(Game, "<3")
+
 menu.toggle_loop(Game, "Auto Skip Conversation",{"pgascon"},"Automatically skip all conversations.",function()
     if AUDIO.IS_SCRIPTED_CONVERSATION_ONGOING() then
         AUDIO.SKIP_TO_NEXT_SCRIPTED_CONVERSATION_LINE()
@@ -1299,6 +1312,8 @@ menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warn
     end
     util.yield(13)
 end)
+
+menu.divider(Game, "<3")
 
 local getEntityCoords = ENTITY.GET_ENTITY_COORDS
 local getPlayerPed = PLAYER.GET_PLAYER_PED
@@ -1625,6 +1640,8 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
     fucking_failure = false
     util.yield(666)
 end)
+
+menu.divider(Session, "<3")
 
 menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join Invite only\nIf R* Admin Detected", function()
     if util.is_session_started() then
