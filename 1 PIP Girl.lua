@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.82"
+local SCRIPT_VERSION = "0.0.83"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -119,6 +119,7 @@ local min_int = -2147483647
 local lua_path = "Stand>Lua Scripts>"..string.gsub(string.gsub(SCRIPT_RELPATH,".lua",""),"\\",">")
 local my = menu.my_root() 
 local Int_PTR = memory.alloc_int()
+local NetWatchAdmin = false
 
 local function getMPX()
     return 'MP'.. util.get_char_slot() ..'_'
@@ -179,6 +180,27 @@ end
 local function warnify_ses(msg)
     chat.send_message(msg, false, true, true)
     util.toast("<[Pip Girl]>: " .. msg)
+end
+
+local function StandUser(pid) -- credit to sapphire for this and jinx script
+    if players.exists(pid) and pid != players.user() then
+        for menu.player_root(pid):getChildren() as cmd do
+            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Stand User"):isValid() then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+local function NetWatch_msg(pid, first)
+    if not StandUser(pid) then
+        if first then
+            chat.send_targeted_message(pid, players.user(), "\n<[NetWatch]>:\nYou have been added to the Global Blacklist for suspected Modded disturbance.\nRemoval is highly unlikely.\nYou will be unable to join or participate in any session protected by NetWatch user.", true)
+        else
+            chat.send_targeted_message(pid, players.user(), "\n<[NetWatch]>:\nYou are currently on the Global Blacklist for suspected Modded disturbance.\nYou are not allowed to participate in this session protected by NetWatch user.", true)
+        end
+    end
 end
 
 function START_SCRIPT(ceo_mc, name)
@@ -281,7 +303,10 @@ local Session = menu.list(menu.my_root(), 'Session', {}, 'Session', function(); 
 local SessionClaimer = menu.list(Session, 'Session Claimer Settings', {}, 'Session Claimer Settings', function(); end)
 local Settings = menu.list(menu.my_root(), 'Settings', {}, '', function(); end)
 
-menu.action(PIP_Girl_APPS, "Master Control Terminal App", {}, "Your Master Control Terminal.", function()
+menu.textslider(PIP_Girl_APPS, "Master Control Terminal App", {}, "Your Master Control Terminal.", {
+    "Open",
+    "Close",
+}, function()
     START_SCRIPT("CEO", "apparcadebusinesshub")
 end)
 
@@ -1779,17 +1804,6 @@ load_data_e()
 
 load_data_g()
 
-local function StandUser(pid) -- credit to sapphire for this and jinx script
-    if players.exists(pid) and pid != players.user() then
-        for menu.player_root(pid):getChildren() as cmd do
-            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Stand User"):isValid() then
-                return true
-            end
-        end
-    end
-    return false
-end
-
 local function add_player_to_blacklist(player, name, rid)
     if rid and name then
         data_e[tostring(rid)] = {
@@ -1881,6 +1895,10 @@ local function SessionCheck(pid)
                         warnify("This Blacklist is a Stand User , we dont Kick them until they atack:\n" .. name .. " - " .. rid)
                         menu.trigger_commands("hellaa " .. name .. " on")
                     else
+                        local first = false
+                        if NetWatchAdmin then
+                            NetWatch_msg(pid, first)
+                        end
                         StrategicKick(pid, name, rid)
                     end
                 else
@@ -1902,6 +1920,10 @@ local function SessionCheck(pid)
                         warnify("This Blacklist is a Stand User , we dont Kick them until they atack:\n" .. name .. " - " .. rid)
                         menu.trigger_commands("hellaa " .. name .. " on")
                     else
+                        local first = false
+                        if NetWatchAdmin then
+                            NetWatch_msg(pid, first)
+                        end
                         StrategicKick(pid, name, rid)
                     end
                 else
@@ -1948,6 +1970,10 @@ players.add_command_hook(function(pid)
     menu.player_root(pid):divider('1 PIP Girl')
     local Bad_Modder = menu.list(menu.player_root(pid), 'Bad Modder?', {""}, '', function() end)
     menu.action(Bad_Modder, "Add Blacklist & Kick", {'hellk'}, "Blacklist Note, Kick and Block the Target from Joining u again.", function ()
+        local first = true
+        if NetWatchAdmin then
+            NetWatch_msg(pid, first)
+        end
         add_in_stand(pid, name, rid)
         if not is_player_in_blacklist(pid, name, rid) then
             add_player_to_blacklist(pid, name, rid)
@@ -1955,6 +1981,10 @@ players.add_command_hook(function(pid)
         StrategicKick(pid, name, rid)
     end)
     menu.action(Bad_Modder, "Add Blacklist ,Phone Call & Kick", {'hellp'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
+        local first = true
+        if NetWatchAdmin then
+            NetWatch_msg(pid, first)
+        end
         add_in_stand(pid, name, rid)
         if not is_player_in_blacklist(pid, name, rid) then
             add_player_to_blacklist(pid, name, rid)
@@ -1964,6 +1994,10 @@ players.add_command_hook(function(pid)
         StrategicKick(pid, name, rid)
     end)
     menu.action(Bad_Modder, "Add Blacklist ,Crash & Kick", {'hellc'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
+        local first = true
+        if NetWatchAdmin then
+            NetWatch_msg(pid, first)
+        end
         add_in_stand(pid, name, rid)
         if not is_player_in_blacklist(pid, name, rid) then
             add_player_to_blacklist(pid, name, rid)
@@ -1971,6 +2005,16 @@ players.add_command_hook(function(pid)
         menu.trigger_commands("choke ".. name)
         util.yield(666)
         StrategicKick(pid, name, rid)
+    end)
+    menu.action(Bad_Modder, "Add Blacklist and Nofify them. (!)", {'hellnn'}, "Blacklist Note , Notify them and Block the Target from Joining u again.\nOnly Works if u are a NetWatch Admin, if have no idea what that means , u can use that without notify them.", function ()
+        local first = true
+        if NetWatchAdmin then
+            NetWatch_msg(pid, first)
+        end
+        add_in_stand(pid, name, rid)
+        if not is_player_in_blacklist(pid, name, rid) then
+            add_player_to_blacklist(pid, name, rid)
+        end
     end)
     menu.action(Bad_Modder, "Add Blacklist Only", {'helln'}, "Blacklist Note and Block the Target from Joining u again.", function ()
         add_in_stand(pid, name, rid)
@@ -2021,7 +2065,10 @@ players.add_command_hook(function(pid)
             end
         end
         if players.is_marked_as_attacker(pid) and bkoape then
-            menu.trigger_commands("ignore " .. name .. " on")
+            local first = true
+            if NetWatchAdmin then
+                NetWatch_msg(pid, first)
+            end
             add_in_stand(pid, name, rid)
             if not is_player_in_blacklist(pid, name, rid) then
                 add_player_to_blacklist(pid, name, rid)
@@ -2045,7 +2092,6 @@ players.add_command_hook(function(pid)
             end
         end
         if players.is_marked_as_attacker(pid) and boape then
-            menu.trigger_commands("ignore " .. name .. " on")
             StrategicKick(pid, name, rid)
             warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
             boape = false
@@ -2066,6 +2112,14 @@ menu.action(Settings, "Copy Position to Clipboard", {}, "", function()
     local positionString = string.format("{ x = %.2f, y = %.2f, z = %.2f },", playerPosition.x, playerPosition.y, playerPosition.z)
     util.copy_to_clipboard(positionString, false)
     notify("Position copied to clipboard!")
+end)
+
+menu.toggle(Settings, "NetWatch Admin", {""}, "Only use this if ur a NetWatch Admin.\nWhy ? well dont embarrassed urself if u turn it on as non admin xD.", function(on)
+    if on then
+        NetWatchAdmin = true
+    else
+        NetWatchAdmin = false
+    end
 end)
 
 menu.hyperlink(Settings, "PIP Girl's GIT", "https://github.com/LeaLangley/PIP-Girl", "")
