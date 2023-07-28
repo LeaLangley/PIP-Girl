@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.84"
+local SCRIPT_VERSION = "0.0.85"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -208,9 +208,8 @@ end
 
 local function isModder(pid)
     local hasModderMark = players.is_marked_as_modder(pid)
-    local detections = StandDetectionsRead(pid)
-
-    return hasModderMark or (detections and #detections > 0)
+    --local detections = StandDetectionsRead(pid)
+    return hasModderMark --or (detections ~= nil and #detections > 0)
 end
 
 
@@ -1654,6 +1653,12 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             end
         else
             if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
+                if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players then
+                    notify("Not Enoght Player")
+                end
+                if isModder(players.get_host()) then
+                    notify("Host is a Modder")
+                end
                 menu.trigger_commands("unstuck")
             end
         end
