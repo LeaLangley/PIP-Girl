@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.83"
+local SCRIPT_VERSION = "0.0.84"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -192,6 +192,27 @@ local function StandUser(pid) -- credit to sapphire for this and jinx script
     end
     return false
 end
+
+local function StandDetectionsRead(pid)
+    local PlayerRootChildrenArray = menu.player_root(pid):getChildren()
+    for PlayerRootChildrenArray as Child do
+        if Child:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and lang.get_string(Child.menu_name, "en"):startswith "Classification: " then
+            local DetectionsArray = Child:getChildren()
+            for Index, Detection in DetectionsArray do
+                DetectionsArray[Index] = lang.get_string(Detection.menu_name, "en")
+            end
+            return DetectionsArray
+        end
+    end
+end
+
+local function isModder(pid)
+    local hasModderMark = players.is_marked_as_modder(pid)
+    local detections = StandDetectionsRead(pid)
+
+    return hasModderMark or (detections and #detections > 0)
+end
+
 
 local function NetWatch_msg(pid, first)
     if not StandUser(pid) then
@@ -1519,7 +1540,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 end
             end
         end
-        if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players and (not players.is_marked_as_modder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
+        if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players and (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
             if session_claimer_kd then
                 local players_with_kd = 0
                 for _, pid in pairs(players.list(false, false, true)) do
@@ -1532,7 +1553,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                         util.yield(666)
                     end
                     if (players_with_kd < session_claimer_kd_target_players) then
-                        if not players.is_marked_as_modder(pid) then
+                        if not isModder(pid) then
                             local kd = players.get_kd(pid) -- Get the K/D value
                             local kd_integer = math.floor(kd) -- Extract the integer part
                             if kd_integer >= session_claimer_kd_target then
@@ -1558,7 +1579,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                         util.yield(666)
                     end
                     if (players_with_lvl < session_claimer_lvl_target_players) then
-                        if not players.is_marked_as_modder(pid) then
+                        if not isModder(pid) then
                             local lvl = players.get_rank(pid)
                             if lvl >= session_claimer_lvl_target then
                                 players_with_lvl = players_with_lvl + 1
@@ -1575,7 +1596,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 util.yield(6666)
             end
             if not fucking_failure and session_claimer_players ~= 0 then
-                if (not players.is_marked_as_modder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
+                if (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
                     warnify("Might found something.")
                     while not IsInSession() do
                         if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
@@ -1587,10 +1608,10 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     end
                     menu.trigger_commands("superclean")
                     util.yield(13666)
-                    if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 and not players.is_marked_as_modder(players.get_host()) then
+                    if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 and not isModder(players.get_host()) then
                         menu.trigger_commands("givecollectibles " .. players.get_name(players.get_host()))
                         util.yield(6666)
-                        if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 and not players.is_marked_as_modder(players.get_host())then
+                        if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 and not isModder(players.get_host())then
                             StrategicKick(players.get_host(), players.get_name(players.get_host()), players.get_rockstar_id(players.get_host()))
                         else
                             if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
@@ -2067,11 +2088,21 @@ players.add_command_hook(function(pid)
         end
     end)
     menu.toggle_loop(Bad_Modder, "Kick when Fully Loaded", {"hellabl"}, "Auto kick if u are fully loaded in the game.", function()
-        if IsInSession() then
+        local hellabl = false
+        for _, plid in pairs(players.list()) do
+            util.yield(13)
+            if pid == plid then
+                hellabl = true
+                break
+            end
+        end
+        if IsInSession() and hellabl then
             StrategicKick(pid, name, rid)
             warnify_net("Attempting to kick " .. name)
+            hellabl = false
             util.yield(66666)
         else
+            hellabl = false
             util.yield(1666)
         end
         util.yield(13)
