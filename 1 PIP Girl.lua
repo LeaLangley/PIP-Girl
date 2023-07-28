@@ -1924,7 +1924,7 @@ local function SessionCheck(pid)
                         warnify("This Blacklist is a Stand User , we dont Kick them until they atack:\n" .. name .. " - " .. rid)
                         menu.trigger_commands("hellaa " .. name .. " on")
                     else
-                        util.yield(666)
+                        StrategicKick(pid, name, rid)
                         menu.trigger_commands("hellabl " .. name .. " on")
                     end
                 end
@@ -1951,6 +1951,7 @@ local function SessionCheck(pid)
                         warnify("This Blacklist is a Stand User , we dont Kick them until they atack:\n" .. name .. " - " .. rid)
                         menu.trigger_commands("hellaa " .. name .. " on")
                     else
+                        StrategicKick(pid, name, rid)
                         menu.trigger_commands("hellabl " .. name .. " on")
                     end
                 end
