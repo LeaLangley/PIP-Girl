@@ -207,11 +207,12 @@ local function StandDetectionsRead(pid)
 end
 
 local function isModder(pid)
-    local hasModderMark = players.is_marked_as_modder(pid)
-    --local detections = StandDetectionsRead(pid)
-    return hasModderMark --or (detections ~= nil and #detections > 0)
+    if players.is_marked_as_modder(pid) then --or (StandDetectionsRead(pid) and #(StandDetectionsRead(pid)) > 0) then
+        return true
+    else
+        return false
+    end
 end
-
 
 local function NetWatch_msg(pid, first)
     if not StandUser(pid) then
@@ -1539,6 +1540,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 end
             end
         end
+        util.yield(3666)
         if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players and (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
             if session_claimer_kd then
                 local players_with_kd = 0
@@ -1693,7 +1695,7 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic a
         end
         MISC.CLEAR_AREA_OF_VEHICLES(0.0, 0.0, 0.0, 19999.9, false, false, false, false, false, false)
         MISC.CLEAR_AREA_OF_PEDS(0, 0, 0, 19999.9, 1)
-        util.yield(3666)
+        util.yield(1666)
     else
         local ClearTraficSphere = 0
         util.yield(13666)
@@ -2101,7 +2103,8 @@ players.add_command_hook(function(pid)
                 break
             end
         end
-        if IsInSession() and hellabl then
+        local pPos = players.get_position(pid)
+        if IsInSession() and hellabl and not pPos.x == 0 and pPos.y == 0 and pPos.z == 0 then
             StrategicKick(pid, name, rid)
             warnify_net("Attempting to kick " .. name)
             hellabl = false
@@ -2160,8 +2163,26 @@ players.add_command_hook(function(pid)
     end)
 end)
 
+menu.hyperlink(Settings, "PIP Girl's GIT", "https://github.com/LeaLangley/PIP-Girl", "")
+
+menu.hyperlink(Settings, "Buy me a Bat", "https://www.buymeacoffee.com/asuka666", "")
+
+menu.action(Settings, "Check for Update", {}, "The script will automatically check for updates at most daily, but you can manually check using this option anytime.", function()
+    auto_updater.run_auto_update(auto_update_config)
+end)
+
 menu.action(Settings, 'Open Export Blacklist Folder', {'oef'}, '', function()
     util.open_folder(resources_dir .. 'Export')
+end)
+
+menu.divider(Settings, "<3")
+
+menu.toggle(Settings, "NetWatch Admin", {""}, "Only use this if ur a NetWatch Admin.\nWhy ? well dont embarrassed urself if u turn it on as non admin xD.", function(on)
+    if on then
+        NetWatchAdmin = false
+    else
+        NetWatchAdmin = false
+    end
 end)
 
 menu.action(Settings, "Copy Position to Clipboard", {}, "", function()
@@ -2169,20 +2190,6 @@ menu.action(Settings, "Copy Position to Clipboard", {}, "", function()
     local positionString = string.format("{ x = %.2f, y = %.2f, z = %.2f },", playerPosition.x, playerPosition.y, playerPosition.z)
     util.copy_to_clipboard(positionString, false)
     notify("Position copied to clipboard!")
-end)
-
-menu.toggle(Settings, "NetWatch Admin", {""}, "Only use this if ur a NetWatch Admin.\nWhy ? well dont embarrassed urself if u turn it on as non admin xD.", function(on)
-    if on then
-        NetWatchAdmin = true
-    else
-        NetWatchAdmin = false
-    end
-end)
-
-menu.hyperlink(Settings, "PIP Girl's GIT", "https://github.com/LeaLangley/PIP-Girl", "")
-
-menu.action(Settings, "Check for Update", {}, "The script will automatically check for updates at most daily, but you can manually check using this option anytime.", function()
-    auto_updater.run_auto_update(auto_update_config)
 end)
 
 menu.action(Settings, "Activate Everyday Goodies", {"pggoodies"}, "Activates all the Everyday Goodies.", function()
