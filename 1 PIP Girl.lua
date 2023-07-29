@@ -1464,12 +1464,13 @@ local function espOnPlayer(pid, namesync)
 
         if screenName.success and vdist <= maxDrawDistance then -- Check if it should be drawn based on distance and screen position.
             --name ESP
-            drawESPText(screenName, -0.06, players.get_name_with_tags(pid), txtscale, colText)
+            local rank = players.get_rank(pid)
+            drawESPText(screenName, -0.10, "("..rank..") "..players.get_name_with_tags(pid), txtscale, colText)
             local health = ENTITY.GET_ENTITY_HEALTH(targetped) - 100
             local maxhealth = ENTITY.GET_ENTITY_MAX_HEALTH(targetped) - 100
             local armour = PED.GET_PED_ARMOUR(targetped)
             local maxarmour = PLAYER.GET_PLAYER_MAX_ARMOUR(pid)
-            drawESPText(screenName, -0.06 * 1.3, "(" .. health .. " / " .. maxhealth .. ")HP | (" .. armour .. " / " .. maxarmour .. ")AP", txtscale, colText)
+            drawESPText(screenName, -0.10 * 1.2, "(" .. health .. " / " .. maxhealth .. ")HP | (" .. armour .. " / " .. maxarmour .. ")AP", txtscale, colText)
             
             -- Draw other ESP elements with the appropriate color
             -- (Add your code here to draw other ESP elements if needed)
@@ -1758,8 +1759,8 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic a
             MISC.CLEAR_AREA(0.0, 0.0, 0.0, 19999.9, true, false, false, true)
             ClearTraficSphere = MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19999.9, 0.0, 0.0, false, true)
         end
-        MISC.CLEAR_AREA_OF_VEHICLES(0.0, 0.0, 0.0, 19999.9, false, false, false, false, false, false)
-        MISC.CLEAR_AREA_OF_PEDS(0, 0, 0, 19999.9, 1)
+        MISC.CLEAR_AREA_OF_VEHICLES(0.0, 0.0, 0.0, 13666, false, false, false, false, false, false)
+        MISC.CLEAR_AREA_OF_PEDS(0, 0, 0, 13666, 1)
         util.yield(1666)
     else
         local ClearTraficSphere = 0
