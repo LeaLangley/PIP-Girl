@@ -1968,9 +1968,9 @@ local function SessionCheck(pid)
                         menu.trigger_commands("hellaa " .. name .. " on")
                     else
                         local first = false
-                        if NetWatchAdmin then
-                            NetWatch_msg(pid, first)
-                        end
+                        --if NetWatchAdmin then
+                        --    NetWatch_msg(pid, first)
+                        --end
                         StrategicKick(pid, name, rid)
                     end
                 else
@@ -1995,9 +1995,9 @@ local function SessionCheck(pid)
                         menu.trigger_commands("hellaa " .. name .. " on")
                     else
                         local first = false
-                        if NetWatchAdmin then
-                            NetWatch_msg(pid, first)
-                        end
+                        --if NetWatchAdmin then
+                        --    NetWatch_msg(pid, first)
+                        --end
                         StrategicKick(pid, name, rid)
                     end
                 else
@@ -2047,9 +2047,9 @@ players.add_command_hook(function(pid)
     local Bad_Modder = menu.list(menu.player_root(pid), 'Bad Modder?', {""}, '', function() end)
     menu.action(Bad_Modder, "Add Blacklist & Kick", {'hellk'}, "Blacklist Note, Kick and Block the Target from Joining u again.", function ()
         local first = true
-        if NetWatchAdmin then
-            NetWatch_msg(pid, first)
-        end
+        --if NetWatchAdmin then
+        --    NetWatch_msg(pid, first)
+        --end
         add_in_stand(pid, name, rid)
         if not is_player_in_blacklist(pid, name, rid) then
             add_player_to_blacklist(pid, name, rid)
@@ -2058,9 +2058,9 @@ players.add_command_hook(function(pid)
     end)
     menu.action(Bad_Modder, "Add Blacklist ,Phone Call & Kick", {'hellp'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
         local first = true
-        if NetWatchAdmin then
-            NetWatch_msg(pid, first)
-        end
+        --if NetWatchAdmin then
+        --    NetWatch_msg(pid, first)
+        --end
         add_in_stand(pid, name, rid)
         if not is_player_in_blacklist(pid, name, rid) then
             add_player_to_blacklist(pid, name, rid)
@@ -2071,9 +2071,9 @@ players.add_command_hook(function(pid)
     end)
     menu.action(Bad_Modder, "Add Blacklist ,Crash & Kick", {'hellc'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
         local first = true
-        if NetWatchAdmin then
-            NetWatch_msg(pid, first)
-        end
+        --if NetWatchAdmin then
+        --    NetWatch_msg(pid, first)
+        --end
         add_in_stand(pid, name, rid)
         if not is_player_in_blacklist(pid, name, rid) then
             add_player_to_blacklist(pid, name, rid)
@@ -2242,7 +2242,7 @@ menu.divider(Settings, "<3")
 
 menu.toggle(Settings, "NetWatch Admin", {""}, "Only use this if ur a NetWatch Admin.\nWhy ? well dont embarrassed urself if u turn it on as non admin xD.", function(on)
     if on then
-        NetWatchAdmin = false
+        NetWatchAdmin = true
     else
         NetWatchAdmin = false
     end
