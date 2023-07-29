@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.88"
+local SCRIPT_VERSION = "0.0.89"
 
 local startupmsg = "Added Credits in Settings <3\nAdded 'PIP Girl > Auto Join Friends CEO (!)'"
 
@@ -324,6 +324,7 @@ local function StrategicKick(pid, name, rid) --TODO , make it actually smart , n
     end
 end
 
+menu.divider(menu.my_root(), SCRIPT_VERSION)
 local PIP_Girl = menu.list(menu.my_root(), 'PIP Girl', {}, 'Personal Information Processor Girl.', function(); end)
 local PIP_Girl_APPS = menu.list(PIP_Girl, 'PIP Girl Apps', {}, 'Personal Information Processor Girl Apps.', function(); end)
 local PIP_Girl_Heist = menu.list(PIP_Girl, 'PIP Girl Heists', {}, 'Personal Information Processor Girl Heist Presets.', function(); end)
@@ -1733,9 +1734,16 @@ menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join 
     util.yield(13)
 end)
 
+
+
 local ClearTraficSphere = 0
 menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic around you.", function()
     if IsInSession() then
+        if players.user() != players.get_host() then
+            util.yield(3666)
+        else
+            util.yield(1013)
+        end
         if not MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(ClearTraficSphere) then
             MISC.CLEAR_AREA(0.0, 0.0, 0.0, 19999.9, true, false, false, true)
             ClearTraficSphere = MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19999.9, 0.0, 0.0, false, true)
@@ -2260,8 +2268,6 @@ menu.action(Credits, "And you!", {""}, "Ty for using my lua, with blocking out k
     notify("Ty for using my lua, with blocking out knowen bad modder we might be able to change something, at least for the ppl around us..")
 end)
 
-menu.divider(Settings, "<3")
-
 menu.toggle(Settings, "NetWatch Admin", {""}, "Only use this if ur a NetWatch Admin.\nWhy ? well dont embarrassed urself if u turn it on as non admin xD.", function(on)
     if on then
         NetWatchAdmin = true
@@ -2294,6 +2300,10 @@ menu.action(Settings, "Activate Everyday Goodies", {"pggoodies"}, "Activates all
     menu.trigger_commands("antitrafic on")
     menu.trigger_commands("pgssh on")
     menu.trigger_commands("pgbll on")    
+end)
+
+menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
+    notify(startupmsg)
 end)
 
 util.keep_running()
