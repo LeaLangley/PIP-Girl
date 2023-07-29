@@ -6,7 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.85"
+local SCRIPT_VERSION = "0.0.86"
+
+local startupmsg = "Added Credits in Settings <3"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -164,22 +166,28 @@ function is_user_driving_vehicle()
 end
 
 local function notify(msg)
+    util.toast("<[Pip Girl]>: " .. msg, TOAST_CONSOLE)
     util.toast("<[Pip Girl]>: " .. msg)
 end
 
+notify(startupmsg)
+
 local function warnify(msg)
     chat.send_message("<[Pip Girl]>: " .. msg, true, true, false)
+    util.toast("<[Pip Girl]>: " .. msg, TOAST_CONSOLE)
     util.toast("<[Pip Girl]>: " .. msg)
 end
 
 local function warnify_net(msg)
     chat.send_message("<[Pip Girl]>: " .. msg, true, true, true)
+    util.toast("<[Pip Girl]>: " .. msg, TOAST_CONSOLE)
     util.toast("<[Pip Girl]>: " .. msg)
 end
 
 local function warnify_ses(msg)
     chat.send_message(msg, false, true, true)
-    util.toast("<[Pip Girl]>: " .. msg)
+    util.toast("<[Pip Girl]>: " .. msg, TOAST_CONSOLE)
+    util.toast(msg)
 end
 
 local function StandUser(pid) -- credit to sapphire for this and jinx script
@@ -325,6 +333,7 @@ local Game = menu.list(menu.my_root(), 'Game', {}, '', function(); end)
 local Session = menu.list(menu.my_root(), 'Session', {}, 'Session', function(); end)
 local SessionClaimer = menu.list(Session, 'Session Claimer Settings', {}, 'Session Claimer Settings', function(); end)
 local Settings = menu.list(menu.my_root(), 'Settings', {}, '', function(); end)
+local Credits = menu.list(Settings, 'Credits', {}, '', function(); end)
 
 menu.textslider(PIP_Girl_APPS, "Master Control Terminal App", {}, "Your Master Control Terminal.", {
     "Open",
@@ -2173,6 +2182,42 @@ end)
 
 menu.action(Settings, 'Open Export Blacklist Folder', {'oef'}, '', function()
     util.open_folder(resources_dir .. 'Export')
+end)
+
+menu.action(Credits, "Statement about skidding.", {""}, "99% of the skidded code has been modifyed or changed, i specially did that since i was new to lua, and i am a noob. It helpt me getting started and understanding the code i was messing around with.", function()
+    notify("99% of the skidded code has been modifyed or changed, i specially did that since i was new to lua, and i am a noob. It helpt me getting started and understanding the code i was messing around with.")
+end)
+
+menu.divider(Credits, "Other Script Dev's. <3")
+
+menu.hyperlink(Credits, "mehScript by akat0zi", "https://discord.gg/uUNRn6xgw5", "For (Specially First) inspiration , little skid.\nSince i was (and still am) new/noob to lua.")
+
+menu.hyperlink(Credits, "AcjokerScript by acjoker8818", "https://discord.gg/fn4uBbFNnA", "For inspiration. <3")
+
+menu.hyperlink(Credits, "JinxScript by Prisuhm", "https://discord.gg/hjs5S93kQv", "For (Specially First) inspiration , little skid.\nSince i was (and still am) new/noob to lua.")
+
+menu.hyperlink(Credits, "LanceScript by Lance", "https://github.com/xSetrox", "For inspiration , little skid.\nSince i was (and still am) new/noob to lua.")
+
+menu.hyperlink(Credits, "Undefined by Undefined Pony", "https://gitlab.com/undefinedscripts", "For inspiration.")
+
+menu.hyperlink(Credits, "CAT ESP by movemint. cat", "https://github.com/Keramis", "For inspiration , little skid.\nSince i hate math.")
+
+menu.hyperlink(Credits, "Stand Lua Auto-Updater by hexarobi", "https://github.com/hexarobi", "For the wonderfull Auto-Updater. :D")
+
+menu.divider(Credits, "My Friends. <3")
+
+menu.action(Credits, "Kris", {""}, "For activly using/testing my lua.", function()
+    notify("Kris is sexy.")
+end)
+
+menu.action(Credits, "Brian", {""}, "For activly using/testing my lua.", function()
+    notify("Brian is sexy.")
+end)
+
+menu.divider(Credits, "<3")
+
+menu.action(Credits, "And you!", {""}, "Ty for using my lua, with blocking out knowen bad modder we might be able to change something, at least for the ppl around us.", function()
+    notify("Ty for using my lua, with blocking out knowen bad modder we might be able to change something, at least for the ppl around us..")
 end)
 
 menu.divider(Settings, "<3")
