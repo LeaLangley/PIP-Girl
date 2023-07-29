@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.86"
+local SCRIPT_VERSION = "0.0.87"
 
 local startupmsg = "Added Credits in Settings <3"
 
@@ -1318,40 +1318,44 @@ menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warn
     local mess_hash = math.abs(HUD.GET_WARNING_SCREEN_MESSAGE_HASH())
 
     if mess_hash ~= 0 then
-        local skipWarning = true
+        if not HUD.IS_PAUSE_MENU_ACTIVE() then
+            local skipWarning = true
 
-        for i, position in ipairs(avoidWarningSkipHere) do
-            local distance = math.sqrt((playerPosition.x - position.x) ^ 2 + (playerPosition.y - position.y) ^ 2 + (playerPosition.z - position.z) ^ 2)
-            local radius = 3
+            for i, position in ipairs(avoidWarningSkipHere) do
+                local distance = math.sqrt((playerPosition.x - position.x) ^ 2 + (playerPosition.y - position.y) ^ 2 + (playerPosition.z - position.z) ^ 2)
+                local radius = 3
 
-            if distance <= radius then
-                skipWarning = false
-                break
-            end
-        end
-
-        if skipWarning then
-            local warning = warningMessages[mess_hash]
-            if warning then
-                local currentTime = os.time()
-                local lastTimeWarnified = lastWarnifyTime[mess_hash] or 0
-
-                if currentTime - lastTimeWarnified >= warnifyCooldown then
-                    warnify(warning)
-                    lastWarnifyTime[mess_hash] = currentTime
+                if distance <= radius then
+                    skipWarning = false
+                    break
                 end
-                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
-                util.yield(13)
-            else
-                local currentTime = os.time()
-                local lastTimeWarnified = lastWarnifyTime[mess_hash] or 0
-
-                if currentTime - lastTimeWarnified >= warnifyCooldown then
-                    notify(mess_hash)
-                    lastWarnifyTime[mess_hash] = currentTime
-                end
-                util.yield(666)
             end
+
+            if skipWarning then
+                local warning = warningMessages[mess_hash]
+                if warning then
+                    local currentTime = os.time()
+                    local lastTimeWarnified = lastWarnifyTime[mess_hash] or 0
+
+                    if currentTime - lastTimeWarnified >= warnifyCooldown then
+                        warnify(warning)
+                        lastWarnifyTime[mess_hash] = currentTime
+                    end
+                    PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
+                    util.yield(13)
+                else
+                    local currentTime = os.time()
+                    local lastTimeWarnified = lastWarnifyTime[mess_hash] or 0
+
+                    if currentTime - lastTimeWarnified >= warnifyCooldown then
+                        notify(mess_hash)
+                        lastWarnifyTime[mess_hash] = currentTime
+                    end
+                    util.yield(666)
+                end
+            end
+        else
+            util.yield(666)
         end
     end
     util.yield(13)
