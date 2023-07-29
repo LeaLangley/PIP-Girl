@@ -1311,6 +1311,8 @@ local avoidWarningSkipHere = {
     { x = 1561.05, y = 385.90, z = -49.69 }, -- Cayo Board
     { x = 1561.05, y = 385.90, z = -49.69 }, -- Cayo Outfit Selection
 }
+local lastWarnifyTime = {}
+local warnifyCooldown = 10
 menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warnings in the game.", function()
     local playerPosition = players.get_position(players.user())
     local mess_hash = math.abs(HUD.GET_WARNING_SCREEN_MESSAGE_HASH())
@@ -1331,9 +1333,15 @@ menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warn
         if skipWarning then
             local warning = warningMessages[mess_hash]
             if warning then
-                warnify(warning)
-                util.yield(13)
+                local currentTime = os.time()
+                local lastTimeWarnified = lastWarnifyTime[mess_hash] or 0
+
+                if currentTime - lastTimeWarnified >= warnifyCooldown then
+                    warnify(warning)
+                    lastWarnifyTime[mess_hash] = currentTime -- Update the last warnify time for this "mess_hash"
+                end
                 PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
+                util.yield(13)
             else
                 notify(mess_hash)
                 util.yield(666)
