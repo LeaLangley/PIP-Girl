@@ -1338,7 +1338,7 @@ menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warn
 
                 if currentTime - lastTimeWarnified >= warnifyCooldown then
                     warnify(warning)
-                    lastWarnifyTime[mess_hash] = currentTime -- Update the last warnify time for this "mess_hash"
+                    lastWarnifyTime[mess_hash] = currentTime
                 end
                 PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
                 util.yield(13)
@@ -1348,7 +1348,7 @@ menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warn
 
                 if currentTime - lastTimeWarnified >= warnifyCooldown then
                     notify(mess_hash)
-                    lastWarnifyTime[mess_hash] = currentTime -- Update the last warnify time for this "mess_hash"
+                    lastWarnifyTime[mess_hash] = currentTime
                 end
                 util.yield(666)
             end
@@ -1718,7 +1718,7 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic a
         end
         MISC.CLEAR_AREA_OF_VEHICLES(0.0, 0.0, 0.0, 19999.9, false, false, false, false, false, false)
         MISC.CLEAR_AREA_OF_PEDS(0, 0, 0, 19999.9, 1)
-        util.yield(1666)
+        util.yield(666)
     else
         local ClearTraficSphere = 0
         util.yield(13666)
