@@ -1760,7 +1760,7 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic a
         end
         MISC.CLEAR_AREA_OF_VEHICLES(0.0, 0.0, 0.0, 19999.9, false, false, false, false, false, false)
         MISC.CLEAR_AREA_OF_PEDS(0, 0, 0, 19999.9, 1)
-        util.yield(666)
+        util.yield(1666)
     else
         local ClearTraficSphere = 0
         util.yield(13666)
