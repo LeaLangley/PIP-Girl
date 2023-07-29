@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.89"
+local SCRIPT_VERSION = "0.0.90"
 
 local startupmsg = "Added Credits in Settings <3\nAdded 'PIP Girl > Auto Join Friends CEO (!)'"
 
@@ -898,74 +898,81 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
         if menu.get_state(menu.ref_by_path(cmd_path)) ~= "On" then
             menu.trigger_commands("brakelights on")
         end
+
         local vehicle = entities.get_user_vehicle_as_handle()
         if vehicle then
-            local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
-            local petrolTankHealth = VEHICLE.GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
-            local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle)
-            local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
-            local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
-            --local getclass = VEHICLE.GET_VEHICLE_CLASS(vehicle)
-            --if getclass == 15 or getclass == 16 then
-            --    if engineHealth < 1000 then
-            --        VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + 13)
-            --    end
-            --    if petrolTankHealth < 1000 then
-            --        VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + 13)
-            --    end
-            --else
-            if engineHealth < 1000 then
-                local randomValue = math.random(1, 6)
-                VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + randomValue)
-            end
-            if petrolTankHealth < 1000 then
-                local randomValue = math.random(1, 6)
-                VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + randomValue)
-            end
-            if bodyHealth < 1000 then
-                local randomValue = math.random(1, 6)
-                VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + randomValue)
-            end
-            if heliTailHealth < 1000 then
-                local randomValue = math.random(1, 6)
-                VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + randomValue)
-            end
-            if heliRotorHealth < 1000 then
-                local randomValue = math.random(1, 6)
-                VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + randomValue)
-            end
-            if petrolTankHealth >= 1000 and engineHealth >= 1000 and bodyHealth >= 1000 then
-                VEHICLE.SET_VEHICLE_DEFORMATION_FIXED(vehicle)
-                VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, 1000)
-                VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, 1000)
-                VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, 1000)
-                VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, 1000)
-                VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, 1000)
-                VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, false)
-                VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, false)
+            local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
+            local driver = NETWORK.NETWORK_GET_PLAYER_INDEX_FROM_PED(driverPed)
+
+            -- Check if the driver seat is empty or if the local player is the driver
+            if driver == -1 or driver == players.user() then
+                local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
+                local petrolTankHealth = VEHICLE.GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
+                local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle)
+                local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
+                local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
+
+                -- Perform repairs
+                if engineHealth < 1000 then
+                    local randomValue = math.random(1, 6)
+                    VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + randomValue)
+                end
+                if petrolTankHealth < 1000 then
+                    local randomValue = math.random(1, 6)
+                    VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + randomValue)
+                end
+                if bodyHealth < 1000 then
+                    local randomValue = math.random(1, 6)
+                    VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + randomValue)
+                end
+                if heliTailHealth < 1000 then
+                    local randomValue = math.random(1, 6)
+                    VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + randomValue)
+                end
+                if heliRotorHealth < 1000 then
+                    local randomValue = math.random(1, 6)
+                    VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + randomValue)
+                end
+
+                -- Check if all vehicle parts are fully repaired
+                if petrolTankHealth >= 1000 and engineHealth >= 1000 and bodyHealth >= 1000 then
+                    VEHICLE.SET_VEHICLE_DEFORMATION_FIXED(vehicle)
+                    VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, 1000)
+                    VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, 1000)
+                    VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, 1000)
+                    VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, 1000)
+                    VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, 1000)
+                    VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, false)
+                    VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, false)
+                else
+                    LeaTech()
+                end
+
+                -- Apply additional settings to the vehicle
+                if saved_vehicle_id == nil or saved_vehicle_id ~= vehicle then
+                    saved_vehicle_id = vehicle
+                    VEHICLE.SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
+                    VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+                    VEHICLE.SET_VEHICLE_FULLBEAM(vehicle, true)
+                    VEHICLE.SET_DONT_PROCESS_VEHICLE_GLASS(vehicles, true)
+                    VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, true)
+                    VEHICLE.SET_HELI_TAIL_BOOM_CAN_BREAK_OFF(vehicle, false)
+                    VEHICLE.CAN_SHUFFLE_SEAT(vehicle, true)
+                    VEHICLE.SET_VEHICLE_CAN_ENGINE_MISSFIRE(vehicle, false)
+                    VEHICLE.SET_VEHICLE_ENGINE_CAN_DEGRADE(vehicle, false)
+                else
+                    saved_vehicle_id = nil
+                end
+
+                util.yield(1000) -- Pause the loop for 1000 milliseconds (1 second) before the next iteration
             else
-                LeaTech()
+                util.yield(1000) -- If the local player is not the driver, wait for 1000 milliseconds (1 second) before the next iteration
             end
-            if saved_vehicle_id == nil or saved_vehicle_id ~= vehicle then
-                saved_vehicle_id = vehicle
-                VEHICLE.SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
-                VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
-                VEHICLE.SET_VEHICLE_FULLBEAM(vehicle, true)
-                VEHICLE.SET_DONT_PROCESS_VEHICLE_GLASS(vehicles, true)
-                VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, true)
-                VEHICLE.SET_HELI_TAIL_BOOM_CAN_BREAK_OFF(vehicle, false)
-                VEHICLE.CAN_SHUFFLE_SEAT(vehicle, true)
-                VEHICLE.SET_VEHICLE_CAN_ENGINE_MISSFIRE(vehicle, false)
-                VEHICLE.SET_VEHICLE_ENGINE_CAN_DEGRADE(vehicle, false)
-            else
-                saved_vehicle_id = nil
-            end
-            util.yield(1000)
         else
-            util.yield(1666)
+            util.yield(1666) -- If the user is not in any vehicle, wait for 1666 milliseconds (1.666 seconds) before the next iteration
         end
     else
-        util.yield(13666)
+        util.yield(13666) -- If the player is not in an active session, wait for 13666 milliseconds (13.666 seconds) before the next iteration
     end
 end)
 
@@ -1089,13 +1096,18 @@ menu.toggle_loop(Stimpak, "Lea's Repair Stop", {"lears"}, "", function()
             end
             if closestDistance <= radius then
                 if not wasInZone then
+                    local vehicle = entities.get_user_vehicle_as_handle()
+                    local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
+                    local driver = NETWORK.NETWORK_GET_PLAYER_INDEX_FROM_PED(driverPed)
                     wasInZone = true
+                    if driver == players.user() then
+                        menu.trigger_commands("performance")
+                        menu.trigger_commands("fixvehicle")
+                    end
                     menu.trigger_commands("fillammo")
                     menu.trigger_commands("wanted 0")
                     menu.trigger_commands("refillhealth")
                     menu.trigger_commands("refillarmour")
-                    menu.trigger_commands("performance")
-                    menu.trigger_commands("fixvehicle")
                     menu.trigger_commands("fillinventory")
                     menu.trigger_commands("clubpopularity 100")
                     menu.trigger_commands("mentalstate 0")
