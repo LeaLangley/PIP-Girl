@@ -1750,6 +1750,7 @@ end)
 local ClearTraficSphere = 0
 menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic around you.", function()
     if IsInSession() then
+        local pos = players.get_position(players.user())
         if players.user() != players.get_host() then
             util.yield(3666)
         else
@@ -1759,8 +1760,8 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic a
             MISC.CLEAR_AREA(0.0, 0.0, 0.0, 19999.9, true, false, false, true)
             ClearTraficSphere = MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19999.9, 0.0, 0.0, false, true)
         end
-        MISC.CLEAR_AREA_OF_VEHICLES(0.0, 0.0, 0.0, 13666, false, false, false, false, false, false)
-        MISC.CLEAR_AREA_OF_PEDS(0, 0, 0, 13666, 1)
+        MISC.CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, 13666, false, false, false, false, false, false)
+        MISC.CLEAR_AREA_OF_PEDS(pos.x, pos.y, pos.z, 13666, 1)
         util.yield(1666)
     else
         local ClearTraficSphere = 0
