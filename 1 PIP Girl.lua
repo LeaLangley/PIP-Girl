@@ -1343,7 +1343,13 @@ menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warn
                 PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
                 util.yield(13)
             else
-                notify(mess_hash)
+                local currentTime = os.time()
+                local lastTimeWarnified = lastWarnifyTime[mess_hash] or 0
+
+                if currentTime - lastTimeWarnified >= warnifyCooldown then
+                    notify(mess_hash)
+                    lastWarnifyTime[mess_hash] = currentTime -- Update the last warnify time for this "mess_hash"
+                end
                 util.yield(666)
             end
         end
