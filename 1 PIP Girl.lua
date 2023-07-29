@@ -1734,8 +1734,6 @@ menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join 
     util.yield(13)
 end)
 
-
-
 local ClearTraficSphere = 0
 menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic around you.", function()
     if IsInSession() then
