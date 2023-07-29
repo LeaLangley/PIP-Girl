@@ -6,9 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.87"
+local SCRIPT_VERSION = "0.0.88"
 
-local startupmsg = "Added Credits in Settings <3"
+local startupmsg = "Added Credits in Settings <3\nAdded 'PIP Girl > Auto Join Friends CEO (!)'"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -625,8 +625,20 @@ local function on_change(input_str, click_type)
     urceoname = input_str
 end
 menu.text_input(PIP_Girl, "CEO Name", {"pgceoname"}, "You can press Ctrl+U and Select Colours but no special GTA Icons sadly.", on_change)
+local joinfriendsceo = false
 menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yourself as CEO and Auto Switches you to MC/CEO in most situations needed.", function()
     if IsInSession() then
+        if joinfriendsceo and players.get_boss(players.user()) == -1 then
+            for _, pid in players.list(true, true, true) do 
+                local hdl = pid_to_handle(pid)
+                if NETWORK.NETWORK_IS_FRIEND(hdl) then
+                    if players.get_boss(pid) ~= -1 and players.get_boss(players.user()) == -1 then
+                        menu.trigger_commands("ceojoin " .. players.get_name(pid))
+                        util.yield(1666)
+                    end
+                end
+            end
+        end
         if players.get_boss(players.user()) == -1 then
             menu.trigger_commands("ceostart")
             util.yield(1666)
@@ -707,6 +719,14 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yo
         util.yield(666)
     else
         util.yield(13666)
+    end
+end)
+
+menu.toggle(PIP_Girl, "Auto Join Friends CEO (!)", {""}, "Uses 'Auto Become a CEO/MC' ", function(on)
+    if on then
+        joinfriendsceo = true
+    else
+        joinfriendsceo = false
     end
 end)
 
