@@ -332,7 +332,7 @@ local Outfit = menu.list(menu.my_root(), 'Outfit', {}, 'Look Pretty and nice.', 
 local Game = menu.list(menu.my_root(), 'Game', {}, '', function(); end)
 local Session = menu.list(menu.my_root(), 'Session', {}, 'Session', function(); end)
 local SessionClaimer = menu.list(Session, 'Session Claimer Settings', {}, 'Session Claimer Settings', function(); end)
-local Settings = menu.list(menu.my_root(), 'Settings', {}, '', function(); end)
+local Settings = menu.list(menu.my_root(), 'Settings/Misc', {}, '', function(); end)
 local Credits = menu.list(Settings, 'Credits', {}, '', function(); end)
 
 menu.textslider(PIP_Girl_APPS, "Master Control Terminal App", {}, "Your Master Control Terminal.", {
@@ -2230,6 +2230,8 @@ menu.divider(Credits, "Other Script Dev's. <3")
 
 menu.hyperlink(Credits, "mehScript by akat0zi", "https://discord.gg/uUNRn6xgw5", "For (Specially First) inspiration , little skid.\nSince i was (and still am) new/noob to lua.")
 
+menu.hyperlink(Credits, "Heist Control by IceDoomfist", "https://discord.gg/KTFAYQn5Xz", "For (Specially First) inspiration , some skid.\nSince i was (and still am) new/noob to lua.")
+
 menu.hyperlink(Credits, "AcjokerScript by acjoker8818", "https://discord.gg/fn4uBbFNnA", "For inspiration. <3")
 
 menu.hyperlink(Credits, "JinxScript by Prisuhm", "https://discord.gg/hjs5S93kQv", "For (Specially First) inspiration , little skid.\nSince i was (and still am) new/noob to lua.")
@@ -2244,11 +2246,11 @@ menu.hyperlink(Credits, "Stand Lua Auto-Updater by hexarobi", "https://github.co
 
 menu.divider(Credits, "My Friends. <3")
 
-menu.action(Credits, "Kris", {""}, "For activly using/testing my lua.", function()
+menu.action(Credits, "Kris <3", {""}, "For activly using/testing my lua.", function()
     notify("Kris is sexy.")
 end)
 
-menu.action(Credits, "Brian", {""}, "For activly using/testing my lua.", function()
+menu.action(Credits, "Brian <3", {""}, "For activly using/testing my lua.", function()
     notify("Brian is sexy.")
 end)
 
