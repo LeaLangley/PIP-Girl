@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.90"
+local SCRIPT_VERSION = "0.0.91"
 
 local startupmsg = "Added Credits in Settings <3\nAdded 'PIP Girl > Auto Join Friends CEO (!)'"
 
@@ -627,95 +627,114 @@ menu.text_input(PIP_Girl, "CEO Name", {"pgceoname"}, "You can press Ctrl+U and S
 local joinfriendsceo = false
 menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yourself as CEO and Auto Switches you to MC/CEO in most situations needed.", function()
     if IsInSession() then
-        if joinfriendsceo and players.get_boss(players.user()) == -1 then
-            for _, pid in players.list(true, true, true) do 
-                local hdl = pid_to_handle(pid)
-                if NETWORK.NETWORK_IS_FRIEND(hdl) then
-                    if players.get_boss(pid) ~= -1 and players.get_boss(players.user()) == -1 then
-                        menu.trigger_commands("ceojoin " .. players.get_name(pid))
-                        util.yield(1666)
+        local uniqueColors = {}  -- Table to store unique organization colors
+        for _, pid in players.list(true, true, true) do 
+            if players.get_boss(pid) ~= -1 then
+                local orgColor = players.get_org_colour(pid)
+                if orgColor and not uniqueColors[orgColor] then
+                    uniqueColors[orgColor] = true
+                end
+                util.yield(1)
+            end
+        end
+        local ceoInSession = 0
+        for _ in pairs(uniqueColors) do
+            ceoInSession = ceoInSession + 1
+            util.yield(1)
+        end
+        if ceoInSession < 10 then
+            if joinfriendsceo and players.get_boss(players.user()) == -1 then
+                for _, pid in players.list(true, true, true) do 
+                    local hdl = pid_to_handle(pid)
+                    if NETWORK.NETWORK_IS_FRIEND(hdl) then
+                        if players.get_boss(pid) ~= -1 and players.get_boss(players.user()) == -1 then
+                            menu.trigger_commands("ceojoin " .. players.get_name(pid))
+                            util.yield(1666)
+                        end
                     end
                 end
             end
-        end
-        if players.get_boss(players.user()) == -1 then
-            menu.trigger_commands("ceostart")
-            util.yield(1666)
-            if players.get_org_type(players.user()) == 0 then
-                notify("Turned you into CEO!")
-                if urceoname ~= "" then
-                    menu.trigger_commands("ceoname " .. urceoname)
-                end
-                util.yield(6666)
-            else
-                notify("We could not turn you into CEO :c\nWe will wait 3 minutes and try again.")
-                util.yield(213666)
-            end
-        end
-        local CEOLabels = {
-            "HIP_HELP_BBOSS",
-            "HIP_HELP_BBOSS2",
-            "HPBOARD_REG",
-            "HPBOARD_REGB",
-            "HT_NOT_BOSS",
-            "HUB_PC_BLCK",
-            "NHPG_HELP_BBOSS",
-            "OFF_COMP_REG",
-            "TRUCK_PC_BLCK",
-            "TUN_HELP_BBOSS",
-            "BUNK_PC_BLCK",
-            "CH_FINALE_REG",
-            "CH_PREP_REG",
-            "CH_SETUP_REG",
-            "FHQ_PC_BLCK",
-            "HANG_PC_BLCK",
-            "HFBOARD_REG",
-            "HIBOARD_REG",
-            "HIBOARD_REGB",
-            "MP_OFF_LAP_1",
-            "MP_OFF_LAP_PC",
-            "OFF_COMP_REG",
-            "ARC_PC_BLCK",
-            "ARC_HT_0",
-            "ARC_HT_0B",
-            "ACID_SLL_HLP2",
-            "HRBOARD_REG",
-            "HRBOARD_REGB",
-        }
-        for _, label in pairs(CEOLabels) do
-            if IS_HELP_MSG_DISPLAYED(label) then
-                if players.get_boss(players.user()) == -1 then menu.trigger_commands("ceostart") end
-                if players.get_org_type(players.user()) == 1 then menu.trigger_commands("ceotomc") end
+            if players.get_boss(players.user()) == -1 then
+                menu.trigger_commands("ceostart")
                 util.yield(1666)
-                if players.get_boss(players.user()) ~= -1 then
-                    if urceoname != "" then
-                        menu.trigger_commands("ceoname " .. urceoname)
-                    end
+                if players.get_org_type(players.user()) == 0 then
                     notify("Turned you into CEO!")
-                    util.yield(666)
-                end
-            end
-        end
-        local MCLabels = {
-            "CLBHBKRREG",
-            "ARC_HT_1",
-            "ARC_HT_1B",
-        }
-        for _, label in pairs(MCLabels) do
-            if IS_HELP_MSG_DISPLAYED(label) then
-                if players.get_boss(players.user()) == -1 then menu.trigger_commands("mcstart") end
-                if players.get_org_type(players.user()) == 0 then menu.trigger_commands("ceotomc") end
-                util.yield(1666)
-                if players.get_boss(players.user()) ~= -1 then
-                    if urceoname != "" then
+                    if urceoname ~= "" then
                         menu.trigger_commands("ceoname " .. urceoname)
                     end
-                    notify("Turned you into MC President!")
-                    util.yield(666)
+                    util.yield(6666)
+                else
+                    notify("We could not turn you into CEO :c\nWe will wait 3 minutes and try again.")
+                    util.yield(213666)
                 end
             end
+            local CEOLabels = {
+                "HIP_HELP_BBOSS",
+                "HIP_HELP_BBOSS2",
+                "HPBOARD_REG",
+                "HPBOARD_REGB",
+                "HT_NOT_BOSS",
+                "HUB_PC_BLCK",
+                "NHPG_HELP_BBOSS",
+                "OFF_COMP_REG",
+                "TRUCK_PC_BLCK",
+                "TUN_HELP_BBOSS",
+                "BUNK_PC_BLCK",
+                "CH_FINALE_REG",
+                "CH_PREP_REG",
+                "CH_SETUP_REG",
+                "FHQ_PC_BLCK",
+                "HANG_PC_BLCK",
+                "HFBOARD_REG",
+                "HIBOARD_REG",
+                "HIBOARD_REGB",
+                "MP_OFF_LAP_1",
+                "MP_OFF_LAP_PC",
+                "OFF_COMP_REG",
+                "ARC_PC_BLCK",
+                "ARC_HT_0",
+                "ARC_HT_0B",
+                "ACID_SLL_HLP2",
+                "HRBOARD_REG",
+                "HRBOARD_REGB",
+            }
+            for _, label in pairs(CEOLabels) do
+                if IS_HELP_MSG_DISPLAYED(label) then
+                    if players.get_boss(players.user()) == -1 then menu.trigger_commands("ceostart") end
+                    if players.get_org_type(players.user()) == 1 then menu.trigger_commands("ceotomc") end
+                    util.yield(1666)
+                    if players.get_boss(players.user()) ~= -1 then
+                        if urceoname != "" then
+                            menu.trigger_commands("ceoname " .. urceoname)
+                        end
+                        notify("Turned you into CEO!")
+                        util.yield(666)
+                    end
+                end
+            end
+            local MCLabels = {
+                "CLBHBKRREG",
+                "ARC_HT_1",
+                "ARC_HT_1B",
+            }
+            for _, label in pairs(MCLabels) do
+                if IS_HELP_MSG_DISPLAYED(label) then
+                    if players.get_boss(players.user()) == -1 then menu.trigger_commands("mcstart") end
+                    if players.get_org_type(players.user()) == 0 then menu.trigger_commands("ceotomc") end
+                    util.yield(1666)
+                    if players.get_boss(players.user()) ~= -1 then
+                        if urceoname != "" then
+                            menu.trigger_commands("ceoname " .. urceoname)
+                        end
+                        notify("Turned you into MC President!")
+                        util.yield(666)
+                    end
+                end
+            end
+            util.yield(666)
+        else
+            util.yield(6666)
         end
-        util.yield(666)
     else
         util.yield(13666)
     end
@@ -1679,7 +1698,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                             end
                         end
                     end
-                    util.yield(13666)
+                    util.yield(16666)
                     if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 and (players.get_host() == players.user() or isHostFriendly) then
                         warnify("Found u a new Home <3")
                         if players.user() != players.get_script_host() then
