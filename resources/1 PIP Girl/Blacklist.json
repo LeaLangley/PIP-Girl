@@ -1,5 +1,5 @@
 {
-    "Version": "29.07.2023",
+    "Version": "30.07.2023",
     "Blacklist": {
         "565770": {
             "Name": "IIRaZ3rII"
@@ -1809,6 +1809,21 @@
         },
         "228429230": {
             "Name": "HUIHUI0310"
+        },
+        "231292425": {
+            "Name": "VIP-BEYOND"
+        },
+        "181263225": {
+            "Name": "akumachaos"
+        },
+        "213598820": {
+            "Name": "GeneralGrieveous"
+        },
+        "157246708": {
+            "Name": "Gamer_Soeren"
+        },
+        "117408398": {
+            "Name": "NikomokWeldKahba"
         }
     }
 }
