@@ -170,8 +170,6 @@ local function notify(msg)
     util.toast("<[Pip Girl]>: " .. msg)
 end
 
-notify(startupmsg)
-
 local function warnify(msg)
     chat.send_message("<[Pip Girl]>: " .. msg, true, true, false)
     util.toast("<[Pip Girl]>: " .. msg, TOAST_CONSOLE)
