@@ -754,6 +754,49 @@ menu.action(PIP_Girl, "Invite All Friends in CEO/MC", {"invceo"}, "Invites all y
         local hdl = pid_to_handle(pid)
         if NETWORK.NETWORK_IS_FRIEND(hdl) then
             if players.get_boss(pid) == -1 and players.get_boss(players.user()) != -1 then
+                -- Thanks to Totaw Annihiwation for this script event! // Position - 0x2725D7
+                util.trigger_script_event(1 << pid, {
+                    -245642440,
+                    players.user(),
+                    4,
+                    10000, -- wage?
+                    0,
+                    0,
+                    0,
+                    0,
+                    memory.read_int(memory.script_global(1924276 + 9)), -- f_8
+                    memory.read_int(memory.script_global(1924276 + 10)), -- f_9
+                })
+            end
+        end
+    end
+    util.yield(3666)
+    for _, pid in players.list(true, true, true) do
+        local hdl = pid_to_handle(pid)  
+        if NETWORK.NETWORK_IS_FRIEND(hdl) then
+            if players.get_boss(pid) == -1 and players.get_boss(players.user()) != -1 then
+                -- Thanks to Totaw Annihiwation for this script event! // Position - 0x2725D7
+                util.trigger_script_event(1 << pid, {
+                    -245642440,
+                    players.user(),
+                    4,
+                    10000, -- wage?
+                    0,
+                    0,
+                    0,
+                    0,
+                    memory.read_int(memory.script_global(1924276 + 9)), -- f_8
+                    memory.read_int(memory.script_global(1924276 + 10)), -- f_9
+                })
+            end
+        end
+    end
+    util.yield(3666)
+    for _, pid in players.list(true, true, true) do
+        local hdl = pid_to_handle(pid)
+        if NETWORK.NETWORK_IS_FRIEND(hdl) then
+            if players.get_boss(pid) == -1 and players.get_boss(players.user()) != -1 then
+                -- Thanks to Totaw Annihiwation for this script event! // Position - 0x2725D7
                 util.trigger_script_event(1 << pid, {
                     -245642440,
                     players.user(),

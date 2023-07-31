@@ -1,5 +1,5 @@
 {
-    "Version": "31.07.2023",
+    "Version": "01.08.2023",
     "Blacklist": {
         "565770": {
             "Name": "IIRaZ3rII"
@@ -1833,6 +1833,15 @@
         },
         "213301607": {
             "Name": "googelinchen"
+        },
+        "219492476": {
+            "Name": "GlockInMyPurse"
+        },
+        "128023603": {
+            "Name": "TheRealCapp"
+        },
+        "223854467": {
+            "Name": "AshaPlug"
         }
     }
 }
