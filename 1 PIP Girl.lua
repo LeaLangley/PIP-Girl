@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.92"
+local SCRIPT_VERSION = "0.0.93"
 
 local startupmsg = "Added Credits in Settings <3\nAdded 'PIP Girl > Auto Join Friends CEO (!)'"
 
@@ -617,14 +617,15 @@ menu.toggle_loop(PIP_Girl, 'Nightclub Party Never Stops!', {'ncpop'}, 'The hotte
     end
 end)
 
-menu.divider(PIP_Girl, "CEO Options")
+menu.divider(PIP_Girl, "CEO/MC Options")
 
 local urceoname = ""
 local function on_change(input_str, click_type)
     urceoname = input_str
 end
-menu.text_input(PIP_Girl, "CEO Name", {"pgceoname"}, "You can press Ctrl+U and Select Colours but no special GTA Icons sadly.", on_change)
+menu.text_input(PIP_Girl, "CEO Name", {"pgceoname"}, "(also works for mc) You can press Ctrl+U and Select Colours but no special GTA Icons sadly.", on_change)
 local joinfriendsceo = false
+local invitefriendsinceo = false
 menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yourself as CEO and Auto Switches you to MC/CEO in most situations needed.", function()
     if IsInSession() then
         local uniqueColors = {}  -- Table to store unique organization colors
@@ -649,7 +650,7 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yo
                     if NETWORK.NETWORK_IS_FRIEND(hdl) then
                         if players.get_boss(pid) ~= -1 and players.get_boss(players.user()) == -1 then
                             menu.trigger_commands("ceojoin " .. players.get_name(pid))
-                            util.yield(1666)
+                            util.yield(13666)
                         end
                     end
                 end
@@ -740,11 +741,33 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yo
     end
 end)
 
-menu.toggle(PIP_Girl, "Auto Join Friends CEO (!)", {""}, "Uses 'Auto Become a CEO/MC' ", function(on)
+menu.toggle(PIP_Girl, "Auto Join Friends CEO (!)", {""}, "(also mc) Uses 'Auto Become a CEO/MC' ", function(on)
     if on then
         joinfriendsceo = true
     else
         joinfriendsceo = false
+    end
+end)
+
+menu.action(PIP_Girl, "Invite All Friends in CEO/MC", {"invceo"}, "Invites all you friends into your CEO/MC", function()
+    for _, pid in players.list(true, true, true) do
+        local hdl = pid_to_handle(pid)
+        if NETWORK.NETWORK_IS_FRIEND(hdl) then
+            if players.get_boss(pid) == -1 and players.get_boss(players.user()) != -1 then
+                util.trigger_script_event(1 << pid, {
+                    -245642440,
+                    players.user(),
+                    4,
+                    10000, -- wage?
+                    0,
+                    0,
+                    0,
+                    0,
+                    memory.read_int(memory.script_global(1924276 + 9)), -- f_8
+                    memory.read_int(memory.script_global(1924276 + 10)), -- f_9
+                })
+            end
+        end
     end
 end)
 
@@ -1611,7 +1634,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 util.yield(1666)
                 first_run = false
             else
-                util.yield(16666)
+                util.yield(19666)
             end
             notify("U r in Story Mode, Getting u online.")
             menu.trigger_commands("go public")
@@ -1637,7 +1660,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 for _, pid in pairs(players.list(false, false, true)) do
                     while not IsInSession() do
                         if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
-                            util.yield(16666)
+                            util.yield(19666)
                             notify("U r in Story Mode ? Getting u online.")
                             menu.trigger_commands("go public")
                         end
@@ -1663,7 +1686,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 for _, pid in pairs(players.list(false, false, true)) do
                     while not IsInSession() do
                         if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
-                            util.yield(16666)
+                            util.yield(19666)
                             notify("U r in Story Mode ? Getting u online.")
                             menu.trigger_commands("go public")
                         end
@@ -1691,7 +1714,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     warnify("Might found something.")
                     while not IsInSession() do
                         if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
-                            util.yield(16666)
+                            util.yield(19666)
                             notify("U r in Story Mode ? Getting u online.")
                             menu.trigger_commands("go public")
                         end
@@ -2260,18 +2283,6 @@ players.add_command_hook(function(pid)
     end)
 end)
 
-menu.hyperlink(Settings, "PIP Girl's GIT", "https://github.com/LeaLangley/PIP-Girl", "")
-
-menu.hyperlink(Settings, "Buy me a Bat", "https://www.buymeacoffee.com/asuka666", "")
-
-menu.action(Settings, "Check for Update", {}, "The script will automatically check for updates at most daily, but you can manually check using this option anytime.", function()
-    auto_updater.run_auto_update(auto_update_config)
-end)
-
-menu.action(Settings, 'Open Export Blacklist Folder', {'oef'}, '', function()
-    util.open_folder(resources_dir .. 'Export')
-end)
-
 menu.action(Credits, "Statement about skidding.", {""}, "99% of the skidded code has been modifyed or changed, i specially did that since i was new to lua, and i am a noob. It helpt me getting started and understanding the code i was messing around with.", function()
     notify("99% of the skidded code has been modifyed or changed, i specially did that since i was new to lua, and i am a noob. It helpt me getting started and understanding the code i was messing around with.")
 end)
@@ -2309,6 +2320,22 @@ menu.divider(Credits, "<3")
 menu.action(Credits, "And you!", {""}, "Ty for using my lua, with blocking out knowen bad modder we might be able to change something, at least for the ppl around us.", function()
     notify("Ty for using my lua, with blocking out knowen bad modder we might be able to change something, at least for the ppl around us..")
 end)
+
+menu.hyperlink(Settings, "PIP Girl's GIT", "https://github.com/LeaLangley/PIP-Girl", "")
+
+menu.hyperlink(Settings, "Buy me a Bat", "https://www.buymeacoffee.com/asuka666", "")
+
+menu.divider(Settings, "<3")
+
+menu.action(Settings, "Check for Update", {}, "The script will automatically check for updates at most daily, but you can manually check using this option anytime.", function()
+    auto_updater.run_auto_update(auto_update_config)
+end)
+
+menu.action(Settings, 'Open Export Blacklist Folder', {'oef'}, '', function()
+    util.open_folder(resources_dir .. 'Export')
+end)
+
+menu.divider(Settings, "<3")
 
 menu.toggle(Settings, "NetWatch Admin", {""}, "Only use this if ur a NetWatch Admin.\nWhy ? well dont embarrassed urself if u turn it on as non admin xD.", function(on)
     if on then
