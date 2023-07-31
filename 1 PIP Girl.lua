@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.91"
+local SCRIPT_VERSION = "0.0.92"
 
 local startupmsg = "Added Credits in Settings <3\nAdded 'PIP Girl > Auto Join Friends CEO (!)'"
 
@@ -1233,9 +1233,9 @@ menu.action(Game, 'Super Cleanse No yacht fix', {"supercleanny"}, 'BCS R* is a m
     for k,ent in pairs(entities.get_all_peds_as_handles()) do
         if not PED.IS_PED_A_PLAYER(ent) then
             entities.delete_by_handle(ent)
+            ct += 1
+            util.yield(1)
         end
-        ct += 1
-        util.yield(1)
     end
     for k,ent in pairs(entities.get_all_objects_as_handles()) do
         entities.delete_by_handle(ent)
@@ -1248,9 +1248,10 @@ menu.action(Game, 'Super Cleanse No yacht fix', {"supercleanny"}, 'BCS R* is a m
         if PHYSICS.DOES_ROPE_EXIST(rope_alloc) then
             PHYSICS.DELETE_ROPE(rope_alloc)
             ct += 1
+            util.yield(1)
         end
-        util.yield(1)
     end
+    util.yield(1)
     menu.trigger_commands("deleteropes")
     notify('Done ' .. ct .. ' entities removed!')
 end)
@@ -1268,15 +1269,25 @@ menu.action(Game, 'Super Cleanse', {"superclean"}, 'BCS R* is a mess.', function
     for k,ent in pairs(entities.get_all_peds_as_handles()) do
         if not PED.IS_PED_A_PLAYER(ent) then
             entities.delete_by_handle(ent)
+            ct += 1
+            util.yield(1)
         end
-        ct += 1
-        util.yield(1)
     end
     for k,ent in pairs(entities.get_all_objects_as_handles()) do
         entities.delete_by_handle(ent)
         ct += 1
         util.yield(1)
     end
+    local rope_alloc = memory.alloc(4)
+    for i=0, 100 do 
+        memory.write_int(rope_alloc, i)
+        if PHYSICS.DOES_ROPE_EXIST(rope_alloc) then
+            PHYSICS.DELETE_ROPE(rope_alloc)
+            ct += 1
+            util.yield(1)
+        end
+    end
+    util.yield(1)
     menu.trigger_commands("deleteropes")
     notify('Done ' .. ct .. ' entities removed!')
     util.yield(666)
@@ -1362,7 +1373,6 @@ local avoidWarningSkipHere = {
     { x = 1561.05, y = 385.90, z = -49.69 }, -- Cayo Outfit Selection
 }
 local lastWarnifyTime = {}
-local warnifyCooldown = 10
 menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warnings in the game.", function()
     local playerPosition = players.get_position(players.user())
     local mess_hash = math.abs(HUD.GET_WARNING_SCREEN_MESSAGE_HASH())
@@ -1384,6 +1394,7 @@ menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warn
             if skipWarning then
                 local warning = warningMessages[mess_hash]
                 if warning then
+                    local warnifyCooldown = 10
                     local currentTime = os.time()
                     local lastTimeWarnified = lastWarnifyTime[mess_hash] or 0
 
@@ -1394,6 +1405,7 @@ menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warn
                     PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
                     util.yield(13)
                 else
+                    local warnifyCooldown = 3
                     local currentTime = os.time()
                     local lastTimeWarnified = lastWarnifyTime[mess_hash] or 0
 
