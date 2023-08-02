@@ -1780,7 +1780,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                             end
                         end
                     end
-                    util.yield(16666)
+                    util.yield(25666)
                     if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 and (players.get_host() == players.user() or isHostFriendly) then
                         warnify("Found u a new Home <3")
                         if players.user() != players.get_script_host() then
