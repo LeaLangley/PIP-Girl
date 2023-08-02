@@ -971,8 +971,7 @@ menu.divider(Stimpak, "Vehicle Related Health")
 local function LeaTech()
     local vehicle = entities.get_user_vehicle_as_handle()
     if vehicle then
-        VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, true)
-        VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, true)
+        menu.trigger_commands("signal hazard")
         VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, true)
         util.yield(666)
         VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, false)
@@ -1031,8 +1030,7 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
                     VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, 1000)
                     VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, 1000)
                     VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, 1000)
-                    VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, false)
-                    VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, false)
+                    menu.trigger_commands("signal off")
                 else
                     LeaTech()
                 end
