@@ -948,12 +948,18 @@ end)
 
 menu.toggle_loop(Stimpak, "Oxygen", {"pgbreath"}, "Just breath.", function()
     if IsInSession() then
-        local air = PLAYER.GET_PLAYER_UNDERWATER_TIME_REMAINING(players.user())
-        if 13 >= air then
-            PLAYER.SET_PLAYER_UNDERWATER_BREATH_PERCENT_REMAINING(players.user(), 100)
-            util.yield(666)
+        if PED.IS_PED_SWIMMING_UNDER_WATER(players.user_ped()) then
+            PED.SET_ENABLE_SCUBA(players.user_ped(), true)
+            local air = PLAYER.GET_PLAYER_UNDERWATER_TIME_REMAINING(players.user())
+            if 13 >= air then
+                PLAYER.SET_PLAYER_UNDERWATER_BREATH_PERCENT_REMAINING(players.user(), 100)
+                util.yield(666)
+            else
+                util.yield(666)
+            end
         else
-            util.yield(13)
+            PED.SET_ENABLE_SCUBA(players.user_ped(), false)
+            util.yield(3666)
         end
     else
         util.yield(13666)
@@ -2349,6 +2355,10 @@ menu.hyperlink(Credits, "CAT ESP by movemint. cat", "https://github.com/Keramis"
 menu.hyperlink(Credits, "Stand Lua Auto-Updater by hexarobi", "https://github.com/hexarobi", "For the wonderfull Auto-Updater. :D")
 
 menu.divider(Credits, "My Friends. <3")
+
+menu.action(Credits, "Kev <3", {""}, "For activly using/testing my lua and gifting me Ultimate <3", function()
+    notify("Kev is very sexy.")
+end)
 
 menu.action(Credits, "Kris <3", {""}, "For activly using/testing my lua.", function()
     notify("Kris is sexy.")

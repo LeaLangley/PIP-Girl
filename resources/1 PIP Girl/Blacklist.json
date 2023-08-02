@@ -1,5 +1,5 @@
 {
-    "Version": "01.08.2023",
+    "Version": "02.08.2023",
     "Blacklist": {
         "565770": {
             "Name": "IIRaZ3rII"
@@ -1848,6 +1848,24 @@
         },
         "105232051": {
             "Name": "Lupulak"
+        },
+        "171605984": {
+            "Name": "brokeHYDRA"
+        },
+        "184043414": {
+            "Name": "invalidmodder"
+        },
+        "83991714": {
+            "Name": "zokremma_6666"
+        },
+        "137333058": {
+            "Name": "SP_SyLox"
+        },
+        "81977333": {
+            "Name": "Parsifal96rus"
+        },
+        "147128807": {
+            "Name": "_Pazival_"
         }
     }
 }
