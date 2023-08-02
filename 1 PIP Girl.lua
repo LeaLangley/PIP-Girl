@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.93"
+local SCRIPT_VERSION = "0.0.94"
 
 local startupmsg = "\nAdded Credits in Settings <3\nAdded 'PIP Girl > Auto Join Friends CEO (!)\nAdded 'PIP Girl > Invite All Friends in CEO/MC'"
 
@@ -650,7 +650,7 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yo
                     if NETWORK.NETWORK_IS_FRIEND(hdl) then
                         if players.get_boss(pid) ~= -1 and players.get_boss(players.user()) == -1 then
                             menu.trigger_commands("ceojoin " .. players.get_name(pid))
-                            util.yield(13666)
+                            util.yield(213666)
                         end
                     end
                 end
@@ -663,7 +663,7 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yo
                     if urceoname ~= "" then
                         menu.trigger_commands("ceoname " .. urceoname)
                     end
-                    util.yield(6666)
+                    util.yield(213666)
                 else
                     notify("We could not turn you into CEO :c\nWe will wait 3 minutes and try again.")
                     util.yield(213666)
