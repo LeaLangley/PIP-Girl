@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.94"
+local SCRIPT_VERSION = "0.0.95"
 
 local startupmsg = "\nAdded Credits in Settings <3\nAdded 'PIP Girl > Auto Join Friends CEO (!)\nAdded 'PIP Girl > Invite All Friends in CEO/MC'"
 
@@ -973,9 +973,9 @@ local function LeaTech()
     if vehicle then
         VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, true)
         VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, true)
-        VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, false)
-        util.yield(666)
         VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, true)
+        util.yield(666)
+        VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, false)
     else
         util.yield(1000)
     end
@@ -1044,7 +1044,7 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
                     VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
                     VEHICLE.SET_VEHICLE_FULLBEAM(vehicle, true)
                     VEHICLE.SET_DONT_PROCESS_VEHICLE_GLASS(vehicles, true)
-                    VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, true)
+                    VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, false)
                     VEHICLE.SET_HELI_TAIL_BOOM_CAN_BREAK_OFF(vehicle, false)
                     VEHICLE.CAN_SHUFFLE_SEAT(vehicle, true)
                     VEHICLE.SET_VEHICLE_CAN_ENGINE_MISSFIRE(vehicle, false)
