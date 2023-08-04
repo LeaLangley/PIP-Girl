@@ -2344,10 +2344,9 @@ players.add_command_hook(function(pid)
                 break
             end
         end
-        local pPos = players.get_position(pid)
-        if IsInSession() and hellabl and not pPos.x == 0 and pPos.y == 0 and pPos.z == 0 then
+        if IsInSession() and hellabl then
             StrategicKick(pid, name, rid)
-            warnify_net("Attempting to kick " .. name)
+            warnify("Attempting to kick " .. name)
             hellabl = false
             util.yield(66666)
         else
