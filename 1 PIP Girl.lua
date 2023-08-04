@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.96"
+local SCRIPT_VERSION = "0.0.97"
 
 local startupmsg = "\nAdded Credits in Settings <3\nAdded 'PIP Girl > Auto Join Friends CEO (!)\nAdded 'PIP Girl > Invite All Friends in CEO/MC'"
 
@@ -1462,7 +1462,7 @@ menu.toggle_loop(Game, "Auto Skip Cutscene", {"pgascut"}, "Automatically skip al
 
         for i, position in ipairs(avoidCutsceneSkipHere) do
             local distance = math.sqrt((playerPosition.x - position.x) ^ 2 + (playerPosition.y - position.y) ^ 2 + (playerPosition.z - position.z) ^ 2)
-            local radius = 6
+            local radius = 25
 
             if distance <= radius then
                 skipCutscene = false
