@@ -317,9 +317,9 @@ local function StrategicKick(pid, name, rid) --TODO , make it actually smart , n
         menu.trigger_commands("desync " .. name .. " on")
         menu.trigger_commands("blocksync " .. name .. " on")
         if players.user() == players.get_host() then
-            menu.trigger_commands("loveletterkick " .. name)
+            menu.trigger_commands("ban " .. name)
         else
-            menu.trigger_commands("kick " .. name)
+            menu.trigger_commands("loveletterkick " .. name)
         end
     end
 end
