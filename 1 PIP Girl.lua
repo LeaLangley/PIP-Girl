@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.98"
+local SCRIPT_VERSION = "0.0.99"
 
 local startupmsg = "\nAdded Credits in Settings <3\nAdded 'PIP Girl > Auto Join Friends CEO (!)\nAdded 'PIP Girl > Invite All Friends in CEO/MC'"
 
@@ -393,6 +393,7 @@ local function CayoBasics()
     STAT_SET_INT("H4CNF_APPROACH", -1)
     STAT_SET_INT("H4CNF_BS_ENTR", 63)
     STAT_SET_INT("H4CNF_BS_GEN", 126975)
+    STAT_SET_INT("H4CNF_BS_ABIL", -1)
     STAT_SET_INT("H4CNF_WEAPONS", 2)
     STAT_SET_INT("H4CNF_WEP_DISRP", 3)
     STAT_SET_INT("H4CNF_ARM_DISRP", 3)
@@ -402,6 +403,7 @@ local function CayoBasics()
     STAT_SET_INT("H4CNF_GRAPPEL", 5156)
     STAT_SET_INT("H4CNF_TROJAN", 5)
     STAT_SET_INT("H4_PROGRESS", 131055)
+    STAT_SET_INT("H4_PLAYTHROUGH_STATUS", 100)
 end
 
 local aboutCayoLimit = "Note that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person."
@@ -1376,6 +1378,7 @@ menu.toggle_loop(Outfit, "Restor Outfit", {"restoreoutfit"}, "Auto Restore the S
 end)
 
 local function SuperClean(fix)
+    local pos = players.get_position(players.user())
     local ct = 0
     local rope_alloc = memory.alloc(4)
     for i=0, 100 do 
@@ -1415,6 +1418,10 @@ local function SuperClean(fix)
         ct += 1
         util.yield(1)
     end
+    util.yield(1)
+    GRAPHICS.REMOVE_PARTICLE_FX_IN_RANGE(pos.x, pos.y, pos.z, 13666)
+    util.yield(1)
+    MISC.CLEAR_AREA_OF_PROJECTILES(pos.x, pos.y, pos.z, 13666)
     notify('Done ' .. ct .. '+ entities removed!')
     if fix then
         util.yield(666)
