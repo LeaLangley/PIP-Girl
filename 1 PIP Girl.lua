@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.97"
+local SCRIPT_VERSION = "0.0.98"
 
 local startupmsg = "\nAdded Credits in Settings <3\nAdded 'PIP Girl > Auto Join Friends CEO (!)\nAdded 'PIP Girl > Invite All Friends in CEO/MC'"
 
@@ -83,7 +83,7 @@ Script = {}
 
 resources_dir = filesystem.resources_dir() .. '/1 PIP Girl/'
 logo = directx.create_texture(resources_dir .. 'logo.png')
-if SCRIPT_MANUAL_START then
+if SCRIPT_MANUAL_START or SCRIPT_SILENT_START then
     logo_alpha = 0
     logo_alpha_incr = 0.01
     logo_alpha_thread = util.create_thread(function (thr)
@@ -105,7 +105,7 @@ if SCRIPT_MANUAL_START then
         while true do
             directx.draw_texture(logo, 0.06, 0.06, 0.5, 0.5, 0.5, 0.5, 0, 1, 1, 1, logo_alpha)
             timepassed = os.clock() - starttime
-            if timepassed > 5 then
+            if timepassed > 1 then
                 logo_alpha_incr = -0.01
             end
             if logo_alpha == 0 then
@@ -233,36 +233,38 @@ local function NetWatch_msg(pid, first)
 end
 
 function START_SCRIPT(ceo_mc, name)
-    if HUD.IS_PAUSE_MENU_ACTIVE() then
-        notify("Close any open Game Menu first!")
-        return
-    end
-    if players.get_boss(players.user()) ~= -1 then
-        if players.get_org_type(players.user()) == 0 then -- NOTE: https://www.unknowncheats.me/forum/3683018-post106.html
-            if ceo_mc == "MC" then
-                menu.trigger_commands("ceotomc")
-                notify("Turned you into MC President!")
+    if IsInSession() then
+        if HUD.IS_PAUSE_MENU_ACTIVE() then
+            notify("Close any open Game Menu first!")
+            return
+        end
+        if players.get_boss(players.user()) ~= -1 then
+            if players.get_org_type(players.user()) == 0 then -- NOTE: https://www.unknowncheats.me/forum/3683018-post106.html
+                if ceo_mc == "MC" then
+                    menu.trigger_commands("ceotomc")
+                    notify("Turned you into MC President!")
+                end
+            else
+                if ceo_mc == "CEO" then
+                    menu.trigger_commands("ceotomc")
+                    notify("Turned you into CEO!")
+                end
             end
         else
             if ceo_mc == "CEO" then
-                menu.trigger_commands("ceotomc")
+                menu.trigger_commands("ceostart")
                 notify("Turned you into CEO!")
+            elseif ceo_mc == "MC" then
+                menu.trigger_commands("mcstart")
+                notify("Turned you into MC President!")
             end
         end
-    else
-        if ceo_mc == "CEO" then
-            menu.trigger_commands("ceostart")
-            notify("Turned you into CEO!")
-        elseif ceo_mc == "MC" then
-            menu.trigger_commands("mcstart")
-            notify("Turned you into MC President!")
-        end
-    end
 
-    SCRIPT.REQUEST_SCRIPT(name)
-    repeat util.yield_once() until SCRIPT.HAS_SCRIPT_LOADED(name)
-    SYSTEM.START_NEW_SCRIPT(name, 5000)
-    SCRIPT.SET_SCRIPT_AS_NO_LONGER_NEEDED(name)
+        SCRIPT.REQUEST_SCRIPT(name)
+        repeat util.yield_once() until SCRIPT.HAS_SCRIPT_LOADED(name)
+        SYSTEM.START_NEW_SCRIPT(name, 5000)
+        SCRIPT.SET_SCRIPT_AS_NO_LONGER_NEEDED(name)
+    end
 end
 
 function IS_HELP_MSG_DISPLAYED(label)
@@ -334,10 +336,7 @@ local SessionClaimer = menu.list(Session, 'Session Claimer Settings', {}, 'Sessi
 local Settings = menu.list(menu.my_root(), 'Settings/Misc', {}, '', function(); end)
 local Credits = menu.list(Settings, 'Credits', {}, '', function(); end)
 
-menu.textslider(PIP_Girl_APPS, "Master Control Terminal App", {}, "Your Master Control Terminal.", {
-    "Open",
-    "Close",
-}, function()
+menu.action(PIP_Girl_APPS, "Master Control Terminal App", {}, "Your Master Control Terminal.", function()
     START_SCRIPT("CEO", "apparcadebusinesshub")
 end)
 
@@ -405,7 +404,13 @@ local function CayoBasics()
     STAT_SET_INT("H4_PROGRESS", 131055)
 end
 
-menu.action(PIP_Girl_Heist, 'Cayo 1 Player Preset (!)', {}, 'Set up the cayo heist with a Sweet Legit Like Preset.\nIf you inside the Submarine, go manually out and in again to refreash the board.\nNote that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.', function (click_type)
+local aboutCayoLimit = "Note that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person."
+
+local aboutCayoPreset = "With this setup , Every player gets 2m, so they can do 2 runs and reach Hour Limit."
+
+local aboutCayo = "The cayo heist with a Sweet Legit Like Preset.\nIf you inside the Submarine, go manually out and in again to refreash the board."
+
+menu.action(PIP_Girl_Heist, 'Cayo 1 Player Preset (!)', {}, aboutCayoPreset..'\n'..aboutCayo.."\n"..aboutCayoLimit, function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'Want to set up cayo?', function()
         if IsInSession() then
             CayoBasics()
@@ -464,16 +469,16 @@ menu.action(PIP_Girl_Heist, 'Cayo 1 Player Preset (!)', {}, 'Set up the cayo hei
                 STAT_SET_INT("H4CNF_TARGET", 3) -- Pink
                 warnify("You'r Cayo Target is a Pink Diamond. *.*")
             end
-            warnify("Note that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.")
+            warnify(aboutCayoPreset..'\n'..aboutCayo.."\n"..aboutCayoLimit)
             util.yield(1337)
-            notify("Note that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.")
+            notify(aboutCayoPreset.."\n"..aboutCayoLimit)
         end
     end, function()
         notify("Aborted.")
     end, true)
 end)
 
-menu.action(PIP_Girl_Heist, 'Cayo 2 Player 50/50 Preset (!)', {}, 'Set up the cayo heist with a Sweet Legit Like Preset.\nIf you inside the Submarine, go manually out and in again to refreash the board.\nNote that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.', function (click_type)
+menu.action(PIP_Girl_Heist, 'Cayo 2 Player 50/50 Preset (!)', {}, aboutCayoPreset..'\n'..aboutCayo.."\n"..aboutCayoLimit, function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'Want to set up cayo?', function()
         if IsInSession() then
             CayoBasics()
@@ -532,16 +537,16 @@ menu.action(PIP_Girl_Heist, 'Cayo 2 Player 50/50 Preset (!)', {}, 'Set up the ca
                 STAT_SET_INT("H4CNF_TARGET", 3) -- Pink
                 warnify("You'r Cayo Target is a Pink Diamond. *.*")
             end
-            warnify("Note that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.")
+            warnify(aboutCayoPreset..'\n'..aboutCayo.."\n"..aboutCayoLimit)
             util.yield(1337)
-            notify("Note that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.")
+            notify(aboutCayoPreset.."\n"..aboutCayoLimit)
         end
     end, function()
         notify("Aborted.")
     end, true)
 end)
 
-menu.action(PIP_Girl_Heist, 'Cayo 3 Player 30/35/35 Preset (!)', {}, 'Set up the cayo heist with a Sweet Legit Like Preset.\nIf you inside the Submarine, go manually out and in again to refreash the board.\nNote that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.', function (click_type)
+menu.action(PIP_Girl_Heist, 'Cayo 3 Player 30/35/35 Preset (!)', {}, aboutCayoPreset..'\n'..aboutCayo.."\n"..aboutCayoLimit, function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'Want to set up cayo?', function()
         if IsInSession() then
             CayoBasics()
@@ -600,16 +605,16 @@ menu.action(PIP_Girl_Heist, 'Cayo 3 Player 30/35/35 Preset (!)', {}, 'Set up the
                 STAT_SET_INT("H4CNF_TARGET", 3) -- Pink
                 warnify("You'r Cayo Target is a Pink Diamond. *.*")
             end
-            warnify("Note that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.")
+            warnify(aboutCayoPreset..'\n'..aboutCayo.."\n"..aboutCayoLimit)
             util.yield(1337)
-            notify("Note that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.")
+            notify(aboutCayoPreset.."\n"..aboutCayoLimit)
         end
     end, function()
         notify("Aborted.")
     end, true)
 end)
 
-menu.action(PIP_Girl_Heist, 'Cayo 4 Player 25/25/25/25 Preset (!)', {}, 'Set up the cayo heist with a Sweet Legit Like Preset.\nIf you inside the Submarine, go manually out and in again to refreash the board.\nNote that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.', function (click_type)
+menu.action(PIP_Girl_Heist, 'Cayo 4 Player 25/25/25/25 Preset (!)', {}, aboutCayoPreset..'\n'..aboutCayo.."\n"..aboutCayoLimit, function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'Want to set up cayo?', function()
         if IsInSession() then
             CayoBasics()
@@ -668,9 +673,9 @@ menu.action(PIP_Girl_Heist, 'Cayo 4 Player 25/25/25/25 Preset (!)', {}, 'Set up 
                 STAT_SET_INT("H4CNF_TARGET", 3) -- Pink
                 warnify("You'r Cayo Target is a Pink Diamond. *.*")
             end
-            warnify("Note that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.")
+            warnify(aboutCayoPreset..'\n'..aboutCayo.."\n"..aboutCayoLimit)
             util.yield(1337)
-            notify("Note that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.")
+            notify(aboutCayoPreset.."\n"..aboutCayoLimit)
         end
     end, function()
         notify("Aborted.")
@@ -823,65 +828,67 @@ menu.toggle(PIP_Girl, "Auto Join Friends CEO (!)", {""}, "(also mc) Uses 'Auto B
 end)
 
 menu.action(PIP_Girl, "Invite All Friends in CEO/MC", {"invceo"}, "Invites all you friends into your CEO/MC", function()
-    for _, pid in players.list(true, true, true) do
-        local hdl = pid_to_handle(pid)
-        if NETWORK.NETWORK_IS_FRIEND(hdl) then
-            if players.get_boss(pid) == -1 and players.get_boss(players.user()) != -1 then
-                -- Thanks to Totaw Annihiwation for this script event! // Position - 0x2725D7
-                util.trigger_script_event(1 << pid, {
-                    -245642440,
-                    players.user(),
-                    4,
-                    10000, -- wage?
-                    0,
-                    0,
-                    0,
-                    0,
-                    memory.read_int(memory.script_global(1924276 + 9)), -- f_8
-                    memory.read_int(memory.script_global(1924276 + 10)), -- f_9
-                })
+    if IsInSession() then
+        for _, pid in players.list(true, true, true) do
+            local hdl = pid_to_handle(pid)
+            if NETWORK.NETWORK_IS_FRIEND(hdl) then
+                if players.get_boss(pid) == -1 and players.get_boss(players.user()) != -1 then
+                    -- Thanks to Totaw Annihiwation for this script event! // Position - 0x2725D7
+                    util.trigger_script_event(1 << pid, {
+                        -245642440,
+                        players.user(),
+                        4,
+                        10000, -- wage?
+                        0,
+                        0,
+                        0,
+                        0,
+                        memory.read_int(memory.script_global(1924276 + 9)), -- f_8
+                        memory.read_int(memory.script_global(1924276 + 10)), -- f_9
+                    })
+                end
             end
         end
-    end
-    util.yield(3666)
-    for _, pid in players.list(true, true, true) do
-        local hdl = pid_to_handle(pid)  
-        if NETWORK.NETWORK_IS_FRIEND(hdl) then
-            if players.get_boss(pid) == -1 and players.get_boss(players.user()) != -1 then
-                -- Thanks to Totaw Annihiwation for this script event! // Position - 0x2725D7
-                util.trigger_script_event(1 << pid, {
-                    -245642440,
-                    players.user(),
-                    4,
-                    10000, -- wage?
-                    0,
-                    0,
-                    0,
-                    0,
-                    memory.read_int(memory.script_global(1924276 + 9)), -- f_8
-                    memory.read_int(memory.script_global(1924276 + 10)), -- f_9
-                })
+        util.yield(3666)
+        for _, pid in players.list(true, true, true) do
+            local hdl = pid_to_handle(pid)  
+            if NETWORK.NETWORK_IS_FRIEND(hdl) then
+                if players.get_boss(pid) == -1 and players.get_boss(players.user()) != -1 then
+                    -- Thanks to Totaw Annihiwation for this script event! // Position - 0x2725D7
+                    util.trigger_script_event(1 << pid, {
+                        -245642440,
+                        players.user(),
+                        4,
+                        10000, -- wage?
+                        0,
+                        0,
+                        0,
+                        0,
+                        memory.read_int(memory.script_global(1924276 + 9)), -- f_8
+                        memory.read_int(memory.script_global(1924276 + 10)), -- f_9
+                    })
+                end
             end
         end
-    end
-    util.yield(3666)
-    for _, pid in players.list(true, true, true) do
-        local hdl = pid_to_handle(pid)
-        if NETWORK.NETWORK_IS_FRIEND(hdl) then
-            if players.get_boss(pid) == -1 and players.get_boss(players.user()) != -1 then
-                -- Thanks to Totaw Annihiwation for this script event! // Position - 0x2725D7
-                util.trigger_script_event(1 << pid, {
-                    -245642440,
-                    players.user(),
-                    4,
-                    10000, -- wage?
-                    0,
-                    0,
-                    0,
-                    0,
-                    memory.read_int(memory.script_global(1924276 + 9)), -- f_8
-                    memory.read_int(memory.script_global(1924276 + 10)), -- f_9
-                })
+        util.yield(3666)
+        for _, pid in players.list(true, true, true) do
+            local hdl = pid_to_handle(pid)
+            if NETWORK.NETWORK_IS_FRIEND(hdl) then
+                if players.get_boss(pid) == -1 and players.get_boss(players.user()) != -1 then
+                    -- Thanks to Totaw Annihiwation for this script event! // Position - 0x2725D7
+                    util.trigger_script_event(1 << pid, {
+                        -245642440,
+                        players.user(),
+                        4,
+                        10000, -- wage?
+                        0,
+                        0,
+                        0,
+                        0,
+                        memory.read_int(memory.script_global(1924276 + 9)), -- f_8
+                        memory.read_int(memory.script_global(1924276 + 10)), -- f_9
+                    })
+                end
             end
         end
     end
@@ -908,17 +915,19 @@ menu.toggle_loop(PIP_Girl, "Carry Pickups", {}, "Carry all Pickups on You.\nNote
 end)
 
 menu.action(PIP_Girl, "Teleport Pickups To Me", {}, "Teleports all Pickups To You.\nNote this donst work in all Situations.", function(click_type)
-    local counter = 0
-    local pos = players.get_position(players.user())
-    for _, pickup in entities.get_all_pickups_as_handles() do
-        ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
-        counter = counter + 1
-        util.yield(1)
-    end
-    if counter == 0 then
-        notify("No Pickups Found. :c")
-    else
-        notify("Teleported ".. tostring(counter) .." Pickups. :D")
+    if IsInSession() then
+        local counter = 0
+        local pos = players.get_position(players.user())
+        for _, pickup in entities.get_all_pickups_as_handles() do
+            ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
+            counter = counter + 1
+            util.yield(1)
+        end
+        if counter == 0 then
+            notify("No Pickups Found. :c")
+        else
+            notify("Teleported ".. tostring(counter) .." Pickups. :D")
+        end
     end
 end)
 
@@ -1317,10 +1326,12 @@ menu.toggle_loop(Stimpak, "(DEBUG) Lea Tech", {""}, "", function()
 end)
 
 menu.action(Stimpak, "(DEBUG) Set Armor/Health to Low", {"dearmor"}, "This is for testing Purpose!\nTurn the options above on and Click this to test them out!", function()
-    PED.SET_PED_ARMOUR(players.user_ped(), 0)
-    local maxHealth = ENTITY.GET_ENTITY_MAX_HEALTH(players.user_ped())
-    local newHealth = math.floor(maxHealth * 0.5)
-    ENTITY.SET_ENTITY_HEALTH(players.user_ped(), newHealth)
+    if IsInSession() then
+        PED.SET_PED_ARMOUR(players.user_ped(), 0)
+        local maxHealth = ENTITY.GET_ENTITY_MAX_HEALTH(players.user_ped())
+        local newHealth = math.floor(maxHealth * 0.5)
+        ENTITY.SET_ENTITY_HEALTH(players.user_ped(), newHealth)
+    end
 end)
 
 menu.action(Outfit, "Edit Outfit", {}, "", function()
@@ -1364,28 +1375,8 @@ menu.toggle_loop(Outfit, "Restor Outfit", {"restoreoutfit"}, "Auto Restore the S
     end
 end)
 
-menu.action(Game, 'Super Cleanse No yacht fix', {"supercleanny"}, 'BCS R* is a mess.', function(click_type)
+local function SuperClean(fix)
     local ct = 0
-    for k,ent in pairs(entities.get_all_vehicles_as_handles()) do
-        local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
-        if not PED.IS_PED_A_PLAYER(driver) then
-            entities.delete_by_handle(ent)
-            ct += 1
-            util.yield(1)
-        end
-    end
-    for k,ent in pairs(entities.get_all_peds_as_handles()) do
-        if not PED.IS_PED_A_PLAYER(ent) then
-            entities.delete_by_handle(ent)
-            ct += 1
-            util.yield(1)
-        end
-    end
-    for k,ent in pairs(entities.get_all_objects_as_handles()) do
-        entities.delete_by_handle(ent)
-        ct += 1
-        util.yield(1)
-    end
     local rope_alloc = memory.alloc(4)
     for i=0, 100 do 
         memory.write_int(rope_alloc, i)
@@ -1396,48 +1387,51 @@ menu.action(Game, 'Super Cleanse No yacht fix', {"supercleanny"}, 'BCS R* is a m
         end
     end
     util.yield(1)
-    menu.trigger_commands("deleteropes")
-    notify('Done ' .. ct .. ' entities removed!')
+    for k,ent in pairs(entities.get_all_peds_as_handles()) do
+        if not PED.IS_PED_A_PLAYER(ent) then
+            entities.delete_by_handle(ent)
+            ct += 1
+            util.yield(1)
+        end
+    end
+    util.yield(1)
+    for k,ent in pairs(entities.get_all_vehicles_as_handles()) do
+        local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
+        if not PED.IS_PED_A_PLAYER(driver) then
+            entities.delete_by_handle(ent)
+            ct += 1
+            util.yield(1)
+        end
+    end
+    util.yield(1)
+    for k,ent in pairs(entities.get_all_objects_as_handles()) do
+        entities.delete_by_handle(ent)
+        ct += 1
+        util.yield(1)
+    end
+    util.yield(1)
+    for k,ent in pairs(entities.get_all_pickups_as_handles()) do
+        entities.delete_by_handle(ent)
+        ct += 1
+        util.yield(1)
+    end
+    notify('Done ' .. ct .. '+ entities removed!')
+    if fix then
+        util.yield(666)
+        menu.trigger_commands("lockstreamingfocus on")
+        util.yield(13)
+        menu.trigger_commands("lockstreamingfocus off")
+    end
+end
+
+menu.action(Game, 'Super Cleanse No yacht fix', {"supercleanny"}, 'BCS R* is a mess.', function()
+    local fix = false
+    SuperClean(fix)
 end)
 
 menu.action(Game, 'Super Cleanse', {"superclean"}, 'BCS R* is a mess.', function(click_type)
-    local ct = 0
-    for k,ent in pairs(entities.get_all_vehicles_as_handles()) do
-        local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
-        if not PED.IS_PED_A_PLAYER(driver) then
-            entities.delete_by_handle(ent)
-            ct += 1
-            util.yield(1)
-        end
-    end
-    for k,ent in pairs(entities.get_all_peds_as_handles()) do
-        if not PED.IS_PED_A_PLAYER(ent) then
-            entities.delete_by_handle(ent)
-            ct += 1
-            util.yield(1)
-        end
-    end
-    for k,ent in pairs(entities.get_all_objects_as_handles()) do
-        entities.delete_by_handle(ent)
-        ct += 1
-        util.yield(1)
-    end
-    local rope_alloc = memory.alloc(4)
-    for i=0, 100 do 
-        memory.write_int(rope_alloc, i)
-        if PHYSICS.DOES_ROPE_EXIST(rope_alloc) then
-            PHYSICS.DELETE_ROPE(rope_alloc)
-            ct += 1
-            util.yield(1)
-        end
-    end
-    util.yield(1)
-    menu.trigger_commands("deleteropes")
-    notify('Done ' .. ct .. ' entities removed!')
-    util.yield(666)
-    menu.trigger_commands("lockstreamingfocus on")
-    util.yield(13)
-    menu.trigger_commands("lockstreamingfocus off")
+    local fix = true
+    SuperClean(fix)
 end)
 
 menu.divider(Game, "<3")
@@ -1721,162 +1715,169 @@ end)
 menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session with Selcted Size.\nChecks if the host is not a Modder or Friend.\nClaims the Host if all clear and next as host.\nElse looks for a better place to stay.\n\nAdmin Bailing & Auto Accept Warning included.", function()
     local magnet_path = "Online>Transitions>Matchmaking>Player Magnet"
     local admin_path = "Stand>Lua Scripts>1 PIP Girl>Session>Admin Bail"
+    local spoof_path = "Online>Spoofing>Host Token Spoofing>Host Token Spoofing"
     local temp_admin = false
     local auto_warning_path = "Stand>Lua Scripts>1 PIP Girl>Game>Auto Accept Warning"
     local temp_auto_warning = false
     local first_run = true
     local fucking_failure = false
-    if menu.get_state(menu.ref_by_path(admin_path)) == "Off" then
-        menu.trigger_commands("antiadmin on")
-        temp_admin = true
-    end
-    if menu.get_state(menu.ref_by_path(auto_warning_path)) == "Off" then
-        menu.trigger_commands("pgaaw on")
-        temp_auto_warning = true
-    end
+    if menu.get_state(menu.ref_by_path(spoof_path)) == "On" then
+        if menu.get_state(menu.ref_by_path(admin_path)) == "Off" then
+            menu.trigger_commands("antiadmin on")
+            temp_admin = true
+        end
+        if menu.get_state(menu.ref_by_path(auto_warning_path)) == "Off" then
+            menu.trigger_commands("pgaaw on")
+            temp_auto_warning = true
+        end
 
-    if session_claimer_players >= 30 and menu.get_state(menu.ref_by_path(magnet_path)) ~= "30" then
-        menu.trigger_commands("playermagnet 30")
-    elseif session_claimer_players == 0 then
-        local random_number = math.random(1, 32)
-        menu.trigger_commands("playermagnet " .. random_number)
-    elseif session_claimer_players < 30 and menu.get_state(menu.ref_by_path(magnet_path)) ~= session_claimer_players then
-        menu.trigger_commands("playermagnet " .. session_claimer_players)
-    end    
-    if util.is_session_started() then
-        menu.trigger_commands("go public")
-        first_run = false
-    end
-    util.yield(666)
-
-    while not util.is_session_started() do
-        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
-            if first_run then
-                util.yield(1666)
-                first_run = false
-            else
-                util.yield(19666)
-            end
-            notify("U r in Story Mode, Getting u online.")
+        if session_claimer_players >= 30 and menu.get_state(menu.ref_by_path(magnet_path)) ~= "30" then
+            menu.trigger_commands("playermagnet 30")
+        elseif session_claimer_players == 0 then
+            local random_number = math.random(1, 32)
+            menu.trigger_commands("playermagnet " .. random_number)
+        elseif session_claimer_players < 30 and menu.get_state(menu.ref_by_path(magnet_path)) ~= session_claimer_players then
+            menu.trigger_commands("playermagnet " .. session_claimer_players)
+        end    
+        if util.is_session_started() then
             menu.trigger_commands("go public")
+            first_run = false
         end
         util.yield(666)
-    end
 
-    if util.is_session_started() then
-        local isHostFriendly = false
-        for _, pid in players.list(true, true, true) do 
-            if pid == players.get_host() then
-                local hdl = pid_to_handle(pid)
-                if NETWORK.NETWORK_IS_FRIEND(hdl) and not players.user() == pid then 
-                    isHostFriendly = true
-                    break
+        while not util.is_session_started() do
+            if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
+                if first_run then
+                    util.yield(1666)
+                    first_run = false
+                else
+                    util.yield(19666)
                 end
+                notify("U r in Story Mode, Getting u online.")
+                menu.trigger_commands("go public")
             end
+            util.yield(666)
         end
-        util.yield(3666)
-        if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players and (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
-            if session_claimer_kd then
-                local players_with_kd = 0
-                for _, pid in pairs(players.list(false, false, true)) do
-                    while not IsInSession() do
-                        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
-                            util.yield(19666)
-                            notify("U r in Story Mode ? Getting u online.")
-                            menu.trigger_commands("go public")
-                        end
-                        util.yield(666)
+
+        if util.is_session_started() then
+            local isHostFriendly = false
+            for _, pid in players.list(true, true, true) do 
+                if pid == players.get_host() then
+                    local hdl = pid_to_handle(pid)
+                    if NETWORK.NETWORK_IS_FRIEND(hdl) and not players.user() == pid then 
+                        isHostFriendly = true
+                        break
                     end
-                    if (players_with_kd < session_claimer_kd_target_players) then
-                        if not isModder(pid) then
-                            local kd = players.get_kd(pid) -- Get the K/D value
-                            local kd_integer = math.floor(kd) -- Extract the integer part
-                            if kd_integer >= session_claimer_kd_target then
-                                players_with_kd = players_with_kd + 1
-                            end
-                        end
-                    end
-                end                
-                if players_with_kd < session_claimer_kd_target_players then
-                    fucking_failure = true
                 end
             end
-
-            if session_claimer_lvl then
-                local players_with_lvl = 0
-                for _, pid in pairs(players.list(false, false, true)) do
-                    while not IsInSession() do
-                        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
-                            util.yield(19666)
-                            notify("U r in Story Mode ? Getting u online.")
-                            menu.trigger_commands("go public")
+            util.yield(3666)
+            if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players and (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
+                if session_claimer_kd then
+                    local players_with_kd = 0
+                    for _, pid in pairs(players.list(false, false, true)) do
+                        while not IsInSession() do
+                            if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
+                                util.yield(19666)
+                                notify("U r in Story Mode ? Getting u online.")
+                                menu.trigger_commands("go public")
+                            end
+                            util.yield(666)
                         end
-                        util.yield(666)
-                    end
-                    if (players_with_lvl < session_claimer_lvl_target_players) then
-                        if not isModder(pid) then
-                            local lvl = players.get_rank(pid)
-                            if lvl >= session_claimer_lvl_target then
-                                players_with_lvl = players_with_lvl + 1
+                        if (players_with_kd < session_claimer_kd_target_players) then
+                            if not isModder(pid) then
+                                local kd = players.get_kd(pid) -- Get the K/D value
+                                local kd_integer = math.floor(kd) -- Extract the integer part
+                                if kd_integer >= session_claimer_kd_target then
+                                    players_with_kd = players_with_kd + 1
+                                end
                             end
                         end
+                    end                
+                    if players_with_kd < session_claimer_kd_target_players then
+                        fucking_failure = true
                     end
-                end                
-                if players_with_lvl < session_claimer_lvl_target_players then
-                    fucking_failure = true
                 end
-            end
 
-            if session_claimer_players == 0 then
-                util.yield(6666)
-            end
-            if not fucking_failure and session_claimer_players ~= 0 then
-                if (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
-                    warnify("Might found something.")
-                    while not IsInSession() do
-                        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
-                            util.yield(19666)
-                            notify("U r in Story Mode ? Getting u online.")
-                            menu.trigger_commands("go public")
+                if session_claimer_lvl then
+                    local players_with_lvl = 0
+                    for _, pid in pairs(players.list(false, false, true)) do
+                        while not IsInSession() do
+                            if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
+                                util.yield(19666)
+                                notify("U r in Story Mode ? Getting u online.")
+                                menu.trigger_commands("go public")
+                            end
+                            util.yield(666)
                         end
-                        util.yield(666)
+                        if (players_with_lvl < session_claimer_lvl_target_players) then
+                            if not isModder(pid) then
+                                local lvl = players.get_rank(pid)
+                                if lvl >= session_claimer_lvl_target then
+                                    players_with_lvl = players_with_lvl + 1
+                                end
+                            end
+                        end
+                    end                
+                    if players_with_lvl < session_claimer_lvl_target_players then
+                        fucking_failure = true
                     end
-                    menu.trigger_commands("superclean")
-                    util.yield(13666)
-                    if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 and not isModder(players.get_host()) then
-                        menu.trigger_commands("givecollectibles " .. players.get_name(players.get_host()))
-                        util.yield(6666)
-                        if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 and not isModder(players.get_host())then
-                            StrategicKick(players.get_host(), players.get_name(players.get_host()), players.get_rockstar_id(players.get_host()))
+                end
+
+                if session_claimer_players == 0 then
+                    util.yield(6666)
+                end
+                if not fucking_failure and session_claimer_players ~= 0 then
+                    if (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
+                        warnify("Might found something.")
+                        while not IsInSession() do
+                            if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
+                                util.yield(19666)
+                                notify("U r in Story Mode ? Getting u online.")
+                                menu.trigger_commands("go public")
+                            end
+                            util.yield(666)
+                        end
+                        menu.trigger_commands("superclean")
+                        util.yield(13666)
+                        if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 and not isModder(players.get_host()) then
+                            menu.trigger_commands("givecollectibles " .. players.get_name(players.get_host()))
+                            util.yield(6666)
+                            if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 and not isModder(players.get_host())then
+                                StrategicKick(players.get_host(), players.get_name(players.get_host()), players.get_rockstar_id(players.get_host()))
+                            else
+                                if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
+                                    menu.trigger_commands("unstuck")
+                                end
+                            end
+                        end
+                        util.yield(25666)
+                        if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 and (players.get_host() == players.user() or isHostFriendly) then
+                            warnify("Found u a new Home <3")
+                            if players.user() != players.get_script_host() then
+                                menu.trigger_commands("scripthost")
+                            end
+                            if temp_admin then
+                                menu.trigger_commands("antiadmin off")
+                                temp_admin = false
+                            end
+                            if temp_auto_warning then
+                                menu.trigger_commands("pgaaw off")
+                                temp_auto_warning = false
+                            end
+                            menu.trigger_commands("resetheadshots")
+                            menu.trigger_commands("claimsession off")
+                            util.yield(6666)
                         else
-                            if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
+                            if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
                                 menu.trigger_commands("unstuck")
                             end
                         end
-                    end
-                    util.yield(25666)
-                    if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 and (players.get_host() == players.user() or isHostFriendly) then
-                        warnify("Found u a new Home <3")
-                        if players.user() != players.get_script_host() then
-                            menu.trigger_commands("scripthost")
-                        end
-                        if temp_admin then
-                            menu.trigger_commands("antiadmin off")
-                            temp_admin = false
-                        end
-                        if temp_auto_warning then
-                            menu.trigger_commands("pgaaw off")
-                            temp_auto_warning = false
-                        end
-                        menu.trigger_commands("resetheadshots")
-                        menu.trigger_commands("claimsession off")
-                        util.yield(6666)
+                        isHostFriendly = false
                     else
                         if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
                             menu.trigger_commands("unstuck")
                         end
                     end
-                    isHostFriendly = false
                 else
                     if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
                         menu.trigger_commands("unstuck")
@@ -1884,23 +1885,23 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 end
             else
                 if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
+                    if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players then
+                        notify("Not Enoght Player")
+                    end
+                    if isModder(players.get_host()) then
+                        notify("Host is a Modder")
+                    end
                     menu.trigger_commands("unstuck")
                 end
             end
-        else
-            if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
-                if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players then
-                    notify("Not Enoght Player")
-                end
-                if isModder(players.get_host()) then
-                    notify("Host is a Modder")
-                end
-                menu.trigger_commands("unstuck")
-            end
         end
+        fucking_failure = false
+        util.yield(666)
+    else
+        notify("You arent spoofing a host token , you should do that.\nIf you dont know what that means, you shouldnt use the function in its current state.")
+        menu.trigger_commands("claimsession off")
+        util.yield(6666)
     end
-    fucking_failure = false
-    util.yield(666)
 end)
 
 menu.divider(Session, "<3")
@@ -1917,7 +1918,7 @@ menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join 
             end    
         end
     end
-    util.yield(13)
+    util.yield()
 end)
 
 local ClearTraficSphere = 0
