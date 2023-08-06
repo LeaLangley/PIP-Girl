@@ -320,7 +320,7 @@ local function StrategicKick(pid, name, rid) --TODO , make it actually smart , n
         if players.user() == players.get_host() then
             menu.trigger_commands("ban " .. name)
         else
-            menu.trigger_commands("loveletterkick " .. name)
+            menu.trigger_commands("smart " .. name)
         end
         StartegicKick = false
     else
