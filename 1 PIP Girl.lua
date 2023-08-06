@@ -1281,6 +1281,11 @@ menu.toggle_loop(Stimpak, "Lea's Repair Stop", {"lears"}, "", function()
                     local vehicle = entities.get_user_vehicle_as_handle()
                     local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
                     local driver = NETWORK.NETWORK_GET_PLAYER_INDEX_FROM_PED(driverPed)
+                    if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(vehicle) then
+                        util.yield(1)
+                        NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(vehicle)
+                        util.yield(1)
+                    end
                     wasInZone = true
                     if driver == players.user() then
                         menu.trigger_commands("performance")
