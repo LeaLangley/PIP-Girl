@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.99"
+local SCRIPT_VERSION = "0.0.100"
 
 local startupmsg = "\nAdded Credits in Settings <3\nAdded 'PIP Girl > Auto Join Friends CEO (!)\nAdded 'PIP Girl > Invite All Friends in CEO/MC'"
 
@@ -322,6 +322,9 @@ local function StrategicKick(pid, name, rid) --TODO , make it actually smart , n
         else
             menu.trigger_commands("loveletterkick " .. name)
         end
+        StartegicKick = false
+    else
+        StartegicKick = false
     end
 end
 
@@ -2339,9 +2342,10 @@ players.add_command_hook(function(pid)
             menu.trigger_commands("reporthate " .. name)
             menu.trigger_commands("reportvcannoying " .. name)
             menu.trigger_commands("reportvchate " .. name)
-            rbpe = false
+            PlayerExists = false
             util.yield(13666)
         else
+            PlayerExists = false
             util.yield(66666)
         end
     end)
@@ -2358,10 +2362,10 @@ players.add_command_hook(function(pid)
         if IsInSession() and PlayerExists and NETWORK.NETWORK_IS_PLAYER_CONNECTED(pid) then
             StrategicKick(pid, name, rid)
             warnify("Attempting to kick " .. name)
-            hellabl = false
+            PlayerExists = false
             util.yield(66666)
         else
-            hellabl = false
+            PlayerExists = false
             util.yield(1666)
         end
         util.yield(13)
@@ -2387,9 +2391,10 @@ players.add_command_hook(function(pid)
             end
             StrategicKick(pid, name, rid)
             warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
-            bkoape = false
+            PlayerExists = false
             util.yield(66666)
         else
+            PlayerExists = false
             util.yield(1666)
         end
         util.yield(13)
@@ -2407,9 +2412,10 @@ players.add_command_hook(function(pid)
         if players.is_marked_as_attacker(pid) and PlayerExists and NETWORK.NETWORK_IS_PLAYER_CONNECTED(pid) then
             StrategicKick(pid, name, rid)
             warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
-            boape = false
+            PlayerExists = false
             util.yield(66666)
         else
+            PlayerExists = false
             util.yield(1666)
         end
         util.yield(13)
