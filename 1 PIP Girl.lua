@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.100"
+local SCRIPT_VERSION = "0.0.101"
 
 local startupmsg = "\nAdded Credits in Settings <3\nAdded 'PIP Girl > Auto Join Friends CEO (!)\nAdded 'PIP Girl > Invite All Friends in CEO/MC'"
 
@@ -1089,6 +1089,12 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
                 local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
                 local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
 
+                if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(vehicle) then
+                    util.yield(1)
+                    NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(vehicle)
+                    util.yield(1)
+                end
+
                 -- Perform repairs
                 if engineHealth < 1000 then
                     local randomValue = math.random(1, 6)
@@ -1388,39 +1394,59 @@ local function SuperClean(fix)
     for i=0, 100 do 
         memory.write_int(rope_alloc, i)
         if PHYSICS.DOES_ROPE_EXIST(rope_alloc) then
+            if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(rope_alloc) then
+                util.yield(1)
+                NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(rope_alloc)
+                util.yield(1)
+            end
             PHYSICS.DELETE_ROPE(rope_alloc)
             ct += 1
-            util.yield(1)
         end
     end
     util.yield(1)
     for k,ent in pairs(entities.get_all_peds_as_handles()) do
         if not PED.IS_PED_A_PLAYER(ent) then
+            if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(ent) then
+                util.yield(1)
+                NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(ent)
+                util.yield(1)
+            end
             entities.delete_by_handle(ent)
             ct += 1
-            util.yield(1)
         end
     end
     util.yield(1)
     for k,ent in pairs(entities.get_all_vehicles_as_handles()) do
         local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
         if not PED.IS_PED_A_PLAYER(driver) then
+            if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(ent) then
+                util.yield(1)
+                NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(ent)
+                util.yield(1)
+            end
             entities.delete_by_handle(ent)
             ct += 1
-            util.yield(1)
         end
     end
     util.yield(1)
     for k,ent in pairs(entities.get_all_objects_as_handles()) do
+        if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(ent) then
+            util.yield(1)
+            NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(ent)
+            util.yield(1)
+        end
         entities.delete_by_handle(ent)
         ct += 1
-        util.yield(1)
     end
     util.yield(1)
     for k,ent in pairs(entities.get_all_pickups_as_handles()) do
+        if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(ent) then
+            util.yield(1)
+            NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(ent)
+            util.yield(1)
+        end
         entities.delete_by_handle(ent)
         ct += 1
-        util.yield(1)
     end
     util.yield(1)
     GRAPHICS.REMOVE_PARTICLE_FX_IN_RANGE(pos.x, pos.y, pos.z, 13666)
