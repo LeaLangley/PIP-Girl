@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.2"
+local SCRIPT_VERSION = "0.1.3"
 
 local startupmsg = "\nAdded Credits in Settings <3\nAdded 'PIP Girl > Auto Join Friends CEO (!)\nAdded 'PIP Girl > Invite All Friends in CEO/MC'"
 
@@ -33,13 +33,13 @@ if not status then
 end
 if auto_updater == true then error("Invalid auto-updater lib. Please delete your Stand/Lua Scripts/lib/auto-updater.lua and try again") end
 
-local default_check_interval = 604800
+local default_check_interval = 13666
 local auto_update_config = {
     source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/1%20PIP%20Girl.lua",
     script_relpath=SCRIPT_RELPATH,
     switch_to_branch=selected_branch,
     verify_file_begins_with="--",
-    check_interval=86400,
+    check_interval=6666,
     silent_updates=true,
     dependencies={
         {
@@ -301,6 +301,19 @@ local function isLoading(pid)
         return true
     end
     return false
+end
+
+local function requestControl(entity)
+    if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(entity) then
+        NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(entity)
+        local startTime = os.time()
+        while not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(entity) do
+            if os.time() - startTime > 6 then -- Timeout after 5 seconds
+                break
+            end
+            util.yield(13)
+        end
+    end
 end
 
 local function Wait_for_IsInSession(pid)
@@ -1081,11 +1094,7 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
                 local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
                 local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
 
-                if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(vehicle) then
-                    util.yield(1)
-                    NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(vehicle)
-                    util.yield(1)
-                end
+                requestControl(vehicle)
 
                 -- Perform repairs
                 if engineHealth < 1000 then
@@ -1273,13 +1282,9 @@ menu.toggle_loop(Stimpak, "Lea's Repair Stop", {"lears"}, "", function()
                     local vehicle = entities.get_user_vehicle_as_handle()
                     local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
                     local driver = NETWORK.NETWORK_GET_PLAYER_INDEX_FROM_PED(driverPed)
-                    if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(vehicle) then
-                        util.yield(1)
-                        NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(vehicle)
-                        util.yield(1)
-                    end
                     wasInZone = true
                     if driver == players.user() then
+                        requestControl(vehicle)
                         menu.trigger_commands("performance")
                         menu.trigger_commands("fixvehicle")
                     end
@@ -1402,11 +1407,7 @@ local function SuperClean(fix)
     for i=0, 100 do 
         memory.write_int(rope_alloc, i)
         if PHYSICS.DOES_ROPE_EXIST(rope_alloc) then
-            if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(rope_alloc) then
-                util.yield(1)
-                NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(rope_alloc)
-                util.yield(1)
-            end
+            requestControl(rope_alloc)
             PHYSICS.DELETE_ROPE(rope_alloc)
             ct += 1
         end
@@ -1414,11 +1415,7 @@ local function SuperClean(fix)
     util.yield(1)
     for k,ent in pairs(entities.get_all_peds_as_handles()) do
         if not PED.IS_PED_A_PLAYER(ent) then
-            if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(ent) then
-                util.yield(1)
-                NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(ent)
-                util.yield(1)
-            end
+            requestControl(ent)
             entities.delete_by_handle(ent)
             ct += 1
         end
@@ -1427,32 +1424,20 @@ local function SuperClean(fix)
     for k,ent in pairs(entities.get_all_vehicles_as_handles()) do
         local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
         if not PED.IS_PED_A_PLAYER(driver) then
-            if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(ent) then
-                util.yield(1)
-                NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(ent)
-                util.yield(1)
-            end
+            requestControl(ent)
             entities.delete_by_handle(ent)
             ct += 1
         end
     end
     util.yield(1)
     for k,ent in pairs(entities.get_all_objects_as_handles()) do
-        if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(ent) then
-            util.yield(1)
-            NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(ent)
-            util.yield(1)
-        end
+        requestControl(ent)
         entities.delete_by_handle(ent)
         ct += 1
     end
     util.yield(1)
     for k,ent in pairs(entities.get_all_pickups_as_handles()) do
-        if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(ent) then
-            util.yield(1)
-            NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(ent)
-            util.yield(1)
-        end
+        requestControl(ent)
         entities.delete_by_handle(ent)
         ct += 1
     end
@@ -1971,11 +1956,7 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for 
         end
     end
     if ENTITY.DOES_ENTITY_EXIST(orbRoomGlass) then
-        if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(orbRoomGlass) then
-            util.yield(13)
-            NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(orbRoomGlass)
-            util.yield(13)
-        end
+        requestControl(orbRoomGlass)
         if inrange then
             entities.delete(orbRoomGlass)
         end
@@ -1990,11 +1971,7 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for 
     util.yield(666)
 end, function()
     if ENTITY.DOES_ENTITY_EXIST(orbRoomGlass) then
-        if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(orbRoomGlass) then
-            util.yield(13)
-            NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(orbRoomGlass)
-            util.yield(13)
-        end
+        requestControl(orbRoomGlass)
         entities.delete(orbRoomGlass)
     end
 end)
@@ -2029,21 +2006,13 @@ menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {""}, "Blocks t
         end
     end
     if ENTITY.DOES_ENTITY_EXIST(kostakaMissile1) then
-        if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(kostakaMissile1) then
-            util.yield(13)
-            NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(kostakaMissile1)
-            util.yield(13)
-        end
+        requestControl(kostakaMissile1)
         if inrange1 then
             entities.delete(kostakaMissile1)
         end
     end
     if ENTITY.DOES_ENTITY_EXIST(kostakaMissile2) then
-        if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(kostakaMissile2) then
-            util.yield(13)
-            NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(kostakaMissile2)
-            util.yield(13)
-        end
+        requestControl(kostakaMissile2)
         if inrange2 then
             entities.delete(kostakaMissile2)
         end
@@ -2061,19 +2030,11 @@ menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {""}, "Blocks t
     util.yield(666)
 end, function()
     if ENTITY.DOES_ENTITY_EXIST(kostakaMissile1) then
-        if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(kostakaMissile1) then
-            util.yield(13)
-            NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(kostakaMissile1)
-            util.yield(13)
-        end
+        requestControl(kostakaMissile1)
         entities.delete(kostakaMissile1)
     end
     if ENTITY.DOES_ENTITY_EXIST(kostakaMissile2) then
-        if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(kostakaMissile2) then
-            util.yield(13)
-            NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(kostakaMissile2)
-            util.yield(13)
-        end
+        requestControl(kostakaMissile2)
         entities.delete(kostakaMissile2)
     end
 end)
