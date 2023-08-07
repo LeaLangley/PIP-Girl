@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.101"
+local SCRIPT_VERSION = "0.0.102"
 
 local startupmsg = "\nAdded Credits in Settings <3\nAdded 'PIP Girl > Auto Join Friends CEO (!)\nAdded 'PIP Girl > Invite All Friends in CEO/MC'"
 
@@ -320,7 +320,7 @@ local function StrategicKick(pid, name, rid) --TODO , make it actually smart , n
         if players.user() == players.get_host() then
             menu.trigger_commands("ban " .. name)
         else
-            menu.trigger_commands("smart " .. name)
+            menu.trigger_commands("kick " .. name)
         end
         StartegicKick = false
     else
@@ -1944,6 +1944,46 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         menu.trigger_commands("claimsession off")
         util.yield(6666)
     end
+end)
+
+local SessionBlocker = menu.list(Session, 'Block in Session', {}, 'Session Blocker Settings', function(); end)
+local orbRoomGlass = {}
+menu.toggle_loop(SessionBlocker, "Block Orb Room", {""}, "Blocks the Entrance for the Orb Room", function()
+    if not ENTITY.DOES_ENTITY_EXIST(orbRoomGlass) then
+        local hash = -1829309699
+        STREAMING.REQUEST_MODEL(hash)
+        util.yield(420)
+        orbRoomGlass = OBJECT.CREATE_OBJECT_NO_OFFSET(hash, 335.882996, 4833.833008, -59.023998, true, true, true)
+        util.yield(113)
+        ENTITY.SET_ENTITY_HEADING(orbRoomGlass, 125)
+        util.yield(666)
+    else
+        util.yield(666)
+    end
+end, function()
+    entities.delete(orbRoomGlass)
+end)
+
+local kostakaMissile1 = {}
+local kostakaMissile2 = {}
+menu.toggle_loop(SessionBlocker, "Block Kostaka Missle Terminal", {""}, "Blocks the Entrance for the Orb Room", function()
+    if not ENTITY.DOES_ENTITY_EXIST(kostakaMissile1) or ENTITY.DOES_ENTITY_EXIST(kostakaMissile2) then
+        local hash = 1228076166
+        STREAMING.REQUEST_MODEL(hash)
+        util.yield(420)
+        if not ENTITY.DOES_ENTITY_EXIST(kostakaMissile1) then
+            kostakaMissile1 = OBJECT.CREATE_OBJECT_NO_OFFSET(hash, 1558.9, 387.111, -50.666, true, true, true)
+        end
+        if not ENTITY.DOES_ENTITY_EXIST(kostakaMissile2) then
+            kostakaMissile2 = OBJECT.CREATE_OBJECT_NO_OFFSET(hash, 1558.9, 388.777, -50.666, true, true, true)
+        end
+        util.yield(666)
+    else
+        util.yield(666)
+    end
+end, function()
+    entities.delete(kostakaMissile1)
+    entities.delete(kostakaMissile2)
 end)
 
 menu.divider(Session, "<3")
