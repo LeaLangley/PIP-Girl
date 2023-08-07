@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.1"
+local SCRIPT_VERSION = "0.1.2"
 
 local startupmsg = "\nAdded Credits in Settings <3\nAdded 'PIP Girl > Auto Join Friends CEO (!)\nAdded 'PIP Girl > Invite All Friends in CEO/MC'"
 
@@ -416,7 +416,7 @@ local function CayoNotify()
     notify("The cayo heist with a Sweet Legit Like Preset.\nIf you inside the Submarine, go manually out and in again to refreash the board.")
 end
 
-menu.action(PIP_Girl_Heist, 'Cayo 1 Player Preset (!)', {}, aboutCayoPreset..'\n'..aboutCayo.."\n"..aboutCayoLimit, function (click_type)
+menu.action(PIP_Girl_Heist, 'Cayo 1 Player Preset (!)', {}, "", function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'Want to set up cayo?', function()
         if IsInSession() then
             CayoBasics()
@@ -482,7 +482,7 @@ menu.action(PIP_Girl_Heist, 'Cayo 1 Player Preset (!)', {}, aboutCayoPreset..'\n
     end, true)
 end)
 
-menu.action(PIP_Girl_Heist, 'Cayo 2 Player 50/50 Preset (!)', {}, aboutCayoPreset..'\n'..aboutCayo.."\n"..aboutCayoLimit, function (click_type)
+menu.action(PIP_Girl_Heist, 'Cayo 2 Player 50/50 Preset (!)', {}, "", function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'Want to set up cayo?', function()
         if IsInSession() then
             CayoBasics()
@@ -548,7 +548,7 @@ menu.action(PIP_Girl_Heist, 'Cayo 2 Player 50/50 Preset (!)', {}, aboutCayoPrese
     end, true)
 end)
 
-menu.action(PIP_Girl_Heist, 'Cayo 3 Player 30/35/35 Preset (!)', {}, aboutCayoPreset..'\n'..aboutCayo.."\n"..aboutCayoLimit, function (click_type)
+menu.action(PIP_Girl_Heist, 'Cayo 3 Player 30/35/35 Preset (!)', {}, "", function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'Want to set up cayo?', function()
         if IsInSession() then
             CayoBasics()
@@ -614,7 +614,7 @@ menu.action(PIP_Girl_Heist, 'Cayo 3 Player 30/35/35 Preset (!)', {}, aboutCayoPr
     end, true)
 end)
 
-menu.action(PIP_Girl_Heist, 'Cayo 4 Player 25/25/25/25 Preset (!)', {}, aboutCayoPreset..'\n'..aboutCayo.."\n"..aboutCayoLimit, function (click_type)
+menu.action(PIP_Girl_Heist, 'Cayo 4 Player 25/25/25/25 Preset (!)', {}, "", function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'Want to set up cayo?', function()
         if IsInSession() then
             CayoBasics()
@@ -1955,6 +1955,7 @@ local orbRoomGlass = {}
 menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for the Orb Room", function()
     local hash = -1829309699
     local specificLocation = { x = 335.882996, y = 4833.833008, z = -59.023998}
+    local locationV3 = v3.new(335.882996, 4833.833008, -59.023998)
     local range = 0.666
     local inrange = false
     local PlayerList = players.list()
@@ -1969,13 +1970,20 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for 
             end
         end
     end
-    if inrange and ENTITY.DOES_ENTITY_EXIST(orbRoomGlass) then
-        entities.delete(orbRoomGlass)
+    if ENTITY.DOES_ENTITY_EXIST(orbRoomGlass) then
+        if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(orbRoomGlass) then
+            util.yield(13)
+            NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(orbRoomGlass)
+            util.yield(13)
+        end
+        if inrange then
+            entities.delete(orbRoomGlass)
+        end
     end
     if not inrange and not ENTITY.DOES_ENTITY_EXIST(orbRoomGlass) then
         STREAMING.REQUEST_MODEL(hash)
         util.yield(420)
-        orbRoomGlass = OBJECT.CREATE_OBJECT_NO_OFFSET(hash, 335.882996, 4833.833008, -59.023998, true, true, true)
+        orbRoomGlass = entities.create_object(hash, locationV3)
         util.yield(113)
         ENTITY.SET_ENTITY_HEADING(orbRoomGlass, 125)
     end
@@ -1997,6 +2005,8 @@ menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {""}, "Blocks t
     local hash = 1228076166
     local specificLocation1 = { x = 1558.9, y = 387.111, z = -50.666 }
     local specificLocation2 = { x = 1558.9, y = 388.777, z = -50.666 }
+    local locationV3_1 = v3.new(1558.9, 387.111, -50.666)
+    local locationV3_2 = v3.new(1558.9, 388.777, -50.666)
     local range = 1.420
     local inrange1 = false
     local inrange2 = false
@@ -2018,21 +2028,35 @@ menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {""}, "Blocks t
             end
         end
     end
-    if inrange1 and ENTITY.DOES_ENTITY_EXIST(kostakaMissile1) then
-        entities.delete(kostakaMissile1)
+    if ENTITY.DOES_ENTITY_EXIST(kostakaMissile1) then
+        if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(kostakaMissile1) then
+            util.yield(13)
+            NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(kostakaMissile1)
+            util.yield(13)
+        end
+        if inrange1 then
+            entities.delete(kostakaMissile1)
+        end
     end
-    if inrange2 and ENTITY.DOES_ENTITY_EXIST(kostakaMissile2) then
-        entities.delete(kostakaMissile2)
+    if ENTITY.DOES_ENTITY_EXIST(kostakaMissile2) then
+        if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(kostakaMissile2) then
+            util.yield(13)
+            NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(kostakaMissile2)
+            util.yield(13)
+        end
+        if inrange2 then
+            entities.delete(kostakaMissile2)
+        end
     end
     if not inrange1 and not ENTITY.DOES_ENTITY_EXIST(kostakaMissile1) then
         STREAMING.REQUEST_MODEL(hash)
         util.yield(420)
-        kostakaMissile1 = OBJECT.CREATE_OBJECT_NO_OFFSET(hash, 1558.9, 387.111, -50.666, true, true, true)
+        kostakaMissile1 = entities.create_object(hash, locationV3_1)
     end
     if not inrange2 and not ENTITY.DOES_ENTITY_EXIST(kostakaMissile2) then
         STREAMING.REQUEST_MODEL(hash)
         util.yield(420)
-        kostakaMissile2 = OBJECT.CREATE_OBJECT_NO_OFFSET(hash, 1558.9, 388.777, -50.666, true, true, true)
+        kostakaMissile2 = entities.create_object(hash, locationV3_2)
     end
     util.yield(666)
 end, function()
