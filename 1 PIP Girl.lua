@@ -1094,7 +1094,7 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
                 local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
                 local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
 
-                util.create_thread(requestControl(vehicle, 13))
+                requestControl(vehicle, 13)
 
                 -- Perform repairs
                 if engineHealth < 1000 then
@@ -1284,7 +1284,7 @@ menu.toggle_loop(Stimpak, "Lea's Repair Stop", {"lears"}, "", function()
                     local driver = NETWORK.NETWORK_GET_PLAYER_INDEX_FROM_PED(driverPed)
                     wasInZone = true
                     if driver == players.user() then
-                        util.create_thread(requestControl(vehicle, 13))
+                        requestControl(vehicle, 13)
                         menu.trigger_commands("performance")
                         menu.trigger_commands("fixvehicle")
                     end
