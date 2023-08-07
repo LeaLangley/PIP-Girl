@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.103"
+local SCRIPT_VERSION = "0.0.104"
 
 local startupmsg = "\nAdded Credits in Settings <3\nAdded 'PIP Girl > Auto Join Friends CEO (!)\nAdded 'PIP Girl > Invite All Friends in CEO/MC'"
 
@@ -303,17 +303,49 @@ local function isLoading(pid)
     return false
 end
 
-local function StrategicKick(pid, name, rid) --TODO , make it actually smart , not bare bones.
-    local StartegicKick = false
+local function isExisting(pid)
+    local PlayerExists = false
     local PlayerList = players.list()
     for _, plid in pairs(PlayerList) do
         util.yield(13)
         if pid == plid then
-            StartegicKick = true
+            PlayerExists = true
             break
         end
     end
-    if StartegicKick and NETWORK.NETWORK_IS_PLAYER_CONNECTED(pid) then
+    if NETWORK.NETWORK_IS_PLAYER_CONNECTED(pid) then
+        PlayerExists = true
+    else
+        PlayerExists = false
+    end
+    --if NETWORK.NETWORK_IS_PLAYER_ACTIVE(pid) then
+    --    PlayerExists = true
+    --else
+    --    PlayerExists = false
+    --end
+    if ENTITY.GET_ENTITY_SPEED(pid) < 1 then
+        if players.get_rank(pid) == 0 then
+            PlayerExists = false
+        else
+            PlayerExists = true
+        end
+        if players.get_money(pid) == 0 and players.get_kd(pid) == 0 then
+            PlayerExists = false
+        else
+            PlayerExists = true
+        end
+    else
+        PlayerExists = true
+    end
+    if PlayerExists then
+        return true
+    else
+        return false
+    end
+end
+
+local function StrategicKick(pid, name, rid) --TODO , make it actually smart , not bare bones.
+    if isExisting(pid) then
         menu.trigger_commands("ignore " .. name .. " on")
         menu.trigger_commands("desync " .. name .. " on")
         menu.trigger_commands("blocksync " .. name .. " on")
@@ -2457,16 +2489,7 @@ players.add_command_hook(function(pid)
         end
     end)
     menu.toggle_loop(Bad_Modder, "(Alpha) Report Bot", {"hellrp"}, "Weak menu? Spamm report them >:D", function()
-        local PlayerExists = false
-        local PlayerList = players.list()
-        for _, plid in pairs(PlayerList) do
-            util.yield(13)
-            if pid == plid and NETWORK.NETWORK_IS_PLAYER_CONNECTED(pid) then
-                PlayerExists = true
-                break
-            end
-        end
-        if players.exists(pid) and PlayerExists and NETWORK.NETWORK_IS_PLAYER_CONNECTED(pid) then
+        if players.exists(pid) and isExisting(pid) then
             menu.trigger_commands("reportgriefing " .. name)
             menu.trigger_commands("reportexploits " .. name)
             menu.trigger_commands("reportbugabuse " .. name)
@@ -2482,16 +2505,7 @@ players.add_command_hook(function(pid)
         end
     end)
     menu.toggle_loop(Bad_Modder, "Kick when Fully Loaded", {"hellabl"}, "Auto kick if u are fully loaded in the game.", function()
-        local PlayerExists = false
-        local PlayerList = players.list()
-        for _, plid in pairs(PlayerList) do
-            util.yield(13)
-            if pid == plid and NETWORK.NETWORK_IS_PLAYER_CONNECTED(pid) then
-                PlayerExists = true
-                break
-            end
-        end
-        if IsInSession() and PlayerExists and NETWORK.NETWORK_IS_PLAYER_CONNECTED(pid) then
+        if IsInSession() and isExisting(pid) then
             StrategicKick(pid, name, rid)
             warnify("Attempting to kick " .. name)
             PlayerExists = false
@@ -2503,16 +2517,7 @@ players.add_command_hook(function(pid)
         util.yield(13)
     end)
     menu.toggle_loop(Bad_Modder, "Blacklist Kick on Atack", {"hellaab"}, "Auto kick if they atack you, and add them to blacklist.", function()
-        local PlayerExists = false
-        local PlayerList = players.list()
-        for _, plid in pairs(PlayerList) do
-            util.yield(13)
-            if pid == plid and NETWORK.NETWORK_IS_PLAYER_CONNECTED(pid) then
-                PlayerExists = true
-                break
-            end
-        end
-        if players.is_marked_as_attacker(pid) and PlayerExists and NETWORK.NETWORK_IS_PLAYER_CONNECTED(pid) then
+        if players.is_marked_as_attacker(pid) and isExisting(pid) then
             local first = true
             if NetWatchAdmin then
                 NetWatch_msg(pid, first)
@@ -2532,22 +2537,11 @@ players.add_command_hook(function(pid)
         util.yield(13)
     end)
     menu.toggle_loop(Bad_Modder, "Kick on Atack", {"hellaa"}, "Auto kick if they atack you.", function()
-        local PlayerExists = false
-        local PlayerList = players.list()
-        for _, plid in pairs(PlayerList) do
-            util.yield(13)
-            if pid == plid then
-                PlayerExists = true
-                break
-            end
-        end
-        if players.is_marked_as_attacker(pid) and PlayerExists and NETWORK.NETWORK_IS_PLAYER_CONNECTED(pid) then
+        if players.is_marked_as_attacker(pid) and isExisting(pid) then
             StrategicKick(pid, name, rid)
             warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
-            PlayerExists = false
             util.yield(66666)
         else
-            PlayerExists = false
             util.yield(1666)
         end
         util.yield(13)
