@@ -1985,7 +1985,7 @@ end)
 
 local kostakaMissile1 = {}
 local kostakaMissile2 = {}
-menu.toggle_loop(SessionWorld, "Block Kostaka Missle Terminal", {""}, "Blocks the Entrance for the Orb Room", function()
+menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {""}, "Blocks the Entrance for the Orb Room", function()
     local hash = 1228076166
     local specificLocation1 = { x = 1558.9, y = 387.111, z = -50.666 }
     local specificLocation2 = { x = 1558.9, y = 388.777, z = -50.666 }
