@@ -1976,6 +1976,11 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for 
     util.yield(666)
 end, function()
     if ENTITY.DOES_ENTITY_EXIST(orbRoomGlass) then
+        if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(orbRoomGlass) then
+            util.yield(13)
+            NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(orbRoomGlass)
+            util.yield(13)
+        end
         entities.delete(orbRoomGlass)
     end
 end)
@@ -2026,9 +2031,19 @@ menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {""}, "Blocks t
     util.yield(666)
 end, function()
     if ENTITY.DOES_ENTITY_EXIST(kostakaMissile1) then
+        if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(kostakaMissile1) then
+            util.yield(13)
+            NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(kostakaMissile1)
+            util.yield(13)
+        end
         entities.delete(kostakaMissile1)
     end
     if ENTITY.DOES_ENTITY_EXIST(kostakaMissile2) then
+        if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(kostakaMissile2) then
+            util.yield(13)
+            NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(kostakaMissile2)
+            util.yield(13)
+        end
         entities.delete(kostakaMissile2)
     end
 end)
