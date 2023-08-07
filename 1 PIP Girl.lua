@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.0"
+local SCRIPT_VERSION = "0.1.1"
 
 local startupmsg = "\nAdded Credits in Settings <3\nAdded 'PIP Girl > Auto Join Friends CEO (!)\nAdded 'PIP Girl > Invite All Friends in CEO/MC'"
 
@@ -408,11 +408,13 @@ local function CayoBasics()
     STAT_SET_INT("H4_PLAYTHROUGH_STATUS", 100)
 end
 
-local aboutCayoLimit = "Note that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person."
-
-local aboutCayoPreset = "With this setup , Every player gets 2m, so they can do 2 runs and reach Hour Limit."
-
-local aboutCayo = "The cayo heist with a Sweet Legit Like Preset.\nIf you inside the Submarine, go manually out and in again to refreash the board."
+local function CayoNotify()
+    warnify("Note that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.")
+    warnify("With this setup , Every player gets 2m, so they can do 2 runs and reach Hour Limit.")
+    warnify("The cayo heist with a Sweet Legit Like Preset.\nIf you inside the Submarine, go manually out and in again to refreash the board.")
+    util.yield(1666)
+    notify("The cayo heist with a Sweet Legit Like Preset.\nIf you inside the Submarine, go manually out and in again to refreash the board.")
+end
 
 menu.action(PIP_Girl_Heist, 'Cayo 1 Player Preset (!)', {}, aboutCayoPreset..'\n'..aboutCayo.."\n"..aboutCayoLimit, function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'Want to set up cayo?', function()
@@ -473,9 +475,7 @@ menu.action(PIP_Girl_Heist, 'Cayo 1 Player Preset (!)', {}, aboutCayoPreset..'\n
                 STAT_SET_INT("H4CNF_TARGET", 3) -- Pink
                 warnify("You'r Cayo Target is a Pink Diamond. *.*")
             end
-            warnify(aboutCayoPreset..'\n'..aboutCayo.."\n"..aboutCayoLimit)
-            util.yield(1337)
-            notify(aboutCayoPreset.."\n"..aboutCayoLimit)
+            CayoNotify()
         end
     end, function()
         notify("Aborted.")
@@ -541,9 +541,7 @@ menu.action(PIP_Girl_Heist, 'Cayo 2 Player 50/50 Preset (!)', {}, aboutCayoPrese
                 STAT_SET_INT("H4CNF_TARGET", 3) -- Pink
                 warnify("You'r Cayo Target is a Pink Diamond. *.*")
             end
-            warnify(aboutCayoPreset..'\n'..aboutCayo.."\n"..aboutCayoLimit)
-            util.yield(1337)
-            notify(aboutCayoPreset.."\n"..aboutCayoLimit)
+            CayoNotify()
         end
     end, function()
         notify("Aborted.")
@@ -609,9 +607,7 @@ menu.action(PIP_Girl_Heist, 'Cayo 3 Player 30/35/35 Preset (!)', {}, aboutCayoPr
                 STAT_SET_INT("H4CNF_TARGET", 3) -- Pink
                 warnify("You'r Cayo Target is a Pink Diamond. *.*")
             end
-            warnify(aboutCayoPreset..'\n'..aboutCayo.."\n"..aboutCayoLimit)
-            util.yield(1337)
-            notify(aboutCayoPreset.."\n"..aboutCayoLimit)
+            CayoNotify()
         end
     end, function()
         notify("Aborted.")
@@ -677,9 +673,7 @@ menu.action(PIP_Girl_Heist, 'Cayo 4 Player 25/25/25/25 Preset (!)', {}, aboutCay
                 STAT_SET_INT("H4CNF_TARGET", 3) -- Pink
                 warnify("You'r Cayo Target is a Pink Diamond. *.*")
             end
-            warnify(aboutCayoPreset..'\n'..aboutCayo.."\n"..aboutCayoLimit)
-            util.yield(1337)
-            notify(aboutCayoPreset.."\n"..aboutCayoLimit)
+            CayoNotify()
         end
     end, function()
         notify("Aborted.")
