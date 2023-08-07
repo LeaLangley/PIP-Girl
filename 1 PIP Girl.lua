@@ -303,12 +303,12 @@ local function isLoading(pid)
     return false
 end
 
-local function requestControl(entity)
+local function requestControl(entity, timeout)
     if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(entity) then
         NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(entity)
         local startTime = os.time()
         while not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(entity) do
-            if os.time() - startTime > 6 then -- Timeout after 5 seconds
+            if os.time() - startTime > timeout then -- Timeout after 5 seconds
                 break
             end
             util.yield(13)
@@ -1094,7 +1094,7 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
                 local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
                 local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
 
-                requestControl(vehicle)
+                util.create_thread(requestControl(vehicle, 13))
 
                 -- Perform repairs
                 if engineHealth < 1000 then
@@ -1284,7 +1284,7 @@ menu.toggle_loop(Stimpak, "Lea's Repair Stop", {"lears"}, "", function()
                     local driver = NETWORK.NETWORK_GET_PLAYER_INDEX_FROM_PED(driverPed)
                     wasInZone = true
                     if driver == players.user() then
-                        requestControl(vehicle)
+                        util.create_thread(requestControl(vehicle, 13))
                         menu.trigger_commands("performance")
                         menu.trigger_commands("fixvehicle")
                     end
@@ -1407,7 +1407,7 @@ local function SuperClean(fix)
     for i=0, 100 do 
         memory.write_int(rope_alloc, i)
         if PHYSICS.DOES_ROPE_EXIST(rope_alloc) then
-            requestControl(rope_alloc)
+            requestControl(rope_alloc, 1)
             PHYSICS.DELETE_ROPE(rope_alloc)
             ct += 1
         end
@@ -1415,7 +1415,7 @@ local function SuperClean(fix)
     util.yield(1)
     for k,ent in pairs(entities.get_all_peds_as_handles()) do
         if not PED.IS_PED_A_PLAYER(ent) then
-            requestControl(ent)
+            requestControl(ent, 1)
             entities.delete_by_handle(ent)
             ct += 1
         end
@@ -1424,20 +1424,20 @@ local function SuperClean(fix)
     for k,ent in pairs(entities.get_all_vehicles_as_handles()) do
         local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
         if not PED.IS_PED_A_PLAYER(driver) then
-            requestControl(ent)
+            requestControl(ent, 1)
             entities.delete_by_handle(ent)
             ct += 1
         end
     end
     util.yield(1)
     for k,ent in pairs(entities.get_all_objects_as_handles()) do
-        requestControl(ent)
+        requestControl(ent, 1)
         entities.delete_by_handle(ent)
         ct += 1
     end
     util.yield(1)
     for k,ent in pairs(entities.get_all_pickups_as_handles()) do
-        requestControl(ent)
+        requestControl(ent, 1)
         entities.delete_by_handle(ent)
         ct += 1
     end
@@ -1956,7 +1956,7 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for 
         end
     end
     if ENTITY.DOES_ENTITY_EXIST(orbRoomGlass) then
-        requestControl(orbRoomGlass)
+        requestControl(orbRoomGlass, 13)
         if inrange then
             entities.delete(orbRoomGlass)
         end
@@ -1971,7 +1971,7 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for 
     util.yield(666)
 end, function()
     if ENTITY.DOES_ENTITY_EXIST(orbRoomGlass) then
-        requestControl(orbRoomGlass)
+        requestControl(orbRoomGlass, 13)
         entities.delete(orbRoomGlass)
     end
 end)
@@ -2006,13 +2006,13 @@ menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {""}, "Blocks t
         end
     end
     if ENTITY.DOES_ENTITY_EXIST(kostakaMissile1) then
-        requestControl(kostakaMissile1)
+        requestControl(kostakaMissile1, 13)
         if inrange1 then
             entities.delete(kostakaMissile1)
         end
     end
     if ENTITY.DOES_ENTITY_EXIST(kostakaMissile2) then
-        requestControl(kostakaMissile2)
+        requestControl(kostakaMissile2, 13)
         if inrange2 then
             entities.delete(kostakaMissile2)
         end
@@ -2030,11 +2030,11 @@ menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {""}, "Blocks t
     util.yield(666)
 end, function()
     if ENTITY.DOES_ENTITY_EXIST(kostakaMissile1) then
-        requestControl(kostakaMissile1)
+        requestControl(kostakaMissile1, 13)
         entities.delete(kostakaMissile1)
     end
     if ENTITY.DOES_ENTITY_EXIST(kostakaMissile2) then
-        requestControl(kostakaMissile2)
+        requestControl(kostakaMissile2, 13)
         entities.delete(kostakaMissile2)
     end
 end)
