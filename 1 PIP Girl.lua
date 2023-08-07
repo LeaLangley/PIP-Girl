@@ -303,7 +303,19 @@ local function isLoading(pid)
     return false
 end
 
+local function Wait_for_IsInSession(pid)
+    while not IsInSession() do
+        util.yield(666)
+    end
+    if players.exist(pid) and NETWORK.NETWORK_IS_PLAYER_CONNECTED(pid) then
+        StrategicKick(pid)
+    end
+end
+
 local function StrategicKick(pid, name, rid) --TODO , make it actually smart , not bare bones.
+    if not IsInSession() then
+        util.create_thread(Wait_for_IsInSession(pid))
+    end
     menu.trigger_commands("ignore " .. name .. " on")
     menu.trigger_commands("desync " .. name .. " on")
     menu.trigger_commands("blocksync " .. name .. " on")
