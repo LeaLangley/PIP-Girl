@@ -52,7 +52,7 @@ local auto_update_config = {
             name="blacklist",
             source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/Blacklist.json",
             script_relpath="resources/1 PIP Girl/Blacklist.json",
-            check_interval=default_check_interval,
+            check_interval=6666,
         },
         {
             name="read_me.txt",
