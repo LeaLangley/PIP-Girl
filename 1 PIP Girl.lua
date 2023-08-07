@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.104"
+local SCRIPT_VERSION = "0.0.105"
 
 local startupmsg = "\nAdded Credits in Settings <3\nAdded 'PIP Girl > Auto Join Friends CEO (!)\nAdded 'PIP Girl > Invite All Friends in CEO/MC'"
 
@@ -303,60 +303,14 @@ local function isLoading(pid)
     return false
 end
 
-local function isExisting(pid)
-    local PlayerExists = false
-    local PlayerList = players.list()
-    for _, plid in pairs(PlayerList) do
-        util.yield(13)
-        if pid == plid then
-            PlayerExists = true
-            break
-        end
-    end
-    if NETWORK.NETWORK_IS_PLAYER_CONNECTED(pid) then
-        PlayerExists = true
-    else
-        PlayerExists = false
-    end
-    --if NETWORK.NETWORK_IS_PLAYER_ACTIVE(pid) then
-    --    PlayerExists = true
-    --else
-    --    PlayerExists = false
-    --end
-    if ENTITY.GET_ENTITY_SPEED(pid) < 1 then
-        if players.get_rank(pid) == 0 then
-            PlayerExists = false
-        else
-            PlayerExists = true
-        end
-        if players.get_money(pid) == 0 and players.get_kd(pid) == 0 then
-            PlayerExists = false
-        else
-            PlayerExists = true
-        end
-    else
-        PlayerExists = true
-    end
-    if PlayerExists then
-        return true
-    else
-        return false
-    end
-end
-
 local function StrategicKick(pid, name, rid) --TODO , make it actually smart , not bare bones.
-    if isExisting(pid) then
-        menu.trigger_commands("ignore " .. name .. " on")
-        menu.trigger_commands("desync " .. name .. " on")
-        menu.trigger_commands("blocksync " .. name .. " on")
-        if players.user() == players.get_host() then
-            menu.trigger_commands("ban " .. name)
-        else
-            menu.trigger_commands("kick " .. name)
-        end
-        StartegicKick = false
+    menu.trigger_commands("ignore " .. name .. " on")
+    menu.trigger_commands("desync " .. name .. " on")
+    menu.trigger_commands("blocksync " .. name .. " on")
+    if players.user() == players.get_host() then
+        menu.trigger_commands("ban " .. name)
     else
-        StartegicKick = false
+        menu.trigger_commands("kick " .. name)
     end
 end
 
@@ -2357,7 +2311,7 @@ local function SessionCheck(pid)
                         warnify("This Blacklist is a Stand User , we dont Kick them until they atack:\n" .. name .. " - " .. rid)
                         menu.trigger_commands("hellaa " .. name .. " on")
                     else
-                        local first = false
+                        --local first = false
                         --if NetWatchAdmin then
                         --    NetWatch_msg(pid, first)
                         --end
@@ -2370,7 +2324,7 @@ local function SessionCheck(pid)
                         menu.trigger_commands("hellaa " .. name .. " on")
                     else
                         StrategicKick(pid, name, rid)
-                        menu.trigger_commands("hellabl " .. name .. " on")
+                        --menu.trigger_commands("hellabl " .. name .. " on")
                     end
                 end
             end
@@ -2384,7 +2338,7 @@ local function SessionCheck(pid)
                         warnify("This Blacklist is a Stand User , we dont Kick them until they atack:\n" .. name .. " - " .. rid)
                         menu.trigger_commands("hellaa " .. name .. " on")
                     else
-                        local first = false
+                        --local first = false
                         --if NetWatchAdmin then
                         --    NetWatch_msg(pid, first)
                         --end
@@ -2397,7 +2351,7 @@ local function SessionCheck(pid)
                         menu.trigger_commands("hellaa " .. name .. " on")
                     else
                         StrategicKick(pid, name, rid)
-                        menu.trigger_commands("hellabl " .. name .. " on")
+                        --menu.trigger_commands("hellabl " .. name .. " on")
                     end
                 end
             end
@@ -2407,117 +2361,41 @@ end
 
 players.on_join(SessionCheck)
 
---menu.toggle_loop(Protection, "Dont Block Love Letter Kicks as Host.", {"pgbll"}, "New Meta.", function()
---    if IsInSession() then
---        local cmd_path = "Online>Protections>Love Letter & Desync Kicks>Block Love Letter Kicks"
---        if players.user() == players.get_host() then
---            if menu.get_state(menu.ref_by_path(cmd_path)) == "On" then
---                menu.trigger_commands("blockloveletters off")
---                util.yield(6666)
---            else
---                util.yield(6666)
---            end
---        else
---            if menu.get_state(menu.ref_by_path(cmd_path)) == "Off" then
---                menu.trigger_commands("blockloveletters on")
---                util.yield(6666)
---            else
---                util.yield(6666)
---            end
---        end
---    else
---        util.yield(20666)
---    end
---end)
-
-players.add_command_hook(function(pid)
-    local name = players.get_name(pid)
-    local rid = players.get_rockstar_id(pid)
-    menu.player_root(pid):divider('1 PIP Girl')
-    local Bad_Modder = menu.list(menu.player_root(pid), 'Bad Modder?', {""}, '', function() end)
-    menu.action(Bad_Modder, "Add Blacklist & Kick", {'hellk'}, "Blacklist Note, Kick and Block the Target from Joining u again.", function ()
-        local first = true
-        --if NetWatchAdmin then
-        --    NetWatch_msg(pid, first)
-        --end
-        add_in_stand(pid, name, rid)
-        if not is_player_in_blacklist(pid, name, rid) then
-            add_player_to_blacklist(pid, name, rid)
+player_menu = function(pid)
+    if players.exists(pid) then
+        if not players.exists(players.user()) then
+            return
         end
-        StrategicKick(pid, name, rid)
-    end)
-    menu.action(Bad_Modder, "Add Blacklist ,Phone Call & Kick", {'hellp'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
-        local first = true
-        --if NetWatchAdmin then
-        --    NetWatch_msg(pid, first)
-        --end
-        add_in_stand(pid, name, rid)
-        if not is_player_in_blacklist(pid, name, rid) then
-            add_player_to_blacklist(pid, name, rid)
-        end
-        menu.trigger_commands("ring " .. name)
-        util.yield(666)
-        StrategicKick(pid, name, rid)
-    end)
-    menu.action(Bad_Modder, "Add Blacklist ,Crash & Kick", {'hellc'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
-        local first = true
-        --if NetWatchAdmin then
-        --    NetWatch_msg(pid, first)
-        --end
-        add_in_stand(pid, name, rid)
-        if not is_player_in_blacklist(pid, name, rid) then
-            add_player_to_blacklist(pid, name, rid)
-        end
-        menu.trigger_commands("choke ".. name)
-        util.yield(666)
-        StrategicKick(pid, name, rid)
-    end)
-    menu.action(Bad_Modder, "Add Blacklist and Nofify them. (!)", {'hellnn'}, "Blacklist Note , Notify them and Block the Target from Joining u again.\nOnly Works if u are a NetWatch Admin, if have no idea what that means , u can use that without notify them.", function ()
-        local first = true
-        if NetWatchAdmin then
-            NetWatch_msg(pid, first)
-        end
-        add_in_stand(pid, name, rid)
-        if not is_player_in_blacklist(pid, name, rid) then
-            add_player_to_blacklist(pid, name, rid)
-        end
-    end)
-    menu.action(Bad_Modder, "Add Blacklist Only", {'helln'}, "Blacklist Note and Block the Target from Joining u again.", function ()
-        add_in_stand(pid, name, rid)
-        if not is_player_in_blacklist(pid, name, rid) then
-            add_player_to_blacklist(pid, name, rid)
-        end
-    end)
-    menu.toggle_loop(Bad_Modder, "(Alpha) Report Bot", {"hellrp"}, "Weak menu? Spamm report them >:D", function()
-        if players.exists(pid) and isExisting(pid) then
-            menu.trigger_commands("reportgriefing " .. name)
-            menu.trigger_commands("reportexploits " .. name)
-            menu.trigger_commands("reportbugabuse " .. name)
-            menu.trigger_commands("reportannoying " .. name)
-            menu.trigger_commands("reporthate " .. name)
-            menu.trigger_commands("reportvcannoying " .. name)
-            menu.trigger_commands("reportvchate " .. name)
-            PlayerExists = false
-            util.yield(13666)
-        else
-            PlayerExists = false
-            util.yield(66666)
-        end
-    end)
-    menu.toggle_loop(Bad_Modder, "Kick when Fully Loaded", {"hellabl"}, "Auto kick if u are fully loaded in the game.", function()
-        if IsInSession() and isExisting(pid) then
+        local name = players.get_name(pid)
+        local rid = players.get_rockstar_id(pid)
+        menu.player_root(pid):divider('1 PIP Girl')
+        local Bad_Modder = menu.list(menu.player_root(pid), 'Bad Modder?', {""}, '', function() end)
+        menu.action(Bad_Modder, "Add Blacklist & Kick", {'hellk'}, "Blacklist Note, Kick and Block the Target from Joining u again.", function ()
+            add_in_stand(pid, name, rid)
+            if not is_player_in_blacklist(pid, name, rid) then
+                add_player_to_blacklist(pid, name, rid)
+            end
             StrategicKick(pid, name, rid)
-            warnify("Attempting to kick " .. name)
-            PlayerExists = false
-            util.yield(66666)
-        else
-            PlayerExists = false
-            util.yield(1666)
-        end
-        util.yield(13)
-    end)
-    menu.toggle_loop(Bad_Modder, "Blacklist Kick on Atack", {"hellaab"}, "Auto kick if they atack you, and add them to blacklist.", function()
-        if players.is_marked_as_attacker(pid) and isExisting(pid) then
+        end)
+        menu.action(Bad_Modder, "Add Blacklist ,Phone Call & Kick", {'hellp'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
+            add_in_stand(pid, name, rid)
+            if not is_player_in_blacklist(pid, name, rid) then
+                add_player_to_blacklist(pid, name, rid)
+            end
+            menu.trigger_commands("ring " .. name)
+            util.yield(666)
+            StrategicKick(pid, name, rid)
+        end)
+        menu.action(Bad_Modder, "Add Blacklist ,Crash & Kick", {'hellc'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
+            add_in_stand(pid, name, rid)
+            if not is_player_in_blacklist(pid, name, rid) then
+                add_player_to_blacklist(pid, name, rid)
+            end
+            menu.trigger_commands("choke ".. name)
+            util.yield(666)
+            StrategicKick(pid, name, rid)
+        end)
+        menu.action(Bad_Modder, "Add Blacklist and Nofify them. (!)", {'hellnn'}, "Blacklist Note , Notify them and Block the Target from Joining u again.\nOnly Works if u are a NetWatch Admin, if have no idea what that means , u can use that without notify them.", function ()
             local first = true
             if NetWatchAdmin then
                 NetWatch_msg(pid, first)
@@ -2526,27 +2404,90 @@ players.add_command_hook(function(pid)
             if not is_player_in_blacklist(pid, name, rid) then
                 add_player_to_blacklist(pid, name, rid)
             end
-            StrategicKick(pid, name, rid)
-            warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
-            PlayerExists = false
-            util.yield(66666)
-        else
-            PlayerExists = false
-            util.yield(1666)
-        end
-        util.yield(13)
-    end)
-    menu.toggle_loop(Bad_Modder, "Kick on Atack", {"hellaa"}, "Auto kick if they atack you.", function()
-        if players.is_marked_as_attacker(pid) and isExisting(pid) then
-            StrategicKick(pid, name, rid)
-            warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
-            util.yield(66666)
-        else
-            util.yield(1666)
-        end
-        util.yield(13)
-    end)
-end)
+        end)
+        menu.action(Bad_Modder, "Add Blacklist Only", {'helln'}, "Blacklist Note and Block the Target from Joining u again.", function ()
+            add_in_stand(pid, name, rid)
+            if not is_player_in_blacklist(pid, name, rid) then
+                add_player_to_blacklist(pid, name, rid)
+            end
+        end)
+        --menu.toggle_loop(Bad_Modder, "(Alpha) Report Bot", {"hellrp"}, "Weak menu? Spamm report them >:D", function()
+        --    if players.exists(pid) then
+        --        menu.trigger_commands("reportgriefing " .. name)
+        --        menu.trigger_commands("reportexploits " .. name)
+        --        menu.trigger_commands("reportbugabuse " .. name)
+        --        menu.trigger_commands("reportannoying " .. name)
+        --        menu.trigger_commands("reporthate " .. name)
+        --        menu.trigger_commands("reportvcannoying " .. name)
+        --        menu.trigger_commands("reportvchate " .. name)
+        --        PlayerExists = false
+        --        util.yield(13666)
+        --    else
+        --        PlayerExists = false
+        --        util.yield(66666)
+        --    end
+        --end)
+        --menu.toggle_loop(Bad_Modder, "Kick when Fully Loaded", {"hellabl"}, "Auto kick if u are fully loaded in the game.", function()
+        --    if IsInSession() then
+        --        StrategicKick(pid, name, rid)
+        --        warnify("Attempting to kick " .. name)
+        --        PlayerExists = false
+        --        util.yield(66666)
+        --    else
+        --        PlayerExists = false
+        --        util.yield(1666)
+        --    end
+        --    util.yield(13)
+        --end)
+        menu.toggle_loop(Bad_Modder, "Blacklist Kick on Atack", {"hellaab"}, "Auto kick if they atack you, and add them to blacklist.", function()
+            if players.is_marked_as_attacker(pid) then
+                --local first = true
+                --if NetWatchAdmin then
+                --    NetWatch_msg(pid, first)
+                --end
+                add_in_stand(pid, name, rid)
+                if not is_player_in_blacklist(pid, name, rid) then
+                    add_player_to_blacklist(pid, name, rid)
+                end
+                StrategicKick(pid, name, rid)
+                warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
+                PlayerExists = false
+                util.yield(66666)
+            else
+                PlayerExists = false
+                util.yield(1666)
+            end
+            util.yield(13)
+        end)
+        menu.toggle_loop(Bad_Modder, "Kick on Atack", {"hellaa"}, "Auto kick if they atack you.", function()
+            if players.is_marked_as_attacker(pid) then
+                StrategicKick(pid, name, rid)
+                warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
+                util.yield(66666)
+            else
+                util.yield(1666)
+            end
+            util.yield(13)
+        end)
+    end
+end
+
+--stop_loop = function(pid)
+--    local cmd_box = "Stand>Settings>Notifications>Suppress Generic Responses>Command Box"
+--    if players.get_name(pid) == "UndiscoveredPlayer" then
+--        if menu.get_state(menu.ref_by_path(cmd_box)) == "Off" then
+--            menu.trigger_commands("suppressgenericresponses on")
+--        end
+--        menu.trigger_commands("hellrp"..players.get_name(pid).." off")
+--        menu.trigger_commands("hellabl"..players.get_name(pid).." off")
+--        menu.trigger_commands("hellaab"..players.get_name(pid).." off")
+--        menu.trigger_commands("hellaa"..players.get_name(pid).." off")
+--    end
+--end
+--
+--players.on_leave(stop_loop)
+players.on_join(player_menu)
+players.dispatch_on_join()
 
 menu.action(Credits, "Statement about skidding.", {""}, "99% of the skidded code has been modifyed or changed, i specially did that since i was new to lua, and i am a noob. It helpt me getting started and understanding the code i was messing around with.", function()
     notify("99% of the skidded code has been modifyed or changed, i specially did that since i was new to lua, and i am a noob. It helpt me getting started and understanding the code i was messing around with.")
