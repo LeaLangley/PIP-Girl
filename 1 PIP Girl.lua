@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.102"
+local SCRIPT_VERSION = "0.0.103"
 
 local startupmsg = "\nAdded Credits in Settings <3\nAdded 'PIP Girl > Auto Join Friends CEO (!)\nAdded 'PIP Girl > Invite All Friends in CEO/MC'"
 
@@ -1947,43 +1947,93 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
 end)
 
 local SessionBlocker = menu.list(Session, 'Block in Session', {}, 'Session Blocker Settings', function(); end)
+
 local orbRoomGlass = {}
 menu.toggle_loop(SessionBlocker, "Block Orb Room", {""}, "Blocks the Entrance for the Orb Room", function()
-    if not ENTITY.DOES_ENTITY_EXIST(orbRoomGlass) then
-        local hash = -1829309699
+    local hash = -1829309699
+    local specificLocation = { x = 335.882996, y = 4833.833008, z = -59.023998}
+    local range = 0.666
+    local inrange = false
+    local PlayerList = players.list()
+    for _, pid in pairs(PlayerList) do
+        local hdl = pid_to_handle(pid)
+        if pid == players.user() or NETWORK.NETWORK_IS_FRIEND(hdl) then
+            local playerPosition = players.get_position(pid)
+            local distance = math.sqrt((playerPosition.x - specificLocation.x) ^ 2 + (playerPosition.y - specificLocation.y) ^ 2 + (playerPosition.z - specificLocation.z) ^ 2)
+            if distance <= range then
+                inrange = true
+                break
+            end
+        end
+    end
+    if inrange and ENTITY.DOES_ENTITY_EXIST(orbRoomGlass) then
+        entities.delete(orbRoomGlass)
+    end
+    if not inrange and not ENTITY.DOES_ENTITY_EXIST(orbRoomGlass) then
         STREAMING.REQUEST_MODEL(hash)
         util.yield(420)
         orbRoomGlass = OBJECT.CREATE_OBJECT_NO_OFFSET(hash, 335.882996, 4833.833008, -59.023998, true, true, true)
         util.yield(113)
         ENTITY.SET_ENTITY_HEADING(orbRoomGlass, 125)
-        util.yield(666)
-    else
-        util.yield(666)
     end
+    util.yield(666)
 end, function()
-    entities.delete(orbRoomGlass)
+    if ENTITY.DOES_ENTITY_EXIST(orbRoomGlass) then
+        entities.delete(orbRoomGlass)
+    end
 end)
 
 local kostakaMissile1 = {}
 local kostakaMissile2 = {}
 menu.toggle_loop(SessionBlocker, "Block Kostaka Missle Terminal", {""}, "Blocks the Entrance for the Orb Room", function()
-    if not ENTITY.DOES_ENTITY_EXIST(kostakaMissile1) or ENTITY.DOES_ENTITY_EXIST(kostakaMissile2) then
-        local hash = 1228076166
+    local hash = 1228076166
+    local specificLocation1 = { x = 1558.9, y = 387.111, z = -50.666 }
+    local specificLocation2 = { x = 1558.9, y = 388.777, z = -50.666 }
+    local range = 1.420
+    local inrange1 = false
+    local inrange2 = false
+    local PlayerList = players.list()
+    for _, pid in pairs(PlayerList) do
+        local hdl = pid_to_handle(pid)
+        if pid == players.user() or NETWORK.NETWORK_IS_FRIEND(hdl) then
+            local playerPosition = players.get_position(pid)
+            local distance1 = math.sqrt((playerPosition.x - specificLocation1.x) ^ 2 + (playerPosition.y - specificLocation1.y) ^ 2 + (playerPosition.z - specificLocation1.z) ^ 2)
+            local distance2 = math.sqrt((playerPosition.x - specificLocation2.x) ^ 2 + (playerPosition.y - specificLocation2.y) ^ 2 + (playerPosition.z - specificLocation2.z) ^ 2)
+            if distance1 <= range then
+                inrange1 = true
+            end
+            if distance2 <= range then
+                inrange2 = true
+            end
+            if inrange1 or inrange2 then
+                break
+            end
+        end
+    end
+    if inrange1 and ENTITY.DOES_ENTITY_EXIST(kostakaMissile1) then
+        entities.delete(kostakaMissile1)
+    end
+    if inrange2 and ENTITY.DOES_ENTITY_EXIST(kostakaMissile2) then
+        entities.delete(kostakaMissile2)
+    end
+    if not inrange1 and not ENTITY.DOES_ENTITY_EXIST(kostakaMissile1) then
         STREAMING.REQUEST_MODEL(hash)
         util.yield(420)
-        if not ENTITY.DOES_ENTITY_EXIST(kostakaMissile1) then
-            kostakaMissile1 = OBJECT.CREATE_OBJECT_NO_OFFSET(hash, 1558.9, 387.111, -50.666, true, true, true)
-        end
-        if not ENTITY.DOES_ENTITY_EXIST(kostakaMissile2) then
-            kostakaMissile2 = OBJECT.CREATE_OBJECT_NO_OFFSET(hash, 1558.9, 388.777, -50.666, true, true, true)
-        end
-        util.yield(666)
-    else
-        util.yield(666)
+        kostakaMissile1 = OBJECT.CREATE_OBJECT_NO_OFFSET(hash, 1558.9, 387.111, -50.666, true, true, true)
     end
+    if not inrange2 and not ENTITY.DOES_ENTITY_EXIST(kostakaMissile2) then
+        STREAMING.REQUEST_MODEL(hash)
+        util.yield(420)
+        kostakaMissile2 = OBJECT.CREATE_OBJECT_NO_OFFSET(hash, 1558.9, 388.777, -50.666, true, true, true)
+    end
+    util.yield(666)
 end, function()
-    entities.delete(kostakaMissile1)
-    entities.delete(kostakaMissile2)
+    if ENTITY.DOES_ENTITY_EXIST(kostakaMissile1) then
+        entities.delete(kostakaMissile1)
+    end
+    if ENTITY.DOES_ENTITY_EXIST(kostakaMissile2) then
+        entities.delete(kostakaMissile2)
+    end
 end)
 
 menu.divider(Session, "<3")
