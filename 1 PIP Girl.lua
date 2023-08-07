@@ -1359,7 +1359,18 @@ menu.action(Outfit, "Wardrobe", {}, "", function()
     menu.trigger_commands("wardrobe")
 end)
 
-menu.toggle_loop(Outfit, "(Alpha) Lock outfit if Iligal Clothing detected.", {"SmartLock"}, "This will lock you outfit if a iligal clothing is detected, so it wont get removed.", function()
+menu.toggle_loop(Outfit, "Smart Oufit Lock", {"SmartLock"}, "This will lock you outfit only if u dont have interaction menu open.", function()
+    if util.is_interaction_menu_open() then
+        menu.trigger_commands("lockoutfit off")
+        util.yield(666)
+    else
+        menu.trigger_commands("lockoutfit on")
+        util.yield(666)
+    end
+    util.yield(13)
+end)
+
+menu.toggle_loop(Outfit, "(Alpha) Lock outfit if Iligal Clothing detected", {"IligalLock"}, "This will lock you outfit if a iligal clothing is detected, so it wont get removed.", function()
     local cmd_path = "Self>Appearance>Outfit>Pants"
     if not util.is_interaction_menu_open() then
         if menu.get_state(menu.ref_by_path(cmd_path)) == "21" then
