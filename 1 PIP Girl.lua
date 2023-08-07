@@ -307,7 +307,7 @@ local function Wait_for_IsInSession(pid)
     while not IsInSession() do
         util.yield(666)
     end
-    if players.exist(pid) and NETWORK.NETWORK_IS_PLAYER_CONNECTED(pid) then
+    if players.exists(pid) and NETWORK.NETWORK_IS_PLAYER_CONNECTED(pid) then
         StrategicKick(pid)
     end
 end
