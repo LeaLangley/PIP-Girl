@@ -1946,10 +1946,10 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
     end
 end)
 
-local SessionBlocker = menu.list(Session, 'Block in Session', {}, 'Session Blocker Settings', function(); end)
+local SessionWorld = menu.list(Session, 'World', {}, 'Session World Manipulation.', function(); end)
 
 local orbRoomGlass = {}
-menu.toggle_loop(SessionBlocker, "Block Orb Room", {""}, "Blocks the Entrance for the Orb Room", function()
+menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for the Orb Room", function()
     local hash = -1829309699
     local specificLocation = { x = 335.882996, y = 4833.833008, z = -59.023998}
     local range = 0.666
@@ -1985,7 +1985,7 @@ end)
 
 local kostakaMissile1 = {}
 local kostakaMissile2 = {}
-menu.toggle_loop(SessionBlocker, "Block Kostaka Missle Terminal", {""}, "Blocks the Entrance for the Orb Room", function()
+menu.toggle_loop(SessionWorld, "Block Kostaka Missle Terminal", {""}, "Blocks the Entrance for the Orb Room", function()
     local hash = 1228076166
     local specificLocation1 = { x = 1558.9, y = 387.111, z = -50.666 }
     local specificLocation2 = { x = 1558.9, y = 388.777, z = -50.666 }
