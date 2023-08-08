@@ -167,19 +167,19 @@ end
 
 local function notify(msg)
     util.toast("<[Pip Girl]>: " .. msg, TOAST_CONSOLE)
-    util.toast("<[Pip Girl]>:\n " .. msg)
+    util.toast("<[Pip Girl]>\n" .. msg)
 end
 
 local function warnify(msg)
     chat.send_message("<[Pip Girl]>:\n " .. msg, true, true, false)
     util.toast("<[Pip Girl]>: " .. msg, TOAST_CONSOLE)
-    util.toast("<[Pip Girl]>:\n " .. msg)
+    util.toast("<[Pip Girl]>\n" .. msg)
 end
 
 local function warnify_net(msg)
     chat.send_message("<[Pip Girl]>:\n " .. msg, true, true, true)
     util.toast("<[Pip Girl]>: " .. msg, TOAST_CONSOLE)
-    util.toast("<[Pip Girl]>:\n " .. msg)
+    util.toast("<[Pip Girl]>\n" .. msg)
 end
 
 local function warnify_ses(msg)
