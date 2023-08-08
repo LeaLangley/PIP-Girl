@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.5"
+local SCRIPT_VERSION = "0.1.6"
 
 local startupmsg = "\nAdded Credits in Settings <3\nAdded 'PIP Girl > Auto Join Friends CEO (!)\nAdded 'PIP Girl > Invite All Friends in CEO/MC'"
 
@@ -303,6 +303,19 @@ local function isLoading(pid)
     return false
 end
 
+local function requestModel(hash, timeout)
+    if not STREAMING.HAS_MODEL_LOADED(hash) then
+        STREAMING.REQUEST_MODEL(hash)
+        local startTime = os.time()
+        while not STREAMING.HAS_MODEL_LOADED(entity) do
+            if os.time() - startTime > timeout or timeout == 0 then
+                break
+            end
+            util.yield(13)
+        end
+    end
+end
+
 local function requestControl(entity, timeout)
     if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(entity) then
         NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(entity)
@@ -344,13 +357,13 @@ menu.divider(menu.my_root(), SCRIPT_VERSION)
 local PIP_Girl = menu.list(menu.my_root(), 'PIP Girl', {}, 'Personal Information Processor Girl.', function(); end)
 local PIP_Girl_APPS = menu.list(PIP_Girl, 'PIP Girl Apps', {}, 'Personal Information Processor Girl Apps.', function(); end)
 --local PIP_Girl_Heist = menu.list(PIP_Girl, 'PIP Girl Heists', {}, 'Personal Information Processor Girl Heist Presets.', function(); end)
-local Stimpak = menu.list(menu.my_root(), 'Stimpak', {}, 'Take a Breath', function(); end)
+local Stimpak = menu.list(menu.my_root(), 'Stimpak', {}, 'Take a Breath.', function(); end)
 local Outfit = menu.list(menu.my_root(), 'Outfit', {}, 'Look Pretty and nice.', function(); end)
-local Game = menu.list(menu.my_root(), 'Game', {}, '', function(); end)
-local Session = menu.list(menu.my_root(), 'Session', {}, 'Session', function(); end)
-local SessionClaimer = menu.list(Session, 'Session Claimer Settings', {}, 'Session Claimer Settings', function(); end)
-local Settings = menu.list(menu.my_root(), 'Settings/Misc', {}, '', function(); end)
-local Credits = menu.list(Settings, 'Credits', {}, '', function(); end)
+local Game = menu.list(menu.my_root(), 'Game', {}, 'Very Gaming Today.', function(); end)
+local Session = menu.list(menu.my_root(), 'Session', {}, '.noisseS', function(); end)
+local SessionClaimer = menu.list(Session, 'Session Claimer Settings', {}, 'Session Claimer Settings.', function(); end)
+local Settings = menu.list(menu.my_root(), 'Settings/Misc', {}, 'Basement.', function(); end)
+local Credits = menu.list(Settings, 'Credits', {}, '<3', function(); end)
 
 menu.action(PIP_Girl_APPS, "Master Control Terminal App", {}, "Your Master Control Terminal.", function()
     START_SCRIPT("CEO", "apparcadebusinesshub")
@@ -697,7 +710,7 @@ end)
 menu.toggle_loop(PIP_Girl, 'Nightclub Party Never Stops!', {'ncpop'}, 'The hottest NC in whole LS.\nKeeps you pop at 90-100%', function ()
     if IsInSession() then
         local ncpop = math.floor(STAT_GET_INT('CLUB_POPULARITY') / 10)
-        if ncpop < 91 then
+        if ncpop < 66 then
             menu.trigger_commands('clubpopularity 100')
             util.yield(66666)
         end
@@ -1945,32 +1958,24 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for 
     local hash = -1829309699
     local specificLocation = { x = 335.882996, y = 4833.833008, z = -59.023998}
     local locationV3 = v3.new(335.882996, 4833.833008, -59.023998)
-    local range = 0.666
-    local inrange = false
-    local PlayerList = players.list()
-    for _, pid in pairs(PlayerList) do
-        local hdl = pid_to_handle(pid)
-        if pid == players.user() or NETWORK.NETWORK_IS_FRIEND(hdl) then
-            local playerPosition = players.get_position(pid)
-            local distance = math.sqrt((playerPosition.x - specificLocation.x) ^ 2 + (playerPosition.y - specificLocation.y) ^ 2 + (playerPosition.z - specificLocation.z) ^ 2)
-            if distance <= range then
-                inrange = true
-                break
-            end
-        end
-    end
-    if ENTITY.DOES_ENTITY_EXIST(orbRoomGlass) then
-        requestControl(orbRoomGlass, 13)
-        if inrange then
-            entities.delete(orbRoomGlass)
-        end
-    end
-    if not inrange and not ENTITY.DOES_ENTITY_EXIST(orbRoomGlass) then
-        STREAMING.REQUEST_MODEL(hash)
+    if not ENTITY.DOES_ENTITY_EXIST(orbRoomGlass) then
+        requestModel(hash, 13)
         util.yield(420)
         orbRoomGlass = entities.create_object(hash, locationV3)
         util.yield(113)
         ENTITY.SET_ENTITY_HEADING(orbRoomGlass, 125)
+        util.yield(113)
+        ENTITY.FREEZE_ENTITY_POSITION(orbRoomGlass, true)
+        local PlayerList = players.list()
+        for _, pid in pairs(PlayerList) do
+            local hdl = pid_to_handle(pid)
+            if pid == players.user() or NETWORK.NETWORK_IS_FRIEND(hdl) then
+                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(orbRoomGlass, PLAYER.GET_PLAYER_PED(pid), false)
+                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(PLAYER.GET_PLAYER_PED(pid), orbRoomGlass, false)
+            end
+        end
+    else
+        requestControl(orbRoomGlass, 13)
     end
     util.yield(666)
 end, function()
@@ -1980,66 +1985,57 @@ end, function()
     end
 end)
 
-local kostakaMissile1 = {}
-local kostakaMissile2 = {}
+local kosatkaMissile1 = {}
+local kosatkaMissile2 = {}
 menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {""}, "Blocks the Entrance for the Orb Room", function()
     local hash = 1228076166
     local specificLocation1 = { x = 1558.9, y = 387.111, z = -50.666 }
     local specificLocation2 = { x = 1558.9, y = 388.777, z = -50.666 }
     local locationV3_1 = v3.new(1558.9, 387.111, -50.666)
     local locationV3_2 = v3.new(1558.9, 388.777, -50.666)
-    local range = 1.420
-    local inrange1 = false
-    local inrange2 = false
-    local PlayerList = players.list()
-    for _, pid in pairs(PlayerList) do
-        local hdl = pid_to_handle(pid)
-        if pid == players.user() or NETWORK.NETWORK_IS_FRIEND(hdl) then
-            local playerPosition = players.get_position(pid)
-            local distance1 = math.sqrt((playerPosition.x - specificLocation1.x) ^ 2 + (playerPosition.y - specificLocation1.y) ^ 2 + (playerPosition.z - specificLocation1.z) ^ 2)
-            local distance2 = math.sqrt((playerPosition.x - specificLocation2.x) ^ 2 + (playerPosition.y - specificLocation2.y) ^ 2 + (playerPosition.z - specificLocation2.z) ^ 2)
-            if distance1 <= range then
-                inrange1 = true
-            end
-            if distance2 <= range then
-                inrange2 = true
-            end
-            if inrange1 or inrange2 then
-                break
-            end
-        end
-    end
-    if ENTITY.DOES_ENTITY_EXIST(kostakaMissile1) then
-        requestControl(kostakaMissile1, 13)
-        if inrange1 then
-            entities.delete(kostakaMissile1)
-        end
-    end
-    if ENTITY.DOES_ENTITY_EXIST(kostakaMissile2) then
-        requestControl(kostakaMissile2, 13)
-        if inrange2 then
-            entities.delete(kostakaMissile2)
-        end
-    end
-    if not inrange1 and not ENTITY.DOES_ENTITY_EXIST(kostakaMissile1) then
-        STREAMING.REQUEST_MODEL(hash)
+    if not ENTITY.DOES_ENTITY_EXIST(kosatkaMissile1) then
+        requestModel(hash, 13)
         util.yield(420)
-        kostakaMissile1 = entities.create_object(hash, locationV3_1)
+        kosatkaMissile1 = entities.create_object(hash, locationV3_1)
+        util.yield(113)
+        ENTITY.FREEZE_ENTITY_POSITION(kosatkaMissile1, true)
+        local PlayerList = players.list()
+        for _, pid in pairs(PlayerList) do
+            local hdl = pid_to_handle(pid)
+            if pid == players.user() or NETWORK.NETWORK_IS_FRIEND(hdl) then
+                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(kosatkaMissile1, PLAYER.GET_PLAYER_PED(pid), false)
+                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(PLAYER.GET_PLAYER_PED(pid), kosatkaMissile1, false)
+            end
+        end
+    else
+        requestControl(kosatkaMissile1, 13)
     end
-    if not inrange2 and not ENTITY.DOES_ENTITY_EXIST(kostakaMissile2) then
-        STREAMING.REQUEST_MODEL(hash)
+    if not ENTITY.DOES_ENTITY_EXIST(kosatkaMissile2) then
+        requestModel(hash, 13)
         util.yield(420)
-        kostakaMissile2 = entities.create_object(hash, locationV3_2)
+        kosatkaMissile2 = entities.create_object(hash, locationV3_2)
+        util.yield(113)
+        ENTITY.FREEZE_ENTITY_POSITION(kosatkaMissile2, true)
+        local PlayerList = players.list()
+        for _, pid in pairs(PlayerList) do
+            local hdl = pid_to_handle(pid)
+            if pid == players.user() or NETWORK.NETWORK_IS_FRIEND(hdl) then
+                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(kosatkaMissile2, PLAYER.GET_PLAYER_PED(pid), false)
+                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(PLAYER.GET_PLAYER_PED(pid), kosatkaMissile2, false)
+            end
+        end
+    else
+        requestControl(kosatkaMissile2, 13)
     end
     util.yield(666)
 end, function()
-    if ENTITY.DOES_ENTITY_EXIST(kostakaMissile1) then
-        requestControl(kostakaMissile1, 13)
-        entities.delete(kostakaMissile1)
+    if ENTITY.DOES_ENTITY_EXIST(kosatkaMissile1) then
+        requestControl(kosatkaMissile1, 13)
+        entities.delete(kosatkaMissile1)
     end
-    if ENTITY.DOES_ENTITY_EXIST(kostakaMissile2) then
-        requestControl(kostakaMissile2, 13)
-        entities.delete(kostakaMissile2)
+    if ENTITY.DOES_ENTITY_EXIST(kosatkaMissile2) then
+        requestControl(kosatkaMissile2, 13)
+        entities.delete(kosatkaMissile2)
     end
 end)
 
