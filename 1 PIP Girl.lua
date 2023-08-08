@@ -1425,6 +1425,7 @@ local function SuperClean(fix)
             ct += 1
         end
     end
+    menu.trigger_commands("deleterope")
     util.yield(1)
     for k,ent in pairs(entities.get_all_peds_as_handles()) do
         if not PED.IS_PED_A_PLAYER(ent) then
