@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.4"
+local SCRIPT_VERSION = "0.1.5"
 
 local startupmsg = "\nAdded Credits in Settings <3\nAdded 'PIP Girl > Auto Join Friends CEO (!)\nAdded 'PIP Girl > Invite All Friends in CEO/MC'"
 
@@ -1098,23 +1098,23 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
 
                 -- Perform repairs
                 if engineHealth < 1000 then
-                    local randomValue = math.random(1, 6)
+                    local randomValue = math.random(1, 3)
                     VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + randomValue)
                 end
                 if petrolTankHealth < 1000 then
-                    local randomValue = math.random(1, 6)
+                    local randomValue = math.random(1, 3)
                     VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + randomValue)
                 end
                 if bodyHealth < 1000 then
-                    local randomValue = math.random(1, 6)
+                    local randomValue = math.random(1, 3)
                     VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + randomValue)
                 end
                 if heliTailHealth < 1000 then
-                    local randomValue = math.random(1, 6)
+                    local randomValue = math.random(1, 3)
                     VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + randomValue)
                 end
                 if heliRotorHealth < 1000 then
-                    local randomValue = math.random(1, 6)
+                    local randomValue = math.random(1, 3)
                     VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + randomValue)
                 end
 
@@ -1414,7 +1414,7 @@ local function SuperClean(fix)
     util.yield(1)
     for k,ent in pairs(entities.get_all_peds_as_handles()) do
         if not PED.IS_PED_A_PLAYER(ent) then
-            requestControl(ent, 1)
+            requestControl(ent, 0.3)
             entities.delete_by_handle(ent)
             ct += 1
         end
@@ -1423,20 +1423,20 @@ local function SuperClean(fix)
     for k,ent in pairs(entities.get_all_vehicles_as_handles()) do
         local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
         if not PED.IS_PED_A_PLAYER(driver) then
-            requestControl(ent, 1)
+            requestControl(ent, 0.3)
             entities.delete_by_handle(ent)
             ct += 1
         end
     end
     util.yield(1)
     for k,ent in pairs(entities.get_all_objects_as_handles()) do
-        requestControl(ent, 1)
+        requestControl(ent, 0.3)
         entities.delete_by_handle(ent)
         ct += 1
     end
     util.yield(1)
     for k,ent in pairs(entities.get_all_pickups_as_handles()) do
-        requestControl(ent, 1)
+        requestControl(ent, 0.3)
         entities.delete_by_handle(ent)
         ct += 1
     end
