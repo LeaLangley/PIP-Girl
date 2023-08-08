@@ -1407,7 +1407,6 @@ local function SuperClean(fix)
     for i=0, 100 do 
         memory.write_int(rope_alloc, i)
         if PHYSICS.DOES_ROPE_EXIST(rope_alloc) then
-            requestControl(rope_alloc, 1)
             PHYSICS.DELETE_ROPE(rope_alloc)
             ct += 1
         end
