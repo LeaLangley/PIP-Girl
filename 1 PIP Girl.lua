@@ -329,13 +329,14 @@ local function StrategicKick(pid, name, rid) --TODO , make it actually smart , n
     if not IsInSession() then
         util.create_thread(Wait_for_IsInSession(pid))
     end
-    menu.trigger_commands("ignore " .. name .. " on")
-    menu.trigger_commands("desync " .. name .. " on")
-    menu.trigger_commands("blocksync " .. name .. " on")
     if players.user() == players.get_host() then
         menu.trigger_commands("ban " .. name)
+        menu.trigger_commands("loveletterkick " .. name)
     else
         menu.trigger_commands("kick " .. name)
+        menu.trigger_commands("ignore " .. name .. " on")
+        menu.trigger_commands("desync " .. name .. " on")
+        menu.trigger_commands("blocksync " .. name .. " on")
     end
 end
 
@@ -2435,18 +2436,6 @@ player_menu = function(pid)
         --        PlayerExists = false
         --        util.yield(66666)
         --    end
-        --end)
-        --menu.toggle_loop(Bad_Modder, "Kick when Fully Loaded", {"hellabl"}, "Auto kick if u are fully loaded in the game.", function()
-        --    if IsInSession() then
-        --        StrategicKick(pid, name, rid)
-        --        warnify("Attempting to kick " .. name)
-        --        PlayerExists = false
-        --        util.yield(66666)
-        --    else
-        --        PlayerExists = false
-        --        util.yield(1666)
-        --    end
-        --    util.yield(13)
         --end)
         menu.toggle_loop(Bad_Modder, "Blacklist Kick on Atack", {"hellaab"}, "Auto kick if they atack you, and add them to blacklist.", function()
             if players.is_marked_as_attacker(pid) then
