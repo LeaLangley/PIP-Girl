@@ -329,18 +329,18 @@ local function requestControl(entity, timeout)
     end
 end
 
-local function Wait_for_IsInSession(pid)
+local function Wait_for_IsInSession(pid, name, rid)
     while not IsInSession() do
         util.yield(666)
     end
     if players.exists(pid) and NETWORK.NETWORK_IS_PLAYER_CONNECTED(pid) then
-        StrategicKick(pid)
+        StrategicKick(pid, name, rid)
     end
 end
 
 local function StrategicKick(pid, name, rid) --TODO , make it actually smart , not bare bones.
     if not IsInSession() then
-        util.create_thread(Wait_for_IsInSession(pid))
+        util.create_thread(Wait_for_IsInSession(pid, name, rid))
     end
     if players.user() == players.get_host() then
         menu.trigger_commands("ban " .. name)
