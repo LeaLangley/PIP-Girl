@@ -6,9 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.6"
+local SCRIPT_VERSION = "0.1.7"
 
-local startupmsg = "\nAdded Credits in Settings <3\nAdded 'PIP Girl > Auto Join Friends CEO (!)\nAdded 'PIP Girl > Invite All Friends in CEO/MC'"
+local startupmsg = "added some cool bussines in 'Session > World'\nAlso removed heist presets, even tho they should be save,\nand have nothing directly to do with the ban wave.\nThere are yet few ppl getting banned for no money method reason.\nBetter Save then sorry."
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -167,19 +167,19 @@ end
 
 local function notify(msg)
     util.toast("<[Pip Girl]>: " .. msg, TOAST_CONSOLE)
-    util.toast("<[Pip Girl]>: " .. msg)
+    util.toast("<[Pip Girl]>:\n " .. msg)
 end
 
 local function warnify(msg)
-    chat.send_message("<[Pip Girl]>: " .. msg, true, true, false)
+    chat.send_message("<[Pip Girl]>:\n " .. msg, true, true, false)
     util.toast("<[Pip Girl]>: " .. msg, TOAST_CONSOLE)
-    util.toast("<[Pip Girl]>: " .. msg)
+    util.toast("<[Pip Girl]>:\n " .. msg)
 end
 
 local function warnify_net(msg)
-    chat.send_message("<[Pip Girl]>: " .. msg, true, true, true)
+    chat.send_message("<[Pip Girl]>:\n " .. msg, true, true, true)
     util.toast("<[Pip Girl]>: " .. msg, TOAST_CONSOLE)
-    util.toast("<[Pip Girl]>: " .. msg)
+    util.toast("<[Pip Girl]>:\n " .. msg)
 end
 
 local function warnify_ses(msg)
@@ -326,6 +326,46 @@ local function requestControl(entity, timeout)
             end
             util.yield(13)
         end
+    end
+end
+
+local function SpawnCheck(entity, hash, locationV3, heading, timeout)
+    if not ENTITY.DOES_ENTITY_EXIST(entity) then
+        requestModel(hash, 13)
+        entity = entities.create_object(hash, locationV3)
+        util.yield(113)
+        if heading != 0 then
+            local startTime = os.time()
+            while math.abs(ENTITY.GET_ENTITY_HEADING(entity) - heading ) > 1 do
+                ENTITY.SET_ENTITY_HEADING(entity, heading)
+                if os.time() - startTime > timeout or timeout == 0 then
+                    break
+                end
+                util.yield(13)
+            end
+        end
+        ENTITY.FREEZE_ENTITY_POSITION(entity, true)
+        local PlayerList = players.list()
+        for _, pid in pairs(PlayerList) do
+            local hdl = pid_to_handle(pid)
+            if pid == players.user() or NETWORK.NETWORK_IS_FRIEND(hdl) then
+                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED(pid), false)
+                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(PLAYER.GET_PLAYER_PED(pid), entity, false)
+            end
+        end
+        return entity
+    else
+        requestControl(entity, 13)
+        local PlayerList = players.list()
+        for _, pid in pairs(PlayerList) do
+            local hdl = pid_to_handle(pid)
+            if pid == players.user() or NETWORK.NETWORK_IS_FRIEND(hdl) then
+                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED(pid), false)
+                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(PLAYER.GET_PLAYER_PED(pid), entity, false)
+            end
+            util.yield(1666)
+        end
+        return entity
     end
 end
 
@@ -931,7 +971,7 @@ menu.toggle_loop(PIP_Girl, "Carry Pickups", {}, "Carry all Pickups on You.\nNote
             else
                 ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z + 1.2, false, false, false, false)
             end
-            util.yield(1)
+            util.yield(6)
         end
         util.yield(13)
     else
@@ -1421,47 +1461,45 @@ local function SuperClean(fix)
     for i=0, 100 do 
         memory.write_int(rope_alloc, i)
         if PHYSICS.DOES_ROPE_EXIST(rope_alloc) then
+            util.yield(13)
             PHYSICS.DELETE_ROPE(rope_alloc)
             ct += 1
         end
     end
+    util.yield(13)
     menu.trigger_commands("deleterope")
-    util.yield(1)
+    util.yield(13)
     for k,ent in pairs(entities.get_all_peds_as_handles()) do
         if not PED.IS_PED_A_PLAYER(ent) then
-            requestControl(ent, 0)
-            util.yield(3)
-            entities.delete_by_handle(ent)
+            util.yield(13)
+            entities.delete(ent)
             ct += 1
         end
     end
-    util.yield(1)
-    for k,ent in pairs(entities.get_all_vehicles_as_handles()) do
+    util.yield(13)
+    for k,ent in pairs(entities.get_all_vehicles_as_pointers()) do
         local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
         if not PED.IS_PED_A_PLAYER(driver) then
-            requestControl(ent, 0)
-            util.yield(3)
-            entities.delete_by_handle(ent)
+            util.yield(13)
+            entities.delete(ent)
             ct += 1
         end
     end
-    util.yield(1)
+    util.yield(13)
     for k,ent in pairs(entities.get_all_objects_as_handles()) do
-        requestControl(ent, 0)
-        util.yield(3)
-        entities.delete_by_handle(ent)
+        util.yield(13)
+        entities.delete(ent)
         ct += 1
     end
-    util.yield(1)
+    util.yield(13)
     for k,ent in pairs(entities.get_all_pickups_as_handles()) do
-        requestControl(ent, 0)
-        util.yield(3)
-        entities.delete_by_handle(ent)
+        util.yield(13)
+        entities.delete(ent)
         ct += 1
     end
-    util.yield(1)
+    util.yield(13)
     GRAPHICS.REMOVE_PARTICLE_FX_IN_RANGE(pos.x, pos.y, pos.z, 13666)
-    util.yield(1)
+    util.yield(13)
     MISC.CLEAR_AREA_OF_PROJECTILES(pos.x, pos.y, pos.z, 13666)
     notify('Done ' .. ct .. '+ entities removed!')
     if fix then
@@ -1954,30 +1992,9 @@ end)
 
 local SessionWorld = menu.list(Session, 'World', {}, 'Session World Manipulation.', function(); end)
 
-local orbRoomGlass = {}
+local orbRoomGlass = nil
 menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for the Orb Room", function()
-    local hash = -1829309699
-    local specificLocation = { x = 335.882996, y = 4833.833008, z = -59.023998}
-    local locationV3 = v3.new(335.882996, 4833.833008, -59.023998)
-    if not ENTITY.DOES_ENTITY_EXIST(orbRoomGlass) then
-        requestModel(hash, 13)
-        util.yield(420)
-        orbRoomGlass = entities.create_object(hash, locationV3)
-        util.yield(113)
-        ENTITY.SET_ENTITY_HEADING(orbRoomGlass, 125)
-        util.yield(113)
-        ENTITY.FREEZE_ENTITY_POSITION(orbRoomGlass, true)
-        local PlayerList = players.list()
-        for _, pid in pairs(PlayerList) do
-            local hdl = pid_to_handle(pid)
-            if pid == players.user() or NETWORK.NETWORK_IS_FRIEND(hdl) then
-                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(orbRoomGlass, PLAYER.GET_PLAYER_PED(pid), false)
-                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(PLAYER.GET_PLAYER_PED(pid), orbRoomGlass, false)
-            end
-        end
-    else
-        requestControl(orbRoomGlass, 13)
-    end
+    orbRoomGlass = SpawnCheck(orbRoomGlass, -1829309699, v3.new(335.882996, 4833.833008, -59.023998), 125, 6)
     util.yield(666)
 end, function()
     if ENTITY.DOES_ENTITY_EXIST(orbRoomGlass) then
@@ -1986,48 +2003,11 @@ end, function()
     end
 end)
 
-local kosatkaMissile1 = {}
-local kosatkaMissile2 = {}
+local kosatkaMissile1 = nil
+local kosatkaMissile2 = nil
 menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {""}, "Blocks the Entrance for the Orb Room", function()
-    local hash = 1228076166
-    local specificLocation1 = { x = 1558.9, y = 387.111, z = -50.666 }
-    local specificLocation2 = { x = 1558.9, y = 388.777, z = -50.666 }
-    local locationV3_1 = v3.new(1558.9, 387.111, -50.666)
-    local locationV3_2 = v3.new(1558.9, 388.777, -50.666)
-    if not ENTITY.DOES_ENTITY_EXIST(kosatkaMissile1) then
-        requestModel(hash, 13)
-        util.yield(420)
-        kosatkaMissile1 = entities.create_object(hash, locationV3_1)
-        util.yield(113)
-        ENTITY.FREEZE_ENTITY_POSITION(kosatkaMissile1, true)
-        local PlayerList = players.list()
-        for _, pid in pairs(PlayerList) do
-            local hdl = pid_to_handle(pid)
-            if pid == players.user() or NETWORK.NETWORK_IS_FRIEND(hdl) then
-                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(kosatkaMissile1, PLAYER.GET_PLAYER_PED(pid), false)
-                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(PLAYER.GET_PLAYER_PED(pid), kosatkaMissile1, false)
-            end
-        end
-    else
-        requestControl(kosatkaMissile1, 13)
-    end
-    if not ENTITY.DOES_ENTITY_EXIST(kosatkaMissile2) then
-        requestModel(hash, 13)
-        util.yield(420)
-        kosatkaMissile2 = entities.create_object(hash, locationV3_2)
-        util.yield(113)
-        ENTITY.FREEZE_ENTITY_POSITION(kosatkaMissile2, true)
-        local PlayerList = players.list()
-        for _, pid in pairs(PlayerList) do
-            local hdl = pid_to_handle(pid)
-            if pid == players.user() or NETWORK.NETWORK_IS_FRIEND(hdl) then
-                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(kosatkaMissile2, PLAYER.GET_PLAYER_PED(pid), false)
-                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(PLAYER.GET_PLAYER_PED(pid), kosatkaMissile2, false)
-            end
-        end
-    else
-        requestControl(kosatkaMissile2, 13)
-    end
+    kosatkaMissile1 = SpawnCheck(kosatkaMissile1, 1228076166, v3.new(1558.9, 387.111, -50.666), 0, 0)
+    kosatkaMissile2 = SpawnCheck(kosatkaMissile2, 1228076166, v3.new(1558.9, 388.777, -50.666), 0, 0)
     util.yield(666)
 end, function()
     if ENTITY.DOES_ENTITY_EXIST(kosatkaMissile1) then
