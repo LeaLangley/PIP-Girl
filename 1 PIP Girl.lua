@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.3"
+local SCRIPT_VERSION = "0.1.4"
 
 local startupmsg = "\nAdded Credits in Settings <3\nAdded 'PIP Girl > Auto Join Friends CEO (!)\nAdded 'PIP Girl > Invite All Friends in CEO/MC'"
 
@@ -342,7 +342,7 @@ end
 menu.divider(menu.my_root(), SCRIPT_VERSION)
 local PIP_Girl = menu.list(menu.my_root(), 'PIP Girl', {}, 'Personal Information Processor Girl.', function(); end)
 local PIP_Girl_APPS = menu.list(PIP_Girl, 'PIP Girl Apps', {}, 'Personal Information Processor Girl Apps.', function(); end)
-local PIP_Girl_Heist = menu.list(PIP_Girl, 'PIP Girl Heists', {}, 'Personal Information Processor Girl Heist Presets.', function(); end)
+--local PIP_Girl_Heist = menu.list(PIP_Girl, 'PIP Girl Heists', {}, 'Personal Information Processor Girl Heist Presets.', function(); end)
 local Stimpak = menu.list(menu.my_root(), 'Stimpak', {}, 'Take a Breath', function(); end)
 local Outfit = menu.list(menu.my_root(), 'Outfit', {}, 'Look Pretty and nice.', function(); end)
 local Game = menu.list(menu.my_root(), 'Game', {}, '', function(); end)
@@ -428,7 +428,7 @@ local function CayoNotify()
     util.yield(1666)
     notify("The cayo heist with a Sweet Legit Like Preset.\nIf you inside the Submarine, go manually out and in again to refreash the board.")
 end
-
+--[[
 menu.action(PIP_Girl_Heist, 'Cayo 1 Player Preset (!)', {}, "", function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'Want to set up cayo?', function()
         if IsInSession() then
@@ -692,7 +692,7 @@ menu.action(PIP_Girl_Heist, 'Cayo 4 Player 25/25/25/25 Preset (!)', {}, "", func
         notify("Aborted.")
     end, true)
 end)
-
+]]--
 menu.toggle_loop(PIP_Girl, 'Nightclub Party Never Stops!', {'ncpop'}, 'The hottest NC in whole LS.\nKeeps you pop at 90-100%', function ()
     if IsInSession() then
         local ncpop = math.floor(STAT_GET_INT('CLUB_POPULARITY') / 10)
