@@ -308,7 +308,7 @@ local function requestControl(entity, timeout)
         NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(entity)
         local startTime = os.time()
         while not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(entity) do
-            if os.time() - startTime > timeout then -- Timeout after 5 seconds
+            if os.time() - startTime > timeout or timeout == 0 then
                 break
             end
             util.yield(13)
@@ -1414,7 +1414,8 @@ local function SuperClean(fix)
     util.yield(1)
     for k,ent in pairs(entities.get_all_peds_as_handles()) do
         if not PED.IS_PED_A_PLAYER(ent) then
-            requestControl(ent, 0.3)
+            requestControl(ent, 0)
+            util.yield(3)
             entities.delete_by_handle(ent)
             ct += 1
         end
@@ -1423,20 +1424,23 @@ local function SuperClean(fix)
     for k,ent in pairs(entities.get_all_vehicles_as_handles()) do
         local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
         if not PED.IS_PED_A_PLAYER(driver) then
-            requestControl(ent, 0.3)
+            requestControl(ent, 0)
+            util.yield(3)
             entities.delete_by_handle(ent)
             ct += 1
         end
     end
     util.yield(1)
     for k,ent in pairs(entities.get_all_objects_as_handles()) do
-        requestControl(ent, 0.3)
+        requestControl(ent, 0)
+        util.yield(3)
         entities.delete_by_handle(ent)
         ct += 1
     end
     util.yield(1)
     for k,ent in pairs(entities.get_all_pickups_as_handles()) do
-        requestControl(ent, 0.3)
+        requestControl(ent, 0)
+        util.yield(3)
         entities.delete_by_handle(ent)
         ct += 1
     end
