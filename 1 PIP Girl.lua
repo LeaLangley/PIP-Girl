@@ -1000,12 +1000,15 @@ menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a Shower in all exsisting 
             local in_vehicle = is_user_driving_vehicle()
             if in_vehicle then
                 ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z , false, false, false, false)
+                util.yield(13)
+                ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
             else
-                ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z + 1.2, false, false, false, false)
+                ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z + 1.0, false, false, false, false)
+                util.yield(13)
+                ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
             end
-            util.yield(13)
+            util.yield(187)
         end
-        util.yield(1)
     else
         util.yield(6666)
     end
