@@ -6,9 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.7"
+local SCRIPT_VERSION = "0.1.8"
 
-local startupmsg = "added some cool bussines in 'Session > World'\nAlso removed heist presets, even tho they should be save,\nand have nothing directly to do with the ban wave.\nThere are yet few ppl getting banned for no money method reason.\nBetter Save then sorry."
+local startupmsg = "Improved Carry Pickups alot 'PIP Girl > Carry Pickups' u should try it.\nadded some cool bussines in 'Session > World'\nAlso removed heist presets, even tho they should be save,\nand have nothing directly to do with the ban wave.\nThere are yet few ppl getting banned for no money method reason.\nBetter Save then sorry."
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -961,32 +961,49 @@ end)
 
 menu.divider(PIP_Girl, "Pickup Options")
 
-menu.toggle_loop(PIP_Girl, "Carry Pickups", {}, "Carry all Pickups on You.\nNote this donst work in all Situations.", function()
-    if IsInSession() then
-        local pos = players.get_position(players.user())
+local carryingPickups = {}
+menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all Pickups on You.\nNote this donst work in all Situations.", function(on)
+    if on then
+        local counter = 0
+        local playerPed = PLAYER.PLAYER_PED_ID()
         for _, pickup in entities.get_all_pickups_as_handles() do
-            local in_vehicle = is_user_driving_vehicle()
-            if in_vehicle then
-                ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z , false, false, false, false)
-            else
-                ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z + 1.2, false, false, false, false)
-            end
-            util.yield(6)
+            requestControl(pickup, 1)
+            util.yield(13)
+            ENTITY.ATTACH_ENTITY_TO_ENTITY(pickup, playerPed, PED.GET_PED_BONE_INDEX(playerPed, 24818), 0.0, -0.3, 0.0, 0.0, 90, 0.0, true, true, false, true, 1, true)
+            table.insert(carryingPickups, pickup)
+            counter = counter + 1
         end
-        util.yield(13)
+        notify("Carrying "..counter.." Pickups.")
     else
-        util.yield(6666)
+        local counter = 0
+        local playerPed = PLAYER.PLAYER_PED_ID()
+        local pos = players.get_position(players.user())
+        for _, pickup in ipairs(carryingPickups) do
+            requestControl(pickup, 1)
+            util.yield(13)
+            ENTITY.DETACH_ENTITY(pickup, true, true)
+            util.yield(13)
+            ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z-0.8, false, false, false, false)
+            util.yield(13)
+            ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
+            counter = counter + 1
+        end
+        notify("Droped "..counter.." Pickups.")
+        carryingPickups = {}
     end
 end)
 
-menu.action(PIP_Girl, "Teleport Pickups To Me", {}, "Teleports all Pickups To You.\nNote this donst work in all Situations.", function(click_type)
+menu.action(PIP_Girl, "Teleport Pickups To Me", {"tppickups"}, "Teleports all Pickups To You.\nNote this donst work in all Situations.", function(click_type)
     if IsInSession() then
         local counter = 0
         local pos = players.get_position(players.user())
         for _, pickup in entities.get_all_pickups_as_handles() do
-            ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
+            requestControl(pickup, 1)
+            util.yield(13)
+            ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z-0.8, false, false, false, false)
+            util.yield(13)
+            ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
             counter = counter + 1
-            util.yield(1)
         end
         if counter == 0 then
             notify("No Pickups Found. :c")
@@ -1469,7 +1486,7 @@ local function SuperClean(fix)
     util.yield(13)
     menu.trigger_commands("deleterope")
     util.yield(13)
-    for k,ent in pairs(entities.get_all_peds_as_handles()) do
+    for k,ent in pairs(entities.get_all_peds_as_pointers()) do
         if not PED.IS_PED_A_PLAYER(ent) then
             util.yield(13)
             entities.delete(ent)
@@ -1492,7 +1509,7 @@ local function SuperClean(fix)
         ct += 1
     end
     util.yield(13)
-    for k,ent in pairs(entities.get_all_pickups_as_handles()) do
+    for k,ent in pairs(entities.get_all_pickups_as_pointers()) do
         util.yield(13)
         entities.delete(ent)
         ct += 1
@@ -1501,7 +1518,7 @@ local function SuperClean(fix)
     GRAPHICS.REMOVE_PARTICLE_FX_IN_RANGE(pos.x, pos.y, pos.z, 13666)
     util.yield(13)
     MISC.CLEAR_AREA_OF_PROJECTILES(pos.x, pos.y, pos.z, 13666)
-    notify('Done ' .. ct .. '+ entities removed!')
+    notify("Done " .. ct .. "+ entities removed!\nThis is a new, 'Optimized' Version of Super Clean.\nIf u encounter an error pls report it.")
     if fix then
         util.yield(666)
         menu.trigger_commands("lockstreamingfocus on")
