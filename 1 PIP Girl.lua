@@ -993,6 +993,24 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all Pickups on Yo
     end
 end)
 
+menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a Shower in all exsisting Pickups.", function()
+    if IsInSession() then
+        local pos = players.get_position(players.user())
+        for _, pickup in entities.get_all_pickups_as_handles() do
+            local in_vehicle = is_user_driving_vehicle()
+            if in_vehicle then
+                ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z , false, false, false, false)
+            else
+                ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z + 1.2, false, false, false, false)
+            end
+            util.yield(13)
+        end
+        util.yield(1)
+    else
+        util.yield(6666)
+    end
+end)
+
 menu.action(PIP_Girl, "Teleport Pickups To Me", {"tppickups"}, "Teleports all Pickups To You.\nNote this donst work in all Situations.", function(click_type)
     if IsInSession() then
         local counter = 0
