@@ -967,7 +967,7 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all Pickups on Yo
         local counter = 0
         local playerPed = PLAYER.PLAYER_PED_ID()
         for _, pickup in entities.get_all_pickups_as_handles() do
-            requestControl(pickup, 1)
+            requestControl(pickup, 0)
             util.yield(13)
             ENTITY.ATTACH_ENTITY_TO_ENTITY(pickup, playerPed, PED.GET_PED_BONE_INDEX(playerPed, 24818), 0.0, -0.3, 0.0, 0.0, 90, 0.0, true, true, false, true, 1, true)
             table.insert(carryingPickups, pickup)
@@ -979,7 +979,7 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all Pickups on Yo
         local playerPed = PLAYER.PLAYER_PED_ID()
         local pos = players.get_position(players.user())
         for _, pickup in ipairs(carryingPickups) do
-            requestControl(pickup, 1)
+            requestControl(pickup, 0)
             util.yield(13)
             ENTITY.DETACH_ENTITY(pickup, true, true)
             util.yield(13)
@@ -1019,7 +1019,7 @@ menu.action(PIP_Girl, "Teleport Pickups To Me", {"tppickups"}, "Teleports all Pi
         local counter = 0
         local pos = players.get_position(players.user())
         for _, pickup in entities.get_all_pickups_as_handles() do
-            requestControl(pickup, 1)
+            requestControl(pickup, 0)
             util.yield(13)
             ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z-0.8, false, false, false, false)
             util.yield(13)
