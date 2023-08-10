@@ -6,27 +6,27 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.8"
+local SCRIPT_VERSION = "0.1.9"
 
 local startupmsg = "Improved Carry Pickups alot 'PIP Girl > Carry Pickups' u should try it.\nadded some cool bussines in 'Session > World'\nAlso removed heist presets, even tho they should be save,\nand have nothing directly to do with the ban wave.\nThere are yet few ppl getting banned for no money method reason.\nBetter Save then sorry."
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
 if not status then
-    local auto_update_complete = nil util.toast("<[Pip Girl]>: Installing auto-updater...", TOAST_ALL)
+    local auto_update_complete = nil util.toast("Installing auto-updater...", TOAST_ALL)
     async_http.init("raw.githubusercontent.com", "/hexarobi/stand-lua-auto-updater/main/auto-updater.lua",
         function(result, headers, status_code)
             local function parse_auto_update_result(result, headers, status_code)
-                local error_prefix = "<[Pip Girl]>: Error downloading auto-updater: "
+                local error_prefix = "Error downloading auto-updater: "
                 if status_code ~= 200 then util.toast(error_prefix..status_code, TOAST_ALL) return false end
                 if not result or result == "" then util.toast(error_prefix.."Found empty file.", TOAST_ALL) return false end
                 filesystem.mkdir(filesystem.scripts_dir() .. "lib")
                 local file = io.open(filesystem.scripts_dir() .. "lib\\auto-updater.lua", "wb")
                 if file == nil then util.toast(error_prefix.."Could not open file for writing.", TOAST_ALL) return false end
-                file:write(result) file:close() util.toast("<[Pip Girl]>: Successfully installed auto-updater lib", TOAST_ALL) return true
+                file:write(result) file:close() util.toast("Successfully installed auto-updater lib", TOAST_ALL) return true
             end
             auto_update_complete = parse_auto_update_result(result, headers, status_code)
-        end, function() util.toast("<[Pip Girl]>: Error downloading auto-updater lib. Update failed to download.", TOAST_ALL) end)
+        end, function() util.toast("Error downloading auto-updater lib. Update failed to download.", TOAST_ALL) end)
     async_http.dispatch() local i = 1 while (auto_update_complete == nil and i < 40) do util.yield(250) i = i + 1 end
     if auto_update_complete == nil then error("Error downloading auto-updater lib. HTTP Request timeout") end
     auto_updater = require("auto-updater")
@@ -367,6 +367,15 @@ local function SpawnCheck(entity, hash, locationV3, heading, timeout)
         end
         return entity
     end
+end
+
+local function thunderForMin(min)
+    menu.trigger_commands("thunderon")
+    local startTimestamp = os.time()
+    while os.time() - startTimestamp < min * 60 do
+        util.yield(1337)
+    end
+    menu.trigger_commands("thunderoff")
 end
 
 local function Wait_for_IsInSession(pid, name, rid)
@@ -991,6 +1000,22 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all Pickups on Yo
         notify("Droped "..counter.." Pickups.")
         carryingPickups = {}
     end
+end, function()
+    local counter = 0
+    local playerPed = PLAYER.PLAYER_PED_ID()
+    local pos = players.get_position(players.user())
+    for _, pickup in ipairs(carryingPickups) do
+        requestControl(pickup, 0)
+        util.yield(13)
+        ENTITY.DETACH_ENTITY(pickup, true, true)
+        util.yield(13)
+        ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z-0.8, false, false, false, false)
+        util.yield(13)
+        ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
+        counter = counter + 1
+    end
+    notify("Droped "..counter.." Pickups.")
+    carryingPickups = {}
 end)
 
 menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a Shower in all exsisting Pickups.", function()
@@ -1800,6 +1825,11 @@ local session_claimer_players = 0
 menu.slider(SessionClaimer, 'Session Size', {'claimsessionsize'}, 'Select the Size of a Session u want to claim.\nThis Value can be saved in a Profile!^^\n(!) Size 31-32 is very rare to reach, so its only use would be filling the Player History.', 0, 32, session_claimer_players, 1, function (new_value)
     session_claimer_players = new_value
 end)
+menu.divider(SessionClaimer, "Misc")
+local thunderMin = 0
+menu.slider(SessionClaimer, 'Thunder for X min', {''}, 'After u claimed a session show Thunder for X amount of min.', 0, 13, thunderMin, 1, function (new_value)
+    thunderMin = new_value
+end)
 menu.divider(SessionClaimer, "K/D Filter")
 local session_claimer_kd = false
 menu.toggle(SessionClaimer, "Seartch K/D On/Off", {""}, "Toggle the Seartch for K/D.", function(on)
@@ -1837,6 +1867,9 @@ menu.slider(SessionClaimer, 'Players With lvl Target', {'scpwlvlt'}, 'Enther the
 end)
 
 menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session with Selcted Size.\nChecks if the host is not a Modder or Friend.\nClaims the Host if all clear and next as host.\nElse looks for a better place to stay.\n\nAdmin Bailing & Auto Accept Warning included.", function()
+    --  <3
+    --  Setting up the Filter
+    --  <3
     local magnet_path = "Online>Transitions>Matchmaking>Player Magnet"
     local admin_path = "Stand>Lua Scripts>1 PIP Girl>Session>Admin Bail"
     local spoof_path = "Online>Spoofing>Host Token Spoofing>Host Token Spoofing"
@@ -1868,7 +1901,9 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             first_run = false
         end
         util.yield(666)
-
+        --  <3
+        --  Waiting to Join a Session
+        --  <3
         while not util.is_session_started() do
             if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
                 if first_run then
@@ -1882,8 +1917,11 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             end
             util.yield(666)
         end
-
+        --  <3
+        --  When Starting to Join a Session, Check if host is a Friend.
+        --  <3
         if util.is_session_started() then
+            util.yield(3666)
             local isHostFriendly = false
             for _, pid in players.list(true, true, true) do 
                 if pid == players.get_host() then
@@ -1895,7 +1933,14 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 end
             end
             util.yield(3666)
+            --  <3
+            --  Check the Basics.
+            --  <3
             if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players and (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
+                warnify("Possibly found something.")
+                --  <3
+                --  Additional Filter.
+                --  <3
                 if session_claimer_kd then
                     local players_with_kd = 0
                     for _, pid in pairs(players.list(false, false, true)) do
@@ -1950,9 +1995,15 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 if session_claimer_players == 0 then
                     util.yield(6666)
                 end
+                --  <3
+                --  If additional filter give the go.
+                --  <3
                 if not fucking_failure and session_claimer_players ~= 0 then
+                    --  <3
+                    --  If Session remains in a Claim-able state.
+                    --  <3
                     if (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
-                        warnify("Might found something.")
+                        warnify("Likely found something.")
                         while not IsInSession() do
                             if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
                                 util.yield(19666)
@@ -1962,7 +2013,10 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                             util.yield(666)
                         end
                         menu.trigger_commands("superclean")
-                        util.yield(13666)
+                        util.yield(3666)
+                        --  <3
+                        --  Claim Session.
+                        --  <3
                         if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 and not isModder(players.get_host()) then
                             menu.trigger_commands("givecollectibles " .. players.get_name(players.get_host()))
                             util.yield(6666)
@@ -1974,9 +2028,19 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                                 end
                             end
                         end
-                        util.yield(25666)
+                        local startTime = os.clock()
+                        while (os.clock() - startTime) * 1000 < 25666 do
+                            if players.get_host() == players.user() then
+                                break
+                            end
+                            util.yield(1337)
+                        end
+                        --  <3
+                        --  Is session under controll?
+                        --  <3
                         if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 and (players.get_host() == players.user() or isHostFriendly) then
                             warnify("Found u a new Home <3")
+                            menu.trigger_commands("claimsession off")
                             if players.user() != players.get_script_host() then
                                 menu.trigger_commands("scripthost")
                             end
@@ -1988,8 +2052,43 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                                 menu.trigger_commands("pgaaw off")
                                 temp_auto_warning = false
                             end
+                            if session_claimer_kd then
+                                local numPlayers
+                                if session_claimer_kd_target_players < 3 then
+                                    numPlayers = 3
+                                else
+                                    numPlayers = session_claimer_kd_target_players
+                                end
+                                local topPlayers = {}
+                                for _, pid in pairs(players.list(false, false, true)) do
+                                    if not isModder(pid) then
+                                        local kd = players.get_kd(pid)
+                                        local kd_integer = math.floor(kd)
+                                        
+                                        if #topPlayers < numPlayers then
+                                            table.insert(topPlayers, {pid = pid, kd = kd_integer})
+                                        else
+                                            table.sort(topPlayers, function(a, b) return a.kd > b.kd end)
+                                            
+                                            if kd_integer > topPlayers[#topPlayers].kd then
+                                                topPlayers[#topPlayers] = {pid = pid, kd = kd_integer}
+                                            end
+                                        end
+                                    end
+                                end
+                                local report = "Top " .. numPlayers .. " players with highest K/D:\n"
+                                for i, player in ipairs(topPlayers) do
+                                    local playerName = PLAYER.GET_PLAYER_NAME(player.pid)
+                                    report = report .. i .. ". " .. playerName .. " - K/D: " .. player.kd .. "\n"
+                                end
+                                warnify(report)
+                            end
                             menu.trigger_commands("resetheadshots")
-                            menu.trigger_commands("claimsession off")
+                            menu.trigger_commands("fillammo")
+                            menu.trigger_commands("fillinventory")
+                            if thunderMin != 0 then
+                                thunderForMin(thunderMin)
+                            end
                             util.yield(6666)
                         else
                             if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
@@ -2092,12 +2191,12 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic a
         util.yield(666)
         MISC.CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, 13666, false, false, false, false, false, false)
     else
-        MISC.REMOVE_POP_MULTIPLIER_SPHERE(ClearTraficSphere, false);
+        MISC.REMOVE_POP_MULTIPLIER_SPHERE(ClearTraficSphere, false)
         ClearTraficSphere = 0
         util.yield(13666)
     end
 end, function()
-    MISC.REMOVE_POP_MULTIPLIER_SPHERE(ClearTraficSphere, false);
+    MISC.REMOVE_POP_MULTIPLIER_SPHERE(ClearTraficSphere, false)
     ClearTraficSphere = 0
 end)
 
@@ -2599,6 +2698,10 @@ end)
 
 menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
     notify(startupmsg)
+end)
+
+menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
+    thunderForMin(6)
 end)
 
 util.keep_running()
