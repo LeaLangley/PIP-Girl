@@ -991,22 +991,6 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all Pickups on Yo
         notify("Droped "..counter.." Pickups.")
         carryingPickups = {}
     end
-end, function()
-    local counter = 0
-    local playerPed = PLAYER.PLAYER_PED_ID()
-    local pos = players.get_position(players.user())
-    for _, pickup in ipairs(carryingPickups) do
-        requestControl(pickup, 0)
-        util.yield(13)
-        ENTITY.DETACH_ENTITY(pickup, true, true)
-        util.yield(13)
-        ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z-0.8, false, false, false, false)
-        util.yield(13)
-        ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
-        counter = counter + 1
-    end
-    notify("Droped "..counter.." Pickups.")
-    carryingPickups = {}
 end)
 
 menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a Shower in all exsisting Pickups.", function()
