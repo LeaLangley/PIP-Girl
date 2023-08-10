@@ -1870,7 +1870,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         util.yield(666)
 
         while not util.is_session_started() do
-            if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
+            if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
                 if first_run then
                     util.yield(1666)
                     first_run = false
@@ -1900,7 +1900,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     local players_with_kd = 0
                     for _, pid in pairs(players.list(false, false, true)) do
                         while not IsInSession() do
-                            if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
+                            if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
                                 util.yield(19666)
                                 notify("U r in Story Mode ? Getting u online.")
                                 menu.trigger_commands("go public")
@@ -1926,7 +1926,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     local players_with_lvl = 0
                     for _, pid in pairs(players.list(false, false, true)) do
                         while not IsInSession() do
-                            if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
+                            if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
                                 util.yield(19666)
                                 notify("U r in Story Mode ? Getting u online.")
                                 menu.trigger_commands("go public")
@@ -1954,7 +1954,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     if (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
                         warnify("Might found something.")
                         while not IsInSession() do
-                            if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 and not GRAPHICS.IS_SCREENBLUR_FADE_RUNNING() then
+                            if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
                                 util.yield(19666)
                                 notify("U r in Story Mode ? Getting u online.")
                                 menu.trigger_commands("go public")
