@@ -1507,7 +1507,7 @@ local function SuperClean(fix)
     util.yield(13)
     menu.trigger_commands("deleterope")
     util.yield(13)
-    for k,ent in pairs(entities.get_all_peds_as_pointers()) do
+    for k,ent in pairs(entities.get_all_peds_as_handles()) do
         if not PED.IS_PED_A_PLAYER(ent) then
             util.yield(13)
             entities.delete(ent)
@@ -1515,7 +1515,7 @@ local function SuperClean(fix)
         end
     end
     util.yield(13)
-    for k,ent in pairs(entities.get_all_vehicles_as_pointers()) do
+    for k,ent in pairs(entities.get_all_vehicles_as_handles()) do
         local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
         if not PED.IS_PED_A_PLAYER(driver) then
             util.yield(13)
@@ -1530,7 +1530,7 @@ local function SuperClean(fix)
         ct += 1
     end
     util.yield(13)
-    for k,ent in pairs(entities.get_all_pickups_as_pointers()) do
+    for k,ent in pairs(entities.get_all_pickups_as_handles()) do
         util.yield(13)
         entities.delete(ent)
         ct += 1
@@ -1539,7 +1539,7 @@ local function SuperClean(fix)
     GRAPHICS.REMOVE_PARTICLE_FX_IN_RANGE(pos.x, pos.y, pos.z, 13666)
     util.yield(13)
     MISC.CLEAR_AREA_OF_PROJECTILES(pos.x, pos.y, pos.z, 13666)
-    notify("Done " .. ct .. "+ entities removed!\nThis is a new, 'Optimized' Version of Super Clean.\nIf u encounter an error pls report it.")
+    notify("Done " .. ct .. "+ entities removed!")
     if fix then
         util.yield(666)
         menu.trigger_commands("lockstreamingfocus on")
