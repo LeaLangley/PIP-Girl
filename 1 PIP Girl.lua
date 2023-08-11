@@ -1827,6 +1827,32 @@ end)
 --    end
 --end)
 
+local function ReportSessionKD(numPlayers)
+    local topPlayers = {}
+    for _, pid in pairs(players.list(false, false, true)) do
+        if not isModder(pid) then
+            local kd = players.get_kd(pid)
+            
+            if #topPlayers < numPlayers then
+                table.insert(topPlayers, {pid = pid, kd = kd})
+            else
+                table.sort(topPlayers, function(a, b) return a.kd > b.kd end)
+                
+                if kd > topPlayers[#topPlayers].kd then
+                    topPlayers[#topPlayers] = {pid = pid, kd = kd}
+                end
+            end
+        end
+    end
+    local report = "Top " .. numPlayers .. " players with highest K/D:\n"
+    for i, player in ipairs(topPlayers) do
+        local playerName = PLAYER.GET_PLAYER_NAME(player.pid)
+        local formattedKD = string.format("%.2f", player.kd) -- Format K/D to two decimal places
+        report = report .. i .. ". " .. playerName .. " - K/D: " .. formattedKD .. "\n"
+    end
+    warnify(report)
+end
+
 menu.divider(SessionClaimer, "Player Amount Filter")
 local session_claimer_players = 0
 menu.slider(SessionClaimer, 'Session Size', {'claimsessionsize'}, 'Select the Size of a Session u want to claim.\nThis Value can be saved in a Profile!^^\n(!) Size 31-32 is very rare to reach, so its only use would be filling the Player History.', 0, 32, session_claimer_players, 1, function (new_value)
@@ -2066,29 +2092,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                                 else
                                     numPlayers = session_claimer_kd_target_players
                                 end
-                                local topPlayers = {}
-                                for _, pid in pairs(players.list(false, false, true)) do
-                                    if not isModder(pid) then
-                                        local kd = players.get_kd(pid)
-                                        local kd_integer = math.floor(kd)
-                                        
-                                        if #topPlayers < numPlayers then
-                                            table.insert(topPlayers, {pid = pid, kd = kd_integer})
-                                        else
-                                            table.sort(topPlayers, function(a, b) return a.kd > b.kd end)
-                                            
-                                            if kd_integer > topPlayers[#topPlayers].kd then
-                                                topPlayers[#topPlayers] = {pid = pid, kd = kd_integer}
-                                            end
-                                        end
-                                    end
-                                end
-                                local report = "Top " .. numPlayers .. " players with highest K/D:\n"
-                                for i, player in ipairs(topPlayers) do
-                                    local playerName = PLAYER.GET_PLAYER_NAME(player.pid)
-                                    report = report .. i .. ". " .. playerName .. " - K/D: " .. player.kd .. "\n"
-                                end
-                                warnify(report)
+                                ReportSessionKD(numPlayers)
                             end
                             menu.trigger_commands("resetheadshots")
                             menu.trigger_commands("fillammo")
@@ -2132,6 +2136,16 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         menu.trigger_commands("claimsession off")
         util.yield(6666)
     end
+end)
+
+menu.action(Session, "Notify Highest K/D", {"notifykd"}, "Notify's u with the Hightest K/D Players.", function()
+    local numPlayers
+    if session_claimer_kd_target_players < 3 then
+        numPlayers = 3
+    else
+        numPlayers = session_claimer_kd_target_players
+    end
+    ReportSessionKD(numPlayers)
 end)
 
 local SessionWorld = menu.list(Session, 'World', {}, 'Session World Manipulation.', function(); end)
