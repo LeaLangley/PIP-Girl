@@ -1840,10 +1840,12 @@ local function ReportSessionKD(numPlayers)
                 
                 if kd > topPlayers[#topPlayers].kd then
                     topPlayers[#topPlayers] = {pid = pid, kd = kd}
+                    table.sort(topPlayers, function(a, b) return a.kd > b.kd end) -- Sort the table after updating
                 end
             end
         end
     end
+    table.sort(topPlayers, function(a, b) return a.kd > b.kd end) -- Sort the table one last time
     local report = "Top " .. numPlayers .. " players with highest K/D:\n"
     for i, player in ipairs(topPlayers) do
         local playerName = PLAYER.GET_PLAYER_NAME(player.pid)
