@@ -1494,7 +1494,7 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
                 local vehicle = entities.get_user_vehicle_as_handle()
                 if vehicle then
                     local getclass = VEHICLE.GET_VEHICLE_CLASS(vehicle)
-                    if getclass == 8 or getclass == 9 or getclass == 13 then
+                    if getclass == 8 or getclass == 13 then
                         menu.trigger_commands("hat "..OutfitLockHelmet)
                         ChangedHelmet = true
                     end
