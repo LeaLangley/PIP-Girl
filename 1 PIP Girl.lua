@@ -2120,7 +2120,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                                 ReportSessionKD(numPlayers)
                             end
                             menu.trigger_commands("resetheadshots")
-                            menu.trigger_commands("fillammo")
+                            menu.trigger_commands("newborn")
                             menu.trigger_commands("fillinventory")
                             if thunderMin != 0 then
                                 thunderForMin(thunderMin)
