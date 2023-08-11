@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.11"
+local SCRIPT_VERSION = "0.1.12"
 
 local startupmsg = "Added; Stand > Lua Scripts > 1 PIP Girl > Outfit > Smart Outfit Lock Helmet."
 
@@ -380,7 +380,7 @@ local function thunderForMin(min)
     menu.trigger_commands("thunderoff")
 end
 
-local function Wait_for_IsInSession(pid, name, rid)
+local function Wait_for_IsInSession()
     while not IsInSession() do
         util.yield(666)
     end
@@ -389,7 +389,7 @@ end
 
 local function StrategicKick(pid, name, rid) --TODO , make it actually smart , not bare bones.
     if not IsInSession() then
-        util.create_thread(Wait_for_IsInSession(pid, name, rid))
+        Wait_for_IsInSession()
     end
     if players.user() == players.get_host() then
         menu.trigger_commands("ban " .. name)
@@ -1470,6 +1470,8 @@ menu.action(Stimpak, "(DEBUG) Set Armor/Health to Low", {"dearmor"}, "This is fo
     end
 end)
 
+menu.divider(Outfit, "Quick Select")
+
 menu.action(Outfit, "Edit Outfit", {}, "", function()
     menu.trigger_commands("outfit")
 end)
@@ -1477,6 +1479,8 @@ end)
 menu.action(Outfit, "Wardrobe", {}, "", function()
     menu.trigger_commands("wardrobe")
 end)
+
+menu.divider(Outfit, "<3")
 
 local OutfitLockHelmet = -1
 local ChangedHelmet = false
@@ -1512,21 +1516,7 @@ menu.slider(Outfit, 'Smart Outfit Lock Helmet', {'SmartLockHelmet'}, 'If u Enter
     OutfitLockHelmet = new_value
 end)
 
-menu.toggle_loop(Outfit, "(Alpha) Lock outfit if Iligal Clothing detected", {"IligalLock"}, "This will lock you outfit if a iligal clothing is detected, so it wont get removed.", function()
-    local cmd_path = "Self>Appearance>Outfit>Pants"
-    if not util.is_interaction_menu_open() then
-        if menu.get_state(menu.ref_by_path(cmd_path)) == "21" then
-            menu.trigger_commands("lockoutfit on")
-        else
-            menu.trigger_commands("lockoutfit off")
-        end
-    else
-        menu.trigger_commands("lockoutfit off")
-    end
-    util.yield(13)
-end, function()
-    menu.trigger_commands("lockoutfit off")
-end)
+menu.divider(Outfit, "Restoring")
 
 menu.action(Outfit, "Saves the Current O. as Restore O.", {}, "This will save you current Oufit as Restor Outfit.", function()
     menu.trigger_commands("saveoutfit 1 Pip Girl")
@@ -1543,6 +1533,24 @@ menu.toggle_loop(Outfit, "Restor Outfit", {"restoreoutfit"}, "Auto Restore the S
         outfit_restored = false
         util.yield(13666)
     end
+end)
+
+menu.divider(Outfit, "Unfinished")
+
+menu.toggle_loop(Outfit, "(Alpha) Lock outfit if Iligal Clothing detected", {"IligalLock"}, "This will lock you outfit if a iligal clothing is detected, so it wont get removed.", function()
+    local cmd_path = "Self>Appearance>Outfit>Pants"
+    if not util.is_interaction_menu_open() then
+        if menu.get_state(menu.ref_by_path(cmd_path)) == "21" then
+            menu.trigger_commands("lockoutfit on")
+        else
+            menu.trigger_commands("lockoutfit off")
+        end
+    else
+        menu.trigger_commands("lockoutfit off")
+    end
+    util.yield(13)
+end, function()
+    menu.trigger_commands("lockoutfit off")
 end)
 
 local function SuperClean(fix)
