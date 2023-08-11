@@ -1264,13 +1264,13 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
                 else
                     saved_vehicle_id = nil
                 end
+                if not isInVehicle and not closedDoors then
+                    util.yield(1666)
+                    VEHICLE.SET_VEHICLE_DOORS_SHUT(vehicle, false)
+                    closedDoors = true
+                end
             else
                 util.yield(1666)
-            end
-            if not isInVehicle and not closedDoors then
-                util.yield(1666)
-                VEHICLE.SET_VEHICLE_DOORS_SHUT(vehicle, false)
-                closedDoors = true
             end
             util.yield(1000)
         else
