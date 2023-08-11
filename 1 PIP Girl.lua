@@ -6,9 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.10"
+local SCRIPT_VERSION = "0.1.11"
 
-local startupmsg = "Improved Carry Pickups alot 'PIP Girl > Carry Pickups' u should try it.\nadded some cool bussines in 'Session > World'\nAlso removed heist presets, even tho they should be save,\nand have nothing directly to do with the ban wave.\nThere are yet few ppl getting banned for no money method reason.\nBetter Save then sorry."
+local startupmsg = "Added; Stand > Lua Scripts > 1 PIP Girl > Outfit > Smart Outfit Lock Helmet."
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1480,15 +1480,38 @@ menu.action(Outfit, "Wardrobe", {}, "", function()
     menu.trigger_commands("wardrobe")
 end)
 
-menu.toggle_loop(Outfit, "Smart Oufit Lock", {"SmartLock"}, "This will lock you outfit only if u dont have interaction menu open.", function()
+local OutfitLockHelmet = -1
+local ChangedHelmet = false
+menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you outfit only if u dont have interaction menu open.", function()
     if util.is_interaction_menu_open() then
         menu.trigger_commands("lockoutfit off")
-        util.yield(666)
     else
         menu.trigger_commands("lockoutfit on")
-        util.yield(666)
     end
-    util.yield(13)
+    if OutfitLockHelmet != -1 then
+        if PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) then
+            if menu.get_state(menu.ref_by_path("Self>Appearance>Outfit>Hat")) == "-1" then
+                local vehicle = entities.get_user_vehicle_as_handle()
+                if vehicle then
+                    local getclass = VEHICLE.GET_VEHICLE_CLASS(vehicle)
+                    if getclass == 8 or getclass == 9 or getclass == 13 then
+                        menu.trigger_commands("hat "..OutfitLockHelmet)
+                        ChangedHelmet = true
+                    end
+                end
+            end
+        else
+            if ChangedHelmet then
+                menu.trigger_commands("hat -1")
+                ChangedHelmet = false
+            end
+        end
+    end
+    util.yield(666)
+end)
+
+menu.slider(Outfit, 'Smart Outfit Lock Helmet', {'SmartLockHelmet'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet.', -1, 201, OutfitLockHelmet, 1, function (new_value)
+    OutfitLockHelmet = new_value
 end)
 
 menu.toggle_loop(Outfit, "(Alpha) Lock outfit if Iligal Clothing detected", {"IligalLock"}, "This will lock you outfit if a iligal clothing is detected, so it wont get removed.", function()
