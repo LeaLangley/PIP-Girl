@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.9"
+local SCRIPT_VERSION = "0.1.10"
 
 local startupmsg = "Improved Carry Pickups alot 'PIP Girl > Carry Pickups' u should try it.\nadded some cool bussines in 'Session > World'\nAlso removed heist presets, even tho they should be save,\nand have nothing directly to do with the ban wave.\nThere are yet few ppl getting banned for no money method reason.\nBetter Save then sorry."
 
@@ -279,11 +279,13 @@ local function pid_to_handle(pid)
 end
 
 local function isLoading(pid)
-    if not pid then
-        pid = players.user()
-    end
-    if not util.is_session_started() then
+    if not IsInSession() then
         return false
+    end
+    if pid == players.user() then
+        if ENTITY.GET_ENTITY_SPEED(pid) < 1 and HUD.BUSYSPINNER_IS_DISPLAYING() then
+            return true
+        end
     end
     local pPos = players.get_position(pid)
     if pPos.x == 0 and pPos.y == 0 and pPos.z == 0 then
@@ -976,11 +978,13 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all Pickups on Yo
         local counter = 0
         local playerPed = PLAYER.PLAYER_PED_ID()
         for _, pickup in entities.get_all_pickups_as_handles() do
-            requestControl(pickup, 0)
-            util.yield(13)
-            ENTITY.ATTACH_ENTITY_TO_ENTITY(pickup, playerPed, PED.GET_PED_BONE_INDEX(playerPed, 24818), 0.0, -0.3, 0.0, 0.0, 90, 0.0, true, true, false, true, 1, true)
-            table.insert(carryingPickups, pickup)
-            counter = counter + 1
+            if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
+                requestControl(pickup, 0)
+                util.yield(111)
+                ENTITY.ATTACH_ENTITY_TO_ENTITY(pickup, playerPed, PED.GET_PED_BONE_INDEX(playerPed, 24818), 0.0, -0.3, 0.0, 0.0, 90, 0.0, true, true, true, true, 1, true)
+                table.insert(carryingPickups, pickup)
+                counter = counter + 1
+            end
         end
         notify("Carrying "..counter.." Pickups.")
     else
@@ -988,14 +992,16 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all Pickups on Yo
         local playerPed = PLAYER.PLAYER_PED_ID()
         local pos = players.get_position(players.user())
         for _, pickup in ipairs(carryingPickups) do
-            requestControl(pickup, 0)
-            util.yield(13)
-            ENTITY.DETACH_ENTITY(pickup, true, true)
-            util.yield(13)
-            ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z-0.8, false, false, false, false)
-            util.yield(13)
-            ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
-            counter = counter + 1
+            if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
+                requestControl(pickup, 0)
+                util.yield(13)
+                ENTITY.DETACH_ENTITY(pickup, true, true)
+                util.yield(13)
+                ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z-0.8, false, false, false, false)
+                util.yield(13)
+                ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
+                counter = counter + 1
+            end
         end
         notify("Droped "..counter.." Pickups.")
         carryingPickups = {}
@@ -1005,18 +1011,20 @@ end)
 menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a Shower in all exsisting Pickups.", function()
     if IsInSession() then
         local pos = players.get_position(players.user())
+        local in_vehicle = is_user_driving_vehicle()
         for _, pickup in entities.get_all_pickups_as_handles() do
-            local in_vehicle = is_user_driving_vehicle()
-            if in_vehicle then
-                ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z , false, false, false, false)
-                util.yield(13)
-                ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
-            else
-                ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z + 1.0, false, false, false, false)
-                util.yield(13)
-                ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
+            if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
+                if in_vehicle then
+                    ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z , false, false, false, false)
+                    util.yield(13)
+                    ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
+                else
+                    ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z + 1.0, false, false, false, false)
+                    util.yield(13)
+                    ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
+                end
             end
-            util.yield(187)
+            util.yield(13)
         end
     else
         util.yield(6666)
@@ -1028,12 +1036,14 @@ menu.action(PIP_Girl, "Teleport Pickups To Me", {"tppickups"}, "Teleports all Pi
         local counter = 0
         local pos = players.get_position(players.user())
         for _, pickup in entities.get_all_pickups_as_handles() do
-            requestControl(pickup, 0)
-            util.yield(13)
-            ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z-0.8, false, false, false, false)
-            util.yield(13)
-            ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
-            counter = counter + 1
+            if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
+                requestControl(pickup, 0)
+                util.yield(13)
+                ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z-0.8, false, false, false, false)
+                util.yield(13)
+                ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
+                counter = counter + 1
+            end
         end
         if counter == 0 then
             notify("No Pickups Found. :c")
@@ -1175,6 +1185,8 @@ local function LeaTech()
     end
 end
 local saved_vehicle_id = nil
+local isInVehicle = false
+local closedDoors = false
 menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle", function()
     local cmd_path = "Vehicle>Light Signals>Use Brake Lights When Stopped"
     if IsInSession() then
@@ -1189,6 +1201,13 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
 
             -- Check if the driver seat is empty or if the local player is the driver
             if driver == -1 or driver == players.user() then
+                if driver == players.user() then
+                    isInVehicle = true
+                    closedDoors = false
+                end
+                if driver == -1 then
+                    isInVehicle = false
+                end
                 local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
                 local petrolTankHealth = VEHICLE.GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
                 local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle)
@@ -1247,16 +1266,20 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
                 else
                     saved_vehicle_id = nil
                 end
-
-                util.yield(1000) -- Pause the loop for 1000 milliseconds (1 second) before the next iteration
             else
-                util.yield(1000) -- If the local player is not the driver, wait for 1000 milliseconds (1 second) before the next iteration
+                util.yield(1666)
             end
+            if not isInVehicle and not closedDoors then
+                util.yield(1666)
+                VEHICLE.SET_VEHICLE_DOORS_SHUT(vehicle, false)
+                closedDoors = true
+            end
+            util.yield(1000)
         else
-            util.yield(1666) -- If the user is not in any vehicle, wait for 1666 milliseconds (1.666 seconds) before the next iteration
+            util.yield(1666)
         end
     else
-        util.yield(13666) -- If the player is not in an active session, wait for 13666 milliseconds (13.666 seconds) before the next iteration
+        util.yield(13666)
     end
 end)
 
