@@ -384,9 +384,7 @@ local function Wait_for_IsInSession(pid, name, rid)
     while not IsInSession() do
         util.yield(666)
     end
-    if players.exists(pid) and NETWORK.NETWORK_IS_PLAYER_CONNECTED(pid) then
-        StrategicKick(pid, name, rid)
-    end
+    players.dispatch_on_join()
 end
 
 local function StrategicKick(pid, name, rid) --TODO , make it actually smart , not bare bones.
