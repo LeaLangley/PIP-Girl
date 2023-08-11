@@ -353,6 +353,8 @@ local function SpawnCheck(entity, hash, locationV3, heading, timeout)
             if pid == players.user() or NETWORK.NETWORK_IS_FRIEND(hdl) then
                 ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED(pid), false)
                 ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(PLAYER.GET_PLAYER_PED(pid), entity, false)
+            else
+                util.yield(13)
             end
         end
         return entity
@@ -364,8 +366,10 @@ local function SpawnCheck(entity, hash, locationV3, heading, timeout)
             if pid == players.user() or NETWORK.NETWORK_IS_FRIEND(hdl) then
                 ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED(pid), false)
                 ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(PLAYER.GET_PLAYER_PED(pid), entity, false)
+                util.yield(666)
+            else
+                util.yield(13)
             end
-            util.yield(1666)
         end
         return entity
     end
