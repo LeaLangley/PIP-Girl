@@ -2236,16 +2236,16 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic a
     if IsInSession() then
         local pos = players.get_position(players.user())
         if players.user() != players.get_host() then
-            util.yield(666)
+            util.yield(1666)
         else
-            util.yield(420)
+            util.yield(1420)
         end
         if not MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(ClearTraficSphere) then
             ClearTraficSphere = MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19999.9, 0.0, 0.0, false, true)
         end
-        MISC.CLEAR_AREA_OF_PEDS(pos.x, pos.y, pos.z, 13666, 0)
+        MISC.CLEAR_AREA_OF_PEDS(pos.x, pos.y, pos.z, 6666, 0)
         util.yield(666)
-        MISC.CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, 13666, false, false, false, false, false, false)
+        MISC.CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, 6666, false, false, false, false, false, false)
     else
         if ClearTraficSphere then
             MISC.REMOVE_POP_MULTIPLIER_SPHERE(ClearTraficSphere, true)
