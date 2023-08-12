@@ -1508,7 +1508,7 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
             end
         else
             if ChangedHelmet then
-                util.yield(13666)
+                util.yield(3666)
                 menu.trigger_commands("hat -1")
                 ChangedHelmet = false
             end
@@ -2231,7 +2231,7 @@ menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join 
     util.yield()
 end)
 
-local ClearTraficSphere = 0
+local ClearTraficSphere
 menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic around you.", function()
     if IsInSession() then
         local pos = players.get_position(players.user())
@@ -2241,19 +2241,22 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic a
             util.yield(420)
         end
         if not MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(ClearTraficSphere) then
-            MISC.CLEAR_AREA(0.0, 0.0, 0.0, 19999.9, true, false, false, true)
             ClearTraficSphere = MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19999.9, 0.0, 0.0, false, true)
         end
-        MISC.CLEAR_AREA_OF_PEDS(pos.x, pos.y, pos.z, 13666, 1)
+        MISC.CLEAR_AREA_OF_PEDS(pos.x, pos.y, pos.z, 13666, 0)
         util.yield(666)
         MISC.CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, 13666, false, false, false, false, false, false)
     else
-        MISC.REMOVE_POP_MULTIPLIER_SPHERE(ClearTraficSphere, false)
-        ClearTraficSphere = 0
-        util.yield(13666)
+        if ClearTraficSphere then
+            MISC.REMOVE_POP_MULTIPLIER_SPHERE(ClearTraficSphere, true)
+            ClearTraficSphere = false
+            util.yield(13666)
+        else
+            util.yield(666)
+        end
     end
 end, function()
-    MISC.REMOVE_POP_MULTIPLIER_SPHERE(ClearTraficSphere, false)
+    MISC.REMOVE_POP_MULTIPLIER_SPHERE(ClearTraficSphere, true)
     ClearTraficSphere = 0
 end)
 
