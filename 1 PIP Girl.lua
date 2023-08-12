@@ -1508,6 +1508,7 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
             end
         else
             if ChangedHelmet then
+                util.yield(13666)
                 menu.trigger_commands("hat -1")
                 ChangedHelmet = false
             end
