@@ -292,10 +292,10 @@ local function isLoading(pid)
         return true
     end
     if ENTITY.GET_ENTITY_SPEED(pid) < 1 then
-        if players.get_rank(pid) == 0 then
+        if players.get_money(pid) == 0 and players.get_kd(pid) == 0 then
             return true
         end
-        if players.get_money(pid) == 0 and players.get_kd(pid) == 0 then
+        if players.get_rank(pid) == 0 then
             return true
         end
     end
@@ -392,17 +392,22 @@ local function Wait_for_IsInSession()
 end
 
 local function StrategicKick(pid, name, rid) --TODO , make it actually smart , not bare bones.
-    if not IsInSession() then
-        Wait_for_IsInSession()
-    end
-    if players.user() == players.get_host() then
-        menu.trigger_commands("ban " .. name)
-        menu.trigger_commands("loveletterkick " .. name)
-    else
-        menu.trigger_commands("kick " .. name)
-        menu.trigger_commands("ignore " .. name .. " on")
-        menu.trigger_commands("desync " .. name .. " on")
-        menu.trigger_commands("blocksync " .. name .. " on")
+    if name != "UndiscoveredPlayer" then
+        if not IsInSession() then
+            Wait_for_IsInSession()
+        end
+        if players.user() == players.get_host() then
+            if not isLoading(pid) then
+                menu.trigger_commands("ban " .. name)
+            else
+                menu.trigger_commands("loveletterkick " .. name)
+            end
+        else
+            menu.trigger_commands("kick " .. name)
+            menu.trigger_commands("ignore " .. name .. " on")
+            menu.trigger_commands("desync " .. name .. " on")
+            menu.trigger_commands("blocksync " .. name .. " on")
+        end
     end
 end
 
@@ -2643,6 +2648,9 @@ player_menu = function(pid)
                 util.yield(1666)
             end
             util.yield(13)
+        end)
+        menu.action(Bad_Modder, "test", {"hellaa"}, "Auto kick if they atack you.", function()
+            StrategicKick(pid, name, rid)
         end)
     end
 end
