@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.12"
+local SCRIPT_VERSION = "0.1.13"
 
 local startupmsg = "Added; Stand > Lua Scripts > 1 PIP Girl > Outfit > Smart Outfit Lock Helmet."
 
@@ -1494,6 +1494,7 @@ menu.divider(Outfit, "<3")
 local OutfitLockHelmet = -1
 local ChangedHelmet = false
 menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you outfit only if u dont have interaction menu open.", function()
+    local focused = lang.get_string(menu.get_current_menu_list():getParent().menu_name)
     if util.is_interaction_menu_open() then
         menu.trigger_commands("lockoutfit off")
     else
@@ -1501,7 +1502,7 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
     end
     if OutfitLockHelmet != -1 then
         if PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) then
-            if menu.get_state(menu.ref_by_path("Self>Appearance>Outfit>Hat")) == "-1" then
+            if menu.get_state(menu.ref_by_path("Self>Appearance>Outfit>Hat")) == "-1" and focused != "Profiles" then
                 local vehicle = entities.get_user_vehicle_as_handle()
                 if vehicle then
                     local getclass = VEHICLE.GET_VEHICLE_CLASS(vehicle)
@@ -1513,13 +1514,26 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
             end
         else
             if ChangedHelmet then
-                util.yield(3666)
+                while not ENTITY.GET_ENTITY_SPEED(players.user()) < 1 do
+                    if focused != "Profiles" then
+                        break
+                    end
+                    util.yield(13)
+                end
                 menu.trigger_commands("hat -1")
                 ChangedHelmet = false
             end
         end
+        if ChangedHelmet and focused == "Profiles" then
+            menu.trigger_commands("hat -1")
+            ChangedHelmet = false
+        end 
     end
-    util.yield(666)
+    if focused == "Stand" or focused == "Profiles" then
+        util.yield(13)
+    else
+        util.yield(666)
+    end
 end)
 
 menu.slider(Outfit, 'Smart Outfit Lock Helmet', {'SmartLockHelmet'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet.', -1, 201, OutfitLockHelmet, 1, function (new_value)
@@ -2766,10 +2780,6 @@ end)
 
 menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
     notify(startupmsg)
-end)
-
-menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
-    thunderForMin(6)
 end)
 
 util.keep_running()
