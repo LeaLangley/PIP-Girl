@@ -1514,12 +1514,6 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
             end
         else
             if ChangedHelmet then
-                while not ENTITY.GET_ENTITY_SPEED(players.user()) < 1 do
-                    if focused != "Profiles" then
-                        break
-                    end
-                    util.yield(13)
-                end
                 menu.trigger_commands("hat -1")
                 ChangedHelmet = false
             end
