@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.13"
+local SCRIPT_VERSION = "0.1.14"
 
 local startupmsg = "Added; Stand > Lua Scripts > 1 PIP Girl > Outfit > Smart Outfit Lock Helmet."
 
@@ -377,12 +377,21 @@ end
 
 local function thunderForMin(min)
     menu.trigger_commands("thunderon")
+    notify("Thunder starts.")
     local startTimestamp = os.time()
     while os.time() - startTimestamp < min * 60 do
-        util.yield(1337)
+        local remainingTime = min - math.floor((os.time() - startTimestamp) / 60)
+        if remainingTime == 1 then
+            notify("Thunder will stop in 1 minute.")
+        else
+            notify("Thunder will stop in "..remainingTime.." minutes.")
+        end
+        util.yield(60000) -- one minute
     end
+    notify("Thunder stops.")
     menu.trigger_commands("thunderoff")
 end
+
 
 local function Wait_for_IsInSession()
     while not IsInSession() do
