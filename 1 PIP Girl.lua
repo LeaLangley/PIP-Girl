@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.14"
+local SCRIPT_VERSION = "0.1.15"
 
 local startupmsg = "Added; Stand > Lua Scripts > 1 PIP Girl > Outfit > Smart Outfit Lock Helmet."
 
@@ -2665,9 +2665,6 @@ player_menu = function(pid)
                 util.yield(1666)
             end
             util.yield(13)
-        end)
-        menu.action(Bad_Modder, "test", {"hellaa"}, "Auto kick if they atack you.", function()
-            StrategicKick(pid, name, rid)
         end)
     end
 end
