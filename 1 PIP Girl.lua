@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.15"
+local SCRIPT_VERSION = "0.1.16"
 
 local startupmsg = "Added; Stand > Lua Scripts > 1 PIP Girl > Outfit > Smart Outfit Lock Helmet."
 
@@ -2214,7 +2214,7 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for 
     util.yield(666)
 end, function()
     if ENTITY.DOES_ENTITY_EXIST(orbRoomGlass) then
-        requestControl(orbRoomGlass, 13)
+        requestControl(orbRoomGlass, 0)
         entities.delete(orbRoomGlass)
     end
 end)
@@ -2227,12 +2227,29 @@ menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {""}, "Blocks t
     util.yield(666)
 end, function()
     if ENTITY.DOES_ENTITY_EXIST(kosatkaMissile1) then
-        requestControl(kosatkaMissile1, 13)
+        requestControl(kosatkaMissile1, 0)
         entities.delete(kosatkaMissile1)
     end
     if ENTITY.DOES_ENTITY_EXIST(kosatkaMissile2) then
-        requestControl(kosatkaMissile2, 13)
+        requestControl(kosatkaMissile2, 0)
         entities.delete(kosatkaMissile2)
+    end
+end)
+
+local antiTerrorMK2 = nil
+local antiTerrorGlass = nil
+menu.toggle_loop(SessionWorld, "Anti Terrorbyte", {""}, "Blocks the MK2 acces", function()
+    antiTerrorMK2 = SpawnCheck(antiTerrorMK2, 656641197, v3.new(-1421.420, -3016.256, -80.1), -90, 6)
+    antiTerrorGlass = SpawnCheck(antiTerrorGlass, -1829309699, v3.new(-1420.666, -3014.579, -79.0), -20, 6)
+    util.yield(666)
+end, function()
+    if ENTITY.DOES_ENTITY_EXIST(antiTerrorMK2) then
+        requestControl(antiTerrorMK2, 0)
+        entities.delete(antiTerrorMK2)
+    end
+    if ENTITY.DOES_ENTITY_EXIST(antiTerrorGlass) then
+        requestControl(antiTerrorGlass, 0)
+        entities.delete(antiTerrorGlass)
     end
 end)
 
