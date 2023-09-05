@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.16"
+local SCRIPT_VERSION = "0.1.17"
 
 local startupmsg = "Added; Stand > Lua Scripts > 1 PIP Girl > Outfit > Smart Outfit Lock Helmet."
 
@@ -2469,6 +2469,7 @@ local function update_player_name(player, name, rid)
 end
 
 local function add_in_stand(pid, name, rid)
+    players.add_detection(pid, "Blacklist", TOAST_DEFAULT, 100)
     --local commandPaths = {
     --    "[Offline]",
     --    "[Public]",
