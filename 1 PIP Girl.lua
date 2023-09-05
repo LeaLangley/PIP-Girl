@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.18"
+local SCRIPT_VERSION = "0.1.19"
 
 local startupmsg = "Added; Stand > Lua Scripts > 1 PIP Girl > Outfit > Smart Outfit Lock Helmet."
 
@@ -2501,13 +2501,13 @@ local function add_in_stand(pid, name, rid)
     --end
 end
 
-local function is_player_in_blacklist(player, name, rid)
+local function is_player_in_blacklist(pid, name, rid)
     if rid then
         add_in_stand(pid, name, rid)
         local player_data_g = data_g[tostring(rid)]
         if player_data_g then
             if player_data_g.Name ~= name then
-                update_player_name(player, name, rid)
+                update_player_name(pid, name, rid)
             end
             return true
         else
