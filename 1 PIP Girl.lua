@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.17"
+local SCRIPT_VERSION = "0.1.18"
 
 local startupmsg = "Added; Stand > Lua Scripts > 1 PIP Girl > Outfit > Smart Outfit Lock Helmet."
 
@@ -2531,11 +2531,11 @@ local function SessionCheck(pid)
         for id, player in pairs(data_g) do
             if tonumber(id) == tonumber(rid) then
                 update_player_name(pid)
-                warnify("Detected Blacklisted Player:\n" .. name .. " - " .. rid)
+                notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
                 add_in_stand(pid, name, rid)
                 if IsInSession() then
                     if StandUser(pid) then
-                        warnify("This Blacklist is a Stand User , we dont Kick them until they atack:\n" .. name .. " - " .. rid)
+                        warnify("This Blacklist is a Stand User , we dont Kick them until they atack: \n" .. name .. " - " .. rid)
                         menu.trigger_commands("hellaa " .. name .. " on")
                     else
                         --local first = false
@@ -2547,7 +2547,7 @@ local function SessionCheck(pid)
                 else
                     util.yield(666)
                     if StandUser(pid) then
-                        warnify("This Blacklist is a Stand User , we dont Kick them until they atack:\n" .. name .. " - " .. rid)
+                        warnify("This Blacklist is a Stand User , we dont Kick them until they atack: \n" .. name .. " - " .. rid)
                         menu.trigger_commands("hellaa " .. name .. " on")
                     else
                         StrategicKick(pid, name, rid)
@@ -2558,11 +2558,11 @@ local function SessionCheck(pid)
         end
         for id, player in pairs(data_e) do
             if tonumber(id) == tonumber(rid) then
-                warnify("Detected Blacklisted Player:\n" .. name .. " - " .. rid)
+                notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
                 add_in_stand(pid, name, rid)
                 if IsInSession() then
                     if StandUser(pid) then
-                        warnify("This Blacklist is a Stand User , we dont Kick them until they atack:\n" .. name .. " - " .. rid)
+                        warnify("This Blacklist is a Stand User , we dont Kick them until they atack: \n" .. name .. " - " .. rid)
                         menu.trigger_commands("hellaa " .. name .. " on")
                     else
                         --local first = false
@@ -2574,7 +2574,7 @@ local function SessionCheck(pid)
                 else
                     util.yield(666)
                     if StandUser(pid) then
-                        warnify("This Blacklist is a Stand User , we dont Kick them until they atack:\n" .. name .. " - " .. rid)
+                        warnify("This Blacklist is a Stand User , we dont Kick them until they atack: \n" .. name .. " - " .. rid)
                         menu.trigger_commands("hellaa " .. name .. " on")
                     else
                         StrategicKick(pid, name, rid)
