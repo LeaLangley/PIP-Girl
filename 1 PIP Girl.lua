@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.20"
+local SCRIPT_VERSION = "0.1.21"
 
 local startupmsg = "Added; Stand > Lua Scripts > 1 PIP Girl > Outfit > Smart Outfit Lock Helmet."
 
@@ -1580,7 +1580,7 @@ end, function()
     menu.trigger_commands("lockoutfit off")
 end)
 
-local function SuperClean(fix)
+local function SuperClean(fix, ignoreMission)
     local pos = players.get_position(players.user())
     local ct = 0
     local rope_alloc = memory.alloc(4)
@@ -1597,31 +1597,59 @@ local function SuperClean(fix)
     util.yield(13)
     for k,ent in pairs(entities.get_all_peds_as_handles()) do
         if not PED.IS_PED_A_PLAYER(ent) then
+            if not ignoreMission then
+                entities.delete(ent)
+                ct += 1
+            else
+                if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
+                    entities.delete(ent)
+                    ct += 1
+                end
+            end
             util.yield(13)
-            entities.delete(ent)
-            ct += 1
         end
     end
     util.yield(13)
     for k,ent in pairs(entities.get_all_vehicles_as_handles()) do
         local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
         if not PED.IS_PED_A_PLAYER(driver) then
+            if not ignoreMission then
+                entities.delete(ent)
+                ct += 1
+            else
+                if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
+                    entities.delete(ent)
+                    ct += 1
+                end
+            end
             util.yield(13)
-            entities.delete(ent)
-            ct += 1
         end
     end
     util.yield(13)
     for k,ent in pairs(entities.get_all_objects_as_handles()) do
+        if not ignoreMission then
+            entities.delete(ent)
+            ct += 1
+        else
+            if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
+                entities.delete(ent)
+                ct += 1
+            end
+        end
         util.yield(13)
-        entities.delete(ent)
-        ct += 1
     end
     util.yield(13)
     for k,ent in pairs(entities.get_all_pickups_as_handles()) do
+        if not ignoreMission then
+            entities.delete(ent)
+            ct += 1
+        else
+            if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
+                entities.delete(ent)
+                ct += 1
+            end
+        end
         util.yield(13)
-        entities.delete(ent)
-        ct += 1
     end
     util.yield(13)
     GRAPHICS.REMOVE_PARTICLE_FX_IN_RANGE(pos.x, pos.y, pos.z, 13666)
@@ -1635,15 +1663,28 @@ local function SuperClean(fix)
         menu.trigger_commands("lockstreamingfocus off")
     end
 end
+menu.divider(Game, "Exclude Mission.")
+
+menu.action(Game, 'Super Cleanse No yacht fix', {"supercleannysave"}, 'BCS R* is a mess.', function()
+    local fix = false
+    SuperClean(fix, true)
+end)
+
+menu.action(Game, 'Super Cleanse', {"supercleansave"}, 'BCS R* is a mess.', function(click_type)
+    local fix = true
+    SuperClean(fix, true)
+end)
+
+menu.divider(Game, "Regular")
 
 menu.action(Game, 'Super Cleanse No yacht fix', {"supercleanny"}, 'BCS R* is a mess.', function()
     local fix = false
-    SuperClean(fix)
+    SuperClean(fix, false)
 end)
 
 menu.action(Game, 'Super Cleanse', {"superclean"}, 'BCS R* is a mess.', function(click_type)
     local fix = true
-    SuperClean(fix)
+    SuperClean(fix, false)
 end)
 
 menu.divider(Game, "<3")
