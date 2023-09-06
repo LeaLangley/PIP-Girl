@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.19"
+local SCRIPT_VERSION = "0.1.20"
 
 local startupmsg = "Added; Stand > Lua Scripts > 1 PIP Girl > Outfit > Smart Outfit Lock Helmet."
 
@@ -1921,6 +1921,14 @@ local thunderMin = 0
 menu.slider(SessionClaimer, 'Thunder for X min', {''}, 'After u claimed a session show Thunder for X amount of min.', 0, 13, thunderMin, 1, function (new_value)
     thunderMin = new_value
 end)
+local session_claimer_here = false
+menu.toggle(SessionClaimer, "Claim current session, or else", {""}, "instead of seartching for a new session, check first if the current session is any good.", function(on)
+    if on then
+        session_claimer_here = true
+    else
+        session_claimer_here = false
+    end
+end)
 menu.divider(SessionClaimer, "K/D Filter")
 local session_claimer_kd = false
 menu.toggle(SessionClaimer, "Seartch K/D On/Off", {""}, "Toggle the Seartch for K/D.", function(on)
@@ -1986,8 +1994,8 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             menu.trigger_commands("playermagnet " .. random_number)
         elseif session_claimer_players < 30 and menu.get_state(menu.ref_by_path(magnet_path)) ~= session_claimer_players then
             menu.trigger_commands("playermagnet " .. session_claimer_players)
-        end    
-        if util.is_session_started() then
+        end
+        if IsInSession() and not session_claimer_here then
             menu.trigger_commands("go public")
             first_run = false
         end
@@ -2014,14 +2022,9 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         if util.is_session_started() then
             util.yield(3666)
             local isHostFriendly = false
-            for _, pid in players.list(true, true, true) do 
-                if pid == players.get_host() then
-                    local hdl = pid_to_handle(pid)
-                    if NETWORK.NETWORK_IS_FRIEND(hdl) and not players.user() == pid then 
-                        isHostFriendly = true
-                        break
-                    end
-                end
+            local hdl = pid_to_handle(players.get_host())
+            if NETWORK.NETWORK_IS_FRIEND(hdl) or players.get_host() == players.user() then 
+                isHostFriendly = true
             end
             util.yield(3666)
             --  <3
