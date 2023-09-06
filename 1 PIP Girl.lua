@@ -2036,7 +2036,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         elseif session_claimer_players < 30 and menu.get_state(menu.ref_by_path(magnet_path)) ~= session_claimer_players then
             menu.trigger_commands("playermagnet " .. session_claimer_players)
         end
-        if IsInSession() and not session_claimer_here then
+        if util.is_session_started() then
             menu.trigger_commands("go public")
             first_run = false
         end
@@ -2067,11 +2067,10 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             if NETWORK.NETWORK_IS_FRIEND(hdl) or players.get_host() == players.user() then 
                 isHostFriendly = true
             end
-            util.yield(3666)
             --  <3
             --  Check the Basics.
             --  <3
-            if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players and (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
+            if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players and (isHostFriendly or (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1)) then
                 warnify("Possibly found something.")
                 --  <3
                 --  Additional Filter.
@@ -2220,17 +2219,18 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     end
                 end
             else
-                if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
+                if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 or first_run then
                     if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players then
                         notify("Not Enoght Player")
                     end
-                    if isModder(players.get_host()) then
+                    if isModder(players.get_host()) and not isHostFriendly then
                         notify("Host is a Modder")
                     end
                     menu.trigger_commands("unstuck")
                 end
             end
         end
+        first_run = false
         fucking_failure = false
         util.yield(666)
     else
