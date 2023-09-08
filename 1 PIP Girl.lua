@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.22"
+local SCRIPT_VERSION = "0.1.23"
 
 local startupmsg = "Added; Stand > Lua Scripts > 1 PIP Girl > Outfit > Smart Outfit Lock Helmet."
 
@@ -1963,7 +1963,7 @@ menu.slider(SessionClaimer, 'Thunder for X min', {''}, 'After u claimed a sessio
     thunderMin = new_value
 end)
 local session_claimer_here = false
-menu.toggle(SessionClaimer, "Claim current session, or else", {""}, "instead of seartching for a new session, check first if the current session is any good.", function(on)
+menu.toggle(SessionClaimer, "Claim current session, or else", {""}, "Not Working! Has been temporally disabled , have to recode it.\ninstead of seartching for a new session, check first if the current session is any good.", function(on)
     if on then
         session_claimer_here = true
     else
