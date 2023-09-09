@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.23"
+local SCRIPT_VERSION = "0.1.24"
 
 local startupmsg = "Added; Stand > Lua Scripts > 1 PIP Girl > Outfit > Smart Outfit Lock Helmet."
 
@@ -2072,7 +2072,6 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             --  Check the Basics.
             --  <3
             if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players and (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
-                warnify("Possibly found something.")
                 --  <3
                 --  Additional Filter.
                 --  <3
@@ -2138,7 +2137,6 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     --  If Session remains in a Claim-able state.
                     --  <3
                     if (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
-                        warnify("Likely found something.")
                         while not IsInSession() do
                             if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
                                 util.yield(19666)
