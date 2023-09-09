@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.24"
+local SCRIPT_VERSION = "0.1.25"
 
 local startupmsg = "Added; Stand > Lua Scripts > 1 PIP Girl > Outfit > Smart Outfit Lock Helmet."
 
@@ -1877,7 +1877,7 @@ local function espOnPlayer(pid, namesync)
         end
         --head offset for all texts
         local screenName = worldToScreen(playerHeadOffset)
-        local txtscale = 0.5
+        local txtscale = 0.42
 
         -- Maximum distance at which to draw the ESP (adjust this value as needed)
         local maxDrawDistance = 313666 -- Change this value to your desired maximum distance.
@@ -2295,7 +2295,46 @@ end, function()
     end
 end)
 
-menu.divider(Session, "<3")
+menu.divider(Session, "<3 Admin Stuff <3")
+
+local group_name = "Admin"
+local copy_from = nil
+local function clearCopy()
+    copy_from:refByRelPath("Copy Session Info").value = false
+    copy_from = nil
+end
+menu.toggle_loop(Session, "Group-Based Copy Session Info", {"groupcopy"}, "", function()
+    util.yield(666)
+    if copy_from ~= nil then
+        if copy_from:getState() ~= "Public" then
+            notify($"{copy_from.name_for_config} is no longer in a public session, disabling copy session info.")
+            clearCopy()
+        end
+    else
+        for menu.ref_by_path("Online>Player History>Noted Players>"..group_name):getChildren() as link do
+            util.yield(13)
+            local hp = link.target
+            if hp:getState() == "Public" then
+                notify($"{hp.name_for_config} is in a public session, copying their session info.")
+                hp:refByRelPath("Copy Session Info").value = true
+                copy_from = hp
+                return
+            end
+        end
+    end
+end)
+menu.text_input(Session, "Group Name", {"groupname"}, "", function(value)
+    group_name = value
+    if copy_from ~= nil then
+        clearCopy()
+    end
+end, group_name)
+
+menu.action(Session, "Create \"Admin\" Group", {""}, "Create a group called \"Admin\"", function()
+    menu.trigger_commands("adminsupdate")
+    util.yield(666)
+    menu.trigger_commands("adminsnote Admin")
+end)
 
 menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join Invite only\nIf R* Admin Detected", function()
     if util.is_session_started() then
@@ -2304,13 +2343,17 @@ menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join 
             if players.is_marked_as_admin(pid) or players.is_marked_as_modder_or_admin(pid) then 
                 menu.trigger_commands("quickbail")
                 warnify("Admin Detected, We get you out of Here!")
-                util.yield(13)
+                util.yield(666)
+                menu.trigger_commands("unstuck")
+                util.yield(666)
                 menu.trigger_commands("go inviteonly")
             end    
         end
     end
     util.yield()
 end)
+
+menu.divider(Session, "<3")
 
 local ClearTraficSphere
 menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic around you.", function()
