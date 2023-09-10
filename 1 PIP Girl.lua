@@ -2055,6 +2055,12 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 notify("U r in Story Mode, Getting u online.")
                 menu.trigger_commands("go public")
             end
+            if util.is_session_transition_active() then
+                util.yield(3666)
+                if PLAYER.GET_NUMBER_OF_PLAYERS() >= 1 then
+                    break
+                end
+            end
             util.yield(666)
         end
         --  <3
