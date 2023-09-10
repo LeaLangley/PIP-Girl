@@ -2066,7 +2066,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         --  <3
         --  When Starting to Join a Session, Check if host is a Friend.
         --  <3
-        if util.is_session_started() then
+        if util.is_session_transition_active() then
             util.yield(3666)
             local isHostFriendly = false
             local hdl = pid_to_handle(players.get_host())
