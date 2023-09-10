@@ -2313,7 +2313,7 @@ menu.toggle_loop(Session, "Group-Based Copy Session Info", {"groupcopy"}, "", fu
     util.yield(666)
     if copy_from ~= nil then
         if copy_from:getState() ~= "Public" then
-            notify($"{copy_from.name_for_config} is no longer in a public session, disabling copy session info.")
+            warnify($"{copy_from.name_for_config} is no longer in a public session, disabling copy session info.")
             clearCopy()
         end
     else
@@ -2321,7 +2321,7 @@ menu.toggle_loop(Session, "Group-Based Copy Session Info", {"groupcopy"}, "", fu
             util.yield(13)
             local hp = link.target
             if hp:getState() == "Public" then
-                notify($"{hp.name_for_config} is in a public session, copying their session info.")
+                warnify($"{hp.name_for_config} is in a public session, copying their session info.")
                 hp:refByRelPath("Copy Session Info").value = true
                 copy_from = hp
                 return
