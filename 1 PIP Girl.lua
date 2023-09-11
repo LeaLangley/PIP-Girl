@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.25"
+local SCRIPT_VERSION = "0.1.26"
 
 local startupmsg = "Added; Stand > Lua Scripts > 1 PIP Girl > Outfit > Smart Outfit Lock Helmet."
 
@@ -2073,11 +2073,11 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             if NETWORK.NETWORK_IS_FRIEND(hdl) or players.get_host() == players.user() then 
                 isHostFriendly = true
             end
-            util.yield(3666)
+            util.yield(666)
             --  <3
             --  Check the Basics.
             --  <3
-            if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players and (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
+            if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players and (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players and isHostFriendly then
                 --  <3
                 --  Additional Filter.
                 --  <3
@@ -2318,7 +2318,7 @@ menu.toggle_loop(Session, "Group-Based Copy Session Info", {"groupcopy"}, "", fu
         end
     else
         for menu.ref_by_path("Online>Player History>Noted Players>"..group_name):getChildren() as link do
-            util.yield(13)
+            util.yield(6)
             local hp = link.target
             if hp:getState() == "Public" then
                 warnify($"{hp.name_for_config} is in a public session, copying their session info.")
