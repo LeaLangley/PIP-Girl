@@ -376,20 +376,26 @@ local function SpawnCheck(entity, hash, locationV3, heading, timeout)
 end
 
 local function thunderForMin(min)
-    menu.trigger_commands("thunderon")
-    notify("Thunder starts.")
-    local startTimestamp = os.time()
-    while os.time() - startTimestamp < min * 60 do
-        local remainingTime = min - math.floor((os.time() - startTimestamp) / 60)
-        if remainingTime == 1 then
-            notify("Thunder will stop in 1 minute.")
-        else
-            notify("Thunder will stop in "..remainingTime.." minutes.")
+    if IsInSession() then
+        menu.trigger_commands("scripthost")
+        menu.trigger_commands("thunderon")
+        notify("Thunder starts.")
+        local startTimestamp = os.time()
+        while os.time() - startTimestamp < min * 60 do
+            local remainingTime = min - math.floor((os.time() - startTimestamp) / 60)
+            if remainingTime == 1 then
+                notify("Thunder will stop in 1 minute.")
+            else
+                notify("Thunder will stop in "..remainingTime.." minutes.")
+            end
+            util.yield(60000) -- one minute
         end
-        util.yield(60000) -- one minute
+        notify("Thunder stops.")
+        if IsInSession() then
+            menu.trigger_commands("scripthost")
+        end
+        menu.trigger_commands("thunderoff")
     end
-    notify("Thunder stops.")
-    menu.trigger_commands("thunderoff")
 end
 
 
