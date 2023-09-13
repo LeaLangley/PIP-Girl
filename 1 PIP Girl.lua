@@ -1240,23 +1240,23 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
 
                 -- Perform repairs
                 if engineHealth < 1000 then
-                    local randomValue = math.random(1, 3)
+                    local randomValue = math.random(1, 2)
                     VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + randomValue)
                 end
                 if petrolTankHealth < 1000 then
-                    local randomValue = math.random(1, 3)
+                    local randomValue = math.random(1, 2)
                     VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + randomValue)
                 end
                 if bodyHealth < 1000 then
-                    local randomValue = math.random(1, 3)
+                    local randomValue = math.random(1, 2)
                     VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + randomValue)
                 end
                 if heliTailHealth < 1000 then
-                    local randomValue = math.random(1, 3)
+                    local randomValue = math.random(1, 2)
                     VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + randomValue)
                 end
                 if heliRotorHealth < 1000 then
-                    local randomValue = math.random(1, 3)
+                    local randomValue = math.random(1, 2)
                     VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + randomValue)
                 end
 
