@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.27"
+local SCRIPT_VERSION = "0.1.28"
 
 local startupmsg = "Added; Stand > Lua Scripts > 1 PIP Girl > Outfit > Smart Outfit Lock Helmet."
 
@@ -276,6 +276,29 @@ handle_ptr = memory.alloc(13*8)
 local function pid_to_handle(pid)
     NETWORK.NETWORK_HANDLE_FROM_PLAYER(pid, handle_ptr, 13)
     return handle_ptr
+end
+
+local function isStuck(pid)
+    if not IsInSession() then
+        return false
+    end
+    if pid == players.user() then
+        if ENTITY.GET_ENTITY_SPEED(pid) < 1 and HUD.BUSYSPINNER_IS_DISPLAYING() then
+            return true
+        end
+    end
+    if NETWORK.IS_PLAYER_IN_CUTSCENE(pid) then
+        return true
+    end
+    if not players.is_visible(pid) then
+        if players.get_money(pid) ~= 0 and players.get_rank(pid) ~= 0 then
+            return true
+        end
+        if players.get_money(pid) ~= 0 and players.get_kd(pid) ~= 0 and players.get_rank(pid) ~= 0 then
+            return true
+        end
+    end
+    return false
 end
 
 local function isLoading(pid)
@@ -1936,14 +1959,15 @@ local function ReportSessionKD(numPlayers)
     for _, pid in pairs(players.list(false, false, true)) do
         if not isModder(pid) then
             local kd = players.get_kd(pid)
+            local playerRank = players.get_rank(pid)
             
             if #topPlayers < numPlayers then
-                table.insert(topPlayers, {pid = pid, kd = kd})
+                table.insert(topPlayers, {pid = pid, kd = kd, rank = playerRank})
             else
                 table.sort(topPlayers, function(a, b) return a.kd > b.kd end)
                 
                 if kd > topPlayers[#topPlayers].kd then
-                    topPlayers[#topPlayers] = {pid = pid, kd = kd}
+                    topPlayers[#topPlayers] = {pid = pid, kd = kd, rank = playerRank}
                     table.sort(topPlayers, function(a, b) return a.kd > b.kd end) -- Sort the table after updating
                 end
             end
@@ -1954,7 +1978,7 @@ local function ReportSessionKD(numPlayers)
     for i, player in ipairs(topPlayers) do
         local playerName = PLAYER.GET_PLAYER_NAME(player.pid)
         local formattedKD = string.format("%.2f", player.kd) -- Format K/D to two decimal places
-        report = report .. i .. ". " .. playerName .. " - K/D: " .. formattedKD .. "\n"
+        report = report .. i .. ". (" .. player.rank .. ") " .. playerName .. " - K/D: " .. formattedKD .. "\n"
     end
     warnify(report)
 end
@@ -2404,33 +2428,33 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                 util.yield(13666)
             end
             local script_host_id = players.get_script_host()
-            if not isLoading(script_host_id) then
-                --local Player_List = players.list()
-                --for _, pid in pairs(Player_List) do
-                local pid = players.user()
-                local name = players.get_name(pid)
-                if IsInSession() and isLoading(pid) and players.exists(pid) and players.get_script_host() != pid and players.get_name(pid) != "undiscoveredplayer" then
-                    util.yield(9666)
-                    if IsInSession() and isLoading(pid) and players.exists(pid) and players.get_script_host() != pid and players.get_name(pid) != "undiscoveredplayer" then
-                        menu.trigger_commands("givesh " .. name)
-                        notify(name .. " is Loading too Long.")
+            if not isStuck(script_host_id) then
+                local Player_List = players.list()
+                for _, pid in pairs(Player_List) do
+                    local name = players.get_name(pid)
+                    if IsInSession() and isStuck(pid) and players.exists(pid) and players.get_script_host() != pid and players.get_name(pid) != "undiscoveredplayer" then
                         util.yield(9666)
-                        while IsInSession() and isLoading(pid) and players.exists(pid) and name != "undiscoveredplayer" do
+                        if IsInSession() and isStuck(pid) and players.exists(pid) and players.get_script_host() != pid and players.get_name(pid) != "undiscoveredplayer" then
+                            menu.trigger_commands("givesh " .. name)
+                            notify(name .. " is Loading too Long.")
                             util.yield(9666)
-                            if players.get_script_host() != pid and isLoading(pid) and players.exists(pid) and players.get_name(pid) != "undiscoveredplayer" then
-                                menu.trigger_commands("givesh " .. name)
-                                notify(name .. " is Still Loading too Long.")
+                            while IsInSession() and isStuck(pid) and players.exists(pid) and name != "undiscoveredplayer" do
                                 util.yield(9666)
+                                if players.get_script_host() != pid and isStuck(pid) and players.exists(pid) and players.get_name(pid) != "undiscoveredplayer" then
+                                    menu.trigger_commands("givesh " .. name)
+                                    notify(name .. " is Still Loading too Long.")
+                                    util.yield(13666)
+                                end
                             end
+                            if players.get_name(pid) != "undiscoveredplayer" then
+                                notify(name .. " Finished Loading.")
+                            else
+                                notify(name .. " got Lost in the Void.")
+                            end
+                            util.yield(6666)
                         end
-                        if players.get_name(pid) != "undiscoveredplayer" then
-                            notify(name .. " Finished Loading.")
-                        else
-                            notify(name .. " got Lost in the Void.")
-                        end
-                        util.yield(6666)
-                    --else
-                    --    break
+                    else
+                        break
                     end
                 end
             end
