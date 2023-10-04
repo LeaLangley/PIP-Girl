@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.29"
+local SCRIPT_VERSION = "0.1.30"
 
 local startupmsg = "Added; Stand > Lua Scripts > 1 PIP Girl > Outfit > Smart Outfit Lock Helmet."
 
@@ -286,9 +286,6 @@ local function isStuck(pid)
         if ENTITY.GET_ENTITY_SPEED(pid) < 1 and HUD.BUSYSPINNER_IS_DISPLAYING() then
             return true
         end
-    end
-    if NETWORK.IS_PLAYER_IN_CUTSCENE(pid) then
-        return true
     end
     if not players.is_visible(pid) then
         if players.get_money(pid) ~= 0 and players.get_rank(pid) ~= 0 then
@@ -2434,13 +2431,13 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                     for _, pid in pairs(Player_List) do
                         local name = players.get_name(pid)
                         if IsInSession() and isStuck(pid) and players.exists(pid) and players.get_script_host() != pid and players.get_name(pid) != "undiscoveredplayer" then
-                            util.yield(9666)
+                            util.yield(13666)
                             if IsInSession() and isStuck(pid) and players.exists(pid) and players.get_script_host() != pid and players.get_name(pid) != "undiscoveredplayer" then
                                 menu.trigger_commands("givesh " .. name)
                                 notify(name .. " is Loading too Long.")
-                                util.yield(9666)
+                                util.yield(13666)
                                 while IsInSession() and isStuck(pid) and players.exists(pid) and name != "undiscoveredplayer" do
-                                    util.yield(9666)
+                                    util.yield(13666)
                                     if players.get_script_host() != pid and isStuck(pid) and players.exists(pid) and players.get_name(pid) != "undiscoveredplayer" then
                                         menu.trigger_commands("givesh " .. name)
                                         notify(name .. " is Still Loading too Long.")
@@ -2452,6 +2449,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                 else
                                     notify(name .. " got Lost in the Void.")
                                 end
+                                notify("scripthost")
                                 util.yield(6666)
                             end
                         end
