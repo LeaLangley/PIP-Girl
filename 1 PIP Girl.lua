@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.28"
+local SCRIPT_VERSION = "0.1.29"
 
 local startupmsg = "Added; Stand > Lua Scripts > 1 PIP Girl > Outfit > Smart Outfit Lock Helmet."
 
@@ -2428,33 +2428,33 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                 util.yield(13666)
             end
             local script_host_id = players.get_script_host()
-            if not isStuck(script_host_id) then
-                local Player_List = players.list()
-                for _, pid in pairs(Player_List) do
-                    local name = players.get_name(pid)
-                    if IsInSession() and isStuck(pid) and players.exists(pid) and players.get_script_host() != pid and players.get_name(pid) != "undiscoveredplayer" then
-                        util.yield(9666)
+            if players.user() == players.get_host() or players.user() == script_host_id then
+                if not isStuck(script_host_id) and players.get_name(script_host_id) != "InvalidPlayer" then
+                    local Player_List = players.list()
+                    for _, pid in pairs(Player_List) do
+                        local name = players.get_name(pid)
                         if IsInSession() and isStuck(pid) and players.exists(pid) and players.get_script_host() != pid and players.get_name(pid) != "undiscoveredplayer" then
-                            menu.trigger_commands("givesh " .. name)
-                            notify(name .. " is Loading too Long.")
                             util.yield(9666)
-                            while IsInSession() and isStuck(pid) and players.exists(pid) and name != "undiscoveredplayer" do
+                            if IsInSession() and isStuck(pid) and players.exists(pid) and players.get_script_host() != pid and players.get_name(pid) != "undiscoveredplayer" then
+                                menu.trigger_commands("givesh " .. name)
+                                notify(name .. " is Loading too Long.")
                                 util.yield(9666)
-                                if players.get_script_host() != pid and isStuck(pid) and players.exists(pid) and players.get_name(pid) != "undiscoveredplayer" then
-                                    menu.trigger_commands("givesh " .. name)
-                                    notify(name .. " is Still Loading too Long.")
-                                    util.yield(13666)
+                                while IsInSession() and isStuck(pid) and players.exists(pid) and name != "undiscoveredplayer" do
+                                    util.yield(9666)
+                                    if players.get_script_host() != pid and isStuck(pid) and players.exists(pid) and players.get_name(pid) != "undiscoveredplayer" then
+                                        menu.trigger_commands("givesh " .. name)
+                                        notify(name .. " is Still Loading too Long.")
+                                        util.yield(13666)
+                                    end
                                 end
+                                if players.get_name(pid) != "undiscoveredplayer" then
+                                    notify(name .. " Finished Loading.")
+                                else
+                                    notify(name .. " got Lost in the Void.")
+                                end
+                                util.yield(6666)
                             end
-                            if players.get_name(pid) != "undiscoveredplayer" then
-                                notify(name .. " Finished Loading.")
-                            else
-                                notify(name .. " got Lost in the Void.")
-                            end
-                            util.yield(6666)
                         end
-                    else
-                        break
                     end
                 end
             end
@@ -2917,6 +2917,7 @@ menu.action(Settings, "Activate Everyday Goodies", {"pggoodies"}, "Activates all
     menu.trigger_commands("pgssh on")
     menu.trigger_commands("pgbll on")    
 end)
+
 
 menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
     notify(startupmsg)
