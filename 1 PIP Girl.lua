@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.26"
+local SCRIPT_VERSION = "0.1.27"
 
 local startupmsg = "Added; Stand > Lua Scripts > 1 PIP Girl > Outfit > Smart Outfit Lock Helmet."
 
@@ -1762,6 +1762,7 @@ local warningMessages = {
     [2113044399] = "Connection to the active GTA Online session lost due to an unknown network error. Please return to Grand Theft Auto V and try again later.",
     [496145784] = "There has been an error with this session. Please return to Grand Theft Auto V and try again.",
     [705668975] = "You have already been voted out of this game session. Joining a new GTA Online session.",
+    [2052473979] = "Failed to find a compatible GTA Online session containing friends. Joining a new GTA Online session.",
     [2055607490] = "XD\nUsing more then your allotted graphics card memory can result in serious performance drops and stability issues. Proceed with caution. :clown:"
 }
 local avoidWarningSkipHere = {
