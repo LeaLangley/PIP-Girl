@@ -6,9 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.30"
+local SCRIPT_VERSION = "0.1.31"
 
-local startupmsg = "Added; Stand > Lua Scripts > 1 PIP Girl > Outfit > Smart Outfit Lock Helmet."
+local startupmsg = "I love u."
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -68,7 +68,7 @@ auto_updater.run_auto_update(auto_update_config)
 for _, dependency in pairs(auto_update_config.dependencies) do
     if dependency.is_required then
         if dependency.loaded_lib == nil then
-            util.toast("<[Pip Girl]>: Error loading lib "..dependency.name, TOAST_ALL)
+            util.toast("Error loading lib "..dependency.name, TOAST_ALL)
         else
             local var_name = dependency.name
             _G[var_name] = dependency.loaded_lib
@@ -2418,30 +2418,71 @@ end, function()
     ClearTraficSphere = 0
 end)
 
+local function SH_Exist(pid)
+    if IsInSession() then
+        if players.exists(pid) and players.get_script_host() ~= pid and players.get_name(pid) ~= "undiscoveredplayer" and players.get_name(pid) ~= "InvalidPlayer" then
+            local Player_List = players.list()
+            for _, plid in pairs(Player_List) do
+                if plid == pid then
+                    return true
+                end
+            end
+        end
+    end
+    return false
+end
+
+local function SH_Unstuck(pid)
+    local name = players.get_name(pid)
+    if SH_Exist(pid) and isStuck(pid) then
+        util.yield(13666)
+        if SH_Exist(pid) and isStuck(pid) then
+            menu.trigger_commands("givesh " .. name)
+            notify(name .. " is Loading too Long.")
+            util.yield(13666)
+            while SH_Exist(pid) and isStuck(pid) do
+                util.yield(6666)
+                if SH_Exist(pid) and isStuck(pid) then
+                    menu.trigger_commands("givesh " .. name)
+                    notify(name .. " is Still Loading too Long.")
+                    util.yield(13666)
+                end
+            end
+            if SH_Exist(pid) then
+                notify(name .. " Finished Loading.")
+            else
+                notify(name .. " got Lost in the Void.")
+            end
+            menu.trigger_commands("scripthost")
+            util.yield(6666)
+        end
+    end
+end
+
 menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
     if IsInSession() then
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
             local script_host_id = players.get_script_host()
             if players.user() == players.get_host() or players.user() == script_host_id then
-                if not isStuck(script_host_id) and players.get_name(script_host_id) != "InvalidPlayer" then
+                if not isStuck(script_host_id) and SH_Exist(script_host_id) then
                     local Player_List = players.list()
                     for _, pid in pairs(Player_List) do
                         local name = players.get_name(pid)
-                        if IsInSession() and isStuck(pid) and players.exists(pid) and players.get_script_host() != pid and  players.get_name(pid) != "undiscoveredplayer" or players.get_name(pid) != "InvalidPlayer"  then
+                        if SH_Exist(pid) and isStuck(pid) and players.get_script_host() != pid then
                             util.yield(13666)
-                            if IsInSession() and isStuck(pid) and players.exists(pid) and players.get_script_host() != pid and  players.get_name(pid) != "undiscoveredplayer" or players.get_name(pid) != "InvalidPlayer"  then
+                            if SH_Exist(pid) and isStuck(pid) and players.get_script_host() != pid then
                                 menu.trigger_commands("givesh " .. name)
                                 notify(name .. " is Loading too Long.")
                                 util.yield(13666)
-                                while IsInSession() and isStuck(pid) and players.exists(pid) and name != "undiscoveredplayer" do
+                                while SH_Exist(pid) and isStuck(pid) do
                                     util.yield(6666)
-                                    if players.get_script_host() != pid and isStuck(pid) and players.exists(pid) and  players.get_name(pid) != "undiscoveredplayer" or players.get_name(pid) != "InvalidPlayer"  then
+                                    if SH_Exist(pid) and isStuck(pid) and players.get_script_host() != pid then
                                         menu.trigger_commands("givesh " .. name)
                                         notify(name .. " is Still Loading too Long.")
                                         util.yield(13666)
                                     end
                                 end
-                                if players.get_name(pid) != "undiscoveredplayer" or players.get_name(pid) != "InvalidPlayer" then
+                                if SH_Exist(pid) then
                                     notify(name .. " Finished Loading.")
                                 else
                                     notify(name .. " got Lost in the Void.")
@@ -2450,6 +2491,13 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                 util.yield(6666)
                             end
                         end
+                    end
+                end
+            else
+                if isStuck(players.user()) then
+                    util.yield(13666)
+                    if isStuck(players.user()) then
+                        menu.trigger_commands("scripthost")
                     end
                 end
             end
@@ -2850,7 +2898,11 @@ menu.action(Credits, "Kev <3", {""}, "For activly using/testing my lua and gifti
 end)
 
 menu.action(Credits, "Kris <3", {""}, "For activly using/testing my lua.", function()
-    notify("Kris is sexy.")
+    notify("Kris is very sexy.")
+end)
+
+menu.action(Credits, "Marcel <3", {""}, "For activly using/testing my lua.", function()
+    notify("Marcel is sexy.")
 end)
 
 menu.action(Credits, "Brian <3", {""}, "For activly using/testing my lua.", function()
