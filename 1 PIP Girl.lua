@@ -2437,7 +2437,6 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
             local script_host_id = players.get_script_host()
             if players.user() == players.get_host() or players.user() == script_host_id then
-                notify("test")
                 if not isStuck(script_host_id) and SH_Exist(script_host_id) then
                     local Player_List = players.list()
                     for _, pid in pairs(Player_List) do
