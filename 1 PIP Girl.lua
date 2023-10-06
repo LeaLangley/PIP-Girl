@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.32"
+local SCRIPT_VERSION = "0.1.33"
 
 local startupmsg = "I love u."
 
@@ -77,9 +77,6 @@ for _, dependency in pairs(auto_update_config.dependencies) do
 end
 
 util.require_natives(1663599433)
-local LOADING_START = util.current_time_millis()
-LOADING_SCRIPT = true
-Script = {}
 
 resources_dir = filesystem.resources_dir() .. '/1 PIP Girl/'
 logo = directx.create_texture(resources_dir .. 'logo.png')
@@ -118,8 +115,6 @@ end
 
 local max_int = 2147483647
 local min_int = -2147483647
-local lua_path = "Stand>Lua Scripts>"..string.gsub(string.gsub(SCRIPT_RELPATH,".lua",""),"\\",">")
-local my = menu.my_root() 
 local Int_PTR = memory.alloc_int()
 
 local function getMPX()
@@ -129,10 +124,6 @@ end
 local function STAT_GET_INT(Stat)
     STATS.STAT_GET_INT(util.joaat(getMPX() .. Stat), Int_PTR, -1)
     return memory.read_int(Int_PTR)
-end
-
-local function IsInSession()
-    return util.is_session_started() and not util.is_session_transition_active()
 end
 
 function ADD_MP_INDEX(stat)
@@ -160,7 +151,11 @@ function STAT_SET_INT(stat, value)
     STATS.STAT_SET_INT(util.joaat(ADD_MP_INDEX(stat)), value, true)
 end
 
-function is_user_driving_vehicle()
+local function IsInSession()
+    return util.is_session_started() and not util.is_session_transition_active()
+end
+
+local function is_user_driving_vehicle()
     return (PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true))
 end
 
@@ -409,7 +404,6 @@ local function thunderForMin(min)
     end
 end
 
-
 local function Wait_for_IsInSession()
     while not IsInSession() do
         util.yield(666)
@@ -418,7 +412,7 @@ local function Wait_for_IsInSession()
 end
 
 local function StrategicKick(pid, name, rid) --TODO , make it actually smart , not bare bones.
-    if name != "UndiscoveredPlayer" then
+    if name ~= "UndiscoveredPlayer" and name ~= "InvalidPlayer" then
         if not IsInSession() then
             Wait_for_IsInSession()
         end
@@ -2781,20 +2775,6 @@ player_menu = function(pid)
     end
 end
 
---stop_loop = function(pid)
---    local cmd_box = "Stand>Settings>Notifications>Suppress Generic Responses>Command Box"
---    if players.get_name(pid) == "UndiscoveredPlayer" then
---        if menu.get_state(menu.ref_by_path(cmd_box)) == "Off" then
---            menu.trigger_commands("suppressgenericresponses on")
---        end
---        menu.trigger_commands("hellrp"..players.get_name(pid).." off")
---        menu.trigger_commands("hellabl"..players.get_name(pid).." off")
---        menu.trigger_commands("hellaab"..players.get_name(pid).." off")
---        menu.trigger_commands("hellaa"..players.get_name(pid).." off")
---    end
---end
---
---players.on_leave(stop_loop)
 players.on_join(player_menu)
 players.dispatch_on_join()
 
@@ -2885,7 +2865,6 @@ menu.action(Settings, "Activate Everyday Goodies", {"pggoodies"}, "Activates all
     menu.trigger_commands("pgssh on")
     menu.trigger_commands("pgbll on")    
 end)
-
 
 menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
     notify(startupmsg)
