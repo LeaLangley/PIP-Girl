@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.31"
+local SCRIPT_VERSION = "0.1.32"
 
 local startupmsg = "I love u."
 
@@ -2420,7 +2420,7 @@ end)
 
 local function SH_Exist(pid)
     if IsInSession() then
-        if players.exists(pid) and players.get_script_host() ~= pid and players.get_name(pid) ~= "undiscoveredplayer" and players.get_name(pid) ~= "InvalidPlayer" then
+        if players.exists(pid) and players.get_name(pid) ~= "undiscoveredplayer" and players.get_name(pid) ~= "InvalidPlayer" then
             local Player_List = players.list()
             for _, plid in pairs(Player_List) do
                 if plid == pid then
@@ -2432,51 +2432,25 @@ local function SH_Exist(pid)
     return false
 end
 
-local function SH_Unstuck(pid)
-    local name = players.get_name(pid)
-    if SH_Exist(pid) and isStuck(pid) then
-        util.yield(13666)
-        if SH_Exist(pid) and isStuck(pid) then
-            menu.trigger_commands("givesh " .. name)
-            notify(name .. " is Loading too Long.")
-            util.yield(13666)
-            while SH_Exist(pid) and isStuck(pid) do
-                util.yield(6666)
-                if SH_Exist(pid) and isStuck(pid) then
-                    menu.trigger_commands("givesh " .. name)
-                    notify(name .. " is Still Loading too Long.")
-                    util.yield(13666)
-                end
-            end
-            if SH_Exist(pid) then
-                notify(name .. " Finished Loading.")
-            else
-                notify(name .. " got Lost in the Void.")
-            end
-            menu.trigger_commands("scripthost")
-            util.yield(6666)
-        end
-    end
-end
-
 menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
     if IsInSession() then
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
             local script_host_id = players.get_script_host()
             if players.user() == players.get_host() or players.user() == script_host_id then
+                notify("test")
                 if not isStuck(script_host_id) and SH_Exist(script_host_id) then
                     local Player_List = players.list()
                     for _, pid in pairs(Player_List) do
                         local name = players.get_name(pid)
-                        if SH_Exist(pid) and isStuck(pid) and players.get_script_host() != pid then
+                        if SH_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid then
                             util.yield(13666)
-                            if SH_Exist(pid) and isStuck(pid) and players.get_script_host() != pid then
+                            if SH_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid then
                                 menu.trigger_commands("givesh " .. name)
                                 notify(name .. " is Loading too Long.")
                                 util.yield(13666)
                                 while SH_Exist(pid) and isStuck(pid) do
                                     util.yield(6666)
-                                    if SH_Exist(pid) and isStuck(pid) and players.get_script_host() != pid then
+                                    if SH_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid then
                                         menu.trigger_commands("givesh " .. name)
                                         notify(name .. " is Still Loading too Long.")
                                         util.yield(13666)
