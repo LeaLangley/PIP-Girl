@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.33"
+local SCRIPT_VERSION = "0.1.34"
 
 local startupmsg = "I love u."
 
@@ -2024,10 +2024,10 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
     --  Setting up the Filter
     --  <3
     local magnet_path = "Online>Transitions>Matchmaking>Player Magnet"
-    local admin_path = "Stand>Lua Scripts>1 PIP Girl>Session>Admin Bail"
+    local admin_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Session>Admin Bail"
     local spoof_path = "Online>Spoofing>Host Token Spoofing>Host Token Spoofing"
     local temp_admin = false
-    local auto_warning_path = "Stand>Lua Scripts>1 PIP Girl>Game>Auto Accept Warning"
+    local auto_warning_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Game>Auto Accept Warning"
     local temp_auto_warning = false
     local first_run = true
     local fucking_failure = false
