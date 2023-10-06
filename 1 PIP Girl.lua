@@ -170,6 +170,10 @@ local function notify(msg)
     util.toast("<[Pip Girl]>\n" .. msg)
 end
 
+local function notify_cmd(msg)
+    util.toast("<[Pip Girl]>: " .. msg, TOAST_CONSOLE)
+end
+
 local function warnify(msg)
     chat.send_message("<[Pip Girl]>:\n " .. msg, true, true, false)
     util.toast("<[Pip Girl]>: " .. msg, TOAST_CONSOLE)
@@ -2445,18 +2449,18 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                             util.yield(13666)
                             if SH_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid then
                                 menu.trigger_commands("givesh " .. name)
-                                notify(name .. " is Loading too Long.")
+                                notify_cmd(name .. " is Loading too Long.")
                                 util.yield(13666)
                                 while SH_Exist(pid) and isStuck(pid) do
                                     util.yield(6666)
                                     if SH_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid then
                                         menu.trigger_commands("givesh " .. name)
-                                        notify(name .. " is Still Loading too Long.")
+                                        notify_cmd(name .. " is Still Loading too Long.")
                                         util.yield(13666)
                                     end
                                 end
                                 if SH_Exist(pid) then
-                                    notify(name .. " Finished Loading.")
+                                    notify_cmd(name .. " Finished Loading.")
                                 else
                                     notify(name .. " got Lost in the Void.")
                                 end
