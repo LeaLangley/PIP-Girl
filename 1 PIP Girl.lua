@@ -121,7 +121,6 @@ local min_int = -2147483647
 local lua_path = "Stand>Lua Scripts>"..string.gsub(string.gsub(SCRIPT_RELPATH,".lua",""),"\\",">")
 local my = menu.my_root() 
 local Int_PTR = memory.alloc_int()
-local NetWatchAdmin = false
 
 local function getMPX()
     return 'MP'.. util.get_char_slot() ..'_'
@@ -221,18 +220,6 @@ local function isModder(pid)
         return true
     else
         return false
-    end
-end
-
-local function NetWatch_msg(pid, first)
-    if not StandUser(pid) then
-        if first then
-            chat.send_targeted_message(pid, players.user(), "\n<[NetWatch]>:\nYou have been added to the Global Blacklist for suspected Modded disturbance.Ω\nRemoval is highly unlikely.\nYou will be unable to join or participate in any session protected by NetWatch user.", true)
-            warnify("\n<[NetWatch]>:\n Added:\n" .. players.get_name(pid) .. " | " .. players.get_rockstar_id(pid))
-        else
-            chat.send_targeted_message(pid, players.user(), "\n<[NetWatch]>:\nYou are currently on the Global Blacklist for suspected Modded disturbance.Ω\nYou are not allowed to participate in this session protected by NetWatch user.", true)
-            warnify("\n<[NetWatch]>:\n Notifyed:\n" .. players.get_name(pid) .. " | " .. players.get_rockstar_id(pid))
-        end
     end
 end
 
@@ -2674,26 +2661,16 @@ local function SessionCheck(pid)
                 update_player_name(pid)
                 notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
                 add_in_stand(pid, name, rid)
-                if IsInSession() then
-                    if StandUser(pid) then
-                        warnify("This Blacklist is a Stand User , we dont Kick them until they atack: \n" .. name .. " - " .. rid)
-                        menu.trigger_commands("hellaa " .. name .. " on")
-                    else
-                        --local first = false
-                        --if NetWatchAdmin then
-                        --    NetWatch_msg(pid, first)
-                        --end
-                        StrategicKick(pid, name, rid)
-                    end
+                if StandUser(pid) then
+                    warnify("This Blacklist is a Stand User , we dont Kick them until they atack: \n" .. name .. " - " .. rid)
+                    menu.trigger_commands("hellaa " .. name .. " on")
                 else
-                    util.yield(666)
-                    if StandUser(pid) then
-                        warnify("This Blacklist is a Stand User , we dont Kick them until they atack: \n" .. name .. " - " .. rid)
-                        menu.trigger_commands("hellaa " .. name .. " on")
-                    else
-                        StrategicKick(pid, name, rid)
-                        --menu.trigger_commands("hellabl " .. name .. " on")
-                    end
+                    --menu.trigger_commands("crash " .. name)
+                    --menu.trigger_commands("choke " .. name)
+                    --menu.trigger_commands("ngcrash " .. name)
+                    --menu.trigger_commands("footlettuce " .. name)
+                    --menu.trigger_commands("slaughter " .. name)
+                    StrategicKick(pid, name, rid)
                 end
             end
         end
@@ -2701,26 +2678,16 @@ local function SessionCheck(pid)
             if tonumber(id) == tonumber(rid) then
                 notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
                 add_in_stand(pid, name, rid)
-                if IsInSession() then
-                    if StandUser(pid) then
-                        warnify("This Blacklist is a Stand User , we dont Kick them until they atack: \n" .. name .. " - " .. rid)
-                        menu.trigger_commands("hellaa " .. name .. " on")
-                    else
-                        --local first = false
-                        --if NetWatchAdmin then
-                        --    NetWatch_msg(pid, first)
-                        --end
-                        StrategicKick(pid, name, rid)
-                    end
+                if StandUser(pid) then
+                    warnify("This Blacklist is a Stand User , we dont Kick them until they atack: \n" .. name .. " - " .. rid)
+                    menu.trigger_commands("hellaa " .. name .. " on")
                 else
-                    util.yield(666)
-                    if StandUser(pid) then
-                        warnify("This Blacklist is a Stand User , we dont Kick them until they atack: \n" .. name .. " - " .. rid)
-                        menu.trigger_commands("hellaa " .. name .. " on")
-                    else
-                        StrategicKick(pid, name, rid)
-                        --menu.trigger_commands("hellabl " .. name .. " on")
-                    end
+                    --menu.trigger_commands("crash " .. name)
+                    --menu.trigger_commands("choke " .. name)
+                    --menu.trigger_commands("ngcrash " .. name)
+                    --menu.trigger_commands("footlettuce " .. name)
+                    --menu.trigger_commands("slaughter " .. name)
+                    StrategicKick(pid, name, rid)
                 end
             end
         end
@@ -2763,16 +2730,6 @@ player_menu = function(pid)
             util.yield(666)
             StrategicKick(pid, name, rid)
         end)
-        menu.action(Bad_Modder, "Add Blacklist and Nofify them. (!)", {'hellnn'}, "Blacklist Note , Notify them and Block the Target from Joining u again.\nOnly Works if u are a NetWatch Admin, if have no idea what that means , u can use that without notify them.", function ()
-            local first = true
-            if NetWatchAdmin then
-                NetWatch_msg(pid, first)
-            end
-            add_in_stand(pid, name, rid)
-            if not is_player_in_blacklist(pid, name, rid) then
-                add_player_to_blacklist(pid, name, rid)
-            end
-        end)
         menu.action(Bad_Modder, "Add Blacklist Only", {'helln'}, "Blacklist Note and Block the Target from Joining u again.", function ()
             add_in_stand(pid, name, rid)
             if not is_player_in_blacklist(pid, name, rid) then
@@ -2797,10 +2754,6 @@ player_menu = function(pid)
         --end)
         menu.toggle_loop(Bad_Modder, "Blacklist Kick on Atack", {"hellaab"}, "Auto kick if they atack you, and add them to blacklist.", function()
             if players.is_marked_as_attacker(pid) then
-                --local first = true
-                --if NetWatchAdmin then
-                --    NetWatch_msg(pid, first)
-                --end
                 add_in_stand(pid, name, rid)
                 if not is_player_in_blacklist(pid, name, rid) then
                     add_player_to_blacklist(pid, name, rid)
@@ -2906,14 +2859,6 @@ menu.action(Settings, 'Open Export Blacklist Folder', {'oef'}, '', function()
 end)
 
 menu.divider(Settings, "<3")
-
-menu.toggle(Settings, "NetWatch Admin", {""}, "Only use this if ur a NetWatch Admin.\nWhy ? well dont embarrassed urself if u turn it on as non admin xD.", function(on)
-    if on then
-        NetWatchAdmin = true
-    else
-        NetWatchAdmin = false
-    end
-end)
 
 menu.action(Settings, "Copy Position to Clipboard", {}, "", function()
     local playerPosition = players.get_position(players.user())
