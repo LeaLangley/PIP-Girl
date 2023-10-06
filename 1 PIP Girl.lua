@@ -2465,7 +2465,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     notify(name .. " got Lost in the Void.")
                                 end
                                 menu.trigger_commands("scripthost")
-                                util.yield(6666)
+                                util.yield(13666)
                             end
                         end
                     end
@@ -2489,7 +2489,6 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                 util.yield(6666)
             end
         end
-        util.yield(666)
     else
         util.yield(13666)
     end
