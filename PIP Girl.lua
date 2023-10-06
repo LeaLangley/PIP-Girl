@@ -9,7 +9,7 @@ __________._____________    ________.__       .__
 local SCRIPT_VERSION = "0.1.33"
 
 local startupmsg = "I love u."
-
+--test
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
 if not status then
