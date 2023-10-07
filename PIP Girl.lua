@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.34"
+local SCRIPT_VERSION = "0.1.35"
 
 local startupmsg = "I love u."
 
@@ -2434,7 +2434,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                 util.yield(13666)
                                 while SH_Exist(pid) and isStuck(pid) do
                                     util.yield(6666)
-                                    if SH_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid then
+                                    if SH_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not isStuck(script_host_id) and SH_Exist(script_host_id)then
                                         menu.trigger_commands("givesh " .. name)
                                         notify_cmd(name .. " is Still Loading too Long.")
                                         util.yield(13666)
