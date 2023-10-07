@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.33"
+local SCRIPT_VERSION = "0.1.34"
 
 local startupmsg = "I love u."
 
@@ -33,13 +33,13 @@ if not status then
 end
 if auto_updater == true then error("Invalid auto-updater lib. Please delete your Stand/Lua Scripts/lib/auto-updater.lua and try again") end
 
-local default_check_interval = 13666
+local default_check_interval = 666
 local auto_update_config = {
     source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/PIP%20Girl.lua",
     script_relpath=SCRIPT_RELPATH,
     switch_to_branch=selected_branch,
     verify_file_begins_with="--",
-    check_interval=6666,
+    check_interval=666,
     silent_updates=true,
     dependencies={
         {
@@ -52,7 +52,7 @@ local auto_update_config = {
             name="blacklist",
             source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/Blacklist.json",
             script_relpath="resources/1 PIP Girl/Blacklist.json",
-            check_interval=6666,
+            check_interval=666,
         },
         {
             name="read_me.txt",
