@@ -2902,12 +2902,4 @@ menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
     notify(startupmsg)
 end)
 
-menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
-    for menu.ref_by_path("Online>CEO/MC>Colour Slots"):getChildren() as link do
-        if string.find(link.help_text, players.get_name(players.user()), 1, true) then
-            menu.set_value(link, 1)
-        end
-    end
-end)
-
 util.keep_running()
