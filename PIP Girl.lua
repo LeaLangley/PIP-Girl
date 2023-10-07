@@ -1038,7 +1038,7 @@ end)
 menu.divider(PIP_Girl, "Pickup Options")
 
 local carryingPickups = {}
-menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all Pickups on You.\nNote this donst work in all Situations.", function(on)
+menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all Pickups on You.\nNote this dosen't work in all Situations.", function(on)
     if on then
         local counter = 0
         local playerPed = PLAYER.PLAYER_PED_ID()
