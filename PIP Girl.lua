@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.36"
+local SCRIPT_VERSION = "0.1.37"
 
 local startupmsg = "I love u."
 
@@ -801,9 +801,17 @@ end)
 menu.divider(PIP_Girl, "CEO/MC Options")
 
 local ceo_color = -1
+local first_color_check = true
 
-local function CEO_Color(ceo_color)
+local function set_CEO_Color(ceo_color)
     for menu.ref_by_path("Online>CEO/MC>Colour Slots"):getChildren() as link do
+        if link.help_text == "" and link.value == 0 and first_color_check then
+            local current = menu.get_current_menu_list()
+            menu.focus(link)
+            util.yield(666)
+            menu.focus(current)
+            first_color_check = false
+        end
         if string.find(link.help_text, players.get_name(players.user()), 1, true) then
             menu.set_value(link, ceo_color)
         end
@@ -855,7 +863,7 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yo
                         menu.trigger_commands("ceoname " .. urceoname)
                     end
                     if ceo_color ~= -1 then
-                        CEO_Color(ceo_color)
+                        set_CEO_Color(ceo_color)
                     end
                     util.yield(213666)
                 else
@@ -903,7 +911,7 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yo
                             menu.trigger_commands("ceoname " .. urceoname)
                         end
                         if ceo_color ~= -1 then
-                            CEO_Color(ceo_color)
+                            set_CEO_Color(ceo_color)
                         end
                         notify("Turned you into CEO!")
                         util.yield(666)
@@ -925,7 +933,7 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yo
                             menu.trigger_commands("ceoname " .. urceoname)
                         end
                         if ceo_color ~= -1 then
-                            CEO_Color(ceo_color)
+                            set_CEO_Color(ceo_color)
                         end
                         notify("Turned you into MC President!")
                         util.yield(666)
@@ -947,9 +955,9 @@ end)
 
 menu.toggle_loop(PIP_Girl, "Additional CEO/MC Color Checks.", {""}, "If u use \"Auto Become a CEO/MC\" it will check for u color on register.\nIf u dont use \"Auto Become a CEO/MC\" u can use Additinal Checks.", function(on)
     if ceo_color ~= -1 then
-        CEO_Color(ceo_color)
+        set_CEO_Color(ceo_color)
     end
-    util.yield(66666)
+    util.yield(6666)
 end)
 
 menu.toggle(PIP_Girl, "Auto Join Friends CEO (!)", {""}, "(also mc) Uses 'Auto Become a CEO/MC' ", function(on)
