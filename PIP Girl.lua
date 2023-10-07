@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.35"
+local SCRIPT_VERSION = "0.1.36"
 
 local startupmsg = "I love u."
 
@@ -800,6 +800,16 @@ end)
 
 menu.divider(PIP_Girl, "CEO/MC Options")
 
+local ceo_color = -1
+
+local function CEO_Color(ceo_color)
+    for menu.ref_by_path("Online>CEO/MC>Colour Slots"):getChildren() as link do
+        if string.find(link.help_text, players.get_name(players.user()), 1, true) then
+            menu.set_value(link, ceo_color)
+        end
+    end
+end
+
 local urceoname = ""
 local function on_change(input_str, click_type)
     urceoname = input_str
@@ -843,6 +853,9 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yo
                     notify("Turned you into CEO!")
                     if urceoname ~= "" then
                         menu.trigger_commands("ceoname " .. urceoname)
+                    end
+                    if ceo_color ~= -1 then
+                        CEO_Color(ceo_color)
                     end
                     util.yield(213666)
                 else
@@ -889,6 +902,9 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yo
                         if urceoname != "" then
                             menu.trigger_commands("ceoname " .. urceoname)
                         end
+                        if ceo_color ~= -1 then
+                            CEO_Color(ceo_color)
+                        end
                         notify("Turned you into CEO!")
                         util.yield(666)
                     end
@@ -908,6 +924,9 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yo
                         if urceoname != "" then
                             menu.trigger_commands("ceoname " .. urceoname)
                         end
+                        if ceo_color ~= -1 then
+                            CEO_Color(ceo_color)
+                        end
                         notify("Turned you into MC President!")
                         util.yield(666)
                     end
@@ -920,6 +939,17 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yo
     else
         util.yield(13666)
     end
+end)
+
+menu.slider(PIP_Girl, 'Auto CEO/MC Color', {'favceocolor'}, 'Enter the Color ID of ur CEO.', -1, 14, ceo_color, 1, function (new_value)
+    ceo_color = new_value
+end)
+
+menu.toggle_loop(PIP_Girl, "Additional CEO/MC Color Checks.", {""}, "If u use \"Auto Become a CEO/MC\" it will check for u color on register.\nIf u dont use \"Auto Become a CEO/MC\" u can use Additinal Checks.", function(on)
+    if ceo_color ~= -1 then
+        CEO_Color(ceo_color)
+    end
+    util.yield(66666)
 end)
 
 menu.toggle(PIP_Girl, "Auto Join Friends CEO (!)", {""}, "(also mc) Uses 'Auto Become a CEO/MC' ", function(on)
@@ -2445,7 +2475,9 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                 else
                                     notify(name .. " got Lost in the Void.")
                                 end
-                                menu.trigger_commands("scripthost")
+                                if not isStuck(script_host_id) and SH_Exist(script_host_id) then
+                                    menu.trigger_commands("scripthost")
+                                end
                                 util.yield(13666)
                             end
                         end
@@ -2868,6 +2900,14 @@ end)
 
 menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
     notify(startupmsg)
+end)
+
+menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
+    for menu.ref_by_path("Online>CEO/MC>Colour Slots"):getChildren() as link do
+        if string.find(link.help_text, players.get_name(players.user()), 1, true) then
+            menu.set_value(link, 1)
+        end
+    end
 end)
 
 util.keep_running()
