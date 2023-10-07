@@ -2010,7 +2010,7 @@ menu.slider(SessionClaimer, 'Session Size', {'claimsessionsize'}, 'Select the Si
 end)
 menu.divider(SessionClaimer, "Misc")
 local thunderMin = 0
-menu.slider(SessionClaimer, 'Thunder for X min', {''}, 'After u claimed a session show Thunder for X amount of min.', 0, 13, thunderMin, 1, function (new_value)
+menu.slider(SessionClaimer, 'Thunder for X min', {''}, 'After u claimed a session show Thunder for X amount of min.', 0, 6, thunderMin, 1, function (new_value)
     thunderMin = new_value
 end)
 local session_claimer_here = false
