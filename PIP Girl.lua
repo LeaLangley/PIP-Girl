@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.38"
+local SCRIPT_VERSION = "0.1.39"
 
 local startupmsg = "I love u."
 
@@ -802,25 +802,27 @@ menu.divider(PIP_Girl, "CEO/MC Options")
 local ceo_color = -1
 local first_color_check = true
 local function check_CEO_Color(ceo_color)
-    local allValuesZero = true
-    local allHelpTextEmpty = true
-    for menu.ref_by_path("Online>CEO/MC>Colour Slots"):getChildren() as link do
-        if link.value ~= 0 then
-            allValuesZero = false
+    if IsInSession() then
+        local allValuesZero = true
+        local allHelpTextEmpty = true
+        for menu.ref_by_path("Online>CEO/MC>Colour Slots"):getChildren() as link do
+            if link.value ~= 0 then
+                allValuesZero = false
+            end
+            if link.help_text ~= "" then
+                allHelpTextEmpty = false
+            end
         end
-        if link.help_text ~= "" then
-            allHelpTextEmpty = false
+        if allValuesZero and allHelpTextEmpty then
+            local current = menu.get_current_menu_list()
+            menu.focus(menu.ref_by_path("Online>CEO/MC>Colour Slots>0"))
+            util.yield(666)
+            menu.focus(current)
         end
-    end
-    if allValuesZero and allHelpTextEmpty then
-        local current = menu.get_current_menu_list()
-        menu.focus(menu.ref_by_path("Online>CEO/MC>Colour Slots>0"))
-        util.yield(666)
-        menu.focus(current)
-    end
-    for menu.ref_by_path("Online>CEO/MC>Colour Slots"):getChildren() as link do
-        if string.find(link.help_text, players.get_name(players.user()), 1, true) then
-            menu.set_value(link, ceo_color)
+        for menu.ref_by_path("Online>CEO/MC>Colour Slots"):getChildren() as link do
+            if string.find(link.help_text, players.get_name(players.user()), 1, true) then
+                menu.set_value(link, ceo_color)
+            end
         end
     end
 end
@@ -961,10 +963,12 @@ menu.slider(PIP_Girl, 'Auto CEO/MC Color', {'favceocolor'}, 'Enter the Color ID 
 end)
 
 menu.toggle_loop(PIP_Girl, "Additional CEO/MC Color Checks.", {""}, "If u use \"Auto Become a CEO/MC\" it will check for u color on register.\nIf u dont use \"Auto Become a CEO/MC\" u can use Additinal Checks.", function(on)
-    if ceo_color ~= -1 then
-        check_CEO_Color(ceo_color)
+    if IsInSession() then
+        if ceo_color ~= -1 then
+            check_CEO_Color(ceo_color)
+        end
+        util.yield(6666)
     end
-    util.yield(6666)
 end)
 
 menu.toggle(PIP_Girl, "Auto Join Friends CEO (!)", {""}, "(also mc) Uses 'Auto Become a CEO/MC' ", function(on)
@@ -2524,7 +2528,11 @@ end)
 
 menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisible for the whole session, but with a nice effect for ppl close by.", function()
     if IsInSession() then
-        warnify_ses("T-5 sec. Start on ;GO;")
+        warnify_ses("T-5 sec. Start on \"GO!\"")
+        local red_countdown = nil
+        local green_contdown = nil
+        local playerPosition = players.get_position(players.user())
+        local red_countdown = SpawnCheck(red_countdown, 831568081, v3.new(playerPosition.x, playerPosition.y, playerPosition.z + 5), ENTITY.GET_ENTITY_HEADING(players.user_ped()), 0)
         for i=1, 13 do
             PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
@@ -2562,9 +2570,19 @@ menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisi
         else
             menu.trigger_commands("deployboth")
         end
-        for i=1, 111 do
+        local green_countdown = SpawnCheck(green_countdown, 857804632, v3.new(playerPosition.x, playerPosition.y, playerPosition.z + 5), ENTITY.GET_ENTITY_HEADING(players.user_ped()), 0)
+        if ENTITY.DOES_ENTITY_EXIST(red_countdown) then
+            requestControl(red_countdown, 0)
+            entities.delete(red_countdown)
+        end
+        for i=1, 222 do
             PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(6)
+        end
+        util.yield(666)
+        if ENTITY.DOES_ENTITY_EXIST(green_countdown) then
+            requestControl(green_countdown, 0)
+            entities.delete(green_countdown)
         end
     end
 end)
