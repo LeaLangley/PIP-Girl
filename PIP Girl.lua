@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.40"
+local SCRIPT_VERSION = "0.1.41"
 
 local startupmsg = "I love u."
 
@@ -813,11 +813,13 @@ local function check_CEO_Color(ceo_color)
                 allHelpTextEmpty = false
             end
         end
-        if allValuesZero and allHelpTextEmpty then
-            local current = menu.get_current_menu_list()
-            menu.focus(menu.ref_by_path("Online>CEO/MC>Colour Slots>0"))
-            util.yield(666)
-            menu.focus(current)
+        if players.user() == players.get_host() then
+            if allValuesZero and allHelpTextEmpty then
+                local current = menu.get_current_menu_list()
+                menu.focus(menu.ref_by_path("Online>CEO/MC>Colour Slots>0"))
+                util.yield(666)
+                menu.focus(current)
+            end
         end
         for menu.ref_by_path("Online>CEO/MC>Colour Slots"):getChildren() as link do
             if string.find(link.help_text, players.get_name(players.user()), 1, true) then
@@ -963,7 +965,7 @@ menu.slider(PIP_Girl, 'Auto CEO/MC Color', {'favceocolor'}, 'Enter the Color ID 
 end)
 
 menu.toggle_loop(PIP_Girl, "Additional CEO/MC Color Checks.", {""}, "If u use \"Auto Become a CEO/MC\" it will check for u color on register.\nIf u dont use \"Auto Become a CEO/MC\" u can use Additinal Checks.", function(on)
-    if IsInSession() then
+    if IsInSession() and players.get_boss(players.user()) ~= -1 then
         if ceo_color ~= -1 then
             check_CEO_Color(ceo_color)
         end
@@ -979,68 +981,44 @@ menu.toggle(PIP_Girl, "Auto Join Friends CEO (!)", {""}, "(also mc) Uses 'Auto B
     end
 end)
 
-menu.action(PIP_Girl, "Invite All Friends in CEO/MC", {"invceo"}, "Invites all you friends into your CEO/MC", function()
+local function inviteToCEO(pid)
+    local hdl = pid_to_handle(pid)
+    if players.get_boss(players.user()) ~= -1 then
+        util.trigger_script_event(1 << pid, {
+            -245642440,
+            players.user(),
+            4,
+            10000, -- wage?
+            0,
+            0,
+            0,
+            0,
+            memory.read_int(memory.script_global(1924276 + 9)), -- f_8
+            memory.read_int(memory.script_global(1924276 + 10)), -- f_9
+        })
+    end
+end
+
+menu.action(PIP_Girl, "Invite All Friends in CEO/MC", {"invceo"}, "Invites all your friends into your CEO/MC", function()
     if IsInSession() then
         for _, pid in players.list(true, true, true) do
             local hdl = pid_to_handle(pid)
-            if NETWORK.NETWORK_IS_FRIEND(hdl) then
-                if players.get_boss(pid) == -1 and players.get_boss(players.user()) != -1 then
-                    -- Thanks to Totaw Annihiwation for this script event! // Position - 0x2725D7
-                    util.trigger_script_event(1 << pid, {
-                        -245642440,
-                        players.user(),
-                        4,
-                        10000, -- wage?
-                        0,
-                        0,
-                        0,
-                        0,
-                        memory.read_int(memory.script_global(1924276 + 9)), -- f_8
-                        memory.read_int(memory.script_global(1924276 + 10)), -- f_9
-                    })
-                end
-            end
-        end
-        util.yield(3666)
-        for _, pid in players.list(true, true, true) do
-            local hdl = pid_to_handle(pid)  
-            if NETWORK.NETWORK_IS_FRIEND(hdl) then
-                if players.get_boss(pid) == -1 and players.get_boss(players.user()) != -1 then
-                    -- Thanks to Totaw Annihiwation for this script event! // Position - 0x2725D7
-                    util.trigger_script_event(1 << pid, {
-                        -245642440,
-                        players.user(),
-                        4,
-                        10000, -- wage?
-                        0,
-                        0,
-                        0,
-                        0,
-                        memory.read_int(memory.script_global(1924276 + 9)), -- f_8
-                        memory.read_int(memory.script_global(1924276 + 10)), -- f_9
-                    })
-                end
+            if NETWORK.NETWORK_IS_FRIEND(hdl) and players.get_boss(pid) == -1 then
+                inviteToCEO(pid)
             end
         end
         util.yield(3666)
         for _, pid in players.list(true, true, true) do
             local hdl = pid_to_handle(pid)
-            if NETWORK.NETWORK_IS_FRIEND(hdl) then
-                if players.get_boss(pid) == -1 and players.get_boss(players.user()) != -1 then
-                    -- Thanks to Totaw Annihiwation for this script event! // Position - 0x2725D7
-                    util.trigger_script_event(1 << pid, {
-                        -245642440,
-                        players.user(),
-                        4,
-                        10000, -- wage?
-                        0,
-                        0,
-                        0,
-                        0,
-                        memory.read_int(memory.script_global(1924276 + 9)), -- f_8
-                        memory.read_int(memory.script_global(1924276 + 10)), -- f_9
-                    })
-                end
+            if NETWORK.NETWORK_IS_FRIEND(hdl) and players.get_boss(pid) == -1 then
+                inviteToCEO(pid)
+            end
+        end
+        util.yield(3666)
+        for _, pid in players.list(true, true, true) do
+            local hdl = pid_to_handle(pid)
+            if NETWORK.NETWORK_IS_FRIEND(hdl) and players.get_boss(pid) == -1 then
+                inviteToCEO(pid)
             end
         end
     end
@@ -2526,8 +2504,6 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
     end
 end)
 
-requestModel(831568081, 666)
-requestModel(857804632, 666)
 menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisible for the whole session, but with a nice effect for ppl close by.", function()
     if IsInSession() then
         requestModel(831568081, 1)
@@ -2940,3 +2916,5 @@ menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
 end)
 
 util.keep_running()
+requestModel(831568081, 666)
+requestModel(857804632, 666)
