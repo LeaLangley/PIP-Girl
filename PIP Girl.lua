@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.39"
+local SCRIPT_VERSION = "0.1.40"
 
 local startupmsg = "I love u."
 
@@ -2526,8 +2526,12 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
     end
 end)
 
+requestModel(831568081, 666)
+requestModel(857804632, 666)
 menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisible for the whole session, but with a nice effect for ppl close by.", function()
     if IsInSession() then
+        requestModel(831568081, 1)
+        requestModel(857804632, 1)    
         warnify_ses("T-5 sec. Start on \"GO!\"")
         local red_countdown = nil
         local green_contdown = nil
