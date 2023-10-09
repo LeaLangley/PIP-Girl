@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.41"
+local SCRIPT_VERSION = "0.1.42"
 
 local startupmsg = "I love u."
 
@@ -273,7 +273,7 @@ local function isStuck(pid)
             return true
         end
     end
-    if not players.is_visible(pid) then
+    if not players.is_visible(pid) and ENTITY.GET_ENTITY_SPEED(pid) < 1 then
         if players.get_money(pid) ~= 0 and players.get_rank(pid) ~= 0 then
             return true
         end
@@ -817,8 +817,9 @@ local function check_CEO_Color(ceo_color)
             if allValuesZero and allHelpTextEmpty then
                 local current = menu.get_current_menu_list()
                 menu.focus(menu.ref_by_path("Online>CEO/MC>Colour Slots>0"))
-                util.yield(666)
+                util.yield(420)
                 menu.focus(current)
+                notify("Changed ur CEO/MC Color")
             end
         end
         for menu.ref_by_path("Online>CEO/MC>Colour Slots"):getChildren() as link do
@@ -2884,6 +2885,16 @@ menu.action(Settings, 'Open Export Blacklist Folder', {'oef'}, '', function()
 end)
 
 menu.divider(Settings, "<3")
+
+menu.action(Settings, "Create \"Friend's\" Group", {""}, "Create a group called \"Friend's\" , turns on Whitelist and Tracking.", function()
+    menu.trigger_commands("friendsupdate")
+    util.yield(13)
+    menu.trigger_commands("friendsnote Friend's")
+    util.yield(13)
+    menu.trigger_commands("friendstrack")
+    util.yield(13)
+    menu.trigger_commands("friendswhitelist")
+end)
 
 menu.action(Settings, "Copy Position to Clipboard", {}, "", function()
     local playerPosition = players.get_position(players.user())
