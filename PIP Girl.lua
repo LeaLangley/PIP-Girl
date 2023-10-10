@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.42"
+local SCRIPT_VERSION = "0.1.43"
 
 local startupmsg = "I love u."
 
@@ -1054,7 +1054,7 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all Pickups on Yo
                 util.yield(13)
                 ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z-0.8, false, false, false, false)
                 util.yield(13)
-                ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
+                --ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
                 counter = counter + 1
             end
         end
@@ -1072,11 +1072,11 @@ menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a Shower in all exsisting 
                 if in_vehicle then
                     ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z , false, false, false, false)
                     util.yield(13)
-                    ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
+                    --ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
                 else
                     ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z + 1.0, false, false, false, false)
                     util.yield(13)
-                    ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
+                    --ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
                 end
             end
             util.yield(13)
@@ -1095,8 +1095,8 @@ menu.action(PIP_Girl, "Teleport Pickups To Me", {"tppickups"}, "Teleports all Pi
                 requestControl(pickup, 0)
                 util.yield(13)
                 ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z-0.8, false, false, false, false)
-                util.yield(13)
-                ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
+                --util.yield(13)
+                --ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
                 counter = counter + 1
             end
         end
