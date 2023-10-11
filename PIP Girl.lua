@@ -269,11 +269,11 @@ local function isStuck(pid)
         return false
     end
     if pid == players.user() then
-        if ENTITY.GET_ENTITY_SPEED(pid) < 1 and HUD.BUSYSPINNER_IS_DISPLAYING() then
+        if ENTITY.GET_ENTITY_SPEED(pid) < 2 and HUD.BUSYSPINNER_IS_DISPLAYING() then
             return true
         end
     end
-    if not players.is_visible(pid) and ENTITY.GET_ENTITY_SPEED(pid) < 1 then
+    if not players.is_visible(pid) and ENTITY.GET_ENTITY_SPEED(pid) < 2 then
         if players.get_money(pid) ~= 0 and players.get_rank(pid) ~= 0 then
             return true
         end
