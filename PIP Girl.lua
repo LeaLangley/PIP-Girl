@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.44"
+local SCRIPT_VERSION = "0.1.45"
 
 local startupmsg = "I love u."
 
@@ -1208,7 +1208,10 @@ end)
 
 menu.toggle_loop(Stimpak, "Oxygen", {"pgbreath"}, "Just breath.", function()
     if IsInSession() then
-        if PED.IS_PED_SWIMMING_UNDER_WATER(players.user_ped()) then
+        if PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) then
+            local vehicle = entities.get_user_vehicle_as_handle()
+        end
+        if ENTITY.IS_ENTITY_IN_WATER(players.user_ped()) or ENTITY.IS_ENTITY_IN_WATER(vehicle) then
             PED.SET_ENABLE_SCUBA(players.user_ped(), true)
             local air = PLAYER.GET_PLAYER_UNDERWATER_TIME_REMAINING(players.user())
             if 13 >= air then
