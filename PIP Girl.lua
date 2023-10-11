@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.43"
+local SCRIPT_VERSION = "0.1.44"
 
 local startupmsg = "I love u."
 
