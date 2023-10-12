@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.45"
+local SCRIPT_VERSION = "0.1.46"
 
 local startupmsg = "I love u."
 
@@ -2460,18 +2460,27 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                 menu.trigger_commands("givesh " .. name)
                                 notify_cmd(name .. " is Loading too Long.")
                                 util.yield(13666)
+                                local timeout = os.time() + 60 -- Set timeout to 1 minute
+                                local fail = false
                                 while SH_Exist(pid) and isStuck(pid) do
                                     util.yield(6666)
-                                    if SH_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not isStuck(script_host_id) and SH_Exist(script_host_id)then
+                                    if os.time() > timeout then
+                                        notify_cmd(name .. " took too long to load. Timeout reached.")
+                                        fail = true
+                                        break
+                                    end
+                                    if SH_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not isStuck(script_host_id) and SH_Exist(script_host_id) then
                                         menu.trigger_commands("givesh " .. name)
                                         notify_cmd(name .. " is Still Loading too Long.")
                                         util.yield(13666)
                                     end
                                 end
-                                if SH_Exist(pid) then
-                                    notify_cmd(name .. " Finished Loading.")
-                                else
-                                    notify(name .. " got Lost in the Void.")
+                                if not fail then
+                                    if SH_Exist(pid) then
+                                        notify_cmd(name .. " Finished Loading.")
+                                    else
+                                        notify(name .. " got Lost in the Void.")
+                                    end
                                 end
                                 if not isStuck(script_host_id) and SH_Exist(script_host_id) then
                                     menu.trigger_commands("scripthost")
