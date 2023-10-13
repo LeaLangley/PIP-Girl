@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.46"
+local SCRIPT_VERSION = "0.1.47"
 
 local startupmsg = "I love u."
 
@@ -1856,9 +1856,6 @@ end)
 
 menu.divider(Game, "<3")
 
-local getEntityCoords = ENTITY.GET_ENTITY_COORDS
-local getPlayerPed = PLAYER.GET_PLAYER_PED
-
 local function getLocalPed()
     return PLAYER.PLAYER_PED_ID()
 end
@@ -1893,13 +1890,13 @@ function getOrgColor(pid)
 end
 
 local function espOnPlayer(pid, namesync)
-    local targetped = getPlayerPed(pid)
-    local ppos = getEntityCoords(targetped)
+    local targetped = PLAYER.GET_PLAYER_PED(pid)
+    local ppos = ENTITY.GET_ENTITY_COORDS(targetped)
     if ppos.z < -10 or ENTITY.HAS_ENTITY_CLEAR_LOS_TO_ENTITY(players.user_ped(), targetped, 256) then
         --coordinate stuff
-        local mypos = getEntityCoords(getLocalPed())
+        local mypos = ENTITY.GET_ENTITY_COORDS(getLocalPed())
         local playerHeadOffset = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(targetped, 0, 0, 1.0)
-        local centerPlayer = getEntityCoords(targetped)
+        local centerPlayer = ENTITY.GET_ENTITY_COORDS(targetped)
         local vdist = SYSTEM.VDIST2(mypos.x, mypos.y, mypos.z, ppos.x, ppos.y, ppos.z)
 
         --color settings
