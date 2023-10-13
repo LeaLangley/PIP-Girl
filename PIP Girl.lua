@@ -2340,6 +2340,44 @@ end, function()
     end
 end)
 
+local mk2noob = {}
+menu.toggle_loop(SessionWorld, "Spinning MK2's", {""}, "Spin all MK2's, except Modder and Friend's", function()
+    for _, pid in pairs(players.list(false, true, true)) do 
+        local hdl = pid_to_handle(pid)
+        local playerName = players.get_name(pid)
+        if players.get_vehicle_model(pid) == 2069146067 and (not players.is_marked_as_modder(pid) or not NETWORK.NETWORK_IS_FRIEND(hdl)) then 
+            local found = false
+            for _, name in ipairs(mk2noob) do
+                if name == playerName then
+                    found = true
+                    break
+                end
+            end
+            if not found then
+                table.insert(mk2noob, playerName)
+            end
+            menu.trigger_commands("spin"..playerName.." on")
+            util.yield(13)
+        else
+            local index
+            for i, name in ipairs(mk2noob) do
+                if name == playerName then
+                    index = i
+                    break
+                end
+            end
+            if index then
+                table.remove(mk2noob, index)
+            end
+        end    
+    end
+    util.yield(666)
+end, function()
+    for _, playerName in pairs(mk2noob) do
+        menu.trigger_commands("spin"..playerName.." off")
+    end
+end)
+
 menu.divider(Session, "<3 Admin Stuff <3")
 
 local group_name = "Admin"
