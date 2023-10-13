@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.48"
+local SCRIPT_VERSION = "0.1.49"
 
 local startupmsg = "I love u."
 
@@ -190,6 +190,17 @@ local function StandUser(pid) -- credit to sapphire for this and jinx script
     if players.exists(pid) and pid != players.user() then
         for menu.player_root(pid):getChildren() as cmd do
             if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Stand User"):isValid() then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+local function wannabeGod(pid) -- credit to sapphire for this and jinx script
+    if players.exists(pid) and pid != players.user() then
+        for menu.player_root(pid):getChildren() as cmd do
+            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Attacking While Invulnerable"):isValid() then
                 return true
             end
         end
@@ -411,7 +422,8 @@ local function Wait_for_IsInSession()
     players.dispatch_on_join()
 end
 
-local function StrategicKick(pid, name, rid) --TODO , make it actually smart , not bare bones.
+local function StrategicKick(pid) --TODO , make it actually smart , not bare bones.
+    local name = players.get_name(pid)
     if name ~= "UndiscoveredPlayer" and name ~= "InvalidPlayer" then
         if not IsInSession() then
             Wait_for_IsInSession()
@@ -2199,7 +2211,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                             menu.trigger_commands("givecollectibles " .. players.get_name(players.get_host()))
                             util.yield(6666)
                             if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 and not isModder(players.get_host())then
-                                StrategicKick(players.get_host(), players.get_name(players.get_host()), players.get_rockstar_id(players.get_host()))
+                                StrategicKick(players.get_host())
                             else
                                 if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
                                     menu.trigger_commands("unstuck")
@@ -2550,6 +2562,21 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
     end
 end)
 
+menu.toggle_loop(Session, "Auto Kick \"Attacking While Invulnerable\"", {""}, "Kick everyone who triggers \"Attacking While Invulnerable\" except Friends or Stand user.", function()
+    if IsInSession() then
+        local Player_List = players.list()
+        for _, pid in pairs(Player_List) do
+            local hdl = pid_to_handle(pid)
+            if wannabeGod(pid) and not NETWORK.NETWORK_IS_FRIEND(hdl) and not StandUser(pid) then
+                StrategicKick(pid)
+            end
+        end
+        util.yield(6666)
+    else
+        util.yield(13666)
+    end
+end)
+
 menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisible for the whole session, but with a nice effect for ppl close by.", function()
     if IsInSession() then 
         warnify_ses("T-5 sec. Start on \"GO!\"")
@@ -2753,7 +2780,7 @@ local function SessionCheck(pid)
                     --menu.trigger_commands("ngcrash " .. name)
                     --menu.trigger_commands("footlettuce " .. name)
                     --menu.trigger_commands("slaughter " .. name)
-                    StrategicKick(pid, name, rid)
+                    StrategicKick(pid)
                 end
             end
         end
@@ -2770,7 +2797,7 @@ local function SessionCheck(pid)
                     --menu.trigger_commands("ngcrash " .. name)
                     --menu.trigger_commands("footlettuce " .. name)
                     --menu.trigger_commands("slaughter " .. name)
-                    StrategicKick(pid, name, rid)
+                    StrategicKick(pid)
                 end
             end
         end
@@ -2793,7 +2820,7 @@ player_menu = function(pid)
             if not is_player_in_blacklist(pid, name, rid) then
                 add_player_to_blacklist(pid, name, rid)
             end
-            StrategicKick(pid, name, rid)
+            StrategicKick(pid)
         end)
         menu.action(Bad_Modder, "Add Blacklist ,Phone Call & Kick", {'hellp'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
             add_in_stand(pid, name, rid)
@@ -2802,7 +2829,7 @@ player_menu = function(pid)
             end
             menu.trigger_commands("ring " .. name)
             util.yield(666)
-            StrategicKick(pid, name, rid)
+            StrategicKick(pid)
         end)
         menu.action(Bad_Modder, "Add Blacklist ,Crash & Kick", {'hellc'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
             add_in_stand(pid, name, rid)
@@ -2811,7 +2838,7 @@ player_menu = function(pid)
             end
             menu.trigger_commands("choke ".. name)
             util.yield(666)
-            StrategicKick(pid, name, rid)
+            StrategicKick(pid)
         end)
         menu.action(Bad_Modder, "Add Blacklist Only", {'helln'}, "Blacklist Note and Block the Target from Joining u again.", function ()
             add_in_stand(pid, name, rid)
@@ -2841,7 +2868,7 @@ player_menu = function(pid)
                 if not is_player_in_blacklist(pid, name, rid) then
                     add_player_to_blacklist(pid, name, rid)
                 end
-                StrategicKick(pid, name, rid)
+                StrategicKick(pid)
                 warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
                 PlayerExists = false
                 util.yield(66666)
@@ -2853,7 +2880,7 @@ player_menu = function(pid)
         end)
         menu.toggle_loop(Bad_Modder, "Kick on Atack", {"hellaa"}, "Auto kick if they atack you.", function()
             if players.is_marked_as_attacker(pid) then
-                StrategicKick(pid, name, rid)
+                StrategicKick(pid)
                 warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
                 util.yield(66666)
             else
