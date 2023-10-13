@@ -1793,6 +1793,7 @@ local warningMessages = {
     [141301462] = "Restart u game. :s\nYour save data could not be loaded form the R* cloud servers at this time. Please try again later. Returning to Grand Theft Auto V.",
     [502833454] = "Connection to the session host has been lost. Unable to determine a new host. The GTA Online session will be terminated. Joining a new GTA Online session.",
     [2113044399] = "Connection to the active GTA Online session lost due to an unknown network error. Please return to Grand Theft Auto V and try again later.",
+    [1869879151] = "Connection to the active GTA Online session lost due to an unknown network error. Please return to Grand Theft Auto V and try again later.",
     [496145784] = "There has been an error with this session. Please return to Grand Theft Auto V and try again.",
     [705668975] = "You have already been voted out of this game session. Joining a new GTA Online session.",
     [2052473979] = "Failed to find a compatible GTA Online session containing friends. Joining a new GTA Online session.",
