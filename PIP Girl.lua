@@ -2592,7 +2592,7 @@ menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost
                 if not found then
                     table.insert(wannabeGOD, playerName)
                     NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
-                    menu.trigger_commands("ignore " .. name .. " on")
+                    menu.trigger_commands("ignore "..playerName.." on")
                 end
             end
         end
@@ -2603,7 +2603,7 @@ menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost
 end, function()
     for _, playerName in pairs(wannabeGOD) do
         NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
-        menu.trigger_commands("ignore " .. name .. " off")
+        menu.trigger_commands("ignore "..playerName.." off")
         table.remove(wannabeGOD, index)
     end
 end)
