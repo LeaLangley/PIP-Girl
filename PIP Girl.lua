@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.51"
+local SCRIPT_VERSION = "0.1.52"
 
 local startupmsg = "I love u."
 
@@ -2373,7 +2373,6 @@ menu.toggle_loop(SessionWorld, "Spinning MK2's", {""}, "Spin all MK2's, except M
             menu.trigger_commands("igniteveh"..playerName)
             menu.trigger_commands("killveh"..playerName)
             menu.trigger_commands("destroyprop"..playerName)
-            menu.trigger_commands("empveh"..playerName)
             util.yield(13)
         else
             local index
@@ -2392,6 +2391,7 @@ menu.toggle_loop(SessionWorld, "Spinning MK2's", {""}, "Spin all MK2's, except M
 end, function()
     for _, playerName in pairs(mk2noob) do
         --menu.trigger_commands("spin"..playerName.." off")
+        table.remove(mk2noob, index)
     end
 end)
 
