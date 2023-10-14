@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.54"
+local SCRIPT_VERSION = "0.1.55"
 
 local startupmsg = "I love u."
 
@@ -186,8 +186,20 @@ local function warnify_ses(msg)
     util.toast(msg)
 end
 
+local function player_Exist(pid)
+    if players.exists(pid) and players.get_name(pid) ~= "undiscoveredplayer" and players.get_name(pid) ~= "InvalidPlayer" then
+        local Player_List = players.list()
+        for _, plid in pairs(Player_List) do
+            if plid == pid then
+                return true
+            end
+        end
+    end
+    return false
+end
+
 local function StandUser(pid) -- credit to sapphire for this and jinx script
-    if players.exists(pid) and pid != players.user() then
+    if player_Exist(pid) and pid != players.user() then
         for menu.player_root(pid):getChildren() as cmd do
             if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Stand User"):isValid() then
                 return true
@@ -198,7 +210,7 @@ local function StandUser(pid) -- credit to sapphire for this and jinx script
 end
 
 local function wannabeGod(pid)
-    if players.exists(pid) and pid != players.user() then
+    if player_Exist(pid) and pid != players.user() then
         for menu.player_root(pid):getChildren() as cmd do
             if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Attacking While Invulnerable"):isValid() then
                 return true
@@ -209,7 +221,7 @@ local function wannabeGod(pid)
 end
 
 local function aggressive(pid)
-    if players.exists(pid) and pid != players.user() then
+    if player_Exist(pid) and pid != players.user() then
         for menu.player_root(pid):getChildren() as cmd do
             if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Spoofed Host Token (Aggressive)"):isValid() then
                 return true
@@ -2479,58 +2491,44 @@ end, function()
     ClearTraficSphere = 0
 end)
 
-local function SH_Exist(pid)
-    if IsInSession() then
-        if players.exists(pid) and players.get_name(pid) ~= "undiscoveredplayer" and players.get_name(pid) ~= "InvalidPlayer" then
-            local Player_List = players.list()
-            for _, plid in pairs(Player_List) do
-                if plid == pid then
-                    return true
-                end
-            end
-        end
-    end
-    return false
-end
-
 menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
     if IsInSession() then
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
             local script_host_id = players.get_script_host()
             if players.user() == players.get_host() or players.user() == script_host_id then
-                if not isStuck(script_host_id) and SH_Exist(script_host_id) then
+                if not isStuck(script_host_id) and player_Exist(script_host_id) then
                     local Player_List = players.list()
                     for _, pid in pairs(Player_List) do
                         local name = players.get_name(pid)
-                        if SH_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid then
+                        if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid then
                             util.yield(13666)
-                            if SH_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid then
+                            if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid then
                                 menu.trigger_commands("givesh " .. name)
                                 notify_cmd(name .. " is Loading too Long.")
                                 util.yield(13666)
                                 local timeout = os.time() + 60 -- Set timeout to 1 minute
                                 local fail = false
-                                while SH_Exist(pid) and isStuck(pid) do
+                                while player_Exist(pid) and isStuck(pid) do
                                     util.yield(6666)
                                     if os.time() > timeout then
                                         notify_cmd(name .. " took too long to load. Timeout reached.")
                                         fail = true
                                         break
                                     end
-                                    if SH_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not isStuck(script_host_id) and SH_Exist(script_host_id) then
+                                    if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not isStuck(script_host_id) and player_Exist(script_host_id) then
                                         menu.trigger_commands("givesh " .. name)
                                         notify_cmd(name .. " is Still Loading too Long.")
                                         util.yield(13666)
                                     end
                                 end
                                 if not fail then
-                                    if SH_Exist(pid) then
+                                    if player_Exist(pid) then
                                         notify_cmd(name .. " Finished Loading.")
                                     else
                                         notify(name .. " got Lost in the Void.")
                                     end
                                 end
-                                if not isStuck(script_host_id) and SH_Exist(script_host_id) then
+                                if not isStuck(script_host_id) and player_Exist(script_host_id) then
                                     menu.trigger_commands("scripthost")
                                 end
                                 util.yield(13666)
@@ -2562,13 +2560,13 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
     end
 end)
 
-menu.toggle_loop(Session, "Auto Kick \"Attacking While Invulnerable\"", {""}, "Kick everyone who triggers \"Attacking While Invulnerable\" except Friends or Stand user.", function()
+menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost everyone who triggers \"Attacking While Invulnerable\" except Friends or Stand user.", function()
     if IsInSession() then
         local Player_List = players.list()
         for _, pid in pairs(Player_List) do
             local hdl = pid_to_handle(pid)
             if wannabeGod(pid) and not NETWORK.NETWORK_IS_FRIEND(hdl) and not StandUser(pid) then
-                StrategicKick(pid)
+                menu.trigger_commands("ignore " .. name .. " on")
             end
         end
         util.yield(6666)
@@ -2822,7 +2820,7 @@ end
 players.on_join(SessionCheck)
 
 player_menu = function(pid)
-    if players.exists(pid) then
+    if player_Exist(pid) then
         if not players.exists(players.user()) then
             return
         end
@@ -2862,7 +2860,7 @@ player_menu = function(pid)
             end
         end)
         --menu.toggle_loop(Bad_Modder, "(Alpha) Report Bot", {"hellrp"}, "Weak menu? Spamm report them >:D", function()
-        --    if players.exists(pid) then
+        --    if player_Exist(pid) then
         --        menu.trigger_commands("reportgriefing " .. name)
         --        menu.trigger_commands("reportexploits " .. name)
         --        menu.trigger_commands("reportbugabuse " .. name)
