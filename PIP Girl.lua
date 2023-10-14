@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.50"
+local SCRIPT_VERSION = "0.1.51"
 
 local startupmsg = "I love u."
 
@@ -831,12 +831,12 @@ local function check_CEO_Color(ceo_color)
                 menu.focus(menu.ref_by_path("Online>CEO/MC>Colour Slots>0"))
                 util.yield(420)
                 menu.focus(current)
+                notify("Changed ur CEO/MC Color")
             end
         end
         for menu.ref_by_path("Online>CEO/MC>Colour Slots"):getChildren() as link do
             if string.find(link.help_text, players.get_name(players.user()), 1, true) then
                 menu.set_value(link, ceo_color)
-                notify("Changed ur CEO/MC Color")
             end
         end
     end
@@ -2369,7 +2369,11 @@ menu.toggle_loop(SessionWorld, "Spinning MK2's", {""}, "Spin all MK2's, except M
             if not found then
                 table.insert(mk2noob, playerName)
             end
-            menu.trigger_commands("spin"..playerName.." on")
+            --menu.trigger_commands("spin"..playerName.." on")
+            menu.trigger_commands("igniteveh"..playerName)
+            menu.trigger_commands("killveh"..playerName)
+            menu.trigger_commands("destroyprop"..playerName)
+            menu.trigger_commands("empveh"..playerName)
             util.yield(13)
         else
             local index
@@ -2387,7 +2391,7 @@ menu.toggle_loop(SessionWorld, "Spinning MK2's", {""}, "Spin all MK2's, except M
     util.yield(666)
 end, function()
     for _, playerName in pairs(mk2noob) do
-        menu.trigger_commands("spin"..playerName.." off")
+        --menu.trigger_commands("spin"..playerName.." off")
     end
 end)
 
