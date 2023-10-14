@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.52"
+local SCRIPT_VERSION = "0.1.53"
 
 local startupmsg = "I love u."
 
@@ -197,10 +197,21 @@ local function StandUser(pid) -- credit to sapphire for this and jinx script
     return false
 end
 
-local function wannabeGod(pid) -- credit to sapphire for this and jinx script
+local function wannabeGod(pid)
     if players.exists(pid) and pid != players.user() then
         for menu.player_root(pid):getChildren() as cmd do
             if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Attacking While Invulnerable"):isValid() then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+local function aggressive(pid)
+    if players.exists(pid) and pid != players.user() then
+        for menu.player_root(pid):getChildren() as cmd do
+            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Spoofed Host Token (Aggressive)"):isValid() then
                 return true
             end
         end
@@ -1613,24 +1624,6 @@ menu.toggle_loop(Outfit, "Restor Outfit", {"restoreoutfit"}, "Auto Restore the S
     end
 end)
 
-menu.divider(Outfit, "Unfinished")
-
-menu.toggle_loop(Outfit, "(Alpha) Lock outfit if Iligal Clothing detected", {"IligalLock"}, "This will lock you outfit if a iligal clothing is detected, so it wont get removed.", function()
-    local cmd_path = "Self>Appearance>Outfit>Pants"
-    if not util.is_interaction_menu_open() then
-        if menu.get_state(menu.ref_by_path(cmd_path)) == "21" then
-            menu.trigger_commands("lockoutfit on")
-        else
-            menu.trigger_commands("lockoutfit off")
-        end
-    else
-        menu.trigger_commands("lockoutfit off")
-    end
-    util.yield(13)
-end, function()
-    menu.trigger_commands("lockoutfit off")
-end)
-
 local function SuperClean(fix, ignoreMission)
     local pos = players.get_position(players.user())
     local ct = 0
@@ -2573,6 +2566,21 @@ menu.toggle_loop(Session, "Auto Kick \"Attacking While Invulnerable\"", {""}, "K
         for _, pid in pairs(Player_List) do
             local hdl = pid_to_handle(pid)
             if wannabeGod(pid) and not NETWORK.NETWORK_IS_FRIEND(hdl) and not StandUser(pid) then
+                StrategicKick(pid)
+            end
+        end
+        util.yield(6666)
+    else
+        util.yield(13666)
+    end
+end)
+
+menu.toggle_loop(Session, "Kick Aggressive Host Token on Attack", {""}, "", function()
+    if IsInSession() then
+        local Player_List = players.list()
+        for _, pid in pairs(Player_List) do
+            local hdl = pid_to_handle(pid)
+            if aggressive(pid) and not NETWORK.NETWORK_IS_FRIEND(hdl) and players.is_marked_as_attacker(pid) then
                 StrategicKick(pid)
             end
         end
