@@ -2351,7 +2351,7 @@ menu.toggle_loop(SessionWorld, "Spinning MK2's", {""}, "Spin all MK2's, except M
     for _, pid in pairs(players.list(false, true, true)) do 
         local hdl = pid_to_handle(pid)
         local playerName = players.get_name(pid)
-        if players.get_vehicle_model(pid) == 2069146067 and not NETWORK.NETWORK_IS_FRIEND(hdl)) then
+        if players.get_vehicle_model(pid) == 2069146067 and not NETWORK.NETWORK_IS_FRIEND(hdl) then
             if not players.is_marked_as_modder(pid) then 
                 local found = false
                 for _, name in ipairs(mk2noob) do
