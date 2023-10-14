@@ -2560,18 +2560,37 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
     end
 end)
 
+local wannabeGOD = {}
 menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost everyone who triggers \"Attacking While Invulnerable\" except Friends or Stand user.", function()
     if IsInSession() then
         local Player_List = players.list()
         for _, pid in pairs(Player_List) do
             local hdl = pid_to_handle(pid)
+            local playerName = players.get_name(pid)
             if wannabeGod(pid) and not NETWORK.NETWORK_IS_FRIEND(hdl) and not StandUser(pid) then
-                menu.trigger_commands("ignore " .. name .. " on")
+                local found = false
+                for _, name in ipairs(wannabeGOD) do
+                    if name == playerName then
+                        found = true
+                        break
+                    end
+                end
+                if not found then
+                    table.insert(wannabeGOD, playerName)
+                    NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+                    menu.trigger_commands("ignore " .. name .. " on")
+                end
             end
         end
         util.yield(6666)
     else
         util.yield(13666)
+    end
+end, function()
+    for _, playerName in pairs(wannabeGOD) do
+        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+        menu.trigger_commands("ignore " .. name .. " off")
+        table.remove(wannabeGOD, index)
     end
 end)
 
