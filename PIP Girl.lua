@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.53"
+local SCRIPT_VERSION = "0.1.54"
 
 local startupmsg = "I love u."
 
@@ -1292,7 +1292,7 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
                 local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
                 local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
 
-                requestControl(vehicle, 13)
+                requestControl(vehicle, 0)
 
                 -- Perform repairs
                 if engineHealth < 1000 then
