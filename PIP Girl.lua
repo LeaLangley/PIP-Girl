@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.49"
+local SCRIPT_VERSION = "0.1.50"
 
 local startupmsg = "I love u."
 
@@ -831,12 +831,12 @@ local function check_CEO_Color(ceo_color)
                 menu.focus(menu.ref_by_path("Online>CEO/MC>Colour Slots>0"))
                 util.yield(420)
                 menu.focus(current)
-                notify("Changed ur CEO/MC Color")
             end
         end
         for menu.ref_by_path("Online>CEO/MC>Colour Slots"):getChildren() as link do
             if string.find(link.help_text, players.get_name(players.user()), 1, true) then
                 menu.set_value(link, ceo_color)
+                notify("Changed ur CEO/MC Color")
             end
         end
     end
@@ -2212,6 +2212,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                             util.yield(6666)
                             if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 and not isModder(players.get_host())then
                                 StrategicKick(players.get_host())
+                                menu.trigger_commands("timeout"..players.get_name(players.get_host()).." off")
                             else
                                 if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
                                     menu.trigger_commands("unstuck")
@@ -2219,7 +2220,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                             end
                         end
                         local startTime = os.clock()
-                        while (os.clock() - startTime) * 1000 < 25666 do
+                        while (os.clock() - startTime) * 1000 < 31666 do
                             if players.get_host() == players.user() then
                                 break
                             end
