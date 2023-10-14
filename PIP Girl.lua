@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.55"
+local SCRIPT_VERSION = "0.1.56"
 
 local startupmsg = "I love u."
 
@@ -468,63 +468,63 @@ end
 
 menu.divider(menu.my_root(), SCRIPT_VERSION)
 local PIP_Girl = menu.list(menu.my_root(), 'PIP Girl', {}, 'Personal Information Processor Girl.', function(); end)
-local PIP_Girl_APPS = menu.list(PIP_Girl, 'PIP Girl Apps', {}, 'Personal Information Processor Girl Apps.', function(); end)
+local PIP_Girl_APPS = menu.list(PIP_Girl, 'PIP Girl Apps', {}, 'Personal Information Processor Girl apps.', function(); end)
 --local PIP_Girl_Heist = menu.list(PIP_Girl, 'PIP Girl Heists', {}, 'Personal Information Processor Girl Heist Presets.', function(); end)
-local Stimpak = menu.list(menu.my_root(), 'Stimpak', {}, 'Take a Breath.', function(); end)
-local Outfit = menu.list(menu.my_root(), 'Outfit', {}, 'Look Pretty and nice.', function(); end)
-local Game = menu.list(menu.my_root(), 'Game', {}, 'Very Gaming Today.', function(); end)
+local Stimpak = menu.list(menu.my_root(), 'Stimpak', {}, 'Take a breath.', function(); end)
+local Outfit = menu.list(menu.my_root(), 'Outfit', {}, 'Look pretty and nice.', function(); end)
+local Game = menu.list(menu.my_root(), 'Game', {}, 'Very gaming today.', function(); end)
 local Session = menu.list(menu.my_root(), 'Session', {}, '.noisseS', function(); end)
-local SessionClaimer = menu.list(Session, 'Session Claimer Settings', {}, 'Session Claimer Settings.', function(); end)
+local SessionClaimer = menu.list(Session, 'Session Claimer Settings', {}, 'Session Claimer settings.', function(); end)
 local Settings = menu.list(menu.my_root(), 'Settings/Misc', {}, 'Basement.', function(); end)
 local Credits = menu.list(Settings, 'Credits', {}, '<3', function(); end)
 
-menu.action(PIP_Girl_APPS, "Master Control Terminal App", {}, "Your Master Control Terminal.", function()
+menu.action(PIP_Girl_APPS, "Master Control Terminal App", {}, "Your master control terminal.", function()
     START_SCRIPT("CEO", "apparcadebusinesshub")
 end)
 
-menu.textslider(PIP_Girl_APPS, "Nightclub App", {}, "Your Nightclub Screen.", {
+menu.textslider(PIP_Girl_APPS, "Nightclub App", {}, "Your nightclub screen.", {
     "Open",
     "Close",
 }, function()
     START_SCRIPT("CEO", "appbusinesshub")
 end)
 
-menu.textslider(PIP_Girl_APPS, "Bunker App", {}, "Your Bunker Screen.", {
+menu.textslider(PIP_Girl_APPS, "Bunker App", {}, "Your bunker screen.", {
     "Open",
     "Close",
 }, function()
     START_SCRIPT("CEO", "appbunkerbusiness")
 end)
 
-menu.textslider(PIP_Girl_APPS, "Touchscreen Terminal App", {}, "Your Terrobyte Screen.", {
+menu.textslider(PIP_Girl_APPS, "Touchscreen Terminal App", {}, "Your Terrorbyte screen.", {
     "Open",
     "Close",
 }, function()
     START_SCRIPT("CEO", "apphackertruck")
 end)
 
-menu.textslider(PIP_Girl_APPS, "Air Cargo App", {}, "Your Air Cargo Screen.", {
+menu.textslider(PIP_Girl_APPS, "Air Cargo App", {}, "Your air cargo screen.", {
     "Open",
     "Close",
 }, function()
     START_SCRIPT("CEO", "appsmuggler")
 end)
 
-menu.textslider(PIP_Girl_APPS, "The Open Road App", {}, "Your MC Management Screen.", {
+menu.textslider(PIP_Girl_APPS, "The Open Road App", {}, "Your MC management screen.", {
     "Open",
     "Close",
 }, function()
     START_SCRIPT("MC", "appbikerbusiness")
 end)
 
-menu.textslider(PIP_Girl_APPS, "The Agency App", {}, "Your Agnecy Screen", {
+menu.textslider(PIP_Girl_APPS, "The Agency App", {}, "Your agency screen.", {
     "Open",
     "Close",
 }, function()
     START_SCRIPT("CEO", "appfixersecurity")
 end)
 
-menu.action(PIP_Girl_APPS, "(Unstuck) Unstuck after start sell.", {}, "If you Use one of the screens above, And start a sell, You could get stuck.\nDo Suicide to Unstuck.", function()
+menu.action(PIP_Girl_APPS, "(Unstuck) Unstuck after starting a sale.", {}, "If you use one of the screens above and start a sale, you could get stuck.\nPerform an Suicide to unstuck.", function()
     menu.trigger_commands('ewo')
 end)
 
@@ -550,10 +550,10 @@ end
 
 local function CayoNotify()
     warnify("Note that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.")
-    warnify("With this setup , Every player gets 2m, so they can do 2 runs and reach Hour Limit.")
-    warnify("The cayo heist with a Sweet Legit Like Preset.\nIf you inside the Submarine, go manually out and in again to refreash the board.")
+    warnify("With this setup, every player gets 2m, so they can do 2 runs and reach the hourly limit.")
+    warnify("The Cayo heist with a sweet legit-like preset.\nIf you're inside the submarine, go manually out and in again to refresh the board.")
     util.yield(1666)
-    notify("The cayo heist with a Sweet Legit Like Preset.\nIf you inside the Submarine, go manually out and in again to refreash the board.")
+    notify("The Cayo heist with a sweet legit-like preset.\nIf you're inside the submarine, go manually out and in again to refresh the board.")    
 end
 --[[
 menu.action(PIP_Girl_Heist, 'Cayo 1 Player Preset (!)', {}, "", function (click_type)
@@ -820,7 +820,7 @@ menu.action(PIP_Girl_Heist, 'Cayo 4 Player 25/25/25/25 Preset (!)', {}, "", func
     end, true)
 end)
 ]]--
-menu.toggle_loop(PIP_Girl, 'Nightclub Party Never Stops!', {'ncpop'}, 'The hottest NC in whole LS.\nKeeps you pop at 90-100%', function ()
+menu.toggle_loop(PIP_Girl, "Nightclub Party Never Stops!", {'ncpop'}, "The hottest NC in whole LS.\nKeeps you pop at 90-100%", function ()
     if IsInSession() then
         local ncpop = math.floor(STAT_GET_INT('CLUB_POPULARITY') / 10)
         if ncpop < 66 then
@@ -854,7 +854,7 @@ local function check_CEO_Color(ceo_color)
                 menu.focus(menu.ref_by_path("Online>CEO/MC>Colour Slots>0"))
                 util.yield(420)
                 menu.focus(current)
-                notify("Changed ur CEO/MC Color")
+                notify("Changed your CEO/MC color.")
             end
         end
         for menu.ref_by_path("Online>CEO/MC>Colour Slots"):getChildren() as link do
@@ -869,10 +869,10 @@ local urceoname = ""
 local function on_change(input_str, click_type)
     urceoname = input_str
 end
-menu.text_input(PIP_Girl, "CEO Name", {"pgceoname"}, "(also works for mc) You can press Ctrl+U and Select Colours but no special GTA Icons sadly.", on_change)
+menu.text_input(PIP_Girl, "CEO Name", {"pgceoname"}, "(Also works for MC) You can press Ctrl+U and select colors, but no special GTA icons, sadly.", on_change)
 local joinfriendsceo = false
 local invitefriendsinceo = false
-menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yourself as CEO and Auto Switches you to MC/CEO in most situations needed.", function()
+menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yourself as CEO and auto switches you to MC/CEO in most situations needed.", function()
     if IsInSession() then
         local uniqueColors = {}  -- Table to store unique organization colors
         for _, pid in players.list(true, true, true) do 
@@ -996,7 +996,7 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yo
     end
 end)
 
-menu.slider(PIP_Girl, 'Auto CEO/MC Color', {'favceocolor'}, 'Enter the Color ID of ur CEO.', -1, 14, ceo_color, 1, function (new_value)
+menu.slider(PIP_Girl, 'Auto CEO/MC Color', {'favceocolor'}, "Enter the Color ID of your CEO.", -1, 14, ceo_color, 1, function (new_value)
     ceo_color = new_value
 end)
 
@@ -1009,7 +1009,7 @@ menu.toggle_loop(PIP_Girl, "Additional CEO/MC Color Checks.", {""}, "If u use \"
     end
 end)
 
-menu.toggle(PIP_Girl, "Auto Join Friends CEO (!)", {""}, "(also mc) Uses 'Auto Become a CEO/MC' ", function(on)
+menu.toggle(PIP_Girl, "Auto Join Friends CEO (!)", {""}, "(also MC) Uses \"Auto Become a CEO/MC\"", function(on)
     if on then
         joinfriendsceo = true
     else
@@ -1035,7 +1035,7 @@ local function inviteToCEO(pid)
     end
 end
 
-menu.action(PIP_Girl, "Invite All Friends in CEO/MC", {"invceo"}, "Invites all your friends into your CEO/MC", function()
+menu.action(PIP_Girl, "Invite All Friends in CEO/MC", {"invceo"}, "Invites all your friends into your CEO/MC.", function()
     if IsInSession() then
         for _, pid in players.list(true, true, true) do
             local hdl = pid_to_handle(pid)
@@ -1063,7 +1063,7 @@ end)
 menu.divider(PIP_Girl, "Pickup Options")
 
 local carryingPickups = {}
-menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all Pickups on You.\nNote this dosen't work in all Situations.", function(on)
+menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all pickups on you.\nNote this doesn't work in all situations.", function(on)
     if on then
         local counter = 0
         local playerPed = PLAYER.PLAYER_PED_ID()
@@ -1076,7 +1076,7 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all Pickups on Yo
                 counter = counter + 1
             end
         end
-        notify("Carrying "..counter.." Pickups.")
+        notify("Carrying "..counter.." pickups.")
     else
         local counter = 0
         local playerPed = PLAYER.PLAYER_PED_ID()
@@ -1093,12 +1093,12 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all Pickups on Yo
                 counter = counter + 1
             end
         end
-        notify("Droped "..counter.." Pickups.")
+        notify("Droped "..counter.." pickups.")
         carryingPickups = {}
     end
 end)
 
-menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a Shower in all exsisting Pickups.", function()
+menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a shower in all existing pickups.", function()
     if IsInSession() then
         local pos = players.get_position(players.user())
         local in_vehicle = is_user_driving_vehicle()
@@ -1121,7 +1121,7 @@ menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a Shower in all exsisting 
     end
 end)
 
-menu.action(PIP_Girl, "Teleport Pickups To Me", {"tppickups"}, "Teleports all Pickups To You.\nNote this donst work in all Situations.", function(click_type)
+menu.action(PIP_Girl, "Teleport Pickups To Me", {"tppickups"}, "Teleports all pickups to you.\nNote this doesn't work in all situations.", function(click_type)
     if IsInSession() then
         local counter = 0
         local pos = players.get_position(players.user())
@@ -1136,9 +1136,9 @@ menu.action(PIP_Girl, "Teleport Pickups To Me", {"tppickups"}, "Teleports all Pi
             end
         end
         if counter == 0 then
-            notify("No Pickups Found. :c")
+            notify("No pickups found. :c")
         else
-            notify("Teleported ".. tostring(counter) .." Pickups. :D")
+            notify("Teleported " .. tostring(counter) .. " Pickups. :D")
         end
     end
 end)
@@ -1149,12 +1149,25 @@ local regen_all = Stimpak:action("Refill Health & Armour",{"newborn"},"Regenerat
     if IsInSession() then
         menu.trigger_commands("refillhealth")
         menu.trigger_commands("refillarmour")
-        menu.trigger_commands("fillammo")
     end
 end)
 
+local filled_up = false
+menu.toggle_loop(Stimpak, "Fill me up! On session join", {""}, "Fill you up with health, armor, snacks, and ammo on session join.", function()
+    if IsInSession() and not filled_up then
+        menu.trigger_command(regen_all)
+        menu.trigger_commands("fillinventory")
+        menu.trigger_commands("fillammo")
+        filled_up = true
+    end
+    if not IsInSession() then
+        filled_up = false
+    end
+    util.yield(6666)
+end)
+
 local dead = 0
-menu.toggle_loop(Stimpak, "Auto Armor after Death",{"pgblessing"},"A body armor will be applied automatically when respawning.",function()
+menu.toggle_loop(Stimpak, "Auto Armor after Death",{"pgblessing"},"A body armor will be applied automatically when respawning.", function()
     if IsInSession() then
         local health = ENTITY.GET_ENTITY_HEALTH(players.user_ped())
         if health == 0 and dead == 0 then
@@ -1169,7 +1182,7 @@ menu.toggle_loop(Stimpak, "Auto Armor after Death",{"pgblessing"},"A body armor 
     end
 end)
 
-menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehicle", {"pghealth"}, "Will Recharge Healt when in Cover or Vehicle quickly.\nBUT also slowly almost legit like otherwise to 100%.", function()
+menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehicle", {"pghealth"}, "Will recharge health when in cover or vehicle quickly.\nBUT also slowly, almost legit-like, otherwise to 100%.", function()
     if IsInSession() then
         local in_vehicle = is_user_driving_vehicle()
         local playerPed = players.user_ped()
@@ -1222,7 +1235,7 @@ menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle", {"pgarmor"}, "Will 
 end)
 
 local was_user_in_vehicle = false
-menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {"pgvaid"}, "Using your First Aid kit provided in you Vehicle.", function()
+menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {"pgvaid"}, "Using your First Aid kit provided in your vehicle.", function()
     if IsInSession() then
         local in_vehicle = is_user_driving_vehicle()
         local health = ENTITY.GET_ENTITY_HEALTH(players.user_ped())
@@ -2258,8 +2271,9 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                                 ReportSessionKD(numPlayers)
                             end
                             menu.trigger_commands("resetheadshots")
-                            menu.trigger_commands("newborn")
+                            menu.trigger_command(regen_all)
                             menu.trigger_commands("fillinventory")
+                            menu.trigger_commands("fillammo")
                             if thunderMin != 0 then
                                 thunderForMin(thunderMin)
                             end
