@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.60"
+local SCRIPT_VERSION = "0.1.61"
 
 local startupmsg = "I love u."
 
@@ -2612,7 +2612,7 @@ menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost
                 if not found then
                     table.insert(wannabeGOD, pid)
                     NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
-                    menu.trigger_commands("ignore "..playerName.." on")
+                    --menu.trigger_commands("ignore "..playerName.." on")
                     --menu.trigger_commands("confuse "..playerName.." on")
                 end
                 --util.trigger_script_event(1 << pid, {800157557, players.user(), 225624744, math.random(0, 9999)}) -- credits to Jinx Script.
