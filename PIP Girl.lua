@@ -2768,6 +2768,19 @@ local function add_player_to_blacklist(player, name, rid)
     end
 end
 
+local function update_player_name(player, name, rid)
+    local player_data_g = data_g[tostring(rid)]
+    if player_data_g then
+        if player_data_g.Name ~= name then
+            player_data_g.Name = name
+            data_e[tostring(rid)] = {
+                ["Name"] = name
+            }
+            save_data_e()
+        end
+    end
+end
+
 local function add_in_stand(pid, name, rid)
     players.add_detection(pid, "Blacklist", TOAST_DEFAULT, 100)
     menu.trigger_commands("historynote ".. name .." Blacklist")
@@ -2779,6 +2792,9 @@ local function is_player_in_blacklist(pid, name, rid)
         add_in_stand(pid, name, rid)
         local player_data_g = data_g[tostring(rid)]
         if player_data_g then
+            if player_data_g.Name ~= name then
+                update_player_name(pid, name, rid)
+            end
             return true
         else
             local player_data_e = data_e[tostring(rid)]
@@ -2800,6 +2816,7 @@ local function SessionCheck(pid)
         local name = players.get_name(pid)
         for id, player in pairs(data_g) do
             if tonumber(id) == tonumber(rid) then
+                update_player_name(pid)
                 notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
                 add_in_stand(pid, name, rid)
                 if StandUser(pid) then
