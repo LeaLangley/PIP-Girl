@@ -2765,50 +2765,10 @@ local function add_player_to_blacklist(player, name, rid)
     end
 end
 
-local function update_player_name(player, name, rid)
-    local player_data_g = data_g[tostring(rid)]
-    if player_data_g then
-        if player_data_g.Name ~= name then
-            player_data_g.Name = name
-            data_e[tostring(rid)] = {
-                ["Name"] = name
-            }
-            save_data_e()
-        end
-    end
-end
-
 local function add_in_stand(pid, name, rid)
     players.add_detection(pid, "Blacklist", TOAST_DEFAULT, 100)
-    --local commandPaths = {
-    --    "[Offline]",
-    --    "[Public]",
-    --    "[Invite]",
-    --    "[Friends Only]",
-    --    "[Story Mode]",
-    --    "[Other]"
-    --}
     menu.trigger_commands("historynote ".. name .." Blacklist")
     menu.trigger_commands("historyblock ".. name .." on")
-    --for i, suffix in ipairs(commandPaths) do
-    --    pathSuffix = suffix
-    --    util.yield(666)
-    --    local Note = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Note")
-    --    local Notification = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Notification")
-    --    local BlockJoin = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Join")
-    --    local Timeout = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Timeout")
-    --    local BlockTheirNetworkEvents = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Their Network Events")
-    --    local BlockIncomingSyncs = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Incoming Syncs")
-    --    local BlockOutgoingSyncs = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Outgoing Syncs")
---
-    --    menu.trigger_commands("historynote ".. name .." Blacklist")
-    --    menu.set_value(Notification, true)
-    --    menu.set_value(BlockJoin, true)
-    --    menu.set_value(Timeout, true)
-    --    menu.set_value(BlockTheirNetworkEvents, true)
-    --    menu.set_value(BlockIncomingSyncs, true)
-    --    menu.set_value(BlockOutgoingSyncs, true)
-    --end
 end
 
 local function is_player_in_blacklist(pid, name, rid)
@@ -2816,9 +2776,6 @@ local function is_player_in_blacklist(pid, name, rid)
         add_in_stand(pid, name, rid)
         local player_data_g = data_g[tostring(rid)]
         if player_data_g then
-            if player_data_g.Name ~= name then
-                update_player_name(pid, name, rid)
-            end
             return true
         else
             local player_data_e = data_e[tostring(rid)]
@@ -2840,18 +2797,12 @@ local function SessionCheck(pid)
         local name = players.get_name(pid)
         for id, player in pairs(data_g) do
             if tonumber(id) == tonumber(rid) then
-                update_player_name(pid)
                 notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
                 add_in_stand(pid, name, rid)
                 if StandUser(pid) then
                     warnify("This Blacklist is a Stand User , we dont Kick them until they atack: \n" .. name .. " - " .. rid)
                     menu.trigger_commands("hellaa " .. name .. " on")
                 else
-                    --menu.trigger_commands("crash " .. name)
-                    --menu.trigger_commands("choke " .. name)
-                    --menu.trigger_commands("ngcrash " .. name)
-                    --menu.trigger_commands("footlettuce " .. name)
-                    --menu.trigger_commands("slaughter " .. name)
                     StrategicKick(pid)
                 end
             end
@@ -2864,11 +2815,6 @@ local function SessionCheck(pid)
                     warnify("This Blacklist is a Stand User , we dont Kick them until they atack: \n" .. name .. " - " .. rid)
                     menu.trigger_commands("hellaa " .. name .. " on")
                 else
-                    --menu.trigger_commands("crash " .. name)
-                    --menu.trigger_commands("choke " .. name)
-                    --menu.trigger_commands("ngcrash " .. name)
-                    --menu.trigger_commands("footlettuce " .. name)
-                    --menu.trigger_commands("slaughter " .. name)
                     StrategicKick(pid)
                 end
             end
