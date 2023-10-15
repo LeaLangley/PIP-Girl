@@ -1176,6 +1176,7 @@ end)
 local filled_up = false
 menu.toggle_loop(Stimpak, "Fill me up! On session join", {""}, "Fill you up with health, armor, snacks, and ammo on session join.", function()
     if IsInSession() and not filled_up then
+        util.yield(13666)
         menu.trigger_command(regen_all)
         menu.trigger_commands("fillinventory")
         menu.trigger_commands("fillammo")
