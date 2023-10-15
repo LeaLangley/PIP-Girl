@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.61"
+local SCRIPT_VERSION = "0.1.62"
 
 local startupmsg = "I love u."
 
@@ -2296,10 +2296,12 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                             menu.trigger_command(regen_all)
                             menu.trigger_commands("fillinventory")
                             menu.trigger_commands("fillammo")
+                            menu.trigger_commands("claimsession off")
                             if thunderMin != 0 then
                                 thunderForMin(thunderMin)
                             end
                             util.yield(6666)
+                            menu.trigger_commands("claimsession off")
                         else
                             if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
                                 menu.trigger_commands("unstuck")
@@ -2807,6 +2809,7 @@ local function SessionCheck(pid)
                     StrategicKick(pid)
                 end
             end
+            util.yield(1)
         end
         for id, player in pairs(data_e) do
             if tonumber(id) == tonumber(rid) then
@@ -2819,6 +2822,7 @@ local function SessionCheck(pid)
                     StrategicKick(pid)
                 end
             end
+            util.yield(1)
         end
     end
 end
