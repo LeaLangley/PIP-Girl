@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.57"
+local SCRIPT_VERSION = "0.1.58"
 
 local startupmsg = "I love u."
 
@@ -315,11 +315,11 @@ local function isStuck(pid)
         return false
     end
     if pid == players.user() then
-        if ENTITY.GET_ENTITY_SPEED(pid) < 2 and HUD.BUSYSPINNER_IS_DISPLAYING() then
+        if ENTITY.GET_ENTITY_SPEED(pid) < 1 and HUD.BUSYSPINNER_IS_DISPLAYING() then
             return true
         end
     end
-    if not players.is_visible(pid) and ENTITY.GET_ENTITY_SPEED(pid) < 2 then
+    if not players.is_visible(pid) and ENTITY.GET_ENTITY_SPEED(pid) < 1 then
         if players.get_money(pid) ~= 0 and players.get_rank(pid) ~= 0 then
             return true
         end
@@ -331,6 +331,9 @@ local function isStuck(pid)
 end
 
 local function isLoading(pid)
+    if pid == players.user() and not IsInSession() then
+        return true
+    end
     if not IsInSession() then
         return false
     end
@@ -348,6 +351,9 @@ local function isLoading(pid)
             return true
         end
         if players.get_rank(pid) == 0 then
+            return true
+        end
+        if not players.is_visible(pid) then
             return true
         end
     end
@@ -457,23 +463,26 @@ local function Wait_for_IsInSession()
     players.dispatch_on_join()
 end
 
-local function StrategicKick(pid) --TODO , make it actually smart , not bare bones.
+local function StrategicKick(pid)
     local name = players.get_name(pid)
-    if name ~= "UndiscoveredPlayer" and name ~= "InvalidPlayer" then
+    if player_Exist(pid) then
         if not IsInSession() then
             Wait_for_IsInSession()
         end
         if players.user() == players.get_host() then
-            if not isLoading(pid) then
+            if not isLoading(pid) and not isLoading(players.user()) then
                 menu.trigger_commands("ban " .. name)
             else
                 menu.trigger_commands("loveletterkick " .. name)
             end
         else
             menu.trigger_commands("kick " .. name)
-            menu.trigger_commands("ignore " .. name .. " on")
-            menu.trigger_commands("desync " .. name .. " on")
-            menu.trigger_commands("blocksync " .. name .. " on")
+            if IsInSession() then
+                menu.trigger_commands("ignore " .. name .. " on")
+                menu.trigger_commands("desync " .. name .. " on")
+                menu.trigger_commands("blocksync " .. name .. " on")
+                NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+            end
         end
     end
 end
@@ -2629,7 +2638,7 @@ menu.toggle_loop(Session, "Kick Aggressive Host Token on Attack", {""}, "", func
                 StrategicKick(pid)
             end
         end
-        util.yield(6666)
+        util.yield(3666)
     else
         util.yield(13666)
     end
