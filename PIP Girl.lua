@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.56"
+local SCRIPT_VERSION = "0.1.57"
 
 local startupmsg = "I love u."
 
@@ -201,9 +201,11 @@ end
 local function StandUser(pid) -- credit to sapphire for this and jinx script
     if player_Exist(pid) and pid != players.user() then
         util.yield(666)
-        for menu.player_root(pid):getChildren() as cmd do
-            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Stand User"):isValid() then
-                return true
+        if player_Exist(pid) and pid != players.user() then
+            for menu.player_root(pid):getChildren() as cmd do
+                if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Stand User"):isValid() then
+                    return true
+                end
             end
         end
     end
@@ -213,12 +215,14 @@ end
 local function wannabeGod(pid)
     if player_Exist(pid) and pid != players.user() then
         util.yield(666)
-        for menu.player_root(pid):getChildren() as cmd do
-            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Attacking While Invulnerable"):isValid() then
-                return true
-            end
-            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Dead For Too Long"):isValid() then
-                return true
+        if player_Exist(pid) and pid != players.user() then
+            for menu.player_root(pid):getChildren() as cmd do
+                if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Attacking While Invulnerable"):isValid() then
+                    return true
+                end
+                if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Dead For Too Long"):isValid() then
+                    return true
+                end
             end
         end
     end
@@ -228,9 +232,11 @@ end
 local function aggressive(pid)
     if player_Exist(pid) and pid != players.user() then
         util.yield(666)
-        for menu.player_root(pid):getChildren() as cmd do
-            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Spoofed Host Token (Aggressive)"):isValid() then
-                return true
+        if player_Exist(pid) and pid != players.user() then
+            for menu.player_root(pid):getChildren() as cmd do
+                if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Spoofed Host Token (Aggressive)"):isValid() then
+                    return true
+                end
             end
         end
     end
