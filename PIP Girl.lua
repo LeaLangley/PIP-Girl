@@ -200,6 +200,7 @@ end
 
 local function StandUser(pid) -- credit to sapphire for this and jinx script
     if player_Exist(pid) and pid != players.user() then
+        util.yield(666)
         for menu.player_root(pid):getChildren() as cmd do
             if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Stand User"):isValid() then
                 return true
@@ -211,8 +212,12 @@ end
 
 local function wannabeGod(pid)
     if player_Exist(pid) and pid != players.user() then
+        util.yield(666)
         for menu.player_root(pid):getChildren() as cmd do
             if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Attacking While Invulnerable"):isValid() then
+                return true
+            end
+            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Dead For Too Long"):isValid() then
                 return true
             end
         end
@@ -222,6 +227,7 @@ end
 
 local function aggressive(pid)
     if player_Exist(pid) and pid != players.user() then
+        util.yield(666)
         for menu.player_root(pid):getChildren() as cmd do
             if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Spoofed Host Token (Aggressive)"):isValid() then
                 return true
