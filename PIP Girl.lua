@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.58"
+local SCRIPT_VERSION = "0.1.59"
 
 local startupmsg = "I love u."
 
@@ -2604,17 +2604,19 @@ menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost
             local playerName = players.get_name(pid)
             if wannabeGod(pid) and not NETWORK.NETWORK_IS_FRIEND(hdl) and not StandUser(pid) then
                 local found = false
-                for _, name in ipairs(wannabeGOD) do
-                    if name == playerName then
+                for _, plid in ipairs(wannabeGOD) do
+                    if plid == pid then
                         found = true
                         break
                     end
                 end
                 if not found then
-                    table.insert(wannabeGOD, playerName)
+                    table.insert(wannabeGOD, pid)
                     NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
                     menu.trigger_commands("ignore "..playerName.." on")
+                    menu.trigger_commands("confuse "..playerName.." on")
                 end
+                --util.trigger_script_event(1 << pid, {800157557, players.user(), 225624744, math.random(0, 9999)}) -- credits to Jinx Script.
             end
         end
         util.yield(6666)
@@ -2622,9 +2624,13 @@ menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost
         util.yield(13666)
     end
 end, function()
-    for _, playerName in pairs(wannabeGOD) do
-        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
-        menu.trigger_commands("ignore "..playerName.." off")
+    for _, pid in pairs(wannabeGOD) do
+        if player_Exist(pid) then
+            local playerName = players.get_name(pid)
+            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+            menu.trigger_commands("ignore "..playerName.." off")
+            menu.trigger_commands("confuse "..playerName.." off")
+        end
         table.remove(wannabeGOD, index)
     end
 end)
