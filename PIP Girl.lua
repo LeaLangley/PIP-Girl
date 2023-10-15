@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.59"
+local SCRIPT_VERSION = "0.1.60"
 
 local startupmsg = "I love u."
 
@@ -2529,9 +2529,8 @@ end)
 menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
     if IsInSession() then
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
-            local script_host_id = players.get_script_host()
-            if players.user() == players.get_host() or players.user() == script_host_id then
-                if not isStuck(script_host_id) and player_Exist(script_host_id) then
+            if players.user() == players.get_host() or players.user() == players.get_script_host() then
+                if not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
                     local Player_List = players.list()
                     for _, pid in pairs(Player_List) do
                         local name = players.get_name(pid)
@@ -2550,7 +2549,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                         fail = true
                                         break
                                     end
-                                    if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not isStuck(script_host_id) and player_Exist(script_host_id) then
+                                    if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
                                         menu.trigger_commands("givesh " .. name)
                                         notify_cmd(name .. " is Still Loading too Long.")
                                         util.yield(13666)
@@ -2563,7 +2562,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                         notify(name .. " got Lost in the Void.")
                                     end
                                 end
-                                if not isStuck(script_host_id) and player_Exist(script_host_id) then
+                                if not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
                                     menu.trigger_commands("scripthost")
                                 end
                                 util.yield(13666)
