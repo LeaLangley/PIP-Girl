@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.62"
+local SCRIPT_VERSION = "0.1.63"
 
 local startupmsg = "I love u."
 
@@ -2643,6 +2643,21 @@ menu.toggle_loop(Session, "Kick Aggressive Host Token on Attack", {""}, "", func
         for _, pid in pairs(Player_List) do
             local hdl = pid_to_handle(pid)
             if aggressive(pid) and not NETWORK.NETWORK_IS_FRIEND(hdl) and players.is_marked_as_attacker(pid) then
+                StrategicKick(pid)
+            end
+        end
+        util.yield(3666)
+    else
+        util.yield(13666)
+    end
+end)
+
+menu.toggle_loop(Session, "Kick Aggressive Host Token as Host", {""}, "", function()
+    if IsInSession() and players.user() == players.get_host() then
+        local Player_List = players.list()
+        for _, pid in pairs(Player_List) do
+            local hdl = pid_to_handle(pid)
+            if aggressive(pid) and not NETWORK.NETWORK_IS_FRIEND(hdl) then
                 StrategicKick(pid)
             end
         end
