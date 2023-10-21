@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.63"
+local SCRIPT_VERSION = "0.1.64"
 
 local startupmsg = "I love u."
 
@@ -2413,10 +2413,8 @@ menu.toggle_loop(SessionWorld, "Spinning MK2's", {""}, "Spin all MK2's, except M
                 if not found then
                     table.insert(mk2noob, playerName)
                 end
-                --menu.trigger_commands("spin"..playerName.." on")
-                menu.trigger_commands("igniteveh"..playerName)
-                menu.trigger_commands("killveh"..playerName)
-                menu.trigger_commands("destroyprop"..playerName)
+                menu.trigger_commands("spin"..playerName.." on")
+                menu.trigger_commands("slippery"..playerName.." on")
                 util.yield(13)
             end
         else
@@ -2435,7 +2433,8 @@ menu.toggle_loop(SessionWorld, "Spinning MK2's", {""}, "Spin all MK2's, except M
     util.yield(666)
 end, function()
     for _, playerName in pairs(mk2noob) do
-        --menu.trigger_commands("spin"..playerName.." off")
+        menu.trigger_commands("spin"..playerName.." on")
+        menu.trigger_commands("slippery"..playerName.." on")
         table.remove(mk2noob, index)
     end
 end)
