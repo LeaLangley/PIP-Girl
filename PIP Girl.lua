@@ -1694,7 +1694,7 @@ menu.toggle_loop(Vehicle, "Set vehicle light color automatically",{""},"Automati
     end
 end)
 
-menu.slider(Vehicle, "Vehicle light color", {"favheadlights"}, "", 2, 14, vehicleFavColor, 1, function (new_value)
+menu.slider(Vehicle, "Vehicle light color", {"favheadlights"}, "Default lights: 0 & 1 | Color lights: 2-14", 2, 14, vehicleFavColor, 1, function (new_value)
     vehicleFavColor = new_value
 end)
 
