@@ -1790,7 +1790,6 @@ menu.toggle_loop(Game, "Heli Sparrow Handeling",{""},"All Heli's u enter fly lik
             if driver == players.user() and VEHICLE.GET_VEHICLE_CLASS(vehicle) == 15 then
                 if sparrowHandeling == nil or sparrowHandeling ~= vehicle then
                     sparrowHandeling = vehicle
-                    notify("Sparrofy")
                     menu.trigger_commands("vhacceleration 1.00000")
                     menu.trigger_commands("vhsuspensionforce 3.00000")
                     menu.trigger_commands("vhsuspensionraise 0.35000")
@@ -1892,6 +1891,7 @@ menu.toggle_loop(Game, "Heli Sparrow Handeling",{""},"All Heli's u enter fly lik
                     menu.trigger_commands("vhpontoonverticaldampingcoefficientup 400.00000")
                     menu.trigger_commands("vhpontoonverticaldampingcoefficientdown 600.00000")
                     menu.trigger_commands("vhkeelspheresize 0.30000")
+                    menu.trigger_commands("deploychaff")
                     util.yield(3666)
                 end
             end
