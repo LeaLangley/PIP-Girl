@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.34"
+local SCRIPT_VERSION = "0.0.0"
 
 local startupmsg = "I love u."
 
@@ -33,13 +33,13 @@ if not status then
 end
 if auto_updater == true then error("Invalid auto-updater lib. Please delete your Stand/Lua Scripts/lib/auto-updater.lua and try again") end
 
-local default_check_interval = 1
+local default_check_interval = 13666
 local auto_update_config = {
     source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/PIP%20Girl.lua",
     script_relpath=SCRIPT_RELPATH,
     switch_to_branch=selected_branch,
     verify_file_begins_with="--",
-    check_interval=1,
+    check_interval=6666,
     silent_updates=true,
     dependencies={
         {
@@ -52,7 +52,7 @@ local auto_update_config = {
             name="blacklist",
             source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/Blacklist.json",
             script_relpath="resources/1 PIP Girl/Blacklist.json",
-            check_interval=1,
+            check_interval=6666,
         },
         {
             name="read_me.txt",
@@ -186,11 +186,57 @@ local function warnify_ses(msg)
     util.toast(msg)
 end
 
-local function StandUser(pid) -- credit to sapphire for this and jinx script
-    if players.exists(pid) and pid != players.user() then
-        for menu.player_root(pid):getChildren() as cmd do
-            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Stand User"):isValid() then
+local function player_Exist(pid)
+    if players.exists(pid) and players.get_name(pid) ~= "undiscoveredplayer" and players.get_name(pid) ~= "InvalidPlayer" then
+        local Player_List = players.list()
+        for _, plid in pairs(Player_List) do
+            if plid == pid then
                 return true
+            end
+        end
+    end
+    return false
+end
+
+local function StandUser(pid) -- credit to sapphire for this and jinx script
+    if player_Exist(pid) and pid != players.user() then
+        util.yield(666)
+        if player_Exist(pid) and pid != players.user() then
+            for menu.player_root(pid):getChildren() as cmd do
+                if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Stand User"):isValid() then
+                    return true
+                end
+            end
+        end
+    end
+    return false
+end
+
+local function wannabeGod(pid)
+    if player_Exist(pid) and pid != players.user() then
+        util.yield(666)
+        if player_Exist(pid) and pid != players.user() then
+            for menu.player_root(pid):getChildren() as cmd do
+                if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Attacking While Invulnerable"):isValid() then
+                    return true
+                end
+                if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Dead For Too Long"):isValid() then
+                    return true
+                end
+            end
+        end
+    end
+    return false
+end
+
+local function aggressive(pid)
+    if player_Exist(pid) and pid != players.user() then
+        util.yield(666)
+        if player_Exist(pid) and pid != players.user() then
+            for menu.player_root(pid):getChildren() as cmd do
+                if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Spoofed Host Token (Aggressive)"):isValid() then
+                    return true
+                end
             end
         end
     end
@@ -273,7 +319,7 @@ local function isStuck(pid)
             return true
         end
     end
-    if not players.is_visible(pid) then
+    if not players.is_visible(pid) and ENTITY.GET_ENTITY_SPEED(pid) < 1 then
         if players.get_money(pid) ~= 0 and players.get_rank(pid) ~= 0 then
             return true
         end
@@ -285,6 +331,9 @@ local function isStuck(pid)
 end
 
 local function isLoading(pid)
+    if pid == players.user() and not IsInSession() then
+        return true
+    end
     if not IsInSession() then
         return false
     end
@@ -302,6 +351,9 @@ local function isLoading(pid)
             return true
         end
         if players.get_rank(pid) == 0 then
+            return true
+        end
+        if not players.is_visible(pid) then
             return true
         end
     end
@@ -341,7 +393,7 @@ local function SpawnCheck(entity, hash, locationV3, heading, timeout)
     if not ENTITY.DOES_ENTITY_EXIST(entity) then
         requestModel(hash, 13)
         entity = entities.create_object(hash, locationV3)
-        util.yield(113)
+        util.yield(13)
         if heading != 0 then
             local startTime = os.time()
             while math.abs(ENTITY.GET_ENTITY_HEADING(entity) - heading ) > 1 do
@@ -411,85 +463,89 @@ local function Wait_for_IsInSession()
     players.dispatch_on_join()
 end
 
-local function StrategicKick(pid, name, rid) --TODO , make it actually smart , not bare bones.
-    if name ~= "UndiscoveredPlayer" and name ~= "InvalidPlayer" then
+local function StrategicKick(pid)
+    local name = players.get_name(pid)
+    if player_Exist(pid) then
         if not IsInSession() then
             Wait_for_IsInSession()
         end
         if players.user() == players.get_host() then
-            if not isLoading(pid) then
+            if not isLoading(pid) and not isLoading(players.user()) then
                 menu.trigger_commands("ban " .. name)
             else
                 menu.trigger_commands("loveletterkick " .. name)
             end
         else
             menu.trigger_commands("kick " .. name)
-            menu.trigger_commands("ignore " .. name .. " on")
-            menu.trigger_commands("desync " .. name .. " on")
-            menu.trigger_commands("blocksync " .. name .. " on")
+            if IsInSession() then
+                menu.trigger_commands("ignore " .. name .. " on")
+                menu.trigger_commands("desync " .. name .. " on")
+                menu.trigger_commands("blocksync " .. name .. " on")
+                NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+            end
         end
     end
 end
 
 menu.divider(menu.my_root(), SCRIPT_VERSION)
 local PIP_Girl = menu.list(menu.my_root(), 'PIP Girl', {}, 'Personal Information Processor Girl.', function(); end)
-local PIP_Girl_APPS = menu.list(PIP_Girl, 'PIP Girl Apps', {}, 'Personal Information Processor Girl Apps.', function(); end)
+local PIP_Girl_APPS = menu.list(PIP_Girl, 'PIP Girl Apps', {}, 'Personal Information Processor Girl apps.', function(); end)
 --local PIP_Girl_Heist = menu.list(PIP_Girl, 'PIP Girl Heists', {}, 'Personal Information Processor Girl Heist Presets.', function(); end)
-local Stimpak = menu.list(menu.my_root(), 'Stimpak', {}, 'Take a Breath.', function(); end)
-local Outfit = menu.list(menu.my_root(), 'Outfit', {}, 'Look Pretty and nice.', function(); end)
-local Game = menu.list(menu.my_root(), 'Game', {}, 'Very Gaming Today.', function(); end)
+local Stimpak = menu.list(menu.my_root(), 'Stimpak', {}, 'Take a breath.', function(); end)
+local Outfit = menu.list(menu.my_root(), 'Outfit', {}, 'Look pretty and nice.', function(); end)
+local Game = menu.list(menu.my_root(), 'Game', {}, 'Very gaming today.', function(); end)
 local Session = menu.list(menu.my_root(), 'Session', {}, '.noisseS', function(); end)
-local SessionClaimer = menu.list(Session, 'Session Claimer Settings', {}, 'Session Claimer Settings.', function(); end)
+local SessionClaimer = menu.list(Session, 'Session Claimer Settings', {}, 'Session Claimer settings.', function(); end)
 local Settings = menu.list(menu.my_root(), 'Settings/Misc', {}, 'Basement.', function(); end)
 local Credits = menu.list(Settings, 'Credits', {}, '<3', function(); end)
 
-menu.action(PIP_Girl_APPS, "Master Control Terminal App", {}, "Your Master Control Terminal.", function()
+menu.action(PIP_Girl_APPS, "Master Control Terminal App", {}, "Your master control terminal.", function()
     START_SCRIPT("CEO", "apparcadebusinesshub")
 end)
 
-menu.textslider(PIP_Girl_APPS, "Nightclub App", {}, "Your Nightclub Screen.", {
+menu.textslider(PIP_Girl_APPS, "Nightclub App", {}, "Your nightclub screen.", {
     "Open",
     "Close",
 }, function()
     START_SCRIPT("CEO", "appbusinesshub")
 end)
 
-menu.textslider(PIP_Girl_APPS, "Bunker App", {}, "Your Bunker Screen.", {
+menu.textslider(PIP_Girl_APPS, "Bunker App", {}, "Your bunker screen.", {
     "Open",
     "Close",
 }, function()
     START_SCRIPT("CEO", "appbunkerbusiness")
 end)
 
-menu.textslider(PIP_Girl_APPS, "Touchscreen Terminal App", {}, "Your Terrobyte Screen.", {
+menu.textslider(PIP_Girl_APPS, "Touchscreen Terminal App", {}, "Your Terrorbyte screen.", {
     "Open",
     "Close",
 }, function()
     START_SCRIPT("CEO", "apphackertruck")
 end)
 
-menu.textslider(PIP_Girl_APPS, "Air Cargo App", {}, "Your Air Cargo Screen.", {
+menu.textslider(PIP_Girl_APPS, "Air Cargo App", {}, "Your air cargo screen.", {
     "Open",
     "Close",
 }, function()
     START_SCRIPT("CEO", "appsmuggler")
 end)
 
-menu.textslider(PIP_Girl_APPS, "The Open Road App", {}, "Your MC Management Screen.", {
+menu.textslider(PIP_Girl_APPS, "The Open Road App", {}, "Your MC management screen.", {
     "Open",
     "Close",
 }, function()
     START_SCRIPT("MC", "appbikerbusiness")
 end)
 
-menu.textslider(PIP_Girl_APPS, "The Agency App", {}, "Your Agnecy Screen", {
+menu.textslider(PIP_Girl_APPS, "The Agency App", {}, "Your agency screen.", {
     "Open",
     "Close",
 }, function()
     START_SCRIPT("CEO", "appfixersecurity")
 end)
 
-menu.action(PIP_Girl_APPS, "(Unstuck) Unstuck after start sell.", {}, "If you Use one of the screens above, And start a sell, You could get stuck.\nDo Suicide to Unstuck.", function()
+menu.action(PIP_Girl_APPS, "(Unstuck) Unstuck after starting a sale.", {}, "If you use one of the screens above and start a sale, you could get stuck.\nPerform an Suicide to unstuck.", function()
     menu.trigger_commands('ewo')
 end)
 
@@ -515,10 +571,10 @@ end
 
 local function CayoNotify()
     warnify("Note that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.")
-    warnify("With this setup , Every player gets 2m, so they can do 2 runs and reach Hour Limit.")
-    warnify("The cayo heist with a Sweet Legit Like Preset.\nIf you inside the Submarine, go manually out and in again to refreash the board.")
+    warnify("With this setup, every player gets 2m, so they can do 2 runs and reach the hourly limit.")
+    warnify("The Cayo heist with a sweet legit-like preset.\nIf you're inside the submarine, go manually out and in again to refresh the board.")
     util.yield(1666)
-    notify("The cayo heist with a Sweet Legit Like Preset.\nIf you inside the Submarine, go manually out and in again to refreash the board.")
+    notify("The Cayo heist with a sweet legit-like preset.\nIf you're inside the submarine, go manually out and in again to refresh the board.")    
 end
 --[[
 menu.action(PIP_Girl_Heist, 'Cayo 1 Player Preset (!)', {}, "", function (click_type)
@@ -785,7 +841,7 @@ menu.action(PIP_Girl_Heist, 'Cayo 4 Player 25/25/25/25 Preset (!)', {}, "", func
     end, true)
 end)
 ]]--
-menu.toggle_loop(PIP_Girl, 'Nightclub Party Never Stops!', {'ncpop'}, 'The hottest NC in whole LS.\nKeeps you pop at 90-100%', function ()
+menu.toggle_loop(PIP_Girl, "Nightclub Party Never Stops!", {'ncpop'}, "The hottest NC in whole LS.\nKeeps you pop at 90-100%", function ()
     if IsInSession() then
         local ncpop = math.floor(STAT_GET_INT('CLUB_POPULARITY') / 10)
         if ncpop < 66 then
@@ -799,15 +855,45 @@ menu.toggle_loop(PIP_Girl, 'Nightclub Party Never Stops!', {'ncpop'}, 'The hotte
 end)
 
 menu.divider(PIP_Girl, "CEO/MC Options")
+local ceo_color = -1
+local first_color_check = true
+local function check_CEO_Color(ceo_color)
+    if IsInSession() then
+        local allValuesZero = true
+        local allHelpTextEmpty = true
+        for menu.ref_by_path("Online>CEO/MC>Colour Slots"):getChildren() as link do
+            if link.value ~= 0 then
+                allValuesZero = false
+            end
+            if link.help_text ~= "" then
+                allHelpTextEmpty = false
+            end
+        end
+        if players.user() == players.get_host() then
+            if allValuesZero and allHelpTextEmpty then
+                local current = menu.get_current_menu_list()
+                menu.focus(menu.ref_by_path("Online>CEO/MC>Colour Slots>0"))
+                util.yield(420)
+                menu.focus(current)
+                notify("Changed your CEO/MC color.")
+            end
+        end
+        for menu.ref_by_path("Online>CEO/MC>Colour Slots"):getChildren() as link do
+            if string.find(link.help_text, players.get_name(players.user()), 1, true) then
+                menu.set_value(link, ceo_color)
+            end
+        end
+    end
+end
 
 local urceoname = ""
 local function on_change(input_str, click_type)
     urceoname = input_str
 end
-menu.text_input(PIP_Girl, "CEO Name", {"pgceoname"}, "(also works for mc) You can press Ctrl+U and Select Colours but no special GTA Icons sadly.", on_change)
+menu.text_input(PIP_Girl, "CEO Name", {"pgceoname"}, "(Also works for MC) You can press Ctrl+U and select colors, but no special GTA icons, sadly.", on_change)
 local joinfriendsceo = false
 local invitefriendsinceo = false
-menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yourself as CEO and Auto Switches you to MC/CEO in most situations needed.", function()
+menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yourself as CEO and auto switches you to MC/CEO in most situations needed.", function()
     if IsInSession() then
         local uniqueColors = {}  -- Table to store unique organization colors
         for _, pid in players.list(true, true, true) do 
@@ -843,6 +929,9 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yo
                     notify("Turned you into CEO!")
                     if urceoname ~= "" then
                         menu.trigger_commands("ceoname " .. urceoname)
+                    end
+                    if ceo_color ~= -1 then
+                        check_CEO_Color(ceo_color)
                     end
                     util.yield(213666)
                 else
@@ -889,6 +978,9 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yo
                         if urceoname != "" then
                             menu.trigger_commands("ceoname " .. urceoname)
                         end
+                        if ceo_color ~= -1 then
+                            check_CEO_Color(ceo_color)
+                        end
                         notify("Turned you into CEO!")
                         util.yield(666)
                     end
@@ -908,6 +1000,9 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yo
                         if urceoname != "" then
                             menu.trigger_commands("ceoname " .. urceoname)
                         end
+                        if ceo_color ~= -1 then
+                            check_CEO_Color(ceo_color)
+                        end
                         notify("Turned you into MC President!")
                         util.yield(666)
                     end
@@ -922,7 +1017,20 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto Register yo
     end
 end)
 
-menu.toggle(PIP_Girl, "Auto Join Friends CEO (!)", {""}, "(also mc) Uses 'Auto Become a CEO/MC' ", function(on)
+menu.slider(PIP_Girl, 'Auto CEO/MC Color', {'favceocolor'}, "Enter the Color ID of your CEO.", -1, 14, ceo_color, 1, function (new_value)
+    ceo_color = new_value
+end)
+
+menu.toggle_loop(PIP_Girl, "Additional CEO/MC Color Checks.", {""}, "If u use \"Auto Become a CEO/MC\" it will check for u color on register.\nIf u dont use \"Auto Become a CEO/MC\" u can use Additinal Checks.", function(on)
+    if IsInSession() and players.get_boss(players.user()) ~= -1 then
+        if ceo_color ~= -1 then
+            check_CEO_Color(ceo_color)
+        end
+        util.yield(6666)
+    end
+end)
+
+menu.toggle(PIP_Girl, "Auto Join Friends CEO (!)", {""}, "(also MC) Uses \"Auto Become a CEO/MC\"", function(on)
     if on then
         joinfriendsceo = true
     else
@@ -930,68 +1038,44 @@ menu.toggle(PIP_Girl, "Auto Join Friends CEO (!)", {""}, "(also mc) Uses 'Auto B
     end
 end)
 
-menu.action(PIP_Girl, "Invite All Friends in CEO/MC", {"invceo"}, "Invites all you friends into your CEO/MC", function()
+local function inviteToCEO(pid)
+    local hdl = pid_to_handle(pid)
+    if players.get_boss(players.user()) ~= -1 then
+        util.trigger_script_event(1 << pid, {
+            -245642440,
+            players.user(),
+            4,
+            10000, -- wage?
+            0,
+            0,
+            0,
+            0,
+            memory.read_int(memory.script_global(1924276 + 9)), -- f_8
+            memory.read_int(memory.script_global(1924276 + 10)), -- f_9
+        })
+    end
+end
+
+menu.action(PIP_Girl, "Invite All Friends in CEO/MC", {"invceo"}, "Invites all your friends into your CEO/MC.", function()
     if IsInSession() then
         for _, pid in players.list(true, true, true) do
             local hdl = pid_to_handle(pid)
-            if NETWORK.NETWORK_IS_FRIEND(hdl) then
-                if players.get_boss(pid) == -1 and players.get_boss(players.user()) != -1 then
-                    -- Thanks to Totaw Annihiwation for this script event! // Position - 0x2725D7
-                    util.trigger_script_event(1 << pid, {
-                        -245642440,
-                        players.user(),
-                        4,
-                        10000, -- wage?
-                        0,
-                        0,
-                        0,
-                        0,
-                        memory.read_int(memory.script_global(1924276 + 9)), -- f_8
-                        memory.read_int(memory.script_global(1924276 + 10)), -- f_9
-                    })
-                end
-            end
-        end
-        util.yield(3666)
-        for _, pid in players.list(true, true, true) do
-            local hdl = pid_to_handle(pid)  
-            if NETWORK.NETWORK_IS_FRIEND(hdl) then
-                if players.get_boss(pid) == -1 and players.get_boss(players.user()) != -1 then
-                    -- Thanks to Totaw Annihiwation for this script event! // Position - 0x2725D7
-                    util.trigger_script_event(1 << pid, {
-                        -245642440,
-                        players.user(),
-                        4,
-                        10000, -- wage?
-                        0,
-                        0,
-                        0,
-                        0,
-                        memory.read_int(memory.script_global(1924276 + 9)), -- f_8
-                        memory.read_int(memory.script_global(1924276 + 10)), -- f_9
-                    })
-                end
+            if NETWORK.NETWORK_IS_FRIEND(hdl) and players.get_boss(pid) == -1 then
+                inviteToCEO(pid)
             end
         end
         util.yield(3666)
         for _, pid in players.list(true, true, true) do
             local hdl = pid_to_handle(pid)
-            if NETWORK.NETWORK_IS_FRIEND(hdl) then
-                if players.get_boss(pid) == -1 and players.get_boss(players.user()) != -1 then
-                    -- Thanks to Totaw Annihiwation for this script event! // Position - 0x2725D7
-                    util.trigger_script_event(1 << pid, {
-                        -245642440,
-                        players.user(),
-                        4,
-                        10000, -- wage?
-                        0,
-                        0,
-                        0,
-                        0,
-                        memory.read_int(memory.script_global(1924276 + 9)), -- f_8
-                        memory.read_int(memory.script_global(1924276 + 10)), -- f_9
-                    })
-                end
+            if NETWORK.NETWORK_IS_FRIEND(hdl) and players.get_boss(pid) == -1 then
+                inviteToCEO(pid)
+            end
+        end
+        util.yield(3666)
+        for _, pid in players.list(true, true, true) do
+            local hdl = pid_to_handle(pid)
+            if NETWORK.NETWORK_IS_FRIEND(hdl) and players.get_boss(pid) == -1 then
+                inviteToCEO(pid)
             end
         end
     end
@@ -1000,42 +1084,42 @@ end)
 menu.divider(PIP_Girl, "Pickup Options")
 
 local carryingPickups = {}
-menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all Pickups on You.\nNote this donst work in all Situations.", function(on)
+menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all pickups on you.\nNote this doesn't work in all situations.", function(on)
     if on then
         local counter = 0
         local playerPed = PLAYER.PLAYER_PED_ID()
         for _, pickup in entities.get_all_pickups_as_handles() do
             if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
-                requestControl(pickup, 0)
+                --requestControl(pickup, 0)
                 util.yield(111)
                 ENTITY.ATTACH_ENTITY_TO_ENTITY(pickup, playerPed, PED.GET_PED_BONE_INDEX(playerPed, 24818), 0.0, -0.3, 0.0, 0.0, 90, 0.0, true, true, true, true, 1, true)
                 table.insert(carryingPickups, pickup)
                 counter = counter + 1
             end
         end
-        notify("Carrying "..counter.." Pickups.")
+        notify("Carrying "..counter.." pickups.")
     else
         local counter = 0
         local playerPed = PLAYER.PLAYER_PED_ID()
         local pos = players.get_position(players.user())
         for _, pickup in ipairs(carryingPickups) do
             if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
-                requestControl(pickup, 0)
+                --requestControl(pickup, 0)
                 util.yield(13)
                 ENTITY.DETACH_ENTITY(pickup, true, true)
                 util.yield(13)
                 ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z-0.8, false, false, false, false)
                 util.yield(13)
-                ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
+                --ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
                 counter = counter + 1
             end
         end
-        notify("Droped "..counter.." Pickups.")
+        notify("Droped "..counter.." pickups.")
         carryingPickups = {}
     end
 end)
 
-menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a Shower in all exsisting Pickups.", function()
+menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a shower in all existing pickups.", function()
     if IsInSession() then
         local pos = players.get_position(players.user())
         local in_vehicle = is_user_driving_vehicle()
@@ -1044,11 +1128,11 @@ menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a Shower in all exsisting 
                 if in_vehicle then
                     ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z , false, false, false, false)
                     util.yield(13)
-                    ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
+                    --ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
                 else
                     ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z + 1.0, false, false, false, false)
                     util.yield(13)
-                    ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
+                    --ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
                 end
             end
             util.yield(13)
@@ -1058,24 +1142,24 @@ menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a Shower in all exsisting 
     end
 end)
 
-menu.action(PIP_Girl, "Teleport Pickups To Me", {"tppickups"}, "Teleports all Pickups To You.\nNote this donst work in all Situations.", function(click_type)
+menu.action(PIP_Girl, "Teleport Pickups To Me", {"tppickups"}, "Teleports all pickups to you.\nNote this doesn't work in all situations.", function(click_type)
     if IsInSession() then
         local counter = 0
         local pos = players.get_position(players.user())
         for _, pickup in entities.get_all_pickups_as_handles() do
             if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
-                requestControl(pickup, 0)
+                --requestControl(pickup, 0)
                 util.yield(13)
                 ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z-0.8, false, false, false, false)
-                util.yield(13)
-                ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
+                --util.yield(13)
+                --ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
                 counter = counter + 1
             end
         end
         if counter == 0 then
-            notify("No Pickups Found. :c")
+            notify("No pickups found. :c")
         else
-            notify("Teleported ".. tostring(counter) .." Pickups. :D")
+            notify("Teleported " .. tostring(counter) .. " Pickups. :D")
         end
     end
 end)
@@ -1086,12 +1170,26 @@ local regen_all = Stimpak:action("Refill Health & Armour",{"newborn"},"Regenerat
     if IsInSession() then
         menu.trigger_commands("refillhealth")
         menu.trigger_commands("refillarmour")
-        menu.trigger_commands("fillammo")
     end
 end)
 
+local filled_up = false
+menu.toggle_loop(Stimpak, "Fill me up! On session join", {""}, "Fill you up with health, armor, snacks, and ammo on session join.", function()
+    if IsInSession() and not filled_up then
+        util.yield(13666)
+        menu.trigger_command(regen_all)
+        menu.trigger_commands("fillinventory")
+        menu.trigger_commands("fillammo")
+        filled_up = true
+    end
+    if not IsInSession() then
+        filled_up = false
+    end
+    util.yield(6666)
+end)
+
 local dead = 0
-menu.toggle_loop(Stimpak, "Auto Armor after Death",{"pgblessing"},"A body armor will be applied automatically when respawning.",function()
+menu.toggle_loop(Stimpak, "Auto Armor after Death",{"pgblessing"},"A body armor will be applied automatically when respawning.", function()
     if IsInSession() then
         local health = ENTITY.GET_ENTITY_HEALTH(players.user_ped())
         if health == 0 and dead == 0 then
@@ -1106,7 +1204,7 @@ menu.toggle_loop(Stimpak, "Auto Armor after Death",{"pgblessing"},"A body armor 
     end
 end)
 
-menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehicle", {"pghealth"}, "Will Recharge Healt when in Cover or Vehicle quickly.\nBUT also slowly almost legit like otherwise to 100%.", function()
+menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehicle", {"pghealth"}, "Will recharge health when in cover or vehicle quickly.\nBUT also slowly, almost legit-like, otherwise to 100%.", function()
     if IsInSession() then
         local in_vehicle = is_user_driving_vehicle()
         local playerPed = players.user_ped()
@@ -1159,7 +1257,7 @@ menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle", {"pgarmor"}, "Will 
 end)
 
 local was_user_in_vehicle = false
-menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {"pgvaid"}, "Using your First Aid kit provided in you Vehicle.", function()
+menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {"pgvaid"}, "Using your First Aid kit provided in your vehicle.", function()
     if IsInSession() then
         local in_vehicle = is_user_driving_vehicle()
         local health = ENTITY.GET_ENTITY_HEALTH(players.user_ped())
@@ -1180,7 +1278,7 @@ end)
 
 menu.toggle_loop(Stimpak, "Oxygen", {"pgbreath"}, "Just breath.", function()
     if IsInSession() then
-        if PED.IS_PED_SWIMMING_UNDER_WATER(players.user_ped()) then
+        if ENTITY.IS_ENTITY_IN_WATER(players.user_ped()) or not STATS.STAT_IS_PLAYER_VEHICLE_ABOVE_OCEAN() then
             PED.SET_ENABLE_SCUBA(players.user_ped(), true)
             local air = PLAYER.GET_PLAYER_UNDERWATER_TIME_REMAINING(players.user())
             if 13 >= air then
@@ -1241,7 +1339,7 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
                 local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
                 local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
 
-                requestControl(vehicle, 13)
+                requestControl(vehicle, 0)
 
                 -- Perform repairs
                 if engineHealth < 1000 then
@@ -1573,24 +1671,6 @@ menu.toggle_loop(Outfit, "Restor Outfit", {"restoreoutfit"}, "Auto Restore the S
     end
 end)
 
-menu.divider(Outfit, "Unfinished")
-
-menu.toggle_loop(Outfit, "(Alpha) Lock outfit if Iligal Clothing detected", {"IligalLock"}, "This will lock you outfit if a iligal clothing is detected, so it wont get removed.", function()
-    local cmd_path = "Self>Appearance>Outfit>Pants"
-    if not util.is_interaction_menu_open() then
-        if menu.get_state(menu.ref_by_path(cmd_path)) == "21" then
-            menu.trigger_commands("lockoutfit on")
-        else
-            menu.trigger_commands("lockoutfit off")
-        end
-    else
-        menu.trigger_commands("lockoutfit off")
-    end
-    util.yield(13)
-end, function()
-    menu.trigger_commands("lockoutfit off")
-end)
-
 local function SuperClean(fix, ignoreMission)
     local pos = players.get_position(players.user())
     local ct = 0
@@ -1700,6 +1780,128 @@ end)
 
 menu.divider(Game, "<3")
 
+local sparrowHandeling = nil
+menu.toggle_loop(Game, "Heli Sparrow Handeling",{""},"All Heli's u enter fly like a Sparrow.",function()
+    if IsInSession() then
+        local vehicle = entities.get_user_vehicle_as_handle()
+        if vehicle then
+            local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
+            local driver = NETWORK.NETWORK_GET_PLAYER_INDEX_FROM_PED(driverPed)
+            if driver == players.user() and VEHICLE.GET_VEHICLE_CLASS(vehicle) == 15 then
+                if sparrowHandeling == nil or sparrowHandeling ~= vehicle then
+                    sparrowHandeling = vehicle
+                    notify("Sparrofy")
+                    menu.trigger_commands("vhacceleration 1.00000")
+                    menu.trigger_commands("vhsuspensionforce 3.00000")
+                    menu.trigger_commands("vhsuspensionraise 0.35000")
+                    menu.trigger_commands("vhsuspensioncompdamp 0.14000")
+                    menu.trigger_commands("vhtractionlossmult 1.00000")
+                    menu.trigger_commands("vhupshift 1.29999")
+                    menu.trigger_commands("vhdownshift 1.29999")
+                    menu.trigger_commands("vhdeformationmult 3.00000")
+                    menu.trigger_commands("vhtractioncurvemin 1.20000")
+                    menu.trigger_commands("vhtractioncurvemax 1.29999")
+                    menu.trigger_commands("vhdownforcemodifier 0.00000")
+                    menu.trigger_commands("vhinitialdragcoeff 0.00099")
+                    menu.trigger_commands("vhpopuplightrotation 0.00000")
+                    menu.trigger_commands("vhbuoyancy 75.00000")
+                    menu.trigger_commands("vhdrivebiasrear 1.33333")
+                    menu.trigger_commands("vhdrivebiasfront 0.00000")
+                    menu.trigger_commands("vhdriveinertia 1.00000")
+                    menu.trigger_commands("vhinitialdriveforce 0.30000")
+                    menu.trigger_commands("vhdrivemaxflatvelocity 53.33334")
+                    menu.trigger_commands("vhinitialdrivemaxflatvel 44.44444")
+                    menu.trigger_commands("vhbrakeforce 0.40000")
+                    menu.trigger_commands("vhbrakebiasfront 1.20000")
+                    menu.trigger_commands("vhbrakebiasrear 0.79999")
+                    menu.trigger_commands("vhhandbrakeforce 0.70000")
+                    menu.trigger_commands("vhsteeringlock 0.61086")
+                    menu.trigger_commands("vhsteeringlockratio 1.63702")
+                    menu.trigger_commands("vhtractioncurvelateral 0.76923")
+                    menu.trigger_commands("vhcurvelateral 0.20943")
+                    menu.trigger_commands("vhcurvelateralratio 4.77464")
+                    menu.trigger_commands("vhtractionspringdeltamax 0.10000")
+                    menu.trigger_commands("vhtractionspringdeltamaxratio 10.00000")
+                    menu.trigger_commands("vhlowspeedtractionlossmult 0.00000")
+                    menu.trigger_commands("vhcamberstiffness 0.00000")
+                    menu.trigger_commands("vhtractionbiasfront 1.00000")
+                    menu.trigger_commands("vhtractionbiasrear 1.00000")
+                    menu.trigger_commands("vhsuspensionrebounddamp 0.30000")
+                    menu.trigger_commands("vhsuspensionupperlimit 0.08000")
+                    menu.trigger_commands("vhsuspensionlowerlimit -0.05000")
+                    menu.trigger_commands("vhsuspensionbiasfront 1.00000")
+                    menu.trigger_commands("vhsuspensionbiasrear 1.00000")
+                    menu.trigger_commands("vhantirollbarforce 0.00000")
+                    menu.trigger_commands("vhantirollbarbiasfront 0.00000")
+                    menu.trigger_commands("vhantirollbarbiasrear 2.00000")
+                    menu.trigger_commands("vhrollcentreheightfront 0.00000")
+                    menu.trigger_commands("vhrollcentreheightrear 0.00000")
+                    menu.trigger_commands("vhcollisiondamagemult 1.50000")
+                    menu.trigger_commands("vhweapondamamgemult 0.50000")
+                    menu.trigger_commands("vhenginedamagemult 1.50000")
+                    menu.trigger_commands("vhpetroltankvolume 100.00000")
+                    menu.trigger_commands("vhoilvolume 8.00000")
+                    menu.trigger_commands("vhthrust 0.63599")
+                    menu.trigger_commands("vhthrustfalloff 0.02890")
+                    menu.trigger_commands("vhthrustvectoring 0.40000")
+                    menu.trigger_commands("vhinitialthrust 0.52999")
+                    menu.trigger_commands("vhinitialthrustfalloff 0.03400")
+                    menu.trigger_commands("vhyawmult -1.76700")
+                    menu.trigger_commands("vhyawstabilise 0.00200")
+                    menu.trigger_commands("vhsideslipmult 0.00400")
+                    menu.trigger_commands("vhinitialyawmult -1.52000")
+                    menu.trigger_commands("vhrollmult 2.23781")
+                    menu.trigger_commands("vhrollstabilise 0.01100")
+                    menu.trigger_commands("vhinitialrollmult 1.92500")
+                    menu.trigger_commands("vhpitchmult 1.97625")
+                    menu.trigger_commands("vhpitchstabilise 0.00100")
+                    menu.trigger_commands("vhinitialpitchmult 1.70000")
+                    menu.trigger_commands("vhformliftmult 1.00000")
+                    menu.trigger_commands("vhattackliftmult 3.00000")
+                    menu.trigger_commands("vhattackdivemult 3.00000")
+                    menu.trigger_commands("vhgeardowndragv 0.10000")
+                    menu.trigger_commands("vhgeardownliftmult 1.00000")
+                    menu.trigger_commands("vhwindmult 0.00075")
+                    menu.trigger_commands("vhmoveres 0.03500")
+                    menu.trigger_commands("vhgeardoorfrontopen 1.57079")
+                    menu.trigger_commands("vhgeardoorrearopen 1.57079")
+                    menu.trigger_commands("vhgeardoorrearopen2 1.57079")
+                    menu.trigger_commands("vhgeardoorrearmopen 1.57079")
+                    menu.trigger_commands("vhturublencemagnitudemax 0.00000")
+                    menu.trigger_commands("vhturublenceforcemulti 0.00000")
+                    menu.trigger_commands("vhturublencerolltorquemulti 0.00000")
+                    menu.trigger_commands("vhturublencepitchtorquemulti 0.00000")
+                    menu.trigger_commands("vhbodydamagecontroleffectmult 0.50000")
+                    menu.trigger_commands("vhinputsensitivityfordifficulty 0.48000")
+                    menu.trigger_commands("vhongroundyawboostspeedpeak 1.00000")
+                    menu.trigger_commands("vhongroundyawboostspeedcap 1.00000")
+                    menu.trigger_commands("vhengineoffglidemulti 1.00000")
+                    menu.trigger_commands("vhafterburnereffectradius 0.50000")
+                    menu.trigger_commands("vhafterburnereffectdistance 4.00000")
+                    menu.trigger_commands("vhafterburnereffectforcemulti 0.20000")
+                    menu.trigger_commands("vhsubmergeleveltopullheliunderwater 0.30000")
+                    menu.trigger_commands("vhextraliftwithroll 0.00000")
+                    menu.trigger_commands("vhleftpontooncomponentid 0")
+                    menu.trigger_commands("vhrightpontooncomponentid 1")
+                    menu.trigger_commands("vhpontoonbuoyconst 12.50000")
+                    menu.trigger_commands("vhpontoonsamplesizefront 0.40000")
+                    menu.trigger_commands("vhpontoonsamplesizemiddle 0.40000")
+                    menu.trigger_commands("vhpontoonsamplesizerear 0.40000")
+                    menu.trigger_commands("vhpontoonlengthfractionforsamples 0.85000")
+                    menu.trigger_commands("vhpontoondragcoefficient 1.50000")
+                    menu.trigger_commands("vhpontoonverticaldampingcoefficientup 400.00000")
+                    menu.trigger_commands("vhpontoonverticaldampingcoefficientdown 600.00000")
+                    menu.trigger_commands("vhkeelspheresize 0.30000")
+                    util.yield(3666)
+                end
+            end
+        end
+    else
+        util.yield(13666)
+    end
+    util.yield(3666)
+end)
+
 menu.toggle_loop(Game, "Auto Skip Conversation",{"pgascon"},"Automatically skip all conversations.",function()
     if AUDIO.IS_SCRIPTED_CONVERSATION_ONGOING() then
         AUDIO.SKIP_TO_NEXT_SCRIPTED_CONVERSATION_LINE()
@@ -1765,6 +1967,7 @@ local warningMessages = {
     [141301462] = "Restart u game. :s\nYour save data could not be loaded form the R* cloud servers at this time. Please try again later. Returning to Grand Theft Auto V.",
     [502833454] = "Connection to the session host has been lost. Unable to determine a new host. The GTA Online session will be terminated. Joining a new GTA Online session.",
     [2113044399] = "Connection to the active GTA Online session lost due to an unknown network error. Please return to Grand Theft Auto V and try again later.",
+    [1869879151] = "Connection to the active GTA Online session lost due to an unknown network error. Please return to Grand Theft Auto V and try again later.",
     [496145784] = "There has been an error with this session. Please return to Grand Theft Auto V and try again.",
     [705668975] = "You have already been voted out of this game session. Joining a new GTA Online session.",
     [2052473979] = "Failed to find a compatible GTA Online session containing friends. Joining a new GTA Online session.",
@@ -1828,9 +2031,6 @@ end)
 
 menu.divider(Game, "<3")
 
-local getEntityCoords = ENTITY.GET_ENTITY_COORDS
-local getPlayerPed = PLAYER.GET_PLAYER_PED
-
 local function getLocalPed()
     return PLAYER.PLAYER_PED_ID()
 end
@@ -1865,13 +2065,13 @@ function getOrgColor(pid)
 end
 
 local function espOnPlayer(pid, namesync)
-    local targetped = getPlayerPed(pid)
-    local ppos = getEntityCoords(targetped)
+    local targetped = PLAYER.GET_PLAYER_PED(pid)
+    local ppos = ENTITY.GET_ENTITY_COORDS(targetped)
     if ppos.z < -10 or ENTITY.HAS_ENTITY_CLEAR_LOS_TO_ENTITY(players.user_ped(), targetped, 256) then
         --coordinate stuff
-        local mypos = getEntityCoords(getLocalPed())
+        local mypos = ENTITY.GET_ENTITY_COORDS(getLocalPed())
         local playerHeadOffset = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(targetped, 0, 0, 1.0)
-        local centerPlayer = getEntityCoords(targetped)
+        local centerPlayer = ENTITY.GET_ENTITY_COORDS(targetped)
         local vdist = SYSTEM.VDIST2(mypos.x, mypos.y, mypos.z, ppos.x, ppos.y, ppos.z)
 
         --color settings
@@ -1972,7 +2172,7 @@ menu.slider(SessionClaimer, 'Session Size', {'claimsessionsize'}, 'Select the Si
 end)
 menu.divider(SessionClaimer, "Misc")
 local thunderMin = 0
-menu.slider(SessionClaimer, 'Thunder for X min', {''}, 'After u claimed a session show Thunder for X amount of min.', 0, 13, thunderMin, 1, function (new_value)
+menu.slider(SessionClaimer, 'Thunder for X min', {''}, 'After u claimed a session show Thunder for X amount of min.', 0, 6, thunderMin, 1, function (new_value)
     thunderMin = new_value
 end)
 local session_claimer_here = false
@@ -2024,10 +2224,10 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
     --  Setting up the Filter
     --  <3
     local magnet_path = "Online>Transitions>Matchmaking>Player Magnet"
-    local admin_path = "Stand>Lua Scripts>1 PIP Girl>Session>Admin Bail"
+    local admin_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Session>Admin Bail"
     local spoof_path = "Online>Spoofing>Host Token Spoofing>Host Token Spoofing"
     local temp_admin = false
-    local auto_warning_path = "Stand>Lua Scripts>1 PIP Girl>Game>Auto Accept Warning"
+    local auto_warning_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Game>Auto Accept Warning"
     local temp_auto_warning = false
     local first_run = true
     local fucking_failure = false
@@ -2173,7 +2373,8 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                             menu.trigger_commands("givecollectibles " .. players.get_name(players.get_host()))
                             util.yield(6666)
                             if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 and not isModder(players.get_host())then
-                                StrategicKick(players.get_host(), players.get_name(players.get_host()), players.get_rockstar_id(players.get_host()))
+                                StrategicKick(players.get_host())
+                                menu.trigger_commands("timeout"..players.get_name(players.get_host()).." off")
                             else
                                 if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
                                     menu.trigger_commands("unstuck")
@@ -2181,7 +2382,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                             end
                         end
                         local startTime = os.clock()
-                        while (os.clock() - startTime) * 1000 < 25666 do
+                        while (os.clock() - startTime) * 1000 < 31666 do
                             if players.get_host() == players.user() then
                                 break
                             end
@@ -2214,12 +2415,15 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                                 ReportSessionKD(numPlayers)
                             end
                             menu.trigger_commands("resetheadshots")
-                            menu.trigger_commands("newborn")
+                            menu.trigger_command(regen_all)
                             menu.trigger_commands("fillinventory")
+                            menu.trigger_commands("fillammo")
+                            menu.trigger_commands("claimsession off")
                             if thunderMin != 0 then
                                 thunderForMin(thunderMin)
                             end
                             util.yield(6666)
+                            menu.trigger_commands("claimsession off")
                         else
                             if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
                                 menu.trigger_commands("unstuck")
@@ -2314,6 +2518,49 @@ end, function()
     end
 end)
 
+local mk2noob = {}
+menu.toggle_loop(SessionWorld, "Spinning MK2's", {""}, "Spin all MK2's, except Modder and Friend's", function()
+    for _, pid in pairs(players.list(false, true, true)) do 
+        local hdl = pid_to_handle(pid)
+        local playerName = players.get_name(pid)
+        if players.get_vehicle_model(pid) == 2069146067 and not NETWORK.NETWORK_IS_FRIEND(hdl) then
+            if not players.is_marked_as_modder(pid) then 
+                local found = false
+                for _, name in ipairs(mk2noob) do
+                    if name == playerName then
+                        found = true
+                        break
+                    end
+                end
+                if not found then
+                    table.insert(mk2noob, playerName)
+                end
+                menu.trigger_commands("spin"..playerName.." on")
+                menu.trigger_commands("slippery"..playerName.." on")
+                util.yield(13)
+            end
+        else
+            local index
+            for i, name in ipairs(mk2noob) do
+                if name == playerName then
+                    index = i
+                    break
+                end
+            end
+            if index then
+                table.remove(mk2noob, index)
+            end
+        end    
+    end
+    util.yield(666)
+end, function()
+    for _, playerName in pairs(mk2noob) do
+        menu.trigger_commands("spin"..playerName.." on")
+        menu.trigger_commands("slippery"..playerName.." on")
+        table.remove(mk2noob, index)
+    end
+end)
+
 menu.divider(Session, "<3 Admin Stuff <3")
 
 local group_name = "Admin"
@@ -2403,49 +2650,45 @@ end, function()
     ClearTraficSphere = 0
 end)
 
-local function SH_Exist(pid)
-    if IsInSession() then
-        if players.exists(pid) and players.get_name(pid) ~= "undiscoveredplayer" and players.get_name(pid) ~= "InvalidPlayer" then
-            local Player_List = players.list()
-            for _, plid in pairs(Player_List) do
-                if plid == pid then
-                    return true
-                end
-            end
-        end
-    end
-    return false
-end
-
 menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
     if IsInSession() then
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
-            local script_host_id = players.get_script_host()
-            if players.user() == players.get_host() or players.user() == script_host_id then
-                if not isStuck(script_host_id) and SH_Exist(script_host_id) then
+            if players.user() == players.get_host() or players.user() == players.get_script_host() then
+                if not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
                     local Player_List = players.list()
                     for _, pid in pairs(Player_List) do
                         local name = players.get_name(pid)
-                        if SH_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid then
+                        if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid then
                             util.yield(13666)
-                            if SH_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid then
+                            if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid then
                                 menu.trigger_commands("givesh " .. name)
                                 notify_cmd(name .. " is Loading too Long.")
                                 util.yield(13666)
-                                while SH_Exist(pid) and isStuck(pid) do
+                                local timeout = os.time() + 30 -- Set timeout to 1 minute
+                                local fail = false
+                                while player_Exist(pid) and isStuck(pid) do
                                     util.yield(6666)
-                                    if SH_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid then
+                                    if os.time() > timeout then
+                                        notify_cmd(name .. " took too long to load. Timeout reached.")
+                                        fail = true
+                                        break
+                                    end
+                                    if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
                                         menu.trigger_commands("givesh " .. name)
                                         notify_cmd(name .. " is Still Loading too Long.")
                                         util.yield(13666)
                                     end
                                 end
-                                if SH_Exist(pid) then
-                                    notify_cmd(name .. " Finished Loading.")
-                                else
-                                    notify(name .. " got Lost in the Void.")
+                                if not fail then
+                                    if player_Exist(pid) then
+                                        notify_cmd(name .. " Finished Loading.")
+                                    else
+                                        notify(name .. " got Lost in the Void.")
+                                    end
                                 end
-                                menu.trigger_commands("scripthost")
+                                if not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
+                                    menu.trigger_commands("scripthost")
+                                end
                                 util.yield(13666)
                             end
                         end
@@ -2475,9 +2718,83 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
     end
 end)
 
-menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisible for the whole session, but with a nice effect for ppl close by.", function()
+local wannabeGOD = {}
+menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost everyone who triggers \"Attacking While Invulnerable\" except Friends or Stand user.", function()
     if IsInSession() then
-        warnify_ses("T-5 sec. Start on ;GO;")
+        local Player_List = players.list()
+        for _, pid in pairs(Player_List) do
+            local hdl = pid_to_handle(pid)
+            local playerName = players.get_name(pid)
+            if wannabeGod(pid) and not NETWORK.NETWORK_IS_FRIEND(hdl) and not StandUser(pid) then
+                local found = false
+                for _, plid in ipairs(wannabeGOD) do
+                    if plid == pid then
+                        found = true
+                        break
+                    end
+                end
+                if not found then
+                    table.insert(wannabeGOD, pid)
+                    NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+                    --menu.trigger_commands("ignore "..playerName.." on")
+                    --menu.trigger_commands("confuse "..playerName.." on")
+                end
+                --util.trigger_script_event(1 << pid, {800157557, players.user(), 225624744, math.random(0, 9999)}) -- credits to Jinx Script.
+            end
+        end
+        util.yield(6666)
+    else
+        util.yield(13666)
+    end
+end, function()
+    for _, pid in pairs(wannabeGOD) do
+        if player_Exist(pid) then
+            local playerName = players.get_name(pid)
+            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+            menu.trigger_commands("ignore "..playerName.." off")
+            --menu.trigger_commands("confuse "..playerName.." off")
+        end
+        table.remove(wannabeGOD, index)
+    end
+end)
+
+menu.toggle_loop(Session, "Kick Aggressive Host Token on Attack", {""}, "", function()
+    if IsInSession() then
+        local Player_List = players.list()
+        for _, pid in pairs(Player_List) do
+            local hdl = pid_to_handle(pid)
+            if aggressive(pid) and not NETWORK.NETWORK_IS_FRIEND(hdl) and players.is_marked_as_attacker(pid) then
+                StrategicKick(pid)
+            end
+        end
+        util.yield(3666)
+    else
+        util.yield(13666)
+    end
+end)
+
+menu.toggle_loop(Session, "Kick Aggressive Host Token as Host", {""}, "", function()
+    if IsInSession() and players.user() == players.get_host() then
+        local Player_List = players.list()
+        for _, pid in pairs(Player_List) do
+            local hdl = pid_to_handle(pid)
+            if aggressive(pid) and not NETWORK.NETWORK_IS_FRIEND(hdl) then
+                StrategicKick(pid)
+            end
+        end
+        util.yield(3666)
+    else
+        util.yield(13666)
+    end
+end)
+
+menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisible for the whole session, but with a nice effect for ppl close by.", function()
+    if IsInSession() then 
+        warnify_ses("T-5 sec. Start on \"GO!\"")
+        local red_countdown = nil
+        local green_contdown = nil
+        local playerPosition = players.get_position(players.user())
+        local red_countdown = SpawnCheck(red_countdown, 831568081, v3.new(playerPosition.x, playerPosition.y, playerPosition.z + 5), ENTITY.GET_ENTITY_HEADING(players.user_ped()), 0)
         for i=1, 13 do
             PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
@@ -2515,9 +2832,19 @@ menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisi
         else
             menu.trigger_commands("deployboth")
         end
-        for i=1, 111 do
+        local green_countdown = SpawnCheck(green_countdown, 857804632, v3.new(playerPosition.x, playerPosition.y, playerPosition.z + 5), ENTITY.GET_ENTITY_HEADING(players.user_ped()), 0)
+        if ENTITY.DOES_ENTITY_EXIST(red_countdown) then
+            requestControl(red_countdown, 0)
+            entities.delete(red_countdown)
+        end
+        for i=1, 222 do
             PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(6)
+        end
+        util.yield(666)
+        if ENTITY.DOES_ENTITY_EXIST(green_countdown) then
+            requestControl(green_countdown, 0)
+            entities.delete(green_countdown)
         end
     end
 end)
@@ -2592,35 +2919,8 @@ end
 
 local function add_in_stand(pid, name, rid)
     players.add_detection(pid, "Blacklist", TOAST_DEFAULT, 100)
-    --local commandPaths = {
-    --    "[Offline]",
-    --    "[Public]",
-    --    "[Invite]",
-    --    "[Friends Only]",
-    --    "[Story Mode]",
-    --    "[Other]"
-    --}
     menu.trigger_commands("historynote ".. name .." Blacklist")
     menu.trigger_commands("historyblock ".. name .." on")
-    --for i, suffix in ipairs(commandPaths) do
-    --    pathSuffix = suffix
-    --    util.yield(666)
-    --    local Note = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Note")
-    --    local Notification = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Notification")
-    --    local BlockJoin = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Join")
-    --    local Timeout = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Timeout")
-    --    local BlockTheirNetworkEvents = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Their Network Events")
-    --    local BlockIncomingSyncs = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Incoming Syncs")
-    --    local BlockOutgoingSyncs = menu.ref_by_path("Online>Player History>" .. name .. " " .. pathSuffix .. ">Player Join Reactions>Block Outgoing Syncs")
---
-    --    menu.trigger_commands("historynote ".. name .." Blacklist")
-    --    menu.set_value(Notification, true)
-    --    menu.set_value(BlockJoin, true)
-    --    menu.set_value(Timeout, true)
-    --    menu.set_value(BlockTheirNetworkEvents, true)
-    --    menu.set_value(BlockIncomingSyncs, true)
-    --    menu.set_value(BlockOutgoingSyncs, true)
-    --end
 end
 
 local function is_player_in_blacklist(pid, name, rid)
@@ -2659,14 +2959,10 @@ local function SessionCheck(pid)
                     warnify("This Blacklist is a Stand User , we dont Kick them until they atack: \n" .. name .. " - " .. rid)
                     menu.trigger_commands("hellaa " .. name .. " on")
                 else
-                    --menu.trigger_commands("crash " .. name)
-                    --menu.trigger_commands("choke " .. name)
-                    --menu.trigger_commands("ngcrash " .. name)
-                    --menu.trigger_commands("footlettuce " .. name)
-                    --menu.trigger_commands("slaughter " .. name)
-                    StrategicKick(pid, name, rid)
+                    StrategicKick(pid)
                 end
             end
+            util.yield(1)
         end
         for id, player in pairs(data_e) do
             if tonumber(id) == tonumber(rid) then
@@ -2676,14 +2972,10 @@ local function SessionCheck(pid)
                     warnify("This Blacklist is a Stand User , we dont Kick them until they atack: \n" .. name .. " - " .. rid)
                     menu.trigger_commands("hellaa " .. name .. " on")
                 else
-                    --menu.trigger_commands("crash " .. name)
-                    --menu.trigger_commands("choke " .. name)
-                    --menu.trigger_commands("ngcrash " .. name)
-                    --menu.trigger_commands("footlettuce " .. name)
-                    --menu.trigger_commands("slaughter " .. name)
-                    StrategicKick(pid, name, rid)
+                    StrategicKick(pid)
                 end
             end
+            util.yield(1)
         end
     end
 end
@@ -2691,7 +2983,7 @@ end
 players.on_join(SessionCheck)
 
 player_menu = function(pid)
-    if players.exists(pid) then
+    if player_Exist(pid) then
         if not players.exists(players.user()) then
             return
         end
@@ -2704,7 +2996,7 @@ player_menu = function(pid)
             if not is_player_in_blacklist(pid, name, rid) then
                 add_player_to_blacklist(pid, name, rid)
             end
-            StrategicKick(pid, name, rid)
+            StrategicKick(pid)
         end)
         menu.action(Bad_Modder, "Add Blacklist ,Phone Call & Kick", {'hellp'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
             add_in_stand(pid, name, rid)
@@ -2713,7 +3005,7 @@ player_menu = function(pid)
             end
             menu.trigger_commands("ring " .. name)
             util.yield(666)
-            StrategicKick(pid, name, rid)
+            StrategicKick(pid)
         end)
         menu.action(Bad_Modder, "Add Blacklist ,Crash & Kick", {'hellc'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
             add_in_stand(pid, name, rid)
@@ -2722,7 +3014,7 @@ player_menu = function(pid)
             end
             menu.trigger_commands("choke ".. name)
             util.yield(666)
-            StrategicKick(pid, name, rid)
+            StrategicKick(pid)
         end)
         menu.action(Bad_Modder, "Add Blacklist Only", {'helln'}, "Blacklist Note and Block the Target from Joining u again.", function ()
             add_in_stand(pid, name, rid)
@@ -2731,7 +3023,7 @@ player_menu = function(pid)
             end
         end)
         --menu.toggle_loop(Bad_Modder, "(Alpha) Report Bot", {"hellrp"}, "Weak menu? Spamm report them >:D", function()
-        --    if players.exists(pid) then
+        --    if player_Exist(pid) then
         --        menu.trigger_commands("reportgriefing " .. name)
         --        menu.trigger_commands("reportexploits " .. name)
         --        menu.trigger_commands("reportbugabuse " .. name)
@@ -2752,7 +3044,7 @@ player_menu = function(pid)
                 if not is_player_in_blacklist(pid, name, rid) then
                     add_player_to_blacklist(pid, name, rid)
                 end
-                StrategicKick(pid, name, rid)
+                StrategicKick(pid)
                 warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
                 PlayerExists = false
                 util.yield(66666)
@@ -2764,7 +3056,7 @@ player_menu = function(pid)
         end)
         menu.toggle_loop(Bad_Modder, "Kick on Atack", {"hellaa"}, "Auto kick if they atack you.", function()
             if players.is_marked_as_attacker(pid) then
-                StrategicKick(pid, name, rid)
+                StrategicKick(pid)
                 warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
                 util.yield(66666)
             else
@@ -2840,6 +3132,16 @@ end)
 
 menu.divider(Settings, "<3")
 
+menu.action(Settings, "Create \"Friend's\" Group", {""}, "Create a group called \"Friend's\" , turns on Whitelist and Tracking.", function()
+    menu.trigger_commands("friendsupdate")
+    util.yield(13)
+    menu.trigger_commands("friendsnote Friend's")
+    util.yield(13)
+    menu.trigger_commands("friendstrack")
+    util.yield(13)
+    menu.trigger_commands("friendswhitelist")
+end)
+
 menu.action(Settings, "Copy Position to Clipboard", {}, "", function()
     local playerPosition = players.get_position(players.user())
     local positionString = string.format("{ x = %.2f, y = %.2f, z = %.2f },", playerPosition.x, playerPosition.y, playerPosition.z)
@@ -2871,3 +3173,5 @@ menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
 end)
 
 util.keep_running()
+requestModel(831568081, 666)
+requestModel(857804632, 666)
