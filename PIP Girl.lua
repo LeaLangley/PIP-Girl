@@ -2542,7 +2542,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                 menu.trigger_commands("givesh " .. name)
                                 notify_cmd(name .. " is Loading too Long.")
                                 util.yield(13666)
-                                local timeout = os.time() + 60 -- Set timeout to 1 minute
+                                local timeout = os.time() + 30 -- Set timeout to 1 minute
                                 local fail = false
                                 while player_Exist(pid) and isStuck(pid) do
                                     util.yield(6666)
