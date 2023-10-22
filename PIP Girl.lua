@@ -861,7 +861,7 @@ local function check_CEO_Color(ceo_color)
     if IsInSession() then
         if players.get_org_colour(players.user()) ~= ceo_color then
             local uniqueColors = {}
-            for _, pid in players.list(true, true, true) do 
+            for _, pid in pairs(players.list()) do 
                 if players.get_boss(pid) ~= -1 then
                     local orgColor = players.get_org_colour(pid)
                     if orgColor and not uniqueColors[orgColor] then
@@ -1023,7 +1023,7 @@ menu.toggle_loop(PIP_Girl, "Additional CEO/MC Color Checks.", {""}, "If u use \"
         if ceo_color ~= -1 then
             check_CEO_Color(ceo_color)
         end
-        util.yield(6666)
+        util.yield(30666)
     end
 end)
 
