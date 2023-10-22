@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.65"
+local SCRIPT_VERSION = "0.1.66"
 
 local startupmsg = "I love u."
 
@@ -492,6 +492,7 @@ local PIP_Girl = menu.list(menu.my_root(), 'PIP Girl', {}, 'Personal Information
 local PIP_Girl_APPS = menu.list(PIP_Girl, 'PIP Girl Apps', {}, 'Personal Information Processor Girl apps.', function(); end)
 --local PIP_Girl_Heist = menu.list(PIP_Girl, 'PIP Girl Heists', {}, 'Personal Information Processor Girl Heist Presets.', function(); end)
 local Stimpak = menu.list(menu.my_root(), 'Stimpak', {}, 'Take a breath.', function(); end)
+local Vehicle = menu.list(menu.my_root(), 'Vehicle', {}, 'Drive pretty and nice.', function(); end)
 local Outfit = menu.list(menu.my_root(), 'Outfit', {}, 'Look pretty and nice.', function(); end)
 local Game = menu.list(menu.my_root(), 'Game', {}, 'Very gaming today.', function(); end)
 local Session = menu.list(menu.my_root(), 'Session', {}, '.noisseS', function(); end)
@@ -856,32 +857,28 @@ end)
 
 menu.divider(PIP_Girl, "CEO/MC Options")
 local ceo_color = -1
-local first_color_check = true
 local function check_CEO_Color(ceo_color)
     if IsInSession() then
-        local allValuesZero = true
-        local allHelpTextEmpty = true
-        for menu.ref_by_path("Online>CEO/MC>Colour Slots"):getChildren() as link do
-            if link.value ~= 0 then
-                allValuesZero = false
+        if players.get_org_colour(players.user()) ~= ceo_color then
+            local uniqueColors = {}
+            for _, pid in players.list(true, true, true) do 
+                if players.get_boss(pid) ~= -1 then
+                    local orgColor = players.get_org_colour(pid)
+                    if orgColor and not uniqueColors[orgColor] then
+                        uniqueColors[orgColor] = true
+                    end
+                    if players.user() == pid then
+                        break
+                    end
+                    util.yield(1)
+                end
             end
-            if link.help_text ~= "" then
-                allHelpTextEmpty = false
+            local ceoInSession = -1
+            for _ in pairs(uniqueColors) do
+                ceoInSession = ceoInSession + 1
+                util.yield(1)
             end
-        end
-        if players.user() == players.get_host() then
-            if allValuesZero and allHelpTextEmpty then
-                local current = menu.get_current_menu_list()
-                menu.focus(menu.ref_by_path("Online>CEO/MC>Colour Slots>0"))
-                util.yield(420)
-                menu.focus(current)
-                notify("Changed your CEO/MC color.")
-            end
-        end
-        for menu.ref_by_path("Online>CEO/MC>Colour Slots"):getChildren() as link do
-            if string.find(link.help_text, players.get_name(players.user()), 1, true) then
-                menu.set_value(link, ceo_color)
-            end
+            menu.trigger_commands("ceocolour"..ceoInSession.." "..ceo_color)
         end
     end
 end
@@ -1671,117 +1668,38 @@ menu.toggle_loop(Outfit, "Restor Outfit", {"restoreoutfit"}, "Auto Restore the S
     end
 end)
 
-local function SuperClean(fix, ignoreMission)
-    local pos = players.get_position(players.user())
-    local ct = 0
-    local rope_alloc = memory.alloc(4)
-    for i=0, 100 do 
-        memory.write_int(rope_alloc, i)
-        if PHYSICS.DOES_ROPE_EXIST(rope_alloc) then
-            util.yield(13)
-            PHYSICS.DELETE_ROPE(rope_alloc)
-            ct += 1
-        end
-    end
-    util.yield(13)
-    menu.trigger_commands("deleterope")
-    util.yield(13)
-    for k,ent in pairs(entities.get_all_peds_as_handles()) do
-        if not PED.IS_PED_A_PLAYER(ent) then
-            if not ignoreMission then
-                entities.delete(ent)
-                ct += 1
-            else
-                if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
-                    entities.delete(ent)
-                    ct += 1
+local vehicleFavColor = 0
+menu.toggle_loop(Vehicle, "Set vehicle light color automatically",{""},"Automatically set your favorite vehicle color for vehicles with default lights.\nDefault lights: 0 & 1 | Color lights: 2-14",function()
+    util.yield(420)
+    if vehicleFavColor ~= 0 then
+        if IsInSession() then
+            local vehicle = entities.get_user_vehicle_as_handle()
+            if vehicle then
+                local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
+                local driver = NETWORK.NETWORK_GET_PLAYER_INDEX_FROM_PED(driverPed)
+                if driver == players.user() then
+                    if VEHICLE.GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 then
+                        vehicleLightsSet = vehicle
+                        menu.trigger_commands("headlights "..vehicleFavColor)
+                    end
                 end
             end
-            util.yield(13)
-        end
-    end
-    util.yield(13)
-    for k,ent in pairs(entities.get_all_vehicles_as_handles()) do
-        local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
-        if not PED.IS_PED_A_PLAYER(driver) then
-            if not ignoreMission then
-                entities.delete(ent)
-                ct += 1
-            else
-                if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
-                    entities.delete(ent)
-                    ct += 1
-                end
-            end
-            util.yield(13)
-        end
-    end
-    util.yield(13)
-    for k,ent in pairs(entities.get_all_objects_as_handles()) do
-        if not ignoreMission then
-            entities.delete(ent)
-            ct += 1
+            util.yield(3666)
         else
-            if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
-                entities.delete(ent)
-                ct += 1
-            end
+            util.yield(13666)
         end
-        util.yield(13)
+    else
+        notify("Pls Select ur Fav Vehicle light color first.")
+        util.yield(6666)
     end
-    util.yield(13)
-    for k,ent in pairs(entities.get_all_pickups_as_handles()) do
-        if not ignoreMission then
-            entities.delete(ent)
-            ct += 1
-        else
-            if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
-                entities.delete(ent)
-                ct += 1
-            end
-        end
-        util.yield(13)
-    end
-    util.yield(13)
-    GRAPHICS.REMOVE_PARTICLE_FX_IN_RANGE(pos.x, pos.y, pos.z, 13666)
-    util.yield(13)
-    MISC.CLEAR_AREA_OF_PROJECTILES(pos.x, pos.y, pos.z, 13666)
-    notify("Done " .. ct .. "+ entities removed!")
-    if fix then
-        util.yield(666)
-        menu.trigger_commands("lockstreamingfocus on")
-        util.yield(13)
-        menu.trigger_commands("lockstreamingfocus off")
-    end
-end
-menu.divider(Game, "Exclude Mission.")
-
-menu.action(Game, 'Super Cleanse No yacht fix', {"supercleannysave"}, 'BCS R* is a mess.', function()
-    local fix = false
-    SuperClean(fix, true)
 end)
 
-menu.action(Game, 'Super Cleanse', {"supercleansave"}, 'BCS R* is a mess.', function(click_type)
-    local fix = true
-    SuperClean(fix, true)
+menu.slider(Vehicle, "Vehicle light color", {"favheadlights"}, "", 2, 14, vehicleFavColor, 1, function (new_value)
+    vehicleFavColor = new_value
 end)
-
-menu.divider(Game, "Regular")
-
-menu.action(Game, 'Super Cleanse No yacht fix', {"supercleanny"}, 'BCS R* is a mess.', function()
-    local fix = false
-    SuperClean(fix, false)
-end)
-
-menu.action(Game, 'Super Cleanse', {"superclean"}, 'BCS R* is a mess.', function(click_type)
-    local fix = true
-    SuperClean(fix, false)
-end)
-
-menu.divider(Game, "<3")
 
 local sparrowHandeling = nil
-menu.toggle_loop(Game, "Heli Sparrow Handeling",{""},"All Heli's u enter fly like a Sparrow.",function()
+menu.toggle_loop(Vehicle, "Heli Sparrow Handling",{""},"All helicopters you enter fly like a sparrow.",function()
     if IsInSession() then
         local vehicle = entities.get_user_vehicle_as_handle()
         if vehicle then
@@ -1901,6 +1819,115 @@ menu.toggle_loop(Game, "Heli Sparrow Handeling",{""},"All Heli's u enter fly lik
     end
     util.yield(3666)
 end)
+
+local function SuperClean(fix, ignoreMission)
+    local pos = players.get_position(players.user())
+    local ct = 0
+    local rope_alloc = memory.alloc(4)
+    for i=0, 100 do 
+        memory.write_int(rope_alloc, i)
+        if PHYSICS.DOES_ROPE_EXIST(rope_alloc) then
+            util.yield(13)
+            PHYSICS.DELETE_ROPE(rope_alloc)
+            ct += 1
+        end
+    end
+    util.yield(13)
+    menu.trigger_commands("deleterope")
+    util.yield(13)
+    for k,ent in pairs(entities.get_all_peds_as_handles()) do
+        if not PED.IS_PED_A_PLAYER(ent) then
+            if not ignoreMission then
+                entities.delete(ent)
+                ct += 1
+            else
+                if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
+                    entities.delete(ent)
+                    ct += 1
+                end
+            end
+            util.yield(13)
+        end
+    end
+    util.yield(13)
+    for k,ent in pairs(entities.get_all_vehicles_as_handles()) do
+        local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
+        if not PED.IS_PED_A_PLAYER(driver) then
+            if not ignoreMission then
+                entities.delete(ent)
+                ct += 1
+            else
+                if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
+                    entities.delete(ent)
+                    ct += 1
+                end
+            end
+            util.yield(13)
+        end
+    end
+    util.yield(13)
+    for k,ent in pairs(entities.get_all_objects_as_handles()) do
+        if not ignoreMission then
+            entities.delete(ent)
+            ct += 1
+        else
+            if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
+                entities.delete(ent)
+                ct += 1
+            end
+        end
+        util.yield(13)
+    end
+    util.yield(13)
+    for k,ent in pairs(entities.get_all_pickups_as_handles()) do
+        if not ignoreMission then
+            entities.delete(ent)
+            ct += 1
+        else
+            if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
+                entities.delete(ent)
+                ct += 1
+            end
+        end
+        util.yield(13)
+    end
+    util.yield(13)
+    GRAPHICS.REMOVE_PARTICLE_FX_IN_RANGE(pos.x, pos.y, pos.z, 13666)
+    util.yield(13)
+    MISC.CLEAR_AREA_OF_PROJECTILES(pos.x, pos.y, pos.z, 13666)
+    notify("Done " .. ct .. "+ entities removed!")
+    if fix then
+        util.yield(666)
+        menu.trigger_commands("lockstreamingfocus on")
+        util.yield(13)
+        menu.trigger_commands("lockstreamingfocus off")
+    end
+end
+menu.divider(Game, "Exclude Mission.")
+
+menu.action(Game, 'Super Cleanse No yacht fix', {"supercleannysave"}, 'BCS R* is a mess.', function()
+    local fix = false
+    SuperClean(fix, true)
+end)
+
+menu.action(Game, 'Super Cleanse', {"supercleansave"}, 'BCS R* is a mess.', function(click_type)
+    local fix = true
+    SuperClean(fix, true)
+end)
+
+menu.divider(Game, "Regular")
+
+menu.action(Game, 'Super Cleanse No yacht fix', {"supercleanny"}, 'BCS R* is a mess.', function()
+    local fix = false
+    SuperClean(fix, false)
+end)
+
+menu.action(Game, 'Super Cleanse', {"superclean"}, 'BCS R* is a mess.', function(click_type)
+    local fix = true
+    SuperClean(fix, false)
+end)
+
+menu.divider(Game, "<3")
 
 menu.toggle_loop(Game, "Auto Skip Conversation",{"pgascon"},"Automatically skip all conversations.",function()
     if AUDIO.IS_SCRIPTED_CONVERSATION_ONGOING() then
@@ -2736,6 +2763,7 @@ menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost
                 if not found then
                     table.insert(wannabeGOD, pid)
                     NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+                    players.add_detection(pid, "Ghosted to you. By PIP Girl.", TOAST_DEFAULT, 100)
                     --menu.trigger_commands("ignore "..playerName.." on")
                     --menu.trigger_commands("confuse "..playerName.." on")
                 end
