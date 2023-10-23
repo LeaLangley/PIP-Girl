@@ -2545,7 +2545,7 @@ end, function()
 end)
 
 local mk2noob = {}
-menu.toggle_loop(SessionWorld, "Spinning MK2's", {""}, "Spin all MK2's, except Modder and Friend's", function()
+menu.toggle_loop(SessionWorld, "Spinning MK2s", {""}, "Spin all MK2's, except Modder and Friend's", function()
     for _, pid in pairs(players.list(false, true, true)) do 
         local hdl = pid_to_handle(pid)
         local playerName = players.get_name(pid)
