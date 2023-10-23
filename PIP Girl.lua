@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.66"
+local SCRIPT_VERSION = "0.1.67"
 
 local startupmsg = "I love u."
 
@@ -1378,7 +1378,6 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
                     saved_vehicle_id = vehicle
                     VEHICLE.SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
                     VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
-                    VEHICLE.SET_VEHICLE_FULLBEAM(vehicle, true)
                     VEHICLE.SET_DONT_PROCESS_VEHICLE_GLASS(vehicles, true)
                     VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, false)
                     VEHICLE.SET_HELI_TAIL_BOOM_CAN_BREAK_OFF(vehicle, false)
@@ -2676,7 +2675,7 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic a
     end
 end, function()
     MISC.REMOVE_POP_MULTIPLIER_SPHERE(ClearTraficSphere, true)
-    ClearTraficSphere = 0
+    ClearTraficSphere = nil
 end)
 
 menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
