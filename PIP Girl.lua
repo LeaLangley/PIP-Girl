@@ -2765,7 +2765,7 @@ menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost
                 if not found then
                     table.insert(wannabeGOD, pid)
                     NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
-                    players.add_detection(pid, "Ghosted to you. By PIP Girl.", TOAST_DEFAULT, 100)
+                    players.add_detection(pid, "Ghosted to you. By PIP Girl.", TOAST_DEFAULT, 0)
                 end
             end
         end
