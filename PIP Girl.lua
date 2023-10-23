@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.67"
+local SCRIPT_VERSION = "0.1.68"
 
 local startupmsg = "I love u."
 
@@ -2575,6 +2575,8 @@ menu.toggle_loop(SessionWorld, "Spinning MK2's", {""}, "Spin all MK2's, except M
             end
             if index then
                 table.remove(mk2noob, index)
+                menu.trigger_commands("spin"..playerName.." off")
+                menu.trigger_commands("slippery"..playerName.." off")
             end
         end    
     end
@@ -2582,8 +2584,8 @@ menu.toggle_loop(SessionWorld, "Spinning MK2's", {""}, "Spin all MK2's, except M
 end, function()
     for _, plid in pairs(mk2noob) do
         if PlayerExists(plid) then
-            menu.trigger_commands("spin"..playerName.." on")
-            menu.trigger_commands("slippery"..playerName.." on")
+            menu.trigger_commands("spin"..playerName.." off")
+            menu.trigger_commands("slippery"..playerName.." off")
         end
         table.remove(mk2noob, index)
     end
