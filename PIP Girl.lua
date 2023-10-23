@@ -2553,14 +2553,14 @@ menu.toggle_loop(SessionWorld, "Spinning MK2's", {""}, "Spin all MK2's, except M
         if players.get_vehicle_model(pid) == 2069146067 and not NETWORK.NETWORK_IS_FRIEND(hdl) then
             if not players.is_marked_as_modder(pid) then 
                 local found = false
-                for _, name in ipairs(mk2noob) do
-                    if name == playerName then
+                for _, plid in ipairs(mk2noob) do
+                    if plid == pid then
                         found = true
                         break
                     end
                 end
                 if not found then
-                    table.insert(mk2noob, playerName)
+                    table.insert(mk2noob, pid)
                 end
                 menu.trigger_commands("spin"..playerName.." on")
                 menu.trigger_commands("slippery"..playerName.." on")
@@ -2568,8 +2568,8 @@ menu.toggle_loop(SessionWorld, "Spinning MK2's", {""}, "Spin all MK2's, except M
             end
         else
             local index
-            for i, name in ipairs(mk2noob) do
-                if name == playerName then
+            for i, plid in ipairs(mk2noob) do
+                if plid == pid then
                     index = i
                     break
                 end
@@ -2581,9 +2581,11 @@ menu.toggle_loop(SessionWorld, "Spinning MK2's", {""}, "Spin all MK2's, except M
     end
     util.yield(666)
 end, function()
-    for _, playerName in pairs(mk2noob) do
-        menu.trigger_commands("spin"..playerName.." on")
-        menu.trigger_commands("slippery"..playerName.." on")
+    for _, plid in pairs(mk2noob) do
+        if PlayerExists(plid) then
+            menu.trigger_commands("spin"..playerName.." on")
+            menu.trigger_commands("slippery"..playerName.." on")
+        end
         table.remove(mk2noob, index)
     end
 end)
@@ -2764,10 +2766,7 @@ menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost
                     table.insert(wannabeGOD, pid)
                     NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
                     players.add_detection(pid, "Ghosted to you. By PIP Girl.", TOAST_DEFAULT, 100)
-                    --menu.trigger_commands("ignore "..playerName.." on")
-                    --menu.trigger_commands("confuse "..playerName.." on")
                 end
-                --util.trigger_script_event(1 << pid, {800157557, players.user(), 225624744, math.random(0, 9999)}) -- credits to Jinx Script.
             end
         end
         util.yield(6666)
@@ -2780,7 +2779,6 @@ end, function()
             local playerName = players.get_name(pid)
             NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
             menu.trigger_commands("ignore "..playerName.." off")
-            --menu.trigger_commands("confuse "..playerName.." off")
         end
         table.remove(wannabeGOD, index)
     end
@@ -3050,22 +3048,16 @@ player_menu = function(pid)
                 add_player_to_blacklist(pid, name, rid)
             end
         end)
-        --menu.toggle_loop(Bad_Modder, "(Alpha) Report Bot", {"hellrp"}, "Weak menu? Spamm report them >:D", function()
-        --    if player_Exist(pid) then
-        --        menu.trigger_commands("reportgriefing " .. name)
-        --        menu.trigger_commands("reportexploits " .. name)
-        --        menu.trigger_commands("reportbugabuse " .. name)
-        --        menu.trigger_commands("reportannoying " .. name)
-        --        menu.trigger_commands("reporthate " .. name)
-        --        menu.trigger_commands("reportvcannoying " .. name)
-        --        menu.trigger_commands("reportvchate " .. name)
-        --        PlayerExists = false
-        --        util.yield(13666)
-        --    else
-        --        PlayerExists = false
-        --        util.yield(66666)
-        --    end
-        --end)
+        menu.toggle_loop(Bad_Modder, "Ghost Player", {""}, "Ghost the selected player.", function()
+            if IsInSession() and player_Exist(pid) then
+                NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+            end
+            util.yield(666)
+        end, function()
+            if player_Exist(pid) then
+                NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+            end
+        end)
         menu.toggle_loop(Bad_Modder, "Blacklist Kick on Atack", {"hellaab"}, "Auto kick if they atack you, and add them to blacklist.", function()
             if players.is_marked_as_attacker(pid) then
                 add_in_stand(pid, name, rid)
