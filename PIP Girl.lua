@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.69"
+local SCRIPT_VERSION = "0.1.70"
 
 local startupmsg = "I love u."
 
@@ -1019,12 +1019,12 @@ menu.slider(PIP_Girl, 'Auto CEO/MC Color', {'favceocolor'}, "Enter the Color ID 
 end)
 
 menu.toggle_loop(PIP_Girl, "Additional CEO/MC Color Checks.", {""}, "If u use \"Auto Become a CEO/MC\" it will check for u color on register.\nIf u dont use \"Auto Become a CEO/MC\" u can use Additinal Checks.", function(on)
-    if IsInSession() and players.get_boss(players.user()) ~= -1 then
+    if IsInSession() and players.get_boss(players.user()) ~= -1 and players.user() == players.get_script_host() then
         if ceo_color ~= -1 then
             check_CEO_Color(ceo_color)
         end
-        util.yield(30666)
     end
+    util.yield(30666)
 end)
 
 menu.toggle(PIP_Girl, "Auto Join Friends CEO (!)", {""}, "(also MC) Uses \"Auto Become a CEO/MC\"", function(on)
@@ -2946,11 +2946,9 @@ load_data_e()
 
 load_data_g()
 
-local function add_player_to_blacklist(player, name, rid)
-    if rid and name then
-        table.insert(data_e, tostring(rid))
-        save_data_e()
-    end
+local function add_player_to_blacklist(rid)
+    table.insert(data_e, tostring(rid))
+    save_data_e()
 end
 
 local function add_in_stand(pid, name, rid)
@@ -2959,18 +2957,18 @@ local function add_in_stand(pid, name, rid)
     menu.trigger_commands("historyblock ".. name .." on")
 end
 
-local function is_player_in_blacklist(pid, name, rid)
-    if rid then
-        for _, blacklistedId in pairs(data_g) do
-            if tonumber(blacklistedId) == tonumber(rid) then
-                return true
-            end
+local function is_player_in_blacklist(rid)
+    for _, blacklistedId in pairs(data_g) do
+        if tonumber(blacklistedId) == tonumber(rid) then
+            return true
         end
-        for _, blacklistedId in pairs(data_e) do
-            if tonumber(blacklistedId) == tonumber(rid) then
-                return true
-            end
+        util.yield()
+    end
+    for _, blacklistedId in pairs(data_e) do
+        if tonumber(blacklistedId) == tonumber(rid) then
+            return true
         end
+        util.yield()
     end
     return false
 end
@@ -2979,31 +2977,15 @@ local function SessionCheck(pid)
     local hdl = pid_to_handle(pid)
     if not NETWORK.NETWORK_IS_FRIEND(hdl) then
         local rid = players.get_rockstar_id(pid)
-        local name = players.get_name(pid)
-        for _, blacklistedId in pairs(data_g) do
-            if tonumber(blacklistedId) == tonumber(rid) then
-                notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
-                add_in_stand(pid, name, rid)
-                if StandUser(pid) then
-                    warnify("This Blacklist is a Stand User , we dont Kick them until they atack: \n" .. name .. " - " .. rid)
-                    menu.trigger_commands("hellaa " .. name .. " on")
-                else
-                    StrategicKick(pid)
-                end
-            end
-            util.yield(1)
-        end
-        for _, blacklistedId in pairs(data_e) do
-            if tonumber(blacklistedId) == tonumber(rid) then
-                notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
-                add_in_stand(pid, name, rid)
-                if StandUser(pid) then
-                    warnify("This Blacklist is a Stand User, we don't kick them until they attack: \n" .. name .. " - " .. rid)
-                    menu.trigger_commands("hellaa " .. name .. " on")
-                else
-                    StrategicKick(pid)
-                end
-                return
+        if is_player_in_blacklist(rid) then
+            local name = players.get_name(pid)
+            notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
+            add_in_stand(pid, name, rid)
+            if StandUser(pid) then
+                notify("This Blacklist is a Stand User, we don't kick them until they attack: \n" .. name .. " - " .. rid)
+                menu.trigger_commands("hellaa " .. name .. " on")
+            else
+                StrategicKick(pid)
             end
         end
     end
@@ -3022,15 +3004,15 @@ player_menu = function(pid)
         local Bad_Modder = menu.list(menu.player_root(pid), 'Bad Modder?', {""}, '', function() end)
         menu.action(Bad_Modder, "Add Blacklist & Kick", {'hellk'}, "Blacklist Note, Kick and Block the Target from Joining u again.", function ()
             add_in_stand(pid, name, rid)
-            if not is_player_in_blacklist(pid, name, rid) then
-                add_player_to_blacklist(pid, name, rid)
+            if not is_player_in_blacklist(rid) then
+                add_player_to_blacklist(rid)
             end
             StrategicKick(pid)
         end)
         menu.action(Bad_Modder, "Add Blacklist ,Phone Call & Kick", {'hellp'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
             add_in_stand(pid, name, rid)
-            if not is_player_in_blacklist(pid, name, rid) then
-                add_player_to_blacklist(pid, name, rid)
+            if not is_player_in_blacklist(rid) then
+                add_player_to_blacklist(rid)
             end
             menu.trigger_commands("ring " .. name)
             util.yield(666)
@@ -3038,8 +3020,8 @@ player_menu = function(pid)
         end)
         menu.action(Bad_Modder, "Add Blacklist ,Crash & Kick", {'hellc'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
             add_in_stand(pid, name, rid)
-            if not is_player_in_blacklist(pid, name, rid) then
-                add_player_to_blacklist(pid, name, rid)
+            if not is_player_in_blacklist(rid) then
+                add_player_to_blacklist(rid)
             end
             menu.trigger_commands("choke ".. name)
             util.yield(666)
@@ -3047,8 +3029,8 @@ player_menu = function(pid)
         end)
         menu.action(Bad_Modder, "Add Blacklist Only", {'helln'}, "Blacklist Note and Block the Target from Joining u again.", function ()
             add_in_stand(pid, name, rid)
-            if not is_player_in_blacklist(pid, name, rid) then
-                add_player_to_blacklist(pid, name, rid)
+            if not is_player_in_blacklist(rid) then
+                add_player_to_blacklist(rid)
             end
         end)
         menu.toggle_loop(Bad_Modder, "Ghost Player", {""}, "Ghost the selected player.", function()
@@ -3064,8 +3046,8 @@ player_menu = function(pid)
         menu.toggle_loop(Bad_Modder, "Blacklist Kick on Atack", {"hellaab"}, "Auto kick if they atack you, and add them to blacklist.", function()
             if players.is_marked_as_attacker(pid) then
                 add_in_stand(pid, name, rid)
-                if not is_player_in_blacklist(pid, name, rid) then
-                    add_player_to_blacklist(pid, name, rid)
+                if not is_player_in_blacklist(rid) then
+                    add_player_to_blacklist(rid)
                 end
                 StrategicKick(pid)
                 warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
