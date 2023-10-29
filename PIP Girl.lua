@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.68"
+local SCRIPT_VERSION = "0.1.69"
 
 local startupmsg = "I love u."
 
@@ -2882,20 +2882,52 @@ local data_e = {}
 
 local data_g = {}
 
+local function save_data_e()
+    local file = io.open(resources_dir .. 'Export/Export_Blacklist.json', 'w+')
+    if file then
+        file:write(json.encode(data_e))
+        io.close(file)
+    end
+end
+
 local function load_data_e()
     local file = io.open(resources_dir .. 'Export/Export_Blacklist.json', 'r')
     if file then
         local contents = file:read('*all')
         io.close(file)
-        data_e = json.decode(contents) or {}
+
+        local old_data_e = json.decode(contents) or {}
+        data_e = old_data_e
+
+        -- Check if old format is detected
+        local is_old_format = false
+        for id, player in pairs(old_data_e) do
+            if player["Name"] then
+                is_old_format = true
+                break
+            end
+        end
+
+        -- Convert old format to new format
+        if is_old_format then
+            data_e = {}
+            for id, player in pairs(old_data_e) do
+                if player["Name"] then
+                    table.insert(data_e, id)
+                end
+            end
+
+            -- Save the new format
+            save_data_e()
+        end
     else
         local new_file = io.open(resources_dir .. 'Export/Export_Blacklist.json', 'w')
         if new_file then
-            new_file:write("{}")
+            new_file:write("[]")
             io.close(new_file)
             data_e = {}
         else
-            warnify("Failed to create Blacklist.json")
+            warnify("Failed to create Export_Blacklist.json")
         end
     end
 end
@@ -2906,15 +2938,7 @@ local function load_data_g()
         local contents = file:read('*all')
         io.close(file)
         local json_data = json.decode(contents) or {}
-        data_g = json_data.Blacklist or {}
-    end
-end
-
-local function save_data_e()
-    local file = io.open(resources_dir .. 'Export/Export_Blacklist.json', 'w+')
-    if file then
-        file:write(json.encode(data_e))
-        io.close(file)
+        data_g = json_data or {} -- Assuming data_g is a table
     end
 end
 
@@ -2924,23 +2948,8 @@ load_data_g()
 
 local function add_player_to_blacklist(player, name, rid)
     if rid and name then
-        data_e[tostring(rid)] = {
-            ["Name"] = name
-        }
+        table.insert(data_e, tostring(rid))
         save_data_e()
-    end
-end
-
-local function update_player_name(player, name, rid)
-    local player_data_g = data_g[tostring(rid)]
-    if player_data_g then
-        if player_data_g.Name ~= name then
-            player_data_g.Name = name
-            data_e[tostring(rid)] = {
-                ["Name"] = name
-            }
-            save_data_e()
-        end
     end
 end
 
@@ -2952,24 +2961,18 @@ end
 
 local function is_player_in_blacklist(pid, name, rid)
     if rid then
-        add_in_stand(pid, name, rid)
-        local player_data_g = data_g[tostring(rid)]
-        if player_data_g then
-            if player_data_g.Name ~= name then
-                update_player_name(pid, name, rid)
-            end
-            return true
-        else
-            local player_data_e = data_e[tostring(rid)]
-            if player_data_e then
+        for _, blacklistedId in pairs(data_g) do
+            if tonumber(blacklistedId) == tonumber(rid) then
                 return true
-            else
-                return false
             end
         end
-    else
-        return false
+        for _, blacklistedId in pairs(data_e) do
+            if tonumber(blacklistedId) == tonumber(rid) then
+                return true
+            end
+        end
     end
+    return false
 end
 
 local function SessionCheck(pid)
@@ -2977,9 +2980,8 @@ local function SessionCheck(pid)
     if not NETWORK.NETWORK_IS_FRIEND(hdl) then
         local rid = players.get_rockstar_id(pid)
         local name = players.get_name(pid)
-        for id, player in pairs(data_g) do
-            if tonumber(id) == tonumber(rid) then
-                update_player_name(pid)
+        for _, blacklistedId in pairs(data_g) do
+            if tonumber(blacklistedId) == tonumber(rid) then
                 notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
                 add_in_stand(pid, name, rid)
                 if StandUser(pid) then
@@ -2991,18 +2993,18 @@ local function SessionCheck(pid)
             end
             util.yield(1)
         end
-        for id, player in pairs(data_e) do
-            if tonumber(id) == tonumber(rid) then
+        for _, blacklistedId in pairs(data_e) do
+            if tonumber(blacklistedId) == tonumber(rid) then
                 notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
                 add_in_stand(pid, name, rid)
                 if StandUser(pid) then
-                    warnify("This Blacklist is a Stand User , we dont Kick them until they atack: \n" .. name .. " - " .. rid)
+                    warnify("This Blacklist is a Stand User, we don't kick them until they attack: \n" .. name .. " - " .. rid)
                     menu.trigger_commands("hellaa " .. name .. " on")
                 else
                     StrategicKick(pid)
                 end
+                return
             end
-            util.yield(1)
         end
     end
 end
