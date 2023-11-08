@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.0.0"
+local SCRIPT_VERSION = "0.1.70"
 
 local startupmsg = "I love u."
 
@@ -492,6 +492,7 @@ local PIP_Girl = menu.list(menu.my_root(), 'PIP Girl', {}, 'Personal Information
 local PIP_Girl_APPS = menu.list(PIP_Girl, 'PIP Girl Apps', {}, 'Personal Information Processor Girl apps.', function(); end)
 --local PIP_Girl_Heist = menu.list(PIP_Girl, 'PIP Girl Heists', {}, 'Personal Information Processor Girl Heist Presets.', function(); end)
 local Stimpak = menu.list(menu.my_root(), 'Stimpak', {}, 'Take a breath.', function(); end)
+local Vehicle = menu.list(menu.my_root(), 'Vehicle', {}, 'Drive pretty and nice.', function(); end)
 local Outfit = menu.list(menu.my_root(), 'Outfit', {}, 'Look pretty and nice.', function(); end)
 local Game = menu.list(menu.my_root(), 'Game', {}, 'Very gaming today.', function(); end)
 local Session = menu.list(menu.my_root(), 'Session', {}, '.noisseS', function(); end)
@@ -856,32 +857,28 @@ end)
 
 menu.divider(PIP_Girl, "CEO/MC Options")
 local ceo_color = -1
-local first_color_check = true
 local function check_CEO_Color(ceo_color)
     if IsInSession() then
-        local allValuesZero = true
-        local allHelpTextEmpty = true
-        for menu.ref_by_path("Online>CEO/MC>Colour Slots"):getChildren() as link do
-            if link.value ~= 0 then
-                allValuesZero = false
+        if players.get_org_colour(players.user()) ~= ceo_color then
+            local uniqueColors = {}
+            for _, pid in pairs(players.list()) do 
+                if players.get_boss(pid) ~= -1 then
+                    local orgColor = players.get_org_colour(pid)
+                    if orgColor and not uniqueColors[orgColor] then
+                        uniqueColors[orgColor] = true
+                    end
+                    if players.user() == pid then
+                        break
+                    end
+                    util.yield(1)
+                end
             end
-            if link.help_text ~= "" then
-                allHelpTextEmpty = false
+            local ceoInSession = -1
+            for _ in pairs(uniqueColors) do
+                ceoInSession = ceoInSession + 1
+                util.yield(1)
             end
-        end
-        if players.user() == players.get_host() then
-            if allValuesZero and allHelpTextEmpty then
-                local current = menu.get_current_menu_list()
-                menu.focus(menu.ref_by_path("Online>CEO/MC>Colour Slots>0"))
-                util.yield(420)
-                menu.focus(current)
-                notify("Changed your CEO/MC color.")
-            end
-        end
-        for menu.ref_by_path("Online>CEO/MC>Colour Slots"):getChildren() as link do
-            if string.find(link.help_text, players.get_name(players.user()), 1, true) then
-                menu.set_value(link, ceo_color)
-            end
+            menu.trigger_commands("ceocolour"..ceoInSession.." "..ceo_color)
         end
     end
 end
@@ -1022,12 +1019,12 @@ menu.slider(PIP_Girl, 'Auto CEO/MC Color', {'favceocolor'}, "Enter the Color ID 
 end)
 
 menu.toggle_loop(PIP_Girl, "Additional CEO/MC Color Checks.", {""}, "If u use \"Auto Become a CEO/MC\" it will check for u color on register.\nIf u dont use \"Auto Become a CEO/MC\" u can use Additinal Checks.", function(on)
-    if IsInSession() and players.get_boss(players.user()) ~= -1 then
+    if IsInSession() and players.get_boss(players.user()) ~= -1 and players.user() == players.get_script_host() then
         if ceo_color ~= -1 then
             check_CEO_Color(ceo_color)
         end
-        util.yield(6666)
     end
+    util.yield(30666)
 end)
 
 menu.toggle(PIP_Girl, "Auto Join Friends CEO (!)", {""}, "(also MC) Uses \"Auto Become a CEO/MC\"", function(on)
@@ -1381,7 +1378,6 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
                     saved_vehicle_id = vehicle
                     VEHICLE.SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
                     VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
-                    VEHICLE.SET_VEHICLE_FULLBEAM(vehicle, true)
                     VEHICLE.SET_DONT_PROCESS_VEHICLE_GLASS(vehicles, true)
                     VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, false)
                     VEHICLE.SET_HELI_TAIL_BOOM_CAN_BREAK_OFF(vehicle, false)
@@ -1671,6 +1667,158 @@ menu.toggle_loop(Outfit, "Restor Outfit", {"restoreoutfit"}, "Auto Restore the S
     end
 end)
 
+local vehicleFavColor = 0
+menu.toggle_loop(Vehicle, "Set vehicle light color automatically",{""},"Automatically set your favorite vehicle color for vehicles with default lights.\nDefault lights: 0 & 1 | Color lights: 2-14",function()
+    util.yield(420)
+    if vehicleFavColor ~= 0 then
+        if IsInSession() then
+            local vehicle = entities.get_user_vehicle_as_handle()
+            if vehicle then
+                local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
+                local driver = NETWORK.NETWORK_GET_PLAYER_INDEX_FROM_PED(driverPed)
+                if driver == players.user() then
+                    if VEHICLE.GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 then
+                        vehicleLightsSet = vehicle
+                        menu.trigger_commands("headlights "..vehicleFavColor)
+                    end
+                end
+            end
+            util.yield(3666)
+        else
+            util.yield(13666)
+        end
+    else
+        notify("Pls Select ur Fav Vehicle light color first.")
+        util.yield(6666)
+    end
+end)
+
+menu.slider(Vehicle, "Vehicle light color", {"favheadlights"}, "Default lights: 0 & 1 | Color lights: 2-14", 2, 14, vehicleFavColor, 1, function (new_value)
+    vehicleFavColor = new_value
+end)
+
+local sparrowHandeling = nil
+menu.toggle_loop(Vehicle, "Heli Sparrow Handling",{""},"All helicopters you enter fly like a sparrow.",function()
+    if IsInSession() then
+        local vehicle = entities.get_user_vehicle_as_handle()
+        if vehicle then
+            local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
+            local driver = NETWORK.NETWORK_GET_PLAYER_INDEX_FROM_PED(driverPed)
+            if driver == players.user() and VEHICLE.GET_VEHICLE_CLASS(vehicle) == 15 then
+                if sparrowHandeling == nil or sparrowHandeling ~= vehicle then
+                    sparrowHandeling = vehicle
+                    menu.trigger_commands("vhacceleration 1.00000")
+                    menu.trigger_commands("vhsuspensionforce 3.00000")
+                    menu.trigger_commands("vhsuspensionraise 0.35000")
+                    menu.trigger_commands("vhsuspensioncompdamp 0.14000")
+                    menu.trigger_commands("vhtractionlossmult 1.00000")
+                    menu.trigger_commands("vhupshift 1.29999")
+                    menu.trigger_commands("vhdownshift 1.29999")
+                    menu.trigger_commands("vhdeformationmult 3.00000")
+                    menu.trigger_commands("vhtractioncurvemin 1.20000")
+                    menu.trigger_commands("vhtractioncurvemax 1.29999")
+                    menu.trigger_commands("vhdownforcemodifier 0.00000")
+                    menu.trigger_commands("vhinitialdragcoeff 0.00099")
+                    menu.trigger_commands("vhpopuplightrotation 0.00000")
+                    menu.trigger_commands("vhbuoyancy 75.00000")
+                    menu.trigger_commands("vhdrivebiasrear 1.33333")
+                    menu.trigger_commands("vhdrivebiasfront 0.00000")
+                    menu.trigger_commands("vhdriveinertia 1.00000")
+                    menu.trigger_commands("vhinitialdriveforce 0.30000")
+                    menu.trigger_commands("vhdrivemaxflatvelocity 53.33334")
+                    menu.trigger_commands("vhinitialdrivemaxflatvel 44.44444")
+                    menu.trigger_commands("vhbrakeforce 0.40000")
+                    menu.trigger_commands("vhbrakebiasfront 1.20000")
+                    menu.trigger_commands("vhbrakebiasrear 0.79999")
+                    menu.trigger_commands("vhhandbrakeforce 0.70000")
+                    menu.trigger_commands("vhsteeringlock 0.61086")
+                    menu.trigger_commands("vhsteeringlockratio 1.63702")
+                    menu.trigger_commands("vhtractioncurvelateral 0.76923")
+                    menu.trigger_commands("vhcurvelateral 0.20943")
+                    menu.trigger_commands("vhcurvelateralratio 4.77464")
+                    menu.trigger_commands("vhtractionspringdeltamax 0.10000")
+                    menu.trigger_commands("vhtractionspringdeltamaxratio 10.00000")
+                    menu.trigger_commands("vhlowspeedtractionlossmult 0.00000")
+                    menu.trigger_commands("vhcamberstiffness 0.00000")
+                    menu.trigger_commands("vhtractionbiasfront 1.00000")
+                    menu.trigger_commands("vhtractionbiasrear 1.00000")
+                    menu.trigger_commands("vhsuspensionrebounddamp 0.30000")
+                    menu.trigger_commands("vhsuspensionupperlimit 0.08000")
+                    menu.trigger_commands("vhsuspensionlowerlimit -0.05000")
+                    menu.trigger_commands("vhsuspensionbiasfront 1.00000")
+                    menu.trigger_commands("vhsuspensionbiasrear 1.00000")
+                    menu.trigger_commands("vhantirollbarforce 0.00000")
+                    menu.trigger_commands("vhantirollbarbiasfront 0.00000")
+                    menu.trigger_commands("vhantirollbarbiasrear 2.00000")
+                    menu.trigger_commands("vhrollcentreheightfront 0.00000")
+                    menu.trigger_commands("vhrollcentreheightrear 0.00000")
+                    menu.trigger_commands("vhcollisiondamagemult 1.50000")
+                    menu.trigger_commands("vhweapondamamgemult 0.50000")
+                    menu.trigger_commands("vhenginedamagemult 1.50000")
+                    menu.trigger_commands("vhpetroltankvolume 100.00000")
+                    menu.trigger_commands("vhoilvolume 8.00000")
+                    menu.trigger_commands("vhthrust 0.63599")
+                    menu.trigger_commands("vhthrustfalloff 0.02890")
+                    menu.trigger_commands("vhthrustvectoring 0.40000")
+                    menu.trigger_commands("vhinitialthrust 0.52999")
+                    menu.trigger_commands("vhinitialthrustfalloff 0.03400")
+                    menu.trigger_commands("vhyawmult -1.76700")
+                    menu.trigger_commands("vhyawstabilise 0.00200")
+                    menu.trigger_commands("vhsideslipmult 0.00400")
+                    menu.trigger_commands("vhinitialyawmult -1.52000")
+                    menu.trigger_commands("vhrollmult 2.23781")
+                    menu.trigger_commands("vhrollstabilise 0.01100")
+                    menu.trigger_commands("vhinitialrollmult 1.92500")
+                    menu.trigger_commands("vhpitchmult 1.97625")
+                    menu.trigger_commands("vhpitchstabilise 0.00100")
+                    menu.trigger_commands("vhinitialpitchmult 1.70000")
+                    menu.trigger_commands("vhformliftmult 1.00000")
+                    menu.trigger_commands("vhattackliftmult 3.00000")
+                    menu.trigger_commands("vhattackdivemult 3.00000")
+                    menu.trigger_commands("vhgeardowndragv 0.10000")
+                    menu.trigger_commands("vhgeardownliftmult 1.00000")
+                    menu.trigger_commands("vhwindmult 0.00075")
+                    menu.trigger_commands("vhmoveres 0.03500")
+                    menu.trigger_commands("vhgeardoorfrontopen 1.57079")
+                    menu.trigger_commands("vhgeardoorrearopen 1.57079")
+                    menu.trigger_commands("vhgeardoorrearopen2 1.57079")
+                    menu.trigger_commands("vhgeardoorrearmopen 1.57079")
+                    menu.trigger_commands("vhturublencemagnitudemax 0.00000")
+                    menu.trigger_commands("vhturublenceforcemulti 0.00000")
+                    menu.trigger_commands("vhturublencerolltorquemulti 0.00000")
+                    menu.trigger_commands("vhturublencepitchtorquemulti 0.00000")
+                    menu.trigger_commands("vhbodydamagecontroleffectmult 0.50000")
+                    menu.trigger_commands("vhinputsensitivityfordifficulty 0.48000")
+                    menu.trigger_commands("vhongroundyawboostspeedpeak 1.00000")
+                    menu.trigger_commands("vhongroundyawboostspeedcap 1.00000")
+                    menu.trigger_commands("vhengineoffglidemulti 1.00000")
+                    menu.trigger_commands("vhafterburnereffectradius 0.50000")
+                    menu.trigger_commands("vhafterburnereffectdistance 4.00000")
+                    menu.trigger_commands("vhafterburnereffectforcemulti 0.20000")
+                    menu.trigger_commands("vhsubmergeleveltopullheliunderwater 0.30000")
+                    menu.trigger_commands("vhextraliftwithroll 0.00000")
+                    menu.trigger_commands("vhleftpontooncomponentid 0")
+                    menu.trigger_commands("vhrightpontooncomponentid 1")
+                    menu.trigger_commands("vhpontoonbuoyconst 12.50000")
+                    menu.trigger_commands("vhpontoonsamplesizefront 0.40000")
+                    menu.trigger_commands("vhpontoonsamplesizemiddle 0.40000")
+                    menu.trigger_commands("vhpontoonsamplesizerear 0.40000")
+                    menu.trigger_commands("vhpontoonlengthfractionforsamples 0.85000")
+                    menu.trigger_commands("vhpontoondragcoefficient 1.50000")
+                    menu.trigger_commands("vhpontoonverticaldampingcoefficientup 400.00000")
+                    menu.trigger_commands("vhpontoonverticaldampingcoefficientdown 600.00000")
+                    menu.trigger_commands("vhkeelspheresize 0.30000")
+                    menu.trigger_commands("deploychaff")
+                    util.yield(3666)
+                end
+            end
+        end
+    else
+        util.yield(13666)
+    end
+    util.yield(3666)
+end)
+
 local function SuperClean(fix, ignoreMission)
     local pos = players.get_position(players.user())
     local ct = 0
@@ -1779,128 +1927,6 @@ menu.action(Game, 'Super Cleanse', {"superclean"}, 'BCS R* is a mess.', function
 end)
 
 menu.divider(Game, "<3")
-
-local sparrowHandeling = nil
-menu.toggle_loop(Game, "Heli Sparrow Handeling",{""},"All Heli's u enter fly like a Sparrow.",function()
-    if IsInSession() then
-        local vehicle = entities.get_user_vehicle_as_handle()
-        if vehicle then
-            local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
-            local driver = NETWORK.NETWORK_GET_PLAYER_INDEX_FROM_PED(driverPed)
-            if driver == players.user() and VEHICLE.GET_VEHICLE_CLASS(vehicle) == 15 then
-                if sparrowHandeling == nil or sparrowHandeling ~= vehicle then
-                    sparrowHandeling = vehicle
-                    notify("Sparrofy")
-                    menu.trigger_commands("vhacceleration 1.00000")
-                    menu.trigger_commands("vhsuspensionforce 3.00000")
-                    menu.trigger_commands("vhsuspensionraise 0.35000")
-                    menu.trigger_commands("vhsuspensioncompdamp 0.14000")
-                    menu.trigger_commands("vhtractionlossmult 1.00000")
-                    menu.trigger_commands("vhupshift 1.29999")
-                    menu.trigger_commands("vhdownshift 1.29999")
-                    menu.trigger_commands("vhdeformationmult 3.00000")
-                    menu.trigger_commands("vhtractioncurvemin 1.20000")
-                    menu.trigger_commands("vhtractioncurvemax 1.29999")
-                    menu.trigger_commands("vhdownforcemodifier 0.00000")
-                    menu.trigger_commands("vhinitialdragcoeff 0.00099")
-                    menu.trigger_commands("vhpopuplightrotation 0.00000")
-                    menu.trigger_commands("vhbuoyancy 75.00000")
-                    menu.trigger_commands("vhdrivebiasrear 1.33333")
-                    menu.trigger_commands("vhdrivebiasfront 0.00000")
-                    menu.trigger_commands("vhdriveinertia 1.00000")
-                    menu.trigger_commands("vhinitialdriveforce 0.30000")
-                    menu.trigger_commands("vhdrivemaxflatvelocity 53.33334")
-                    menu.trigger_commands("vhinitialdrivemaxflatvel 44.44444")
-                    menu.trigger_commands("vhbrakeforce 0.40000")
-                    menu.trigger_commands("vhbrakebiasfront 1.20000")
-                    menu.trigger_commands("vhbrakebiasrear 0.79999")
-                    menu.trigger_commands("vhhandbrakeforce 0.70000")
-                    menu.trigger_commands("vhsteeringlock 0.61086")
-                    menu.trigger_commands("vhsteeringlockratio 1.63702")
-                    menu.trigger_commands("vhtractioncurvelateral 0.76923")
-                    menu.trigger_commands("vhcurvelateral 0.20943")
-                    menu.trigger_commands("vhcurvelateralratio 4.77464")
-                    menu.trigger_commands("vhtractionspringdeltamax 0.10000")
-                    menu.trigger_commands("vhtractionspringdeltamaxratio 10.00000")
-                    menu.trigger_commands("vhlowspeedtractionlossmult 0.00000")
-                    menu.trigger_commands("vhcamberstiffness 0.00000")
-                    menu.trigger_commands("vhtractionbiasfront 1.00000")
-                    menu.trigger_commands("vhtractionbiasrear 1.00000")
-                    menu.trigger_commands("vhsuspensionrebounddamp 0.30000")
-                    menu.trigger_commands("vhsuspensionupperlimit 0.08000")
-                    menu.trigger_commands("vhsuspensionlowerlimit -0.05000")
-                    menu.trigger_commands("vhsuspensionbiasfront 1.00000")
-                    menu.trigger_commands("vhsuspensionbiasrear 1.00000")
-                    menu.trigger_commands("vhantirollbarforce 0.00000")
-                    menu.trigger_commands("vhantirollbarbiasfront 0.00000")
-                    menu.trigger_commands("vhantirollbarbiasrear 2.00000")
-                    menu.trigger_commands("vhrollcentreheightfront 0.00000")
-                    menu.trigger_commands("vhrollcentreheightrear 0.00000")
-                    menu.trigger_commands("vhcollisiondamagemult 1.50000")
-                    menu.trigger_commands("vhweapondamamgemult 0.50000")
-                    menu.trigger_commands("vhenginedamagemult 1.50000")
-                    menu.trigger_commands("vhpetroltankvolume 100.00000")
-                    menu.trigger_commands("vhoilvolume 8.00000")
-                    menu.trigger_commands("vhthrust 0.63599")
-                    menu.trigger_commands("vhthrustfalloff 0.02890")
-                    menu.trigger_commands("vhthrustvectoring 0.40000")
-                    menu.trigger_commands("vhinitialthrust 0.52999")
-                    menu.trigger_commands("vhinitialthrustfalloff 0.03400")
-                    menu.trigger_commands("vhyawmult -1.76700")
-                    menu.trigger_commands("vhyawstabilise 0.00200")
-                    menu.trigger_commands("vhsideslipmult 0.00400")
-                    menu.trigger_commands("vhinitialyawmult -1.52000")
-                    menu.trigger_commands("vhrollmult 2.23781")
-                    menu.trigger_commands("vhrollstabilise 0.01100")
-                    menu.trigger_commands("vhinitialrollmult 1.92500")
-                    menu.trigger_commands("vhpitchmult 1.97625")
-                    menu.trigger_commands("vhpitchstabilise 0.00100")
-                    menu.trigger_commands("vhinitialpitchmult 1.70000")
-                    menu.trigger_commands("vhformliftmult 1.00000")
-                    menu.trigger_commands("vhattackliftmult 3.00000")
-                    menu.trigger_commands("vhattackdivemult 3.00000")
-                    menu.trigger_commands("vhgeardowndragv 0.10000")
-                    menu.trigger_commands("vhgeardownliftmult 1.00000")
-                    menu.trigger_commands("vhwindmult 0.00075")
-                    menu.trigger_commands("vhmoveres 0.03500")
-                    menu.trigger_commands("vhgeardoorfrontopen 1.57079")
-                    menu.trigger_commands("vhgeardoorrearopen 1.57079")
-                    menu.trigger_commands("vhgeardoorrearopen2 1.57079")
-                    menu.trigger_commands("vhgeardoorrearmopen 1.57079")
-                    menu.trigger_commands("vhturublencemagnitudemax 0.00000")
-                    menu.trigger_commands("vhturublenceforcemulti 0.00000")
-                    menu.trigger_commands("vhturublencerolltorquemulti 0.00000")
-                    menu.trigger_commands("vhturublencepitchtorquemulti 0.00000")
-                    menu.trigger_commands("vhbodydamagecontroleffectmult 0.50000")
-                    menu.trigger_commands("vhinputsensitivityfordifficulty 0.48000")
-                    menu.trigger_commands("vhongroundyawboostspeedpeak 1.00000")
-                    menu.trigger_commands("vhongroundyawboostspeedcap 1.00000")
-                    menu.trigger_commands("vhengineoffglidemulti 1.00000")
-                    menu.trigger_commands("vhafterburnereffectradius 0.50000")
-                    menu.trigger_commands("vhafterburnereffectdistance 4.00000")
-                    menu.trigger_commands("vhafterburnereffectforcemulti 0.20000")
-                    menu.trigger_commands("vhsubmergeleveltopullheliunderwater 0.30000")
-                    menu.trigger_commands("vhextraliftwithroll 0.00000")
-                    menu.trigger_commands("vhleftpontooncomponentid 0")
-                    menu.trigger_commands("vhrightpontooncomponentid 1")
-                    menu.trigger_commands("vhpontoonbuoyconst 12.50000")
-                    menu.trigger_commands("vhpontoonsamplesizefront 0.40000")
-                    menu.trigger_commands("vhpontoonsamplesizemiddle 0.40000")
-                    menu.trigger_commands("vhpontoonsamplesizerear 0.40000")
-                    menu.trigger_commands("vhpontoonlengthfractionforsamples 0.85000")
-                    menu.trigger_commands("vhpontoondragcoefficient 1.50000")
-                    menu.trigger_commands("vhpontoonverticaldampingcoefficientup 400.00000")
-                    menu.trigger_commands("vhpontoonverticaldampingcoefficientdown 600.00000")
-                    menu.trigger_commands("vhkeelspheresize 0.30000")
-                    util.yield(3666)
-                end
-            end
-        end
-    else
-        util.yield(13666)
-    end
-    util.yield(3666)
-end)
 
 menu.toggle_loop(Game, "Auto Skip Conversation",{"pgascon"},"Automatically skip all conversations.",function()
     if AUDIO.IS_SCRIPTED_CONVERSATION_ONGOING() then
@@ -2519,21 +2545,21 @@ end, function()
 end)
 
 local mk2noob = {}
-menu.toggle_loop(SessionWorld, "Spinning MK2's", {""}, "Spin all MK2's, except Modder and Friend's", function()
+menu.toggle_loop(SessionWorld, "Spinning MK2s", {""}, "Spin all MK2's, except Modder and Friend's", function()
     for _, pid in pairs(players.list(false, true, true)) do 
         local hdl = pid_to_handle(pid)
         local playerName = players.get_name(pid)
         if players.get_vehicle_model(pid) == 2069146067 and not NETWORK.NETWORK_IS_FRIEND(hdl) then
             if not players.is_marked_as_modder(pid) then 
                 local found = false
-                for _, name in ipairs(mk2noob) do
-                    if name == playerName then
+                for _, plid in ipairs(mk2noob) do
+                    if plid == pid then
                         found = true
                         break
                     end
                 end
                 if not found then
-                    table.insert(mk2noob, playerName)
+                    table.insert(mk2noob, pid)
                 end
                 menu.trigger_commands("spin"..playerName.." on")
                 menu.trigger_commands("slippery"..playerName.." on")
@@ -2541,22 +2567,26 @@ menu.toggle_loop(SessionWorld, "Spinning MK2's", {""}, "Spin all MK2's, except M
             end
         else
             local index
-            for i, name in ipairs(mk2noob) do
-                if name == playerName then
+            for i, plid in ipairs(mk2noob) do
+                if plid == pid then
                     index = i
                     break
                 end
             end
             if index then
                 table.remove(mk2noob, index)
+                menu.trigger_commands("spin"..playerName.." off")
+                menu.trigger_commands("slippery"..playerName.." off")
             end
         end    
     end
     util.yield(666)
 end, function()
-    for _, playerName in pairs(mk2noob) do
-        menu.trigger_commands("spin"..playerName.." on")
-        menu.trigger_commands("slippery"..playerName.." on")
+    for _, plid in pairs(mk2noob) do
+        if PlayerExists(plid) then
+            menu.trigger_commands("spin"..playerName.." off")
+            menu.trigger_commands("slippery"..playerName.." off")
+        end
         table.remove(mk2noob, index)
     end
 end)
@@ -2647,7 +2677,7 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic a
     end
 end, function()
     MISC.REMOVE_POP_MULTIPLIER_SPHERE(ClearTraficSphere, true)
-    ClearTraficSphere = 0
+    ClearTraficSphere = nil
 end)
 
 menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
@@ -2736,10 +2766,8 @@ menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost
                 if not found then
                     table.insert(wannabeGOD, pid)
                     NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
-                    --menu.trigger_commands("ignore "..playerName.." on")
-                    --menu.trigger_commands("confuse "..playerName.." on")
+                    players.add_detection(pid, "Ghosted to you. By PIP Girl.", TOAST_DEFAULT, 0)
                 end
-                --util.trigger_script_event(1 << pid, {800157557, players.user(), 225624744, math.random(0, 9999)}) -- credits to Jinx Script.
             end
         end
         util.yield(6666)
@@ -2752,7 +2780,6 @@ end, function()
             local playerName = players.get_name(pid)
             NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
             menu.trigger_commands("ignore "..playerName.." off")
-            --menu.trigger_commands("confuse "..playerName.." off")
         end
         table.remove(wannabeGOD, index)
     end
@@ -2855,20 +2882,52 @@ local data_e = {}
 
 local data_g = {}
 
+local function save_data_e()
+    local file = io.open(resources_dir .. 'Export/Export_Blacklist.json', 'w+')
+    if file then
+        file:write(json.encode(data_e))
+        io.close(file)
+    end
+end
+
 local function load_data_e()
     local file = io.open(resources_dir .. 'Export/Export_Blacklist.json', 'r')
     if file then
         local contents = file:read('*all')
         io.close(file)
-        data_e = json.decode(contents) or {}
+
+        local old_data_e = json.decode(contents) or {}
+        data_e = old_data_e
+
+        -- Check if old format is detected
+        local is_old_format = false
+        for id, player in pairs(old_data_e) do
+            if player["Name"] then
+                is_old_format = true
+                break
+            end
+        end
+
+        -- Convert old format to new format
+        if is_old_format then
+            data_e = {}
+            for id, player in pairs(old_data_e) do
+                if player["Name"] then
+                    table.insert(data_e, id)
+                end
+            end
+
+            -- Save the new format
+            save_data_e()
+        end
     else
         local new_file = io.open(resources_dir .. 'Export/Export_Blacklist.json', 'w')
         if new_file then
-            new_file:write("{}")
+            new_file:write("[]")
             io.close(new_file)
             data_e = {}
         else
-            warnify("Failed to create Blacklist.json")
+            warnify("Failed to create Export_Blacklist.json")
         end
     end
 end
@@ -2879,15 +2938,7 @@ local function load_data_g()
         local contents = file:read('*all')
         io.close(file)
         local json_data = json.decode(contents) or {}
-        data_g = json_data.Blacklist or {}
-    end
-end
-
-local function save_data_e()
-    local file = io.open(resources_dir .. 'Export/Export_Blacklist.json', 'w+')
-    if file then
-        file:write(json.encode(data_e))
-        io.close(file)
+        data_g = json_data or {} -- Assuming data_g is a table
     end
 end
 
@@ -2895,26 +2946,9 @@ load_data_e()
 
 load_data_g()
 
-local function add_player_to_blacklist(player, name, rid)
-    if rid and name then
-        data_e[tostring(rid)] = {
-            ["Name"] = name
-        }
-        save_data_e()
-    end
-end
-
-local function update_player_name(player, name, rid)
-    local player_data_g = data_g[tostring(rid)]
-    if player_data_g then
-        if player_data_g.Name ~= name then
-            player_data_g.Name = name
-            data_e[tostring(rid)] = {
-                ["Name"] = name
-            }
-            save_data_e()
-        end
-    end
+local function add_player_to_blacklist(rid)
+    table.insert(data_e, tostring(rid))
+    save_data_e()
 end
 
 local function add_in_stand(pid, name, rid)
@@ -2923,59 +2957,36 @@ local function add_in_stand(pid, name, rid)
     menu.trigger_commands("historyblock ".. name .." on")
 end
 
-local function is_player_in_blacklist(pid, name, rid)
-    if rid then
-        add_in_stand(pid, name, rid)
-        local player_data_g = data_g[tostring(rid)]
-        if player_data_g then
-            if player_data_g.Name ~= name then
-                update_player_name(pid, name, rid)
-            end
+local function is_player_in_blacklist(rid)
+    for _, blacklistedId in pairs(data_g) do
+        if tonumber(blacklistedId) == tonumber(rid) then
             return true
-        else
-            local player_data_e = data_e[tostring(rid)]
-            if player_data_e then
-                return true
-            else
-                return false
-            end
         end
-    else
-        return false
+        util.yield()
     end
+    for _, blacklistedId in pairs(data_e) do
+        if tonumber(blacklistedId) == tonumber(rid) then
+            return true
+        end
+        util.yield()
+    end
+    return false
 end
 
 local function SessionCheck(pid)
     local hdl = pid_to_handle(pid)
     if not NETWORK.NETWORK_IS_FRIEND(hdl) then
         local rid = players.get_rockstar_id(pid)
-        local name = players.get_name(pid)
-        for id, player in pairs(data_g) do
-            if tonumber(id) == tonumber(rid) then
-                update_player_name(pid)
-                notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
-                add_in_stand(pid, name, rid)
-                if StandUser(pid) then
-                    warnify("This Blacklist is a Stand User , we dont Kick them until they atack: \n" .. name .. " - " .. rid)
-                    menu.trigger_commands("hellaa " .. name .. " on")
-                else
-                    StrategicKick(pid)
-                end
+        if is_player_in_blacklist(rid) then
+            local name = players.get_name(pid)
+            notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
+            add_in_stand(pid, name, rid)
+            if StandUser(pid) then
+                notify("This Blacklist is a Stand User, we don't kick them until they attack: \n" .. name .. " - " .. rid)
+                menu.trigger_commands("hellaa " .. name .. " on")
+            else
+                StrategicKick(pid)
             end
-            util.yield(1)
-        end
-        for id, player in pairs(data_e) do
-            if tonumber(id) == tonumber(rid) then
-                notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
-                add_in_stand(pid, name, rid)
-                if StandUser(pid) then
-                    warnify("This Blacklist is a Stand User , we dont Kick them until they atack: \n" .. name .. " - " .. rid)
-                    menu.trigger_commands("hellaa " .. name .. " on")
-                else
-                    StrategicKick(pid)
-                end
-            end
-            util.yield(1)
         end
     end
 end
@@ -2993,15 +3004,15 @@ player_menu = function(pid)
         local Bad_Modder = menu.list(menu.player_root(pid), 'Bad Modder?', {""}, '', function() end)
         menu.action(Bad_Modder, "Add Blacklist & Kick", {'hellk'}, "Blacklist Note, Kick and Block the Target from Joining u again.", function ()
             add_in_stand(pid, name, rid)
-            if not is_player_in_blacklist(pid, name, rid) then
-                add_player_to_blacklist(pid, name, rid)
+            if not is_player_in_blacklist(rid) then
+                add_player_to_blacklist(rid)
             end
             StrategicKick(pid)
         end)
         menu.action(Bad_Modder, "Add Blacklist ,Phone Call & Kick", {'hellp'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
             add_in_stand(pid, name, rid)
-            if not is_player_in_blacklist(pid, name, rid) then
-                add_player_to_blacklist(pid, name, rid)
+            if not is_player_in_blacklist(rid) then
+                add_player_to_blacklist(rid)
             end
             menu.trigger_commands("ring " .. name)
             util.yield(666)
@@ -3009,8 +3020,8 @@ player_menu = function(pid)
         end)
         menu.action(Bad_Modder, "Add Blacklist ,Crash & Kick", {'hellc'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
             add_in_stand(pid, name, rid)
-            if not is_player_in_blacklist(pid, name, rid) then
-                add_player_to_blacklist(pid, name, rid)
+            if not is_player_in_blacklist(rid) then
+                add_player_to_blacklist(rid)
             end
             menu.trigger_commands("choke ".. name)
             util.yield(666)
@@ -3018,31 +3029,25 @@ player_menu = function(pid)
         end)
         menu.action(Bad_Modder, "Add Blacklist Only", {'helln'}, "Blacklist Note and Block the Target from Joining u again.", function ()
             add_in_stand(pid, name, rid)
-            if not is_player_in_blacklist(pid, name, rid) then
-                add_player_to_blacklist(pid, name, rid)
+            if not is_player_in_blacklist(rid) then
+                add_player_to_blacklist(rid)
             end
         end)
-        --menu.toggle_loop(Bad_Modder, "(Alpha) Report Bot", {"hellrp"}, "Weak menu? Spamm report them >:D", function()
-        --    if player_Exist(pid) then
-        --        menu.trigger_commands("reportgriefing " .. name)
-        --        menu.trigger_commands("reportexploits " .. name)
-        --        menu.trigger_commands("reportbugabuse " .. name)
-        --        menu.trigger_commands("reportannoying " .. name)
-        --        menu.trigger_commands("reporthate " .. name)
-        --        menu.trigger_commands("reportvcannoying " .. name)
-        --        menu.trigger_commands("reportvchate " .. name)
-        --        PlayerExists = false
-        --        util.yield(13666)
-        --    else
-        --        PlayerExists = false
-        --        util.yield(66666)
-        --    end
-        --end)
+        menu.toggle_loop(Bad_Modder, "Ghost Player", {""}, "Ghost the selected player.", function()
+            if IsInSession() and player_Exist(pid) then
+                NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+            end
+            util.yield(666)
+        end, function()
+            if player_Exist(pid) then
+                NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+            end
+        end)
         menu.toggle_loop(Bad_Modder, "Blacklist Kick on Atack", {"hellaab"}, "Auto kick if they atack you, and add them to blacklist.", function()
             if players.is_marked_as_attacker(pid) then
                 add_in_stand(pid, name, rid)
-                if not is_player_in_blacklist(pid, name, rid) then
-                    add_player_to_blacklist(pid, name, rid)
+                if not is_player_in_blacklist(rid) then
+                    add_player_to_blacklist(rid)
                 end
                 StrategicKick(pid)
                 warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
@@ -3118,7 +3123,7 @@ end)
 
 menu.hyperlink(Settings, "PIP Girl's GIT", "https://github.com/LeaLangley/PIP-Girl", "")
 
-menu.hyperlink(Settings, "Buy me a Bat", "https://www.buymeacoffee.com/asuka666", "")
+menu.hyperlink(Settings, "Support me", "https://ko-fi.com/asuka666", "")
 
 menu.divider(Settings, "<3")
 

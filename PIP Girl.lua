@@ -3123,7 +3123,7 @@ end)
 
 menu.hyperlink(Settings, "PIP Girl's GIT", "https://github.com/LeaLangley/PIP-Girl", "")
 
-menu.hyperlink(Settings, "Buy me a Bat", "https://www.buymeacoffee.com/asuka666", "")
+menu.hyperlink(Settings, "Support me", "https://ko-fi.com/asuka666", "")
 
 menu.divider(Settings, "<3")
 
