@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.70"
+local SCRIPT_VERSION = "0.1.71"
 
 local startupmsg = "I love u."
 
@@ -468,20 +468,21 @@ local function StrategicKick(pid)
     if player_Exist(pid) then
         if not IsInSession() then
             Wait_for_IsInSession()
-        end
-        if players.user() == players.get_host() then
-            if not isLoading(pid) and not isLoading(players.user()) then
-                menu.trigger_commands("ban " .. name)
-            else
-                menu.trigger_commands("loveletterkick " .. name)
-            end
         else
-            menu.trigger_commands("kick " .. name)
-            if IsInSession() then
-                menu.trigger_commands("ignore " .. name .. " on")
-                menu.trigger_commands("desync " .. name .. " on")
-                menu.trigger_commands("blocksync " .. name .. " on")
-                NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+            if players.user() == players.get_host() then
+                if not isLoading(pid) and not isLoading(players.user()) then
+                    menu.trigger_commands("ban " .. name)
+                else
+                    menu.trigger_commands("loveletterkick " .. name)
+                end
+            else
+                menu.trigger_commands("kick " .. name)
+                if IsInSession() then
+                    menu.trigger_commands("ignore " .. name .. " on")
+                    menu.trigger_commands("desync " .. name .. " on")
+                    menu.trigger_commands("blocksync " .. name .. " on")
+                    NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+                end
             end
         end
     end
