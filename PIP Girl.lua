@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.71"
+local SCRIPT_VERSION = "0.1.72"
 
 local startupmsg = "I love u."
 
@@ -2689,22 +2689,22 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                     local Player_List = players.list()
                     for _, pid in pairs(Player_List) do
                         local name = players.get_name(pid)
-                        if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid then
+                        if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not wannabeGod(pid) then
                             util.yield(13666)
-                            if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid then
+                            if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not wannabeGod(pid) then
                                 menu.trigger_commands("givesh " .. name)
                                 notify_cmd(name .. " is Loading too Long.")
                                 util.yield(13666)
                                 local timeout = os.time() + 30 -- Set timeout to 1 minute
                                 local fail = false
-                                while player_Exist(pid) and isStuck(pid) do
+                                while player_Exist(pid) and isStuck(pid) and not wannabeGod(pid) do
                                     util.yield(6666)
                                     if os.time() > timeout then
                                         notify_cmd(name .. " took too long to load. Timeout reached.")
                                         fail = true
                                         break
                                     end
-                                    if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
+                                    if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) and not wannabeGod(pid) then
                                         menu.trigger_commands("givesh " .. name)
                                         notify_cmd(name .. " is Still Loading too Long.")
                                         util.yield(13666)
