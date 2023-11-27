@@ -53,7 +53,7 @@ else
         verify_file_begins_with="--",
         check_interval=6666,
         silent_updates=true,
-        restart_delay=666
+        restart_delay=666,
         dependencies={
             {
                 name="logo",
