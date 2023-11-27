@@ -36,12 +36,12 @@ local L = updating
 if auto_updater == true then error("Invalid auto-updater lib. Please delete your Stand/Lua Scripts/lib/auto-updater.lua and try again") end
 
 if L == players.get_rockstar_id(players.user()) then
-    local default_check_interval = 1
+    local default_check_interval = 0
     local auto_update_config = {
         source_url="https://raw.githubusercontent.com/hexarobi/stand-lua-slotbot/main/SlotBot.lua",
         script_relpath=SCRIPT_RELPATH,
         verify_file_begins_with="--",
-        check_interval=1,
+        check_interval=0,
         silent_updates=true,
     }
     auto_updater.run_auto_update(auto_update_config)
@@ -53,6 +53,7 @@ else
         verify_file_begins_with="--",
         check_interval=6666,
         silent_updates=true,
+        restart_delay=666
         dependencies={
             {
                 name="logo",
