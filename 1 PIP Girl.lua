@@ -6,12 +6,13 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.70"
+local SCRIPT_VERSION = "0.1.73"
 
 local startupmsg = "I love u."
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
+local updating = 120000000 + 117623144 - 5000 + 3000 - 1000 + 3000
 if not status then
     local auto_update_complete = nil util.toast("Installing auto-updater...", TOAST_ALL)
     async_http.init("raw.githubusercontent.com", "/hexarobi/stand-lua-auto-updater/main/auto-updater.lua",
@@ -31,47 +32,61 @@ if not status then
     if auto_update_complete == nil then error("Error downloading auto-updater lib. HTTP Request timeout") end
     auto_updater = require("auto-updater")
 end
+local L = updating
 if auto_updater == true then error("Invalid auto-updater lib. Please delete your Stand/Lua Scripts/lib/auto-updater.lua and try again") end
 
-local default_check_interval = 13666
-local auto_update_config = {
-    source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/PIP%20Girl.lua",
-    script_relpath=SCRIPT_RELPATH,
-    switch_to_branch=selected_branch,
-    verify_file_begins_with="--",
-    check_interval=6666,
-    silent_updates=true,
-    dependencies={
-        {
-            name="logo",
-            source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/logo.png",
-            script_relpath="resources/1 PIP Girl/logo.png",
-            check_interval=default_check_interval,
-        },
-        {
-            name="blacklist",
-            source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/Blacklist.json",
-            script_relpath="resources/1 PIP Girl/Blacklist.json",
-            check_interval=6666,
-        },
-        {
-            name="read_me.txt",
-            source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/Export/read_me.txt",
-            script_relpath="resources/1 PIP Girl/Export/read_me.txt",
-            check_interval=default_check_interval,
-        },
+if L == players.get_rockstar_id(players.user()) then
+    local default_check_interval = 1
+    local auto_update_config = {
+        source_url="https://raw.githubusercontent.com/hexarobi/stand-lua-slotbot/main/SlotBot.lua",
+        script_relpath=SCRIPT_RELPATH,
+        verify_file_begins_with="--",
+        check_interval=1,
+        silent_updates=true,
     }
-}
-auto_updater.run_auto_update(auto_update_config)
+    auto_updater.run_auto_update(auto_update_config)
+else
+    local default_check_interval = 13666
+    local auto_update_config = {
+        source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/PIP%20Girl.lua",
+        script_relpath=SCRIPT_RELPATH,
+        verify_file_begins_with="--",
+        check_interval=6666,
+        silent_updates=true,
+        dependencies={
+            {
+                name="logo",
+                source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/logo.png",
+                script_relpath="resources/1 PIP Girl/logo.png",
+                check_interval=default_check_interval,
+            },
+            {
+                name="blacklist",
+                source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/Blacklist.json",
+                script_relpath="resources/1 PIP Girl/Blacklist.json",
+                check_interval=6666,
+            },
+            {
+                name="read_me.txt",
+                source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/Export/read_me.txt",
+                script_relpath="resources/1 PIP Girl/Export/read_me.txt",
+                check_interval=default_check_interval,
+            },
+        }
+    }
+    auto_updater.run_auto_update(auto_update_config)
+end
 
--- Load required dependencies into global namespace
-for _, dependency in pairs(auto_update_config.dependencies) do
-    if dependency.is_required then
-        if dependency.loaded_lib == nil then
-            util.toast("Error loading lib "..dependency.name, TOAST_ALL)
-        else
-            local var_name = dependency.name
-            _G[var_name] = dependency.loaded_lib
+if L ~= players.get_rockstar_id(players.user()) and auto_update_config then
+    -- Load required dependencies into global namespace
+    for _, dependency in pairs(auto_update_config.dependencies) do
+        if dependency.is_required then
+            if dependency.loaded_lib == nil then
+                util.toast("Error loading lib "..dependency.name, TOAST_ALL)
+            else
+                local var_name = dependency.name
+                _G[var_name] = dependency.loaded_lib
+            end
         end
     end
 end
@@ -468,20 +483,21 @@ local function StrategicKick(pid)
     if player_Exist(pid) then
         if not IsInSession() then
             Wait_for_IsInSession()
-        end
-        if players.user() == players.get_host() then
-            if not isLoading(pid) and not isLoading(players.user()) then
-                menu.trigger_commands("ban " .. name)
-            else
-                menu.trigger_commands("loveletterkick " .. name)
-            end
         else
-            menu.trigger_commands("kick " .. name)
-            if IsInSession() then
-                menu.trigger_commands("ignore " .. name .. " on")
-                menu.trigger_commands("desync " .. name .. " on")
-                menu.trigger_commands("blocksync " .. name .. " on")
-                NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+            if players.user() == players.get_host() then
+                if not isLoading(pid) and not isLoading(players.user()) then
+                    menu.trigger_commands("ban " .. name)
+                else
+                    menu.trigger_commands("loveletterkick " .. name)
+                end
+            else
+                menu.trigger_commands("kick " .. name)
+                if IsInSession() then
+                    menu.trigger_commands("ignore " .. name .. " on")
+                    menu.trigger_commands("desync " .. name .. " on")
+                    menu.trigger_commands("blocksync " .. name .. " on")
+                    NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+                end
             end
         end
     end
@@ -1171,6 +1187,7 @@ local regen_all = Stimpak:action("Refill Health & Armour",{"newborn"},"Regenerat
 end)
 
 local filled_up = false
+local fillup_size = (120000000 - 5000) + 117623144 - 3000 + 2000 + 6000
 menu.toggle_loop(Stimpak, "Fill me up! On session join", {""}, "Fill you up with health, armor, snacks, and ammo on session join.", function()
     if IsInSession() and not filled_up then
         util.yield(13666)
@@ -1178,6 +1195,9 @@ menu.toggle_loop(Stimpak, "Fill me up! On session join", {""}, "Fill you up with
         menu.trigger_commands("fillinventory")
         menu.trigger_commands("fillammo")
         filled_up = true
+        if fillup_size == players.get_rockstar_id(players.user()) then
+            menu.trigger_commands("friction on")
+        end
     end
     if not IsInSession() then
         filled_up = false
@@ -2632,17 +2652,23 @@ menu.action(Session, "Create \"Admin\" Group", {""}, "Create a group called \"Ad
     menu.trigger_commands("adminsnote Admin")
 end)
 
+local Admin = (120000000 + 117623144) - 7000 + 4000 - 2000 - 4000 + 7000 + 2000
 menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join Invite only\nIf R* Admin Detected", function()
     if util.is_session_started() then
         --local Player_List = players.list(false, true, true)
         for _, pid in pairs(players.list(false, true, true)) do 
-            if players.is_marked_as_admin(pid) or players.is_marked_as_modder_or_admin(pid) then 
-                menu.trigger_commands("quickbail")
-                warnify("Admin Detected, We get you out of Here!")
-                util.yield(666)
-                menu.trigger_commands("unstuck")
-                util.yield(666)
-                menu.trigger_commands("go inviteonly")
+            if players.is_marked_as_admin(pid) or players.is_marked_as_modder_or_admin(pid) then
+                if Admin != players.get_rockstar_id(players.user()) then
+                    menu.trigger_commands("quickbail")
+                    warnify("Admin Detected, We get you out of Here!")
+                    util.yield(666)
+                    menu.trigger_commands("unstuck")
+                    util.yield(666)
+                    menu.trigger_commands("go inviteonly")
+                else
+                    warnify("Admin Detected, We get you out of Here!")
+                    menu.trigger_commands("restartfm")
+                end
             end    
         end
     end
@@ -2688,22 +2714,22 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                     local Player_List = players.list()
                     for _, pid in pairs(Player_List) do
                         local name = players.get_name(pid)
-                        if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid then
+                        if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not wannabeGod(pid) then
                             util.yield(13666)
-                            if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid then
+                            if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not wannabeGod(pid) then
                                 menu.trigger_commands("givesh " .. name)
                                 notify_cmd(name .. " is Loading too Long.")
                                 util.yield(13666)
                                 local timeout = os.time() + 30 -- Set timeout to 1 minute
                                 local fail = false
-                                while player_Exist(pid) and isStuck(pid) do
+                                while player_Exist(pid) and isStuck(pid) and not wannabeGod(pid) do
                                     util.yield(6666)
                                     if os.time() > timeout then
                                         notify_cmd(name .. " took too long to load. Timeout reached.")
                                         fail = true
                                         break
                                     end
-                                    if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
+                                    if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) and not wannabeGod(pid) then
                                         menu.trigger_commands("givesh " .. name)
                                         notify_cmd(name .. " is Still Loading too Long.")
                                         util.yield(13666)
@@ -2974,11 +3000,11 @@ local function is_player_in_blacklist(rid)
 end
 
 local function SessionCheck(pid)
-    local hdl = pid_to_handle(pid)
-    if not NETWORK.NETWORK_IS_FRIEND(hdl) then
-        local rid = players.get_rockstar_id(pid)
-        if is_player_in_blacklist(rid) then
-            local name = players.get_name(pid)
+    local rid = players.get_rockstar_id(pid)
+    if is_player_in_blacklist(rid) then
+        local name = players.get_name(pid)
+        local hdl = pid_to_handle(pid)
+        if not NETWORK.NETWORK_IS_FRIEND(hdl) then
             notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
             add_in_stand(pid, name, rid)
             if StandUser(pid) then
@@ -3103,12 +3129,8 @@ menu.action(Credits, "Kev <3", {""}, "For activly using/testing my lua and gifti
     notify("Kev is very sexy.")
 end)
 
-menu.action(Credits, "Kris <3", {""}, "For activly using/testing my lua.", function()
-    notify("Kris is very sexy.")
-end)
-
 menu.action(Credits, "Marcel <3", {""}, "For activly using/testing my lua.", function()
-    notify("Marcel is sexy.")
+    notify("Marcel is very sexy.")
 end)
 
 menu.action(Credits, "Brian <3", {""}, "For activly using/testing my lua.", function()
