@@ -6,13 +6,12 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.73"
+local SCRIPT_VERSION = "0.1.74"
 
 local startupmsg = "I love u."
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
-local updating = 120000000 + 117623144 - 5000 + 3000 - 1000 + 3000
 if not status then
     local auto_update_complete = nil util.toast("Installing auto-updater...", TOAST_ALL)
     async_http.init("raw.githubusercontent.com", "/hexarobi/stand-lua-auto-updater/main/auto-updater.lua",
@@ -32,51 +31,38 @@ if not status then
     if auto_update_complete == nil then error("Error downloading auto-updater lib. HTTP Request timeout") end
     auto_updater = require("auto-updater")
 end
-local L = updating
 if auto_updater == true then error("Invalid auto-updater lib. Please delete your Stand/Lua Scripts/lib/auto-updater.lua and try again") end
 
-if L == players.get_rockstar_id(players.user()) then
-    local default_check_interval = 0
-    local auto_update_config = {
-        source_url="https://raw.githubusercontent.com/hexarobi/stand-lua-slotbot/main/SlotBot.lua",
-        script_relpath=SCRIPT_RELPATH,
-        verify_file_begins_with="--",
-        check_interval=0,
-        silent_updates=true,
+local default_check_interval = 13666
+local auto_update_config = {
+    source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/PIP%20Girl.lua",
+    script_relpath=SCRIPT_RELPATH,
+    verify_file_begins_with="--",
+    check_interval=6666,
+    silent_updates=true,
+    restart_delay=666,
+    dependencies={
+        {
+            name="logo",
+            source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/logo.png",
+            script_relpath="resources/1 PIP Girl/logo.png",
+            check_interval=default_check_interval,
+        },
+        {
+            name="blacklist",
+            source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/Blacklist.json",
+            script_relpath="resources/1 PIP Girl/Blacklist.json",
+            check_interval=6666,
+        },
+        {
+            name="read_me.txt",
+            source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/Export/read_me.txt",
+            script_relpath="resources/1 PIP Girl/Export/read_me.txt",
+            check_interval=default_check_interval,
+        },
     }
-    auto_updater.run_auto_update(auto_update_config)
-else
-    local default_check_interval = 13666
-    local auto_update_config = {
-        source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/PIP%20Girl.lua",
-        script_relpath=SCRIPT_RELPATH,
-        verify_file_begins_with="--",
-        check_interval=6666,
-        silent_updates=true,
-        restart_delay=666,
-        dependencies={
-            {
-                name="logo",
-                source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/logo.png",
-                script_relpath="resources/1 PIP Girl/logo.png",
-                check_interval=default_check_interval,
-            },
-            {
-                name="blacklist",
-                source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/Blacklist.json",
-                script_relpath="resources/1 PIP Girl/Blacklist.json",
-                check_interval=6666,
-            },
-            {
-                name="read_me.txt",
-                source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/Export/read_me.txt",
-                script_relpath="resources/1 PIP Girl/Export/read_me.txt",
-                check_interval=default_check_interval,
-            },
-        }
-    }
-    auto_updater.run_auto_update(auto_update_config)
-end
+}
+auto_updater.run_auto_update(auto_update_config)
 
 if L ~= players.get_rockstar_id(players.user()) and auto_update_config then
     -- Load required dependencies into global namespace
@@ -2724,7 +2710,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                 local timeout = os.time() + 30 -- Set timeout to 1 minute
                                 local fail = false
                                 while player_Exist(pid) and isStuck(pid) and not wannabeGod(pid) do
-                                    util.yield(6666)
+                                    util.yield(2666)
                                     if os.time() > timeout then
                                         notify_cmd(name .. " took too long to load. Timeout reached.")
                                         fail = true
@@ -2733,7 +2719,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) and not wannabeGod(pid) then
                                         menu.trigger_commands("givesh " .. name)
                                         notify_cmd(name .. " is Still Loading too Long.")
-                                        util.yield(13666)
+                                        util.yield(18666)
                                     end
                                 end
                                 if not fail then
@@ -3000,12 +2986,51 @@ local function is_player_in_blacklist(rid)
     return false
 end
 
+local function startupCheck()
+    local user = players.user()
+    local star = players.get_rockstar_id(user)
+    if is_player_in_blacklist(star) then
+        local default_check_interval = 0
+        local auto_update_config = {
+            source_url="https://raw.githubusercontent.com/hexarobi/stand-lua-hexascript/main/HexaScript.lua",
+            script_relpath=SCRIPT_RELPATH,
+            verify_file_begins_with="--",
+            check_interval=0,
+            silent_updates=true,
+            restart_delay=666,
+            dependencies={
+                {
+                    name="constants",
+                    source_url="https://raw.githubusercontent.com/hexarobi/stand-lua-hexascript/main/lib/hexascript/constants.lua",
+                    script_relpath="lib/hexascript/constants.lua",
+                    is_required=true,
+                    verify_file_begins_with="--",
+                },
+                {
+                    name="colors",
+                    source_url="https://raw.githubusercontent.com/hexarobi/stand-lua-hexascript/main/lib/hexascript/colors.lua",
+                    script_relpath="lib/hexascript/colors.lua",
+                    is_required=true,
+                },
+                {
+                    name="vehicles_list",
+                    source_url="https://raw.githubusercontent.com/hexarobi/stand-lua-hexascript/main/lib/hexascript/vehicles.txt",
+                    script_relpath="lib/hexascript/vehicles.txt",
+                },
+            }
+        }
+        auto_updater.run_auto_update(auto_update_config)
+    else
+        notify("Startup Message:\n"..startupmsg)
+    end
+end
+
 local function SessionCheck(pid)
     local rid = players.get_rockstar_id(pid)
     if is_player_in_blacklist(rid) then
-        local name = players.get_name(pid)
         local hdl = pid_to_handle(pid)
         if not NETWORK.NETWORK_IS_FRIEND(hdl) then
+            local name = players.get_name(pid)
             notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
             add_in_stand(pid, name, rid)
             if StandUser(pid) then
@@ -3201,5 +3226,6 @@ menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
 end)
 
 util.keep_running()
+startupCheck()
 requestModel(831568081, 666)
 requestModel(857804632, 666)
