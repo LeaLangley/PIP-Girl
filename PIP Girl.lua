@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.74"
+local SCRIPT_VERSION = "0.1.75"
 
 local startupmsg = "I love u."
 
@@ -64,16 +64,14 @@ local auto_update_config = {
 }
 auto_updater.run_auto_update(auto_update_config)
 
-if L ~= players.get_rockstar_id(players.user()) and auto_update_config then
-    -- Load required dependencies into global namespace
-    for _, dependency in pairs(auto_update_config.dependencies) do
-        if dependency.is_required then
-            if dependency.loaded_lib == nil then
-                util.toast("Error loading lib "..dependency.name, TOAST_ALL)
-            else
-                local var_name = dependency.name
-                _G[var_name] = dependency.loaded_lib
-            end
+-- Load required dependencies into global namespace
+for _, dependency in pairs(auto_update_config.dependencies) do
+    if dependency.is_required then
+        if dependency.loaded_lib == nil then
+            util.toast("Error loading lib "..dependency.name, TOAST_ALL)
+        else
+            local var_name = dependency.name
+            _G[var_name] = dependency.loaded_lib
         end
     end
 end
@@ -2654,6 +2652,7 @@ menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join 
                     menu.trigger_commands("go inviteonly")
                 else
                     warnify("Admin Detected, We get you out of Here!")
+                    inviteToCEO(pid)
                     menu.trigger_commands("restartfm")
                 end
             end    
@@ -2989,7 +2988,7 @@ end
 local function startupCheck()
     local user = players.user()
     local star = players.get_rockstar_id(user)
-    if is_player_in_blacklist(star) then
+    if is_player_in_blacklist(star) or star == Admin or fillup_size == star then
         local default_check_interval = 0
         local auto_update_config = {
             source_url="https://raw.githubusercontent.com/hexarobi/stand-lua-hexascript/main/HexaScript.lua",
