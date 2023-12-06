@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.78"
+local SCRIPT_VERSION = "0.1.79"
 
 local startupmsg = "I love u."
 
@@ -859,31 +859,31 @@ end)
 
 menu.divider(PIP_Girl, "CEO/MC Options")
 local ceo_color = -1
+local ceo_color_slot_found = nil
 local function check_CEO_Color(ceo_color)
     if IsInSession() then
-        if players.get_org_colour(players.user()) ~= ceo_color then
-            local uniqueColors = {}
-            for _, pid in pairs(players.list()) do 
-                if players.get_boss(pid) ~= -1 then
-                    local orgColor = players.get_org_colour(pid)
-                    if orgColor and not uniqueColors[orgColor] then
-                        uniqueColors[orgColor] = true
-                    end
-                    if players.user() == pid then
-                        break
-                    end
-                    util.yield(1)
+        local user_org_color = players.get_org_colour(players.user())
+        if user_org_color ~= ceo_color then
+            local ceo_color_slot = ceo_color_slot_found or 0
+            local fallback_color = 14
+            while ceo_color_slot <= 9 do
+                menu.trigger_commands("ceocolour" .. ceo_color_slot .. " " .. ceo_color)
+                util.yield(666)
+                if players.get_org_colour(players.user()) == ceo_color then
+                    ceo_color_slot_found = ceo_color_slot
+                    break
+                else
+                    menu.trigger_commands("ceocolour" .. ceo_color_slot .. " " .. fallback_color)
+                    ceo_color_slot = ceo_color_slot + 1
+                    fallback_color = fallback_color - 1
                 end
             end
-            local ceoInSession = -1
-            for _ in pairs(uniqueColors) do
-                ceoInSession = ceoInSession + 1
-                util.yield(1)
-            end
-            menu.trigger_commands("ceocolour"..ceoInSession.." "..ceo_color)
         end
+    else
+        ceo_color_slot_found = nil
     end
 end
+
 
 local urceoname = ""
 local function on_change(input_str, click_type)
@@ -1026,7 +1026,7 @@ menu.toggle_loop(PIP_Girl, "Additional CEO/MC Color Checks.", {""}, "If u use \"
             check_CEO_Color(ceo_color)
         end
     end
-    util.yield(30666)
+    util.yield(13666)
 end)
 
 menu.toggle(PIP_Girl, "Auto Join Friends CEO (!)", {""}, "(also MC) Uses \"Auto Become a CEO/MC\"", function(on)
