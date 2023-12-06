@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.77"
+local SCRIPT_VERSION = "0.1.78"
 
 local startupmsg = "I love u."
 
@@ -494,6 +494,7 @@ local PIP_Girl_APPS = menu.list(PIP_Girl, 'PIP Girl Apps', {}, 'Personal Informa
 --local PIP_Girl_Heist = menu.list(PIP_Girl, 'PIP Girl Heists', {}, 'Personal Information Processor Girl Heist Presets.', function(); end)
 local Stimpak = menu.list(menu.my_root(), 'Stimpak', {}, 'Take a breath.', function(); end)
 local Vehicle = menu.list(menu.my_root(), 'Vehicle', {}, 'Drive pretty and nice.', function(); end)
+local Vehicle_Light = menu.list(Vehicle, 'Vehicle Light Rhythm', {}, 'Flash the lights pretty and nice.', function(); end)
 local Outfit = menu.list(menu.my_root(), 'Outfit', {}, 'Look pretty and nice.', function(); end)
 local Game = menu.list(menu.my_root(), 'Game', {}, 'Very gaming today.', function(); end)
 local Session = menu.list(menu.my_root(), 'Session', {}, '.noisseS', function(); end)
@@ -1393,13 +1394,12 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
                     VEHICLE.CAN_SHUFFLE_SEAT(vehicle, true)
                     VEHICLE.SET_VEHICLE_CAN_ENGINE_MISSFIRE(vehicle, false)
                     VEHICLE.SET_VEHICLE_ENGINE_CAN_DEGRADE(vehicle, false)
-                else
-                    saved_vehicle_id = nil
                 end
                 if not isInVehicle and not closedDoors then
                     util.yield(1666)
                     VEHICLE.SET_VEHICLE_DOORS_SHUT(vehicle, false)
                     closedDoors = true
+                    saved_vehicle_id = nil
                 end
             else
                 util.yield(1666)
@@ -1699,6 +1699,68 @@ menu.toggle_loop(Vehicle, "Set vehicle light color automatically",{""},"Automati
     else
         notify("Pls Select ur Fav Vehicle light color first.")
         util.yield(6666)
+    end
+end)
+
+menu.toggle_loop(Vehicle_Light, "S.O.S. Morse",{"sosmorse"},"",function()
+    local vehicle = entities.get_user_vehicle_as_handle()
+    if vehicle then
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        util.yield(100)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+        util.yield(300)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        util.yield(50)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        util.yield(100)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+        util.yield(300)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        util.yield(50)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        util.yield(100)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+        util.yield(300)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        
+        util.yield(300)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        util.yield(100)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+        util.yield(100)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        util.yield(50)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        util.yield(100)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+        util.yield(100)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        util.yield(50)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        util.yield(100)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+        util.yield(100)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+
+        util.yield(300)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        util.yield(100)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+        util.yield(300)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        util.yield(50)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        util.yield(100)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+        util.yield(300)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        util.yield(50)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        util.yield(100)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+        util.yield(300)
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        util.yield(1666)
     end
 end)
 
