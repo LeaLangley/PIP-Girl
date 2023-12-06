@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.75"
+local SCRIPT_VERSION = "0.1.77"
 
 local startupmsg = "I love u."
 
@@ -1222,6 +1222,8 @@ menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehicle", {"pghealth"}, "Wil
     else
         util.yield(13666)
     end
+end, function()
+    menu.trigger_commands("healthrate 0.00")
 end)
 
 menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle", {"pgarmor"}, "Will Recharge Armor when in Cover or Vehicle quickly.\nBUT also slowly otherwise to 100%.", function()
@@ -1256,6 +1258,8 @@ menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle", {"pgarmor"}, "Will 
         end
         util.yield(13666)
     end
+end, function()
+    menu.trigger_commands("armourrate 0.00")
 end)
 
 local was_user_in_vehicle = false
@@ -2726,6 +2730,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                         notify_cmd(name .. " Finished Loading.")
                                     else
                                         notify(name .. " got Lost in the Void.")
+                                        menu.trigger_commands("scripthost")
                                     end
                                 end
                                 if not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
