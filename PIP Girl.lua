@@ -1762,6 +1762,8 @@ menu.toggle_loop(Vehicle_Light, "S.O.S. Morse",{"sosmorse"},"",function()
         VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
         util.yield(1666)
     end
+end, function()
+    VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 0)
 end)
 
 menu.slider(Vehicle, "Vehicle light color", {"favheadlights"}, "Default lights: 0 & 1 | Color lights: 2-14", 2, 14, vehicleFavColor, 1, function (new_value)
