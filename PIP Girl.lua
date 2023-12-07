@@ -3020,42 +3020,46 @@ menu.toggle_loop(Session, "Kick Aggressive Host Token as Host", {""}, "", functi
 end)
 
 menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisible for the whole session, but with a nice effect for ppl close by.", function()
-    if IsInSession() then 
+    if IsInSession() then
+        playerPosition = players.get_position(players.user())
+        local cmd_path = "Vehicle>Countermeasures>Only In Aircraft"
         warnify_ses("T-5 sec. Start on \"GO!\"")
-        --local red_countdown = nil
-        --local green_contdown = nil
-        --local playerPosition = players.get_position(players.user())
-        --local red_countdown = SpawnCheck(red_countdown, 831568081, v3.new(playerPosition.x, playerPosition.y, playerPosition.z + 5), ENTITY.GET_ENTITY_HEADING(players.user_ped()), 0)
+        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z + 7, 3, 1, true, false, 0, true)
         for i=1, 13 do
             PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
         end
         util.yield(859)
+        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z + 7, 3, 1, true, false, 0, true)
         for i=1, 13 do
             PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
         end
         util.yield(859)
         warnify_ses("3")
+        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z + 7, 3, 1, true, false, 0, true)
         for i=1, 13 do
             PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
         end
         util.yield(859)
         warnify_ses("2")
+        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z + 7, 3, 1, true, false, 0, true)
         for i=1, 13 do
             PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
         end
         util.yield(859)
         warnify_ses("1")
+        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z + 7, 3, 1, true, false, 0, true)
         for i=1, 13 do
             PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
         end
         util.yield(859)
         warnify_ses("GO!")
-        local cmd_path = "Vehicle>Countermeasures>Only In Aircraft"
+        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z + 7, 38, 1, true, false, 0, true)
+        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z + 10, 49, 1, true, false, 0, true)
         if menu.get_state(menu.ref_by_path(cmd_path)) == "On" then
             menu.trigger_commands("onlyaircraft off")
             menu.trigger_commands("deployboth")
@@ -3063,20 +3067,11 @@ menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisi
         else
             menu.trigger_commands("deployboth")
         end
-        --local green_countdown = SpawnCheck(green_countdown, 857804632, v3.new(playerPosition.x, playerPosition.y, playerPosition.z + 5), ENTITY.GET_ENTITY_HEADING(players.user_ped()), 0)
-        --if ENTITY.DOES_ENTITY_EXIST(red_countdown) then
-        --    requestControl(red_countdown, 0)
-        --    entities.delete(red_countdown)
-        --end
         for i=1, 222 do
             PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(6)
         end
         util.yield(666)
-        --if ENTITY.DOES_ENTITY_EXIST(green_countdown) then
-        --    requestControl(green_countdown, 0)
-        --    entities.delete(green_countdown)
-        --end
     end
 end)
 
