@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.79"
+local SCRIPT_VERSION = "0.1.80"
 
 local startupmsg = "Auto CEO color is very experimental!\nI love u."
 
@@ -1779,7 +1779,6 @@ menu.toggle_loop(Vehicle_Light, "S.O.S. Morse",{"sosmorse"},"",function()
         util.yield(1666)
     end
 end, function()
-    VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 0)
     saved_vehicle_id = nil
 end)
 
