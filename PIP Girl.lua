@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.80"
+local SCRIPT_VERSION = "0.1.81"
 
 local startupmsg = "Auto CEO color is very experimental!\nI love u."
 
@@ -1693,7 +1693,7 @@ menu.toggle_loop(Outfit, "Restor Outfit", {"restoreoutfit"}, "Auto Restore the S
 end)
 
 local vehicleFavColor = 0
-menu.toggle_loop(Vehicle, "Set vehicle light color automatically",{""},"Automatically set your favorite vehicle color for vehicles with default lights.\nDefault lights: 0 & 1 | Color lights: 2-14",function()
+menu.toggle_loop(Vehicle, "Set vehicle light color automatically",{"autocarlights"},"Automatically set your favorite vehicle color for vehicles with default lights.\nDefault lights: 0 & 1 | Color lights: 2-14",function()
     util.yield(420)
     if vehicleFavColor ~= 0 then
         if IsInSession() then
@@ -1907,6 +1907,69 @@ menu.toggle_loop(Vehicle, "Heli Sparrow Handling",{""},"All helicopters you ente
         util.yield(13666)
     end
     util.yield(3666)
+end)
+
+menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
+    local nearbyVehicles = entities.get_all_vehicles_as_handles()
+    local playerPosition = players.get_position(players.user())
+    local my_ped = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(players.user())
+    local fullfixed = 0
+    local couldbefixed = 0
+    local indistance = 0
+    local last_vehicle = nil
+    local auto_light_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Vehicle>Set vehicle light color automatically"
+    local temp_auto_light = false
+
+    if menu.get_state(menu.ref_by_path(auto_light_path)) == "On" then
+        menu.trigger_commands("autocarlights of")
+        temp_auto_light = true
+    end
+
+    for _, vehicle in ipairs(nearbyVehicles) do
+        if ENTITY.GET_ENTITY_HEALTH(vehicle) == 0 then
+            return
+        end
+        local vehiclePosition = ENTITY.GET_ENTITY_COORDS(vehicle, true)
+        local distance = SYSTEM.VDIST(playerPosition.x, playerPosition.y, playerPosition.z, vehiclePosition.x, vehiclePosition.y, vehiclePosition.z)
+
+        if distance <= 150.0 then
+            indistance = indistance + 1
+            local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
+            if driver == 0 or driver == players.user() then
+                PED.SET_PED_INTO_VEHICLE(my_ped, vehicle, -1)
+                -- Full fix
+                fullfixed = fullfixed + 1
+            else
+                PED.SET_PED_INTO_VEHICLE(my_ped, vehicle, -2)
+                -- Possible fix
+                couldbefixed = couldbefixed + 1
+            end
+            util.yield(111)
+            menu.trigger_commands("fixvehicle")
+            util.yield(666)
+            last_vehicle = vehicle
+        end
+    end
+    util.yield(13)
+    TASK.TASK_LEAVE_VEHICLE(my_ped, last_vehicle, 16)
+    util.yield(420)
+    players.teleport_3d(players.user(), playerPosition.x, playerPosition.y, playerPosition.z)
+    local message = ""
+    if fullfixed > 0 then
+        message = message .. "Fully Fixed: " .. fullfixed .. " | "
+    end
+    if couldbefixed > 0 then
+        message = message .. "Possibly Fixed: " .. couldbefixed .. " | "
+    end
+    if indistance > 0 then
+        message = message .. "Out of " .. indistance .. " Vehicles in 150m Distance."
+    end
+    if message ~= "" then
+        warnify_ses(message)
+    end
+    if temp_auto_light then
+        menu.trigger_commands("autocarlights on")
+    end
 end)
 
 local function SuperClean(fix, ignoreMission)
@@ -2340,7 +2403,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
     --  Setting up the Filter
     --  <3
     local magnet_path = "Online>Transitions>Matchmaking>Player Magnet"
-    local admin_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Session>Admin Bail"
+    local auto_warning_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Game>Auto Accept Warning"
     local spoof_path = "Online>Spoofing>Host Token Spoofing>Host Token Spoofing"
     local temp_admin = false
     local auto_warning_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Game>Auto Accept Warning"
@@ -2748,7 +2811,7 @@ end)
 
 menu.divider(Session, "<3")
 
-local ClearTraficSphere
+local ClearTraficSphere = nil
 menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic around you.", function()
     if IsInSession() then
         if players.user() != players.get_host() then
@@ -2767,6 +2830,12 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic a
         if ClearTraficSphere then
             MISC.REMOVE_POP_MULTIPLIER_SPHERE(ClearTraficSphere, true)
             ClearTraficSphere = false
+            local cmd_path = "Online>Protections>Delete Modded Pop Multiplier Areas"
+            if menu.get_state(menu.ref_by_path(cmd_path)) == "Off" then
+                menu.trigger_commands("nomodpop on")
+                util.yield(6666)
+                menu.trigger_commands("nomodpop off")
+            end
             util.yield(13666)
         else
             util.yield(666)
@@ -2775,6 +2844,12 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic a
 end, function()
     MISC.REMOVE_POP_MULTIPLIER_SPHERE(ClearTraficSphere, true)
     ClearTraficSphere = nil
+    local cmd_path = "Online>Protections>Delete Modded Pop Multiplier Areas"
+    if menu.get_state(menu.ref_by_path(cmd_path)) == "Off" then
+        menu.trigger_commands("nomodpop on")
+        util.yield(6666)
+        menu.trigger_commands("nomodpop off")
+    end
 end)
 
 menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
