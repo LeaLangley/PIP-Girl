@@ -1699,12 +1699,14 @@ menu.toggle_loop(Vehicle, "Set vehicle light color automatically",{"autocarlight
         if IsInSession() then
             local vehicle = entities.get_user_vehicle_as_handle()
             if vehicle then
-                local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
-                local driver = NETWORK.NETWORK_GET_PLAYER_INDEX_FROM_PED(driverPed)
-                if driver == players.user() then
-                    if VEHICLE.GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 then
-                        vehicleLightsSet = vehicle
-                        menu.trigger_commands("headlights "..vehicleFavColor)
+                if entities.get_owner(vehicle) == players.user() then
+                    local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
+                    local driver = NETWORK.NETWORK_GET_PLAYER_INDEX_FROM_PED(driverPed)
+                    if driver == players.user() then
+                        if VEHICLE.GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 then
+                            vehicleLightsSet = vehicle
+                            menu.trigger_commands("headlights "..vehicleFavColor)
+                        end
                     end
                 end
             end
