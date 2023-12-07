@@ -8,7 +8,7 @@ __________._____________    ________.__       .__
 
 local SCRIPT_VERSION = "0.1.79"
 
-local startupmsg = "I love u."
+local startupmsg = "Auto CEO color is very experimental!\nI love u."
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -859,22 +859,35 @@ end)
 menu.divider(PIP_Girl, "CEO/MC Options")
 local ceo_color = -1
 local ceo_color_slot_found = nil
+local first_ceo_color_check = true
 local function check_CEO_Color(ceo_color)
     if IsInSession() then
         local user_org_color = players.get_org_colour(players.user())
         if user_org_color ~= ceo_color then
+            if first_ceo_color_check then
+                menu.focus(menu.ref_by_path("Online>CEO/MC>Colour Slots>0"))
+                util.yield(420)
+                menu.focus(current)
+                first_ceo_color_check = false
+            end
+            if ceo_color_slot_found then
+                menu.trigger_commands("ceocolour" .. ceo_color_slot_found .. " " .. ceo_color)
+                util.yield(666)
+            end
             local ceo_color_slot = ceo_color_slot_found or 0
             local fallback_color = 14
-            while ceo_color_slot <= 9 do
-                menu.trigger_commands("ceocolour" .. ceo_color_slot .. " " .. ceo_color)
-                util.yield(666)
-                if players.get_org_colour(players.user()) == ceo_color then
-                    ceo_color_slot_found = ceo_color_slot
-                    break
-                else
-                    menu.trigger_commands("ceocolour" .. ceo_color_slot .. " " .. fallback_color)
-                    ceo_color_slot = ceo_color_slot + 1
-                    fallback_color = fallback_color - 1
+            if players.get_org_colour(players.user()) != ceo_color then
+                while ceo_color_slot <= 9 do
+                    menu.trigger_commands("ceocolour" .. ceo_color_slot .. " " .. ceo_color)
+                    util.yield(666)
+                    if players.get_org_colour(players.user()) == ceo_color then
+                        ceo_color_slot_found = ceo_color_slot
+                        break
+                    else
+                        menu.trigger_commands("ceocolour" .. ceo_color_slot .. " " .. fallback_color)
+                        ceo_color_slot = ceo_color_slot + 1
+                        fallback_color = fallback_color - 1
+                    end
                 end
             end
         end
