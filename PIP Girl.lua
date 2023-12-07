@@ -2945,10 +2945,10 @@ end)
 menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisible for the whole session, but with a nice effect for ppl close by.", function()
     if IsInSession() then 
         warnify_ses("T-5 sec. Start on \"GO!\"")
-        local red_countdown = nil
-        local green_contdown = nil
-        local playerPosition = players.get_position(players.user())
-        local red_countdown = SpawnCheck(red_countdown, 831568081, v3.new(playerPosition.x, playerPosition.y, playerPosition.z + 5), ENTITY.GET_ENTITY_HEADING(players.user_ped()), 0)
+        --local red_countdown = nil
+        --local green_contdown = nil
+        --local playerPosition = players.get_position(players.user())
+        --local red_countdown = SpawnCheck(red_countdown, 831568081, v3.new(playerPosition.x, playerPosition.y, playerPosition.z + 5), ENTITY.GET_ENTITY_HEADING(players.user_ped()), 0)
         for i=1, 13 do
             PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
@@ -2986,20 +2986,20 @@ menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisi
         else
             menu.trigger_commands("deployboth")
         end
-        local green_countdown = SpawnCheck(green_countdown, 857804632, v3.new(playerPosition.x, playerPosition.y, playerPosition.z + 5), ENTITY.GET_ENTITY_HEADING(players.user_ped()), 0)
-        if ENTITY.DOES_ENTITY_EXIST(red_countdown) then
-            requestControl(red_countdown, 0)
-            entities.delete(red_countdown)
-        end
+        --local green_countdown = SpawnCheck(green_countdown, 857804632, v3.new(playerPosition.x, playerPosition.y, playerPosition.z + 5), ENTITY.GET_ENTITY_HEADING(players.user_ped()), 0)
+        --if ENTITY.DOES_ENTITY_EXIST(red_countdown) then
+        --    requestControl(red_countdown, 0)
+        --    entities.delete(red_countdown)
+        --end
         for i=1, 222 do
             PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(6)
         end
         util.yield(666)
-        if ENTITY.DOES_ENTITY_EXIST(green_countdown) then
-            requestControl(green_countdown, 0)
-            entities.delete(green_countdown)
-        end
+        --if ENTITY.DOES_ENTITY_EXIST(green_countdown) then
+        --    requestControl(green_countdown, 0)
+        --    entities.delete(green_countdown)
+        --end
     end
 end)
 
@@ -3343,5 +3343,5 @@ end)
 
 util.keep_running()
 startupCheck()
-requestModel(831568081, 666)
-requestModel(857804632, 666)
+--requestModel(831568081, 666)
+--requestModel(857804632, 666)
