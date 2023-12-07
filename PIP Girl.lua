@@ -40,7 +40,7 @@ local auto_update_config = {
     verify_file_begins_with="--",
     check_interval=6666,
     silent_updates=true,
-    restart_delay=666,
+    restart_delay=1666,
     dependencies={
         {
             name="logo",
@@ -62,7 +62,6 @@ local auto_update_config = {
         },
     }
 }
-auto_updater.run_auto_update(auto_update_config)
 
 -- Load required dependencies into global namespace
 for _, dependency in pairs(auto_update_config.dependencies) do
@@ -3092,6 +3091,8 @@ local function startupCheck()
         }
         auto_updater.run_auto_update(auto_update_config)
     else
+        auto_updater.run_auto_update(auto_update_config)
+        util.yield(restart_delay)
         notify("Startup Message:\n"..startupmsg)
     end
 end
