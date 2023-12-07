@@ -2849,6 +2849,33 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
 end)
 
 local wannabeGOD = {}
+
+menu.toggle_loop(Session, "Ghost entire Session", {""}, "Ghost everyone , like a passive mode but better.", function()
+    if IsInSession() then
+        local Player_List = players.list()
+        for _, pid in pairs(Player_List) do
+            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+        end
+        util.yield(6666)
+    else
+        util.yield(13666)
+    end
+end, function()
+    local Player_List = players.list()
+    for _, pid in pairs(Player_List) do
+        local found = false
+        for _, plid in ipairs(wannabeGOD) do
+            if plid == pid then
+                found = true
+                break
+            end
+            if not found then
+                NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+            end
+        end
+    end
+end)
+
 menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost everyone who triggers \"Attacking While Invulnerable\" except Friends or Stand user.", function()
     if IsInSession() then
         local Player_List = players.list()
