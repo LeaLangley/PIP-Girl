@@ -2850,7 +2850,7 @@ end)
 
 local wannabeGOD = {}
 
-menu.toggle_loop(Session, "Ghost entire Session", {""}, "Ghost everyone , like a passive mode but better.", function()
+menu.toggle_loop(Session, "Ghost entire Session", {"imaghost"}, "Ghost everyone , like a passive mode but better.", function()
     if IsInSession() then
         local Player_List = players.list()
         for _, pid in pairs(Player_List) do
