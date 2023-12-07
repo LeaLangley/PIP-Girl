@@ -1780,6 +1780,7 @@ menu.toggle_loop(Vehicle_Light, "S.O.S. Morse",{"sosmorse"},"",function()
     end
 end, function()
     saved_vehicle_id = nil
+    closedDoors = false
 end)
 
 menu.slider(Vehicle, "Vehicle light color", {"favheadlights"}, "Default lights: 0 & 1 | Color lights: 2-14", 2, 14, vehicleFavColor, 1, function (new_value)
