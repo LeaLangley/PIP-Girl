@@ -865,7 +865,8 @@ local function check_CEO_Color(ceo_color)
         local user_org_color = players.get_org_colour(players.user())
         if user_org_color ~= ceo_color then
             if first_ceo_color_check then
-                menu.focus(menu.ref_by_path("Online>CEO/MC>Colour Slots>0"))
+                local current = menu.get_current_menu_list()
+                menu.trigger_commands("ceocolours")
                 util.yield(420)
                 menu.focus(current)
                 first_ceo_color_check = false
@@ -890,9 +891,12 @@ local function check_CEO_Color(ceo_color)
                     end
                 end
             end
+            if players.get_org_colour(players.user()) != ceo_color and not first_ceo_color_check then
+                ceo_color_slot_found = true
+            end
         end
     else
-        ceo_color_slot_found = nil
+        ceo_color_slot_found = true
     end
 end
 
