@@ -1934,6 +1934,9 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
         if not ENTITY.DOES_ENTITY_EXIST(vehicle) then
             return
         end
+        if VEHICLE.GET_VEHICLE_DOORS_LOCKED_FOR_PLAYER(vehicle, players.user()) then
+            return
+        end
         local vehiclePosition = ENTITY.GET_ENTITY_COORDS(vehicle, true)
         local distance = SYSTEM.VDIST(playerPosition.x, playerPosition.y, playerPosition.z, vehiclePosition.x, vehiclePosition.y, vehiclePosition.z)
 
@@ -3028,7 +3031,7 @@ end)
 
 menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisible for the whole session, but with a nice effect for ppl close by.", function()
     if IsInSession() then
-        playerPosition = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(players.user_ped(), 0, -23.0, 0)
+        playerPosition = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(players.user_ped(), 0, -23.0, 1)
         local cmd_path = "Vehicle>Countermeasures>Only In Aircraft"
         warnify_ses("T-5 sec. Start on \"GO!\"")
         FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 3, 1, true, false, 0, true)
