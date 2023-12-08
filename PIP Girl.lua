@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.81"
+local SCRIPT_VERSION = "0.1.82"
 
 local startupmsg = "Auto CEO color is very experimental!\nI love u."
 
@@ -867,7 +867,7 @@ local function check_CEO_Color(ceo_color)
             if first_ceo_color_check then
                 local current = menu.get_current_menu_list()
                 menu.trigger_commands("ceocolours")
-                util.yield(420)
+                util.yield(111)
                 menu.focus(current)
                 first_ceo_color_check = false
             end
@@ -3211,7 +3211,7 @@ local function startupCheck()
     else
         auto_updater.run_auto_update(auto_update_config)
         util.yield(restart_delay)
-        notify("Startup Message:\n"..startupmsg)
+        notify(SCRIPT_VERSION.."\nStartup Message:\n"..startupmsg)
     end
 end
 
