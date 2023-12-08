@@ -1921,7 +1921,6 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     local last_vehicle = nil
     local auto_light_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Vehicle>Set vehicle light color automatically"
     local temp_auto_light = false
-    TASK.TASK_LEAVE_VEHICLE(my_ped, last_vehicle, 16)
     
     if menu.get_state(menu.ref_by_path(auto_light_path)) == "On" then
         menu.trigger_commands("autocarlights of")
@@ -1954,9 +1953,10 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
             end
             util.yield(111)
             menu.trigger_commands("fixvehicle")
-            util.yield(666)
+            util.yield(111)
+            TASK.TASK_LEAVE_VEHICLE(my_ped, vehicle, 16)
             last_vehicle = vehicle
-            TASK.TASK_LEAVE_VEHICLE(my_ped, last_vehicle, 16)
+            util.yield(666)
         end
     end
     util.yield(13)
