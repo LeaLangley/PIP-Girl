@@ -1931,6 +1931,9 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
         if ENTITY.GET_ENTITY_HEALTH(vehicle) == 0 then
             return
         end
+        if not ENTITY.DOES_ENTITY_EXIST(vehicle) then
+            return
+        end
         local vehiclePosition = ENTITY.GET_ENTITY_COORDS(vehicle, true)
         local distance = SYSTEM.VDIST(playerPosition.x, playerPosition.y, playerPosition.z, vehiclePosition.x, vehiclePosition.y, vehiclePosition.z)
 
