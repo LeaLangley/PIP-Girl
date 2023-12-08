@@ -2751,38 +2751,38 @@ end)
 
 menu.divider(Session, "<3 Admin Stuff <3")
 
-local group_name = "Admin"
-local copy_from = nil
-local function clearCopy()
-    copy_from:refByRelPath("Copy Session Info").value = false
-    copy_from = nil
-end
-menu.toggle_loop(Session, "Group-Based Copy Session Info", {"groupcopy"}, "", function()
-    util.yield(666)
-    if copy_from ~= nil then
-        if copy_from:getState() ~= "Public" then
-            warnify($"{copy_from.name_for_config} is no longer in a public session, disabling copy session info.")
-            clearCopy()
-        end
-    else
-        for menu.ref_by_path("Online>Player History>Noted Players>"..group_name):getChildren() as link do
-            util.yield(6)
-            local hp = link.target
-            if hp:getState() == "Public" then
-                warnify($"{hp.name_for_config} is in a public session, copying their session info.")
-                hp:refByRelPath("Copy Session Info").value = true
-                copy_from = hp
-                return
-            end
-        end
-    end
-end)
-menu.text_input(Session, "Group Name", {"groupname"}, "", function(value)
-    group_name = value
-    if copy_from ~= nil then
-        clearCopy()
-    end
-end, group_name)
+--local group_name = "Admin"
+--local copy_from = nil
+--local function clearCopy()
+--    copy_from:refByRelPath("Copy Session Info").value = false
+--    copy_from = nil
+--end
+--menu.toggle_loop(Session, "Group-Based Copy Session Info", {"groupcopy"}, "", function()
+--    util.yield(666)
+--    if copy_from ~= nil then
+--        if copy_from:getState() ~= "Public" then
+--            warnify($"{copy_from.name_for_config} is no longer in a public session, disabling copy session info.")
+--            clearCopy()
+--        end
+--    else
+--        for menu.ref_by_path("Online>Player History>Noted Players>"..group_name):getChildren() as link do
+--            util.yield(6)
+--            local hp = link.target
+--            if hp:getState() == "Public" then
+--                warnify($"{hp.name_for_config} is in a public session, copying their session info.")
+--                hp:refByRelPath("Copy Session Info").value = true
+--                copy_from = hp
+--                return
+--            end
+--        end
+--    end
+--end)
+--menu.text_input(Session, "Group Name", {"groupname"}, "", function(value)
+--    group_name = value
+--    if copy_from ~= nil then
+--        clearCopy()
+--    end
+--end, group_name)
 
 menu.action(Session, "Create \"Admin\" Group", {""}, "Create a group called \"Admin\"", function()
     menu.trigger_commands("adminsupdate")
@@ -2816,45 +2816,31 @@ end)
 
 menu.divider(Session, "<3")
 
-local ClearTraficSphere = nil
 menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic around you.", function()
     if IsInSession() then
         if players.user() != players.get_host() then
-            util.yield(1666)
+            util.yield(666)
         else
-            util.yield(1420)
+            util.yield(420)
         end
-        --if not MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(ClearTraficSphere) then
-        --    ClearTraficSphere = MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19999.9, 0.0, 0.0, false, true)
-        --end
         local pos = players.get_position(players.user())
         MISC.CLEAR_AREA_OF_PEDS(pos.x, pos.y, pos.z, 13666, 0)
         util.yield(666)
         MISC.CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, 13666, false, false, false, false, false, false)
-    --else
-    --    if ClearTraficSphere then
-    --        MISC.REMOVE_POP_MULTIPLIER_SPHERE(ClearTraficSphere, true)
-    --        ClearTraficSphere = false
-    --        local cmd_path = "Online>Protections>Delete Modded Pop Multiplier Areas"
-    --        if menu.get_state(menu.ref_by_path(cmd_path)) == "Off" then
-    --            menu.trigger_commands("nomodpop on")
-    --            util.yield(6666)
-    --            menu.trigger_commands("nomodpop off")
-    --        end
-    --        util.yield(13666)
-    --    else
-    --        util.yield(666)
-    --    end
     end
-end, function()
-    --MISC.REMOVE_POP_MULTIPLIER_SPHERE(ClearTraficSphere, true)
-    ClearTraficSphere = nil
-    --local cmd_path = "Online>Protections>Delete Modded Pop Multiplier Areas"
-    --if menu.get_state(menu.ref_by_path(cmd_path)) == "Off" then
-    --    menu.trigger_commands("nomodpop on")
-    --    util.yield(6666)
-    --    menu.trigger_commands("nomodpop off")
-    --end
+end)
+
+local pop_multiplier_id = nil
+menu.toggle(Session, "Agressive Clear Traffic", {}, "", function(on)
+    if on then
+        local ped_sphere, traffic_sphere
+        local ped_sphere = 0.0
+        local traffic_sphere = 0.0
+        pop_multiplier_id = MISC.ADD_POP_MULTIPLIER_SPHERE(1.1, 1.1, 1.1, 15000.0, ped_sphere, traffic_sphere, false, true)
+        MISC.CLEAR_AREA(1.1, 1.1, 1.1, 19999.9, true, false, false, true)
+    else
+        MISC.REMOVE_POP_MULTIPLIER_SPHERE(pop_multiplier_id, false);
+    end
 end)
 
 menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
