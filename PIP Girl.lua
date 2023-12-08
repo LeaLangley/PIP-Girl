@@ -1937,7 +1937,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
         local vehiclePosition = ENTITY.GET_ENTITY_COORDS(vehicle, true)
         local distance = SYSTEM.VDIST(playerPosition.x, playerPosition.y, playerPosition.z, vehiclePosition.x, vehiclePosition.y, vehiclePosition.z)
 
-        if distance <= 150.0 then
+        if distance <= 100.0 then
             indistance = indistance + 1
             local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
             if driver == 0 or driver == players.user() then
@@ -1967,7 +1967,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
         message = message .. "Possibly Fixed: " .. couldbefixed .. " | "
     end
     if indistance > 0 then
-        message = message .. "Out of " .. indistance .. " Vehicles in 150m Distance."
+        message = message .. "Out of " .. indistance .. " Vehicles in 100m Distance."
     end
     if message ~= "" then
         warnify_ses(message)
