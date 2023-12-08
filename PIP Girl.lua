@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.83"
+local SCRIPT_VERSION = "0.1.84"
 
 local startupmsg = "If settings are missing PLS restart lua.\nAuto CEO color is very experimental!\nI love u."
 
@@ -3010,45 +3010,45 @@ end)
 
 menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisible for the whole session, but with a nice effect for ppl close by.", function()
     if IsInSession() then
-        playerPosition = players.get_position(players.user())
+        playerPosition = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(players.user_ped(), 0, -23.0, 0)
         local cmd_path = "Vehicle>Countermeasures>Only In Aircraft"
         warnify_ses("T-5 sec. Start on \"GO!\"")
-        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z + 7, 3, 1, true, false, 0, true)
+        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 3, 1, true, false, 0, true)
         for i=1, 13 do
             PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
         end
         util.yield(859)
-        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z + 7, 3, 1, true, false, 0, true)
+        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 3, 1, true, false, 0, true)
         for i=1, 13 do
             PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
         end
         util.yield(859)
         warnify_ses("3")
-        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z + 7, 3, 1, true, false, 0, true)
+        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 3, 1, true, false, 0, true)
         for i=1, 13 do
             PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
         end
         util.yield(859)
         warnify_ses("2")
-        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z + 7, 3, 1, true, false, 0, true)
+        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 3, 1, true, false, 0, true)
         for i=1, 13 do
             PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
         end
         util.yield(859)
         warnify_ses("1")
-        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z + 7, 3, 1, true, false, 0, true)
+        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 3, 1, true, false, 0, true)
         for i=1, 13 do
             PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
         end
         util.yield(859)
         warnify_ses("GO!")
-        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z + 7, 38, 1, true, false, 0, true)
-        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z + 10, 49, 1, true, false, 0, true)
+        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 38, 1, true, false, 0, true)
+        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 49, 1, true, false, 0, true)
         if menu.get_state(menu.ref_by_path(cmd_path)) == "On" then
             menu.trigger_commands("onlyaircraft off")
             menu.trigger_commands("deployboth")
@@ -3412,5 +3412,3 @@ end)
 
 util.keep_running()
 startupCheck()
---requestModel(831568081, 666)
---requestModel(857804632, 666)
