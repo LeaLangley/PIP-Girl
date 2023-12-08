@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.83"
+local SCRIPT_VERSION = "0.1.84"
 
 local startupmsg = "If settings are missing PLS restart lua.\nAuto CEO color is very experimental!\nI love u."
 
