@@ -1941,8 +1941,10 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
         if distance <= 100.0 then
             indistance = indistance + 1
             local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
+            requestControl(vehicle, 3)
             if driver == 0 or driver == players.user() then
-                PED.SET_PED_INTO_VEHICLE(my_ped, vehicle, -1)
+                --PED.SET_PED_INTO_VEHICLE(my_ped, vehicle, -1)
+                PED.SET_PED_INTO_VEHICLE(my_ped, vehicle, -2)
                 -- Full fix
                 fullfixed = fullfixed + 1
             else
