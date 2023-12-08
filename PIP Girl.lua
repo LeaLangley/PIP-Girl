@@ -2820,7 +2820,20 @@ end)
 
 menu.divider(Session, "<3")
 
-menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic around you.", function()
+local pop_multiplier_id = nil
+menu.toggle(Session, "Clear Traffic", {}, "", function(on)
+    if on then
+        local ped_sphere, traffic_sphere
+        local ped_sphere = 0.0
+        local traffic_sphere = 0.0
+        pop_multiplier_id = MISC.ADD_POP_MULTIPLIER_SPHERE(1.1, 1.1, 1.1, 15000.0, ped_sphere, traffic_sphere, false, true)
+        MISC.CLEAR_AREA(1.1, 1.1, 1.1, 19999.9, true, false, false, true)
+    else
+        MISC.REMOVE_POP_MULTIPLIER_SPHERE(pop_multiplier_id, false);
+    end
+end)
+
+menu.toggle_loop(Session, "Soft Clear Traffic", {"antitrafic"}, "Clears the traffic around you.", function()
     if IsInSession() then
         if players.user() != players.get_host() then
             util.yield(666)
@@ -2831,19 +2844,6 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic a
         MISC.CLEAR_AREA_OF_PEDS(pos.x, pos.y, pos.z, 13666, 0)
         util.yield(666)
         MISC.CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, 13666, false, false, false, false, false, false)
-    end
-end)
-
-local pop_multiplier_id = nil
-menu.toggle(Session, "Agressive Clear Traffic", {}, "", function(on)
-    if on then
-        local ped_sphere, traffic_sphere
-        local ped_sphere = 0.0
-        local traffic_sphere = 0.0
-        pop_multiplier_id = MISC.ADD_POP_MULTIPLIER_SPHERE(1.1, 1.1, 1.1, 15000.0, ped_sphere, traffic_sphere, false, true)
-        MISC.CLEAR_AREA(1.1, 1.1, 1.1, 19999.9, true, false, false, true)
-    else
-        MISC.REMOVE_POP_MULTIPLIER_SPHERE(pop_multiplier_id, false);
     end
 end)
 
