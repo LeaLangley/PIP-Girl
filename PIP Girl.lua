@@ -8,7 +8,7 @@ __________._____________    ________.__       .__
 
 local SCRIPT_VERSION = "0.1.84"
 
-local startupmsg = "If settings are missing PLS restart lua.\nAuto CEO color is very experimental!\nI love u."
+local startupmsg = "If settings are missing PLS restart lua.\nI love u."
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -858,49 +858,48 @@ menu.toggle_loop(PIP_Girl, "Nightclub Party Never Stops!", {'ncpop'}, "The hotte
 end)
 
 menu.divider(PIP_Girl, "CEO/MC Options")
-local ceo_color = -1
-local ceo_color_slot_found = nil
-local first_ceo_color_check = true
-local function check_CEO_Color(ceo_color)
-    if IsInSession() then
-        local user_org_color = players.get_org_colour(players.user())
-        if user_org_color ~= ceo_color then
-            if first_ceo_color_check then
-                local current = menu.get_current_menu_list()
-                menu.trigger_commands("ceocolours")
-                util.yield(111)
-                menu.focus(current)
-                first_ceo_color_check = false
-            end
-            if ceo_color_slot_found then
-                menu.trigger_commands("ceocolour" .. ceo_color_slot_found .. " " .. ceo_color)
-                util.yield(666)
-            end
-            local ceo_color_slot = ceo_color_slot_found or 0
-            local fallback_color = 14
-            if players.get_org_colour(players.user()) != ceo_color then
-                while ceo_color_slot <= 9 do
-                    menu.trigger_commands("ceocolour" .. ceo_color_slot .. " " .. ceo_color)
-                    util.yield(666)
-                    if players.get_org_colour(players.user()) == ceo_color then
-                        ceo_color_slot_found = ceo_color_slot
-                        break
-                    else
-                        menu.trigger_commands("ceocolour" .. ceo_color_slot .. " " .. fallback_color)
-                        ceo_color_slot = ceo_color_slot + 1
-                        fallback_color = fallback_color - 1
-                    end
-                end
-            end
-            if players.get_org_colour(players.user()) != ceo_color and not first_ceo_color_check then
-                ceo_color_slot_found = true
-            end
-        end
-    else
-        ceo_color_slot_found = true
-    end
-end
-
+--local ceo_color = -1
+--local ceo_color_slot_found = nil
+--local first_ceo_color_check = true
+--local function check_CEO_Color(ceo_color)
+--    if IsInSession() then
+--        local user_org_color = players.get_org_colour(players.user())
+--        if user_org_color ~= ceo_color then
+--            if first_ceo_color_check then
+--                local current = menu.get_current_menu_list()
+--                menu.trigger_commands("ceocolours")
+--                util.yield(111)
+--                menu.focus(current)
+--                first_ceo_color_check = false
+--            end
+--            if ceo_color_slot_found then
+--                menu.trigger_commands("ceocolour" .. ceo_color_slot_found .. " " .. ceo_color)
+--                util.yield(666)
+--            end
+--            local ceo_color_slot = ceo_color_slot_found or 0
+--            local fallback_color = 14
+--            if players.get_org_colour(players.user()) != ceo_color then
+--                while ceo_color_slot <= 9 do
+--                    menu.trigger_commands("ceocolour" .. ceo_color_slot .. " " .. ceo_color)
+--                    util.yield(666)
+--                    if players.get_org_colour(players.user()) == ceo_color then
+--                        ceo_color_slot_found = ceo_color_slot
+--                        break
+--                    else
+--                        menu.trigger_commands("ceocolour" .. ceo_color_slot .. " " .. fallback_color)
+--                        ceo_color_slot = ceo_color_slot + 1
+--                        fallback_color = fallback_color - 1
+--                    end
+--                end
+--            end
+--            if players.get_org_colour(players.user()) != ceo_color and not first_ceo_color_check then
+--                ceo_color_slot_found = true
+--            end
+--        end
+--    else
+--        ceo_color_slot_found = true
+--    end
+--end
 
 local urceoname = ""
 local function on_change(input_str, click_type)
@@ -946,9 +945,9 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yo
                     if urceoname ~= "" then
                         menu.trigger_commands("ceoname " .. urceoname)
                     end
-                    if ceo_color ~= -1 then
-                        check_CEO_Color(ceo_color)
-                    end
+                    --if ceo_color ~= -1 then
+                    --    check_CEO_Color(ceo_color)
+                    --end
                     util.yield(213666)
                 else
                     notify("We could not turn you into CEO :c\nWe will wait 3 minutes and try again.")
@@ -994,9 +993,9 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yo
                         if urceoname != "" then
                             menu.trigger_commands("ceoname " .. urceoname)
                         end
-                        if ceo_color ~= -1 then
-                            check_CEO_Color(ceo_color)
-                        end
+                        --if ceo_color ~= -1 then
+                        --    check_CEO_Color(ceo_color)
+                        --end
                         notify("Turned you into CEO!")
                         util.yield(666)
                     end
@@ -1016,9 +1015,9 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yo
                         if urceoname != "" then
                             menu.trigger_commands("ceoname " .. urceoname)
                         end
-                        if ceo_color ~= -1 then
-                            check_CEO_Color(ceo_color)
-                        end
+                        --if ceo_color ~= -1 then
+                        --    check_CEO_Color(ceo_color)
+                        --end
                         notify("Turned you into MC President!")
                         util.yield(666)
                     end
@@ -1033,18 +1032,18 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yo
     end
 end)
 
-menu.slider(PIP_Girl, 'Auto CEO/MC Color', {'favceocolor'}, "Enter the Color ID of your CEO.", -1, 14, ceo_color, 1, function (new_value)
-    ceo_color = new_value
-end)
-
-menu.toggle_loop(PIP_Girl, "Additional CEO/MC Color Checks.", {""}, "If u use \"Auto Become a CEO/MC\" it will check for u color on register.\nIf u dont use \"Auto Become a CEO/MC\" u can use Additinal Checks.", function(on)
-    if IsInSession() and players.get_boss(players.user()) ~= -1 and players.user() == players.get_script_host() then
-        if ceo_color ~= -1 then
-            check_CEO_Color(ceo_color)
-        end
-    end
-    util.yield(13666)
-end)
+--menu.slider(PIP_Girl, 'Auto CEO/MC Color', {'favceocolor'}, "Enter the Color ID of your CEO.", -1, 14, ceo_color, 1, function (new_value)
+--    ceo_color = new_value
+--end)
+--
+--menu.toggle_loop(PIP_Girl, "Additional CEO/MC Color Checks.", {""}, "If u use \"Auto Become a CEO/MC\" it will check for u color on register.\nIf u dont use \"Auto Become a CEO/MC\" u can use Additinal Checks.", function(on)
+--    if IsInSession() and players.get_boss(players.user()) ~= -1 and players.user() == players.get_script_host() then
+--        if ceo_color ~= -1 then
+--            check_CEO_Color(ceo_color)
+--        end
+--    end
+--    util.yield(13666)
+--end)
 
 menu.toggle(PIP_Girl, "Auto Join Friends CEO (!)", {""}, "(also MC) Uses \"Auto Become a CEO/MC\"", function(on)
     if on then
