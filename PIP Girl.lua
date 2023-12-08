@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.84"
+local SCRIPT_VERSION = "0.1.85"
 
 local startupmsg = "If settings are missing PLS restart lua.\nI love u."
 
@@ -1928,13 +1928,20 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     end
 
     for _, vehicle in ipairs(nearbyVehicles) do
+        local model = ENTITY.GET_ENTITY_MODEL(vehicle)
+        if not VEHICLE.IS_THIS_MODEL_A_CAR(model) then
+            return
+        end
         if ENTITY.GET_ENTITY_HEALTH(vehicle) == 0 then
             return
         end
-        if not ENTITY.DOES_ENTITY_EXIST(vehicle) then
+        if ENTITY.IS_ENTITY_ATTACHED_TO_ANY_VEHICLE(vehicle) then
             return
         end
         if VEHICLE.GET_VEHICLE_DOORS_LOCKED_FOR_PLAYER(vehicle, players.user()) then
+            return
+        end
+        if not ENTITY.DOES_ENTITY_EXIST(vehicle) then
             return
         end
         local vehiclePosition = ENTITY.GET_ENTITY_COORDS(vehicle, true)
