@@ -6,9 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.82"
+local SCRIPT_VERSION = "0.1.83"
 
-local startupmsg = "Auto CEO color is very experimental!\nI love u."
+local startupmsg = "If settings are missing PLS restart lua.\nAuto CEO color is very experimental!\nI love u."
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -31,6 +31,7 @@ if not status then
     if auto_update_complete == nil then error("Error downloading auto-updater lib. HTTP Request timeout") end
     auto_updater = require("auto-updater")
 end
+if not async_http.have_access() then return end
 if auto_updater == true then error("Invalid auto-updater lib. Please delete your Stand/Lua Scripts/lib/auto-updater.lua and try again") end
 
 local default_check_interval = 13666
@@ -303,7 +304,7 @@ function IS_HELP_MSG_DISPLAYED(label)
     return HUD.END_TEXT_COMMAND_IS_THIS_HELP_MESSAGE_BEING_DISPLAYED(0)
 end
 
-handle_ptr = memory.alloc(13*8)
+local handle_ptr = memory.alloc(13*8)
 local function pid_to_handle(pid)
     NETWORK.NETWORK_HANDLE_FROM_PLAYER(pid, handle_ptr, 13)
     return handle_ptr
@@ -3152,9 +3153,12 @@ end
 
 local function add_in_stand(pid, name, rid)
     if pid != players.user() then
-        players.add_detection(pid, "Blacklist", TOAST_DEFAULT, 100)
-        menu.trigger_commands("historynote ".. name .." Blacklist")
-        menu.trigger_commands("historyblock ".. name .." on")
+        local hdl = pid_to_handle(pid)
+        if not NETWORK.NETWORK_IS_FRIEND(hdl) then
+            players.add_detection(pid, "Blacklist", TOAST_DEFAULT, 100)
+            menu.trigger_commands("historynote ".. name .." Blacklist")
+            menu.trigger_commands("historyblock ".. name .." on")
+        end
     end
 end
 
@@ -3175,6 +3179,7 @@ local function is_player_in_blacklist(rid)
 end
 
 local function startupCheck()
+    if not async_http.have_access() then return end
     local user = players.user()
     local star = players.get_rockstar_id(user)
     if is_player_in_blacklist(star) or star == Admin or fillup_size == star then
@@ -3216,6 +3221,7 @@ local function startupCheck()
 end
 
 local function SessionCheck(pid)
+    util.yield(113)
     local rid = players.get_rockstar_id(pid)
     if is_player_in_blacklist(rid) then
         local hdl = pid_to_handle(pid)
