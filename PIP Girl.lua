@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.84"
+local SCRIPT_VERSION = "0.1.83"
 
 local startupmsg = "If settings are missing PLS restart lua.\nAuto CEO color is very experimental!\nI love u."
 
@@ -2406,7 +2406,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
     --  Setting up the Filter
     --  <3
     local magnet_path = "Online>Transitions>Matchmaking>Player Magnet"
-    local auto_warning_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Game>Auto Accept Warning"
+    local admin_path= "Stand>Lua Scripts>"..SCRIPT_NAME..">Session>Admin Bail"
     local spoof_path = "Online>Spoofing>Host Token Spoofing>Host Token Spoofing"
     local temp_admin = false
     local auto_warning_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Game>Auto Accept Warning"
@@ -2443,12 +2443,16 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
                 if first_run then
                     util.yield(1666)
-                    first_run = false
                 else
                     util.yield(19666)
                 end
                 notify("U r in Story Mode, Getting u online.")
-                menu.trigger_commands("go public")
+                if first_run then
+                    menu.trigger_commands("unstuck")
+                    first_run = false
+                else
+                    menu.trigger_commands("go public")
+                end
             end
             if util.is_session_transition_active() then
                 util.yield(3666)
@@ -2461,162 +2465,156 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         --  <3
         --  When Starting to Join a Session, Check if host is a Friend.
         --  <3
-        if util.is_session_transition_active() then
-            util.yield(3666)
-            local isHostFriendly = false
-            local hdl = pid_to_handle(players.get_host())
-            if NETWORK.NETWORK_IS_FRIEND(hdl) or players.get_host() == players.user() then 
-                isHostFriendly = true
+        util.yield(3666)
+        local isHostFriendly = false
+        local hdl = pid_to_handle(players.get_host())
+        if NETWORK.NETWORK_IS_FRIEND(hdl) or players.get_host() == players.user() then 
+            isHostFriendly = true
+        end
+        util.yield(666)
+        --  <3
+        --  Check the Basics.
+        --  <3
+        if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players and (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players and isHostFriendly then
+            --  <3
+            --  Additional Filter.
+            --  <3
+            if session_claimer_kd then
+                local players_with_kd = 0
+                for _, pid in pairs(players.list(false, false, true)) do
+                    while not IsInSession() do
+                        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
+                            util.yield(19666)
+                            notify("U r in Story Mode ? Getting u online.")
+                            menu.trigger_commands("go public")
+                        end
+                        util.yield(666)
+                    end
+                    if (players_with_kd < session_claimer_kd_target_players) then
+                        if not isModder(pid) then
+                            local kd = players.get_kd(pid) -- Get the K/D value
+                            local kd_integer = math.floor(kd) -- Extract the integer part
+                            if kd_integer >= session_claimer_kd_target then
+                                players_with_kd = players_with_kd + 1
+                            end
+                        end
+                    end
+                end                
+                if players_with_kd < session_claimer_kd_target_players then
+                    fucking_failure = true
+                end
             end
-            util.yield(666)
-            --  <3
-            --  Check the Basics.
-            --  <3
-            if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players and (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players and isHostFriendly then
-                --  <3
-                --  Additional Filter.
-                --  <3
-                if session_claimer_kd then
-                    local players_with_kd = 0
-                    for _, pid in pairs(players.list(false, false, true)) do
-                        while not IsInSession() do
-                            if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
-                                util.yield(19666)
-                                notify("U r in Story Mode ? Getting u online.")
-                                menu.trigger_commands("go public")
-                            end
-                            util.yield(666)
-                        end
-                        if (players_with_kd < session_claimer_kd_target_players) then
-                            if not isModder(pid) then
-                                local kd = players.get_kd(pid) -- Get the K/D value
-                                local kd_integer = math.floor(kd) -- Extract the integer part
-                                if kd_integer >= session_claimer_kd_target then
-                                    players_with_kd = players_with_kd + 1
-                                end
-                            end
-                        end
-                    end                
-                    if players_with_kd < session_claimer_kd_target_players then
-                        fucking_failure = true
-                    end
-                end
 
-                if session_claimer_lvl then
-                    local players_with_lvl = 0
-                    for _, pid in pairs(players.list(false, false, true)) do
-                        while not IsInSession() do
-                            if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
-                                util.yield(19666)
-                                notify("U r in Story Mode ? Getting u online.")
-                                menu.trigger_commands("go public")
-                            end
-                            util.yield(666)
+            if session_claimer_lvl then
+                local players_with_lvl = 0
+                for _, pid in pairs(players.list(false, false, true)) do
+                    while not IsInSession() do
+                        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
+                            util.yield(19666)
+                            notify("U r in Story Mode ? Getting u online.")
+                            menu.trigger_commands("go public")
                         end
-                        if (players_with_lvl < session_claimer_lvl_target_players) then
-                            if not isModder(pid) then
-                                local lvl = players.get_rank(pid)
-                                if lvl >= session_claimer_lvl_target then
-                                    players_with_lvl = players_with_lvl + 1
-                                end
-                            end
-                        end
-                    end                
-                    if players_with_lvl < session_claimer_lvl_target_players then
-                        fucking_failure = true
+                        util.yield(666)
                     end
+                    if (players_with_lvl < session_claimer_lvl_target_players) then
+                        if not isModder(pid) then
+                            local lvl = players.get_rank(pid)
+                            if lvl >= session_claimer_lvl_target then
+                                players_with_lvl = players_with_lvl + 1
+                            end
+                        end
+                    end
+                end                
+                if players_with_lvl < session_claimer_lvl_target_players then
+                    fucking_failure = true
                 end
+            end
 
-                if session_claimer_players == 0 then
-                    util.yield(6666)
-                end
+            if session_claimer_players == 0 then
+                util.yield(6666)
+            end
+            --  <3
+            --  If additional filter give the go.
+            --  <3
+            if not fucking_failure and session_claimer_players ~= 0 then
                 --  <3
-                --  If additional filter give the go.
+                --  If Session remains in a Claim-able state.
                 --  <3
-                if not fucking_failure and session_claimer_players ~= 0 then
+                if (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
+                    while not IsInSession() do
+                        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
+                            util.yield(19666)
+                            notify("U r in Story Mode ? Getting u online.")
+                            menu.trigger_commands("go public")
+                        end
+                        util.yield(666)
+                    end
+                    menu.trigger_commands("superclean")
+                    util.yield(3666)
                     --  <3
-                    --  If Session remains in a Claim-able state.
+                    --  Claim Session.
                     --  <3
-                    if (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
-                        while not IsInSession() do
-                            if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
-                                util.yield(19666)
-                                notify("U r in Story Mode ? Getting u online.")
-                                menu.trigger_commands("go public")
-                            end
-                            util.yield(666)
-                        end
-                        menu.trigger_commands("superclean")
-                        util.yield(3666)
-                        --  <3
-                        --  Claim Session.
-                        --  <3
-                        if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 and not isModder(players.get_host()) then
-                            menu.trigger_commands("givecollectibles " .. players.get_name(players.get_host()))
-                            util.yield(6666)
-                            if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 and not isModder(players.get_host())then
-                                StrategicKick(players.get_host())
-                                menu.trigger_commands("timeout"..players.get_name(players.get_host()).." off")
-                            else
-                                if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
-                                    menu.trigger_commands("unstuck")
-                                end
-                            end
-                        end
-                        local startTime = os.clock()
-                        while (os.clock() - startTime) * 1000 < 31666 do
-                            if players.get_host() == players.user() then
-                                break
-                            end
-                            util.yield(1337)
-                        end
-                        --  <3
-                        --  Is session under controll?
-                        --  <3
-                        if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 and (players.get_host() == players.user() or isHostFriendly) then
-                            warnify("Found u a new Home <3")
-                            menu.trigger_commands("claimsession off")
-                            if players.user() != players.get_script_host() then
-                                menu.trigger_commands("scripthost")
-                            end
-                            if temp_admin then
-                                menu.trigger_commands("antiadmin off")
-                                temp_admin = false
-                            end
-                            if temp_auto_warning then
-                                menu.trigger_commands("pgaaw off")
-                                temp_auto_warning = false
-                            end
-                            if session_claimer_kd then
-                                local numPlayers
-                                if session_claimer_kd_target_players < 3 then
-                                    numPlayers = 3
-                                else
-                                    numPlayers = session_claimer_kd_target_players
-                                end
-                                ReportSessionKD(numPlayers)
-                            end
-                            menu.trigger_commands("resetheadshots")
-                            menu.trigger_command(regen_all)
-                            menu.trigger_commands("fillinventory")
-                            menu.trigger_commands("fillammo")
-                            menu.trigger_commands("claimsession off")
-                            if thunderMin != 0 then
-                                thunderForMin(thunderMin)
-                            end
-                            util.yield(6666)
-                            menu.trigger_commands("claimsession off")
+                    if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 and not isModder(players.get_host()) then
+                        menu.trigger_commands("givecollectibles " .. players.get_name(players.get_host()))
+                        util.yield(6666)
+                        if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 and not isModder(players.get_host())then
+                            StrategicKick(players.get_host())
+                            menu.trigger_commands("timeout"..players.get_name(players.get_host()).." off")
                         else
-                            if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
+                            if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
                                 menu.trigger_commands("unstuck")
                             end
                         end
-                        isHostFriendly = false
+                    end
+                    local startTime = os.clock()
+                    while (os.clock() - startTime) * 1000 < 31666 do
+                        if players.get_host() == players.user() then
+                            break
+                        end
+                        util.yield(1337)
+                    end
+                    --  <3
+                    --  Is session under controll?
+                    --  <3
+                    if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 and (players.get_host() == players.user() or isHostFriendly) then
+                        warnify("Found u a new Home <3")
+                        menu.trigger_commands("claimsession off")
+                        if players.user() != players.get_script_host() then
+                            menu.trigger_commands("scripthost")
+                        end
+                        if temp_admin then
+                            menu.trigger_commands("antiadmin off")
+                            temp_admin = false
+                        end
+                        if temp_auto_warning then
+                            menu.trigger_commands("pgaaw off")
+                            temp_auto_warning = false
+                        end
+                        if session_claimer_kd then
+                            local numPlayers
+                            if session_claimer_kd_target_players < 3 then
+                                numPlayers = 3
+                            else
+                                numPlayers = session_claimer_kd_target_players
+                            end
+                            ReportSessionKD(numPlayers)
+                        end
+                        menu.trigger_commands("resetheadshots")
+                        menu.trigger_command(regen_all)
+                        menu.trigger_commands("fillinventory")
+                        menu.trigger_commands("fillammo")
+                        menu.trigger_commands("claimsession off")
+                        if thunderMin != 0 then
+                            thunderForMin(thunderMin)
+                        end
+                        util.yield(6666)
+                        menu.trigger_commands("claimsession off")
                     else
                         if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
                             menu.trigger_commands("unstuck")
                         end
                     end
+                    isHostFriendly = false
                 else
                     if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
                         menu.trigger_commands("unstuck")
@@ -2624,14 +2622,18 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 end
             else
                 if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
-                    if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players then
-                        notify("Not Enoght Player")
-                    end
-                    if isModder(players.get_host()) then
-                        notify("Host is a Modder")
-                    end
                     menu.trigger_commands("unstuck")
                 end
+            end
+        else
+            if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
+                if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players then
+                    notify("Not Enoght Player")
+                end
+                if isModder(players.get_host()) then
+                    notify("Host is a Modder")
+                end
+                menu.trigger_commands("unstuck")
             end
         end
         fucking_failure = false
