@@ -2925,19 +2925,20 @@ menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost
         local Player_List = players.list()
         for _, pid in pairs(Player_List) do
             local hdl = pid_to_handle(pid)
-            local playerName = players.get_name(pid)
-            if wannabeGod(pid) and not NETWORK.NETWORK_IS_FRIEND(hdl) and not StandUser(pid) then
-                local found = false
-                for _, plid in ipairs(wannabeGOD) do
-                    if plid == pid then
-                        found = true
-                        break
+            if not NETWORK.NETWORK_IS_FRIEND(hdl) then
+                if wannabeGod(pid) and not StandUser(pid) then
+                    local found = false
+                    for _, plid in ipairs(wannabeGOD) do
+                        if plid == pid then
+                            found = true
+                            break
+                        end
                     end
-                end
-                if not found then
-                    table.insert(wannabeGOD, pid)
-                    NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
-                    players.add_detection(pid, "Ghosted to you. By PIP Girl.", TOAST_DEFAULT, 0)
+                    if not found then
+                        table.insert(wannabeGOD, pid)
+                        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+                        players.add_detection(pid, "Ghosted to you. By PIP Girl.", TOAST_DEFAULT, 0)
+                    end
                 end
             end
         end
@@ -2950,7 +2951,6 @@ end, function()
         if player_Exist(pid) then
             local playerName = players.get_name(pid)
             NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
-            menu.trigger_commands("ignore "..playerName.." off")
         end
         table.remove(wannabeGOD, index)
     end
@@ -3009,6 +3009,18 @@ menu.toggle_loop(Session, "Kick Aggressive Host Token as Host", {""}, "", functi
         util.yield(3666)
     else
         util.yield(13666)
+    end
+end)
+
+menu.action(Session, "de-Ghost entire Session", {""}, "", function()
+    if IsInSession() then
+        local Player_List = players.list()
+        for _, pid in pairs(Player_List) do
+            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+        end
+        for _, pid in pairs(wannabeGOD) do
+            table.remove(wannabeGOD, index)
+        end
     end
 end)
 
