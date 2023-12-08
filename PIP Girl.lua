@@ -2821,37 +2821,37 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic a
         else
             util.yield(1420)
         end
-        if not MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(ClearTraficSphere) then
-            ClearTraficSphere = MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19999.9, 0.0, 0.0, false, true)
-        end
+        --if not MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(ClearTraficSphere) then
+        --    ClearTraficSphere = MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19999.9, 0.0, 0.0, false, true)
+        --end
         local pos = players.get_position(players.user())
         MISC.CLEAR_AREA_OF_PEDS(pos.x, pos.y, pos.z, 13666, 0)
         util.yield(666)
         MISC.CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, 13666, false, false, false, false, false, false)
-    else
-        if ClearTraficSphere then
-            MISC.REMOVE_POP_MULTIPLIER_SPHERE(ClearTraficSphere, true)
-            ClearTraficSphere = false
-            local cmd_path = "Online>Protections>Delete Modded Pop Multiplier Areas"
-            if menu.get_state(menu.ref_by_path(cmd_path)) == "Off" then
-                menu.trigger_commands("nomodpop on")
-                util.yield(6666)
-                menu.trigger_commands("nomodpop off")
-            end
-            util.yield(13666)
-        else
-            util.yield(666)
-        end
+    --else
+    --    if ClearTraficSphere then
+    --        MISC.REMOVE_POP_MULTIPLIER_SPHERE(ClearTraficSphere, true)
+    --        ClearTraficSphere = false
+    --        local cmd_path = "Online>Protections>Delete Modded Pop Multiplier Areas"
+    --        if menu.get_state(menu.ref_by_path(cmd_path)) == "Off" then
+    --            menu.trigger_commands("nomodpop on")
+    --            util.yield(6666)
+    --            menu.trigger_commands("nomodpop off")
+    --        end
+    --        util.yield(13666)
+    --    else
+    --        util.yield(666)
+    --    end
     end
 end, function()
-    MISC.REMOVE_POP_MULTIPLIER_SPHERE(ClearTraficSphere, true)
+    --MISC.REMOVE_POP_MULTIPLIER_SPHERE(ClearTraficSphere, true)
     ClearTraficSphere = nil
-    local cmd_path = "Online>Protections>Delete Modded Pop Multiplier Areas"
-    if menu.get_state(menu.ref_by_path(cmd_path)) == "Off" then
-        menu.trigger_commands("nomodpop on")
-        util.yield(6666)
-        menu.trigger_commands("nomodpop off")
-    end
+    --local cmd_path = "Online>Protections>Delete Modded Pop Multiplier Areas"
+    --if menu.get_state(menu.ref_by_path(cmd_path)) == "Off" then
+    --    menu.trigger_commands("nomodpop on")
+    --    util.yield(6666)
+    --    menu.trigger_commands("nomodpop off")
+    --end
 end)
 
 menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
