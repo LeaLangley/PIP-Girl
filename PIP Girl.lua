@@ -464,7 +464,7 @@ end
 
 local function StrategicKick(pid)
     local name = players.get_name(pid)
-    if player_Exist(pid) then
+    if player_Exist(pid) and not pid == players.user() then
         if not IsInSession() then
             Wait_for_IsInSession()
         else
@@ -2927,32 +2927,6 @@ end)
 
 local wannabeGOD = {}
 
-menu.toggle_loop(Session, "Ghost entire Session", {"imaghost"}, "Ghost everyone , like a passive mode but better.", function()
-    if IsInSession() then
-        local Player_List = players.list()
-        for _, pid in pairs(Player_List) do
-            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
-        end
-        util.yield(6666)
-    else
-        util.yield(13666)
-    end
-end, function()
-    local Player_List = players.list()
-    for _, pid in pairs(Player_List) do
-        local found = false
-        for _, plid in ipairs(wannabeGOD) do
-            if plid == pid then
-                found = true
-                break
-            end
-            if not found then
-                NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
-            end
-        end
-    end
-end)
-
 menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost everyone who triggers \"Attacking While Invulnerable\" except Friends or Stand user.", function()
     if IsInSession() then
         local Player_List = players.list()
@@ -2986,6 +2960,32 @@ end, function()
             menu.trigger_commands("ignore "..playerName.." off")
         end
         table.remove(wannabeGOD, index)
+    end
+end)
+
+menu.toggle_loop(Session, "Ghost entire Session", {"imaghost"}, "Ghost everyone , like a passive mode but better.", function()
+    if IsInSession() then
+        local Player_List = players.list()
+        for _, pid in pairs(Player_List) do
+            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+        end
+        util.yield(6666)
+    else
+        util.yield(13666)
+    end
+end, function()
+    local Player_List = players.list()
+    for _, pid in pairs(Player_List) do
+        local found = false
+        for _, plid in ipairs(wannabeGOD) do
+            if plid == pid then
+                found = true
+                break
+            end
+            if not found then
+                NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+            end
+        end
     end
 end)
 
@@ -3151,9 +3151,11 @@ local function add_player_to_blacklist(rid)
 end
 
 local function add_in_stand(pid, name, rid)
-    players.add_detection(pid, "Blacklist", TOAST_DEFAULT, 100)
-    menu.trigger_commands("historynote ".. name .." Blacklist")
-    menu.trigger_commands("historyblock ".. name .." on")
+    if pid != players.user() then
+        players.add_detection(pid, "Blacklist", TOAST_DEFAULT, 100)
+        menu.trigger_commands("historynote ".. name .." Blacklist")
+        menu.trigger_commands("historyblock ".. name .." on")
+    end
 end
 
 local function is_player_in_blacklist(rid)
@@ -3235,7 +3237,8 @@ players.on_join(SessionCheck)
 
 player_menu = function(pid)
     if player_Exist(pid) then
-        if not players.exists(players.user()) then
+        local hdl = pid_to_handle(pid)
+        if not players.exists(players.user()) or pid == players.user() or NETWORK.NETWORK_IS_FRIEND(hdl) then
             return
         end
         local name = players.get_name(pid)
