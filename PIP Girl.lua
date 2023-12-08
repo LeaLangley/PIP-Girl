@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.85"
+local SCRIPT_VERSION = "0.1.86"
 
 local startupmsg = "If settings are missing PLS restart lua.\nI love u."
 
@@ -1928,21 +1928,14 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     end
 
     for _, vehicle in ipairs(nearbyVehicles) do
-        local model = ENTITY.GET_ENTITY_MODEL(vehicle)
-        if not VEHICLE.IS_THIS_MODEL_A_CAR(model) then
-            return
-        end
         if ENTITY.GET_ENTITY_HEALTH(vehicle) == 0 then
-            return
+            goto continue_loop
         end
         if ENTITY.IS_ENTITY_ATTACHED_TO_ANY_VEHICLE(vehicle) then
-            return
-        end
-        if VEHICLE.GET_VEHICLE_DOORS_LOCKED_FOR_PLAYER(vehicle, players.user()) then
-            return
+            goto continue_loop
         end
         if not ENTITY.DOES_ENTITY_EXIST(vehicle) then
-            return
+            goto continue_loop
         end
         local vehiclePosition = ENTITY.GET_ENTITY_COORDS(vehicle, true)
         local distance = SYSTEM.VDIST(playerPosition.x, playerPosition.y, playerPosition.z, vehiclePosition.x, vehiclePosition.y, vehiclePosition.z)
@@ -1952,8 +1945,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
             local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
             requestControl(vehicle, 3)
             if driver == 0 or driver == players.user() then
-                --PED.SET_PED_INTO_VEHICLE(my_ped, vehicle, -1)
-                PED.SET_PED_INTO_VEHICLE(my_ped, vehicle, -2)
+                PED.SET_PED_INTO_VEHICLE(my_ped, vehicle, -1)
                 -- Full fix
                 fullfixed = fullfixed + 1
             else
@@ -1968,6 +1960,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
             last_vehicle = vehicle
             util.yield(666)
         end
+        ::continue_loop::
     end
     util.yield(13)
     TASK.TASK_LEAVE_VEHICLE(my_ped, last_vehicle, 16)
