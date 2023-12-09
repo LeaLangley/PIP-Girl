@@ -1958,7 +1958,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
             util.yield(213)
             TASK.TASK_LEAVE_VEHICLE(my_ped, vehicle, 16)
             last_vehicle = vehicle
-            util.yield(666)
+            util.yield(213)
         end
         ::continue_loop::
     end
