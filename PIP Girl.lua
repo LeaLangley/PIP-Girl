@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.86"
+local SCRIPT_VERSION = "0.1.87"
 
 local startupmsg = "If settings are missing PLS restart lua.\nI love u."
 
@@ -3239,7 +3239,7 @@ local function startupCheck()
 end
 
 local function SessionCheck(pid)
-    util.yield(113)
+    util.yield(6666)
     local rid = players.get_rockstar_id(pid)
     if is_player_in_blacklist(rid) then
         local hdl = pid_to_handle(pid)
