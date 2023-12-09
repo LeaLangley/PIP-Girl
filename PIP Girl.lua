@@ -2827,14 +2827,24 @@ menu.divider(Session, "<3")
 
 local pop_multiplier_id = nil
 menu.toggle_loop(Session, "Clear Traffic", {}, "", function(on)
-    if not pop_multiplier_id then
-        pop_multiplier_id = MISC.ADD_POP_MULTIPLIER_SPHERE(1.1, 1.1, 1.1, 15000.0, 0.0, 0.0, false, true)
-        MISC.CLEAR_AREA(1.1, 1.1, 1.1, 19999.9, true, false, false, true)
+    if IsInSession() then
+        if not pop_multiplier_id then
+            pop_multiplier_id = MISC.ADD_POP_MULTIPLIER_SPHERE(1.1, 1.1, 1.1, 15000.0, 0.0, 0.0, false, true)
+            MISC.CLEAR_AREA(1.1, 1.1, 1.1, 19999.9, true, false, false, true)
+        else
+            util.yield(6666)
+        end
     else
-        util.yield(6666)
+        if pop_multiplier_id then
+            MISC.REMOVE_POP_MULTIPLIER_SPHERE(pop_multiplier_id, false)
+            pop_multiplier_id = nil
+        else
+            util.yield(6666)
+        end
     end
 end, function()
-    MISC.REMOVE_POP_MULTIPLIER_SPHERE(pop_multiplier_id, false);
+    MISC.REMOVE_POP_MULTIPLIER_SPHERE(pop_multiplier_id, false)
+    pop_multiplier_id = nil
 end)
 
 menu.toggle_loop(Session, "Soft Clear Traffic", {"antitrafic"}, "Clears the traffic around you.", function()
