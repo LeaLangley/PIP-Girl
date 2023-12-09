@@ -1972,7 +1972,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
         message = message .. "Fully Fixed: " .. fullfixed .. " | "
     end
     if couldbefixed > 0 then
-        message = message .. "Possibly Fixed: " .. couldbefixed .. " | "
+        message = message .. "Might Not Fixed: " .. couldbefixed .. " | "
     end
     if indistance > 0 then
         message = message .. "Out of " .. indistance .. " Vehicles in 100m Distance."
