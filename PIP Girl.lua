@@ -2826,16 +2826,15 @@ end)
 menu.divider(Session, "<3")
 
 local pop_multiplier_id = nil
-menu.toggle(Session, "Clear Traffic", {}, "", function(on)
-    if on then
-        local ped_sphere, traffic_sphere
-        local ped_sphere = 0.0
-        local traffic_sphere = 0.0
-        pop_multiplier_id = MISC.ADD_POP_MULTIPLIER_SPHERE(1.1, 1.1, 1.1, 15000.0, ped_sphere, traffic_sphere, false, true)
+menu.toggle_loop(Session, "Clear Traffic", {}, "", function(on)
+    if not pop_multiplier_id then
+        pop_multiplier_id = MISC.ADD_POP_MULTIPLIER_SPHERE(1.1, 1.1, 1.1, 15000.0, 0.0, 0.0, false, true)
         MISC.CLEAR_AREA(1.1, 1.1, 1.1, 19999.9, true, false, false, true)
     else
-        MISC.REMOVE_POP_MULTIPLIER_SPHERE(pop_multiplier_id, false);
+        util.yield(6666)
     end
+end, function()
+    MISC.REMOVE_POP_MULTIPLIER_SPHERE(pop_multiplier_id, false);
 end)
 
 menu.toggle_loop(Session, "Soft Clear Traffic", {"antitrafic"}, "Clears the traffic around you.", function()
