@@ -1920,11 +1920,18 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     local indistance = 0
     local last_vehicle = nil
     local auto_light_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Vehicle>Set vehicle light color automatically"
+    local lea_tech_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Vehicle>Set vehicle light color automatically"
     local temp_auto_light = false
+    local temp_lea_tech = false
     
     if menu.get_state(menu.ref_by_path(auto_light_path)) == "On" then
-        menu.trigger_commands("autocarlights of")
+        menu.trigger_commands("autocarlights off")
         temp_auto_light = true
+    end
+
+    if menu.get_state(menu.ref_by_path(lea_tech_path)) == "On" then
+        menu.trigger_commands("leatech off")
+        temp_lea_tech = true
     end
 
     for _, vehicle in ipairs(nearbyVehicles) do
@@ -1982,6 +1989,9 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     end
     if temp_auto_light then
         menu.trigger_commands("autocarlights on")
+    end
+    if temp_lea_tech then
+        menu.trigger_commands("leatech on")
     end
 end)
 
