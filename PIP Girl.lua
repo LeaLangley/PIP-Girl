@@ -1943,7 +1943,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
         if distance <= 100.0 then
             indistance = indistance + 1
             local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
-            requestControl(vehicle, 3)
+            requestControl(vehicle, 1)
             if driver == 0 or driver == players.user() then
                 PED.SET_PED_INTO_VEHICLE(my_ped, vehicle, -1)
                 -- Full fix
@@ -1953,9 +1953,9 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
                 -- Possible fix
                 couldbefixed = couldbefixed + 1
             end
-            util.yield(111)
+            util.yield(213)
             menu.trigger_commands("fixvehicle")
-            util.yield(111)
+            util.yield(213)
             TASK.TASK_LEAVE_VEHICLE(my_ped, vehicle, 16)
             last_vehicle = vehicle
             util.yield(666)
