@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.87"
+local SCRIPT_VERSION = "0.1.88"
 
 local startupmsg = "If settings are missing PLS restart lua.\nI love u."
 
@@ -363,6 +363,19 @@ local function isLoading(pid)
     return false
 end
 
+local function isFriend(pid)
+    local hdl = pid_to_handle(pid)
+    if NETWORK.NETWORK_IS_FRIEND(hdl) then
+        return true
+    end
+    for players.list(false, true, false) as plid do
+        if plid == pid then
+            return true
+        end
+    end
+    return false
+end
+
 local function requestModel(hash, timeout)
     if not STREAMING.HAS_MODEL_LOADED(hash) then
         STREAMING.REQUEST_MODEL(hash)
@@ -407,8 +420,7 @@ local function SpawnCheck(entity, hash, locationV3, heading, timeout)
         ENTITY.FREEZE_ENTITY_POSITION(entity, true)
         local PlayerList = players.list()
         for _, pid in pairs(PlayerList) do
-            local hdl = pid_to_handle(pid)
-            if pid == players.user() or NETWORK.NETWORK_IS_FRIEND(hdl) then
+            if pid == players.user() or isFriend(pid) then
                 ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED(pid), false)
                 ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(PLAYER.GET_PLAYER_PED(pid), entity, false)
             else
@@ -420,8 +432,7 @@ local function SpawnCheck(entity, hash, locationV3, heading, timeout)
         requestControl(entity, 13)
         local PlayerList = players.list()
         for _, pid in pairs(PlayerList) do
-            local hdl = pid_to_handle(pid)
-            if pid == players.user() or NETWORK.NETWORK_IS_FRIEND(hdl) then
+            if pid == players.user() or isFriend(pid) then
                 ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED(pid), false)
                 ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(PLAYER.GET_PLAYER_PED(pid), entity, false)
                 util.yield(666)
@@ -928,8 +939,7 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yo
         if ceoInSession < 10 then
             if joinfriendsceo and players.get_boss(players.user()) == -1 then
                 for _, pid in players.list(true, true, true) do 
-                    local hdl = pid_to_handle(pid)
-                    if NETWORK.NETWORK_IS_FRIEND(hdl) then
+                    if isFriend(pid) then
                         if players.get_boss(pid) ~= -1 and players.get_boss(players.user()) == -1 then
                             menu.trigger_commands("ceojoin " .. players.get_name(pid))
                             util.yield(213666)
@@ -1054,7 +1064,6 @@ menu.toggle(PIP_Girl, "Auto Join Friends CEO (!)", {""}, "(also MC) Uses \"Auto 
 end)
 
 local function inviteToCEO(pid)
-    local hdl = pid_to_handle(pid)
     if players.get_boss(players.user()) ~= -1 then
         util.trigger_script_event(1 << pid, {
             -245642440,
@@ -1074,22 +1083,19 @@ end
 menu.action(PIP_Girl, "Invite All Friends in CEO/MC", {"invceo"}, "Invites all your friends into your CEO/MC.", function()
     if IsInSession() then
         for _, pid in players.list(true, true, true) do
-            local hdl = pid_to_handle(pid)
-            if NETWORK.NETWORK_IS_FRIEND(hdl) and players.get_boss(pid) == -1 then
+            if isFriend(pid) and players.get_boss(pid) == -1 then
                 inviteToCEO(pid)
             end
         end
         util.yield(3666)
         for _, pid in players.list(true, true, true) do
-            local hdl = pid_to_handle(pid)
-            if NETWORK.NETWORK_IS_FRIEND(hdl) and players.get_boss(pid) == -1 then
+            if isFriend(pid) and players.get_boss(pid) == -1 then
                 inviteToCEO(pid)
             end
         end
         util.yield(3666)
         for _, pid in players.list(true, true, true) do
-            local hdl = pid_to_handle(pid)
-            if NETWORK.NETWORK_IS_FRIEND(hdl) and players.get_boss(pid) == -1 then
+            if isFriend(pid) and players.get_boss(pid) == -1 then
                 inviteToCEO(pid)
             end
         end
@@ -2497,8 +2503,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         --  <3
         util.yield(3666)
         local isHostFriendly = false
-        local hdl = pid_to_handle(players.get_host())
-        if NETWORK.NETWORK_IS_FRIEND(hdl) or players.get_host() == players.user() then 
+        if isFriend(pid) or players.get_host() == players.user() then 
             isHostFriendly = true
         end
         util.yield(666)
@@ -2735,9 +2740,8 @@ end)
 local mk2noob = {}
 menu.toggle_loop(SessionWorld, "Spinning MK2s", {""}, "Spin all MK2's, except Modder and Friend's", function()
     for _, pid in pairs(players.list(false, true, true)) do 
-        local hdl = pid_to_handle(pid)
         local playerName = players.get_name(pid)
-        if players.get_vehicle_model(pid) == 2069146067 and not NETWORK.NETWORK_IS_FRIEND(hdl) then
+        if players.get_vehicle_model(pid) == 2069146067 and not isFriend(pid) then
             if not players.is_marked_as_modder(pid) then 
                 local found = false
                 for _, plid in ipairs(mk2noob) do
@@ -2959,8 +2963,7 @@ menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost
     if IsInSession() then
         local Player_List = players.list()
         for _, pid in pairs(Player_List) do
-            local hdl = pid_to_handle(pid)
-            if not NETWORK.NETWORK_IS_FRIEND(hdl) then
+            if not isFriend(pid) then
                 if wannabeGod(pid) and not StandUser(pid) then
                     local found = false
                     for _, plid in ipairs(wannabeGOD) do
@@ -3021,8 +3024,7 @@ menu.toggle_loop(Session, "Kick Aggressive Host Token on Attack", {""}, "", func
     if IsInSession() then
         local Player_List = players.list()
         for _, pid in pairs(Player_List) do
-            local hdl = pid_to_handle(pid)
-            if aggressive(pid) and not NETWORK.NETWORK_IS_FRIEND(hdl) and players.is_marked_as_attacker(pid) then
+            if aggressive(pid) and not isFriend(pid) and players.is_marked_as_attacker(pid) then
                 StrategicKick(pid)
             end
         end
@@ -3036,8 +3038,7 @@ menu.toggle_loop(Session, "Kick Aggressive Host Token as Host", {""}, "", functi
     if IsInSession() and players.user() == players.get_host() then
         local Player_List = players.list()
         for _, pid in pairs(Player_List) do
-            local hdl = pid_to_handle(pid)
-            if aggressive(pid) and not NETWORK.NETWORK_IS_FRIEND(hdl) then
+            if aggressive(pid) and not isFriend(pid) then
                 StrategicKick(pid)
             end
         end
@@ -3192,8 +3193,7 @@ end
 
 local function add_in_stand(pid, name, rid)
     if pid != players.user() then
-        local hdl = pid_to_handle(pid)
-        if not NETWORK.NETWORK_IS_FRIEND(hdl) then
+        if not isFriend(pid) then
             players.add_detection(pid, "Blacklist", TOAST_DEFAULT, 100)
             menu.trigger_commands("historynote ".. name .." Blacklist")
             menu.trigger_commands("historyblock ".. name .." on")
@@ -3260,11 +3260,10 @@ local function startupCheck()
 end
 
 local function SessionCheck(pid)
-    util.yield(6666)
+    util.yield(666)
     local rid = players.get_rockstar_id(pid)
     if is_player_in_blacklist(rid) then
-        local hdl = pid_to_handle(pid)
-        if not NETWORK.NETWORK_IS_FRIEND(hdl) then
+        if not isFriend(pid) then
             local name = players.get_name(pid)
             notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
             add_in_stand(pid, name, rid)
@@ -3282,8 +3281,7 @@ players.on_join(SessionCheck)
 
 player_menu = function(pid)
     if player_Exist(pid) then
-        local hdl = pid_to_handle(pid)
-        if not players.exists(players.user()) or pid == players.user() or NETWORK.NETWORK_IS_FRIEND(hdl) then
+        if not players.exists(players.user()) or pid == players.user() or isFriend(pid) then
             return
         end
         local name = players.get_name(pid)
