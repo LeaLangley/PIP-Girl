@@ -1335,6 +1335,7 @@ end
 local saved_vehicle_id = nil
 local isInVehicle = false
 local closedDoors = false
+local repairing = false
 menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle", function()
     local cmd_path = "Vehicle>Light Signals>Use Brake Lights When Stopped"
     if IsInSession() then
@@ -1361,6 +1362,7 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
                 local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle)
                 local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
                 local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
+                repairing = false
 
                 requestControl(vehicle, 0)
 
@@ -1368,33 +1370,41 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
                 if engineHealth < 1000 then
                     local randomValue = math.random(1, 2)
                     VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + randomValue)
+                    repairing = true
                 end
                 if petrolTankHealth < 1000 then
                     local randomValue = math.random(1, 2)
                     VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + randomValue)
+                    repairing = true
                 end
                 if bodyHealth < 1000 then
                     local randomValue = math.random(1, 2)
                     VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + randomValue)
+                    repairing = true
                 end
                 if heliTailHealth < 1000 then
                     local randomValue = math.random(1, 2)
                     VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + randomValue)
+                    repairing = true
                 end
                 if heliRotorHealth < 1000 then
                     local randomValue = math.random(1, 2)
                     VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + randomValue)
+                    repairing = true
                 end
 
                 -- Check if all vehicle parts are fully repaired
                 if petrolTankHealth >= 1000 and engineHealth >= 1000 and bodyHealth >= 1000 then
-                    VEHICLE.SET_VEHICLE_DEFORMATION_FIXED(vehicle)
-                    VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, 1000)
-                    VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, 1000)
-                    VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, 1000)
-                    VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, 1000)
-                    VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, 1000)
-                    menu.trigger_commands("signal off")
+                    if not repairing then
+                        VEHICLE.SET_VEHICLE_DEFORMATION_FIXED(vehicle)
+                        VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, 1000)
+                        VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, 1000)
+                        VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, 1000)
+                        VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, 1000)
+                        VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, 1000)
+                        menu.trigger_commands("signal off")
+                        repairing = false
+                    end
                 else
                     LeaTech()
                 end
