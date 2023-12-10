@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.88"
+local SCRIPT_VERSION = "0.1.89"
 
 local startupmsg = "If settings are missing PLS restart lua.\nI love u."
 
@@ -1960,12 +1960,15 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
         if not ENTITY.DOES_ENTITY_EXIST(vehicle) then
             goto continue_loop
         end
+        local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
+        if not PED.IS_PED_A_PLAYER(driver) and driver != 0 then
+            goto continue_loop
+        end
         local vehiclePosition = ENTITY.GET_ENTITY_COORDS(vehicle, true)
         local distance = SYSTEM.VDIST(playerPosition.x, playerPosition.y, playerPosition.z, vehiclePosition.x, vehiclePosition.y, vehiclePosition.z)
 
         if distance <= 100.0 then
             indistance = indistance + 1
-            local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
             requestControl(vehicle, 0)
             util.yield(213)
             if driver == 0 or driver == players.user() then
