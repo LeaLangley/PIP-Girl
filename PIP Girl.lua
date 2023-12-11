@@ -187,11 +187,19 @@ local function warnify_ses(msg)
 end
 
 local function player_Exist(pid)
-    if players.exists(pid) and players.get_name(pid) ~= "undiscoveredplayer" and players.get_name(pid) ~= "InvalidPlayer" then
-        for players.list() as plid do
-            if plid == pid then
-                return true
-            end
+    if players.exists(pid) then
+        return true
+    end
+    local name = players.get_name(pid)
+    if name != "undiscoveredplayer" then
+        return true
+    end
+    if name != "InvalidPlayer" then
+        return true
+    end
+    for players.list() as plid do
+        if plid == pid then
+            return true
         end
     end
     return false
@@ -474,7 +482,7 @@ local function Wait_for_IsInSession()
 end
 
 local function StrategicKick(pid)
-    if player_Exist(pid) and not pid == players.user() then
+    if player_Exist(pid) and pid != players.user() then
         if not IsInSession() then
             Wait_for_IsInSession()
         else
@@ -3291,7 +3299,7 @@ player_menu = function(pid)
         local rid = players.get_rockstar_id(pid)
         menu.player_root(pid):divider('1 PIP Girl')
         local Bad_Modder = menu.list(menu.player_root(pid), 'Bad Modder?', {""}, '', function() end)
-        menu.action(Bad_Modder, "Add Blacklist & Kick", {'hellk'}, "Blacklist Note, Kick and Block the Target from Joining u again.", function ()
+        menu.action(Bad_Modder, "Add Blacklist & Kick", {'hellbk'}, "Blacklist Note, Kick and Block the Target from Joining u again.", function ()
             add_in_stand(pid, name, rid)
             if not is_player_in_blacklist(rid) then
                 add_player_to_blacklist(rid)
@@ -3314,6 +3322,9 @@ player_menu = function(pid)
             end
             menu.trigger_commands("choke ".. name)
             util.yield(666)
+            StrategicKick(pid)
+        end)
+        menu.action(Bad_Modder, "Kick", {"hellk"}, "", function()
             StrategicKick(pid)
         end)
         menu.action(Bad_Modder, "Add Blacklist Only", {'helln'}, "Blacklist Note and Block the Target from Joining u again.", function ()
