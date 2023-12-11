@@ -188,8 +188,7 @@ end
 
 local function player_Exist(pid)
     if players.exists(pid) and players.get_name(pid) ~= "undiscoveredplayer" and players.get_name(pid) ~= "InvalidPlayer" then
-        local Player_List = players.list()
-        for _, plid in pairs(Player_List) do
+        for players.list() as plid do
             if plid == pid then
                 return true
             end
@@ -475,11 +474,11 @@ local function Wait_for_IsInSession()
 end
 
 local function StrategicKick(pid)
-    local name = players.get_name(pid)
     if player_Exist(pid) and not pid == players.user() then
         if not IsInSession() then
             Wait_for_IsInSession()
         else
+            local name = players.get_name(pid)
             if players.user() == players.get_host() then
                 if not isLoading(pid) and not isLoading(players.user()) then
                     menu.trigger_commands("ban " .. name)
