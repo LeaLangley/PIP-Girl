@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.89"
+local SCRIPT_VERSION = "0.1.90"
 
 local startupmsg = "If settings are missing PLS restart lua.\nI love u."
 
@@ -188,18 +188,15 @@ end
 
 local function player_Exist(pid)
     if players.exists(pid) then
-        return true
-    end
-    local name = players.get_name(pid)
-    if name != "undiscoveredplayer" then
-        return true
-    end
-    if name != "InvalidPlayer" then
-        return true
-    end
-    for players.list() as plid do
-        if plid == pid then
-            return true
+        local name = players.get_name(pid)
+        if name != "undiscoveredplayer" then
+            if name != "InvalidPlayer" then
+                for players.list() as plid do
+                    if plid == pid then
+                        return true
+                    end
+                end
+            end
         end
     end
     return false
@@ -482,7 +479,7 @@ local function Wait_for_IsInSession()
 end
 
 local function StrategicKick(pid)
-    if player_Exist(pid) and pid != players.user() then
+    if player_Exist(pid) and pid ~= players.user() then
         if not IsInSession() then
             Wait_for_IsInSession()
         else
@@ -3198,13 +3195,16 @@ load_data_e()
 load_data_g()
 
 local function add_player_to_blacklist(rid)
-    table.insert(data_e, tostring(rid))
-    save_data_e()
+    if pid != players.user() then
+        table.insert(data_e, tostring(rid))
+        save_data_e()
+    end
 end
 
-local function add_in_stand(pid, name, rid)
+local function add_in_stand(pid)
     if pid != players.user() then
         if not isFriend(pid) then
+            local name = players.get_name(pid)
             players.add_detection(pid, "Blacklist", TOAST_DEFAULT, 100)
             menu.trigger_commands("historynote ".. name .." Blacklist")
             menu.trigger_commands("historyblock ".. name .." on")
@@ -3213,17 +3213,19 @@ local function add_in_stand(pid, name, rid)
 end
 
 local function is_player_in_blacklist(rid)
-    for _, blacklistedId in pairs(data_g) do
-        if tonumber(blacklistedId) == tonumber(rid) then
-            return true
+    if pid ~= players.user() then
+        for pairs(data_g) as blacklistedId do
+            if tonumber(blacklistedId) == tonumber(rid) then
+                return true
+            end
+            util.yield()
         end
-        util.yield()
-    end
-    for _, blacklistedId in pairs(data_e) do
-        if tonumber(blacklistedId) == tonumber(rid) then
-            return true
+        for pairs(data_e) as blacklistedId do
+            if tonumber(blacklistedId) == tonumber(rid) then
+                return true
+            end
+            util.yield()
         end
-        util.yield()
     end
     return false
 end
@@ -3277,7 +3279,7 @@ local function SessionCheck(pid)
         if not isFriend(pid) then
             local name = players.get_name(pid)
             notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
-            add_in_stand(pid, name, rid)
+            add_in_stand(pid)
             if StandUser(pid) then
                 notify("This Blacklist is a Stand User, we don't kick them until they attack: \n" .. name .. " - " .. rid)
                 menu.trigger_commands("hellaa " .. name .. " on")
@@ -3300,35 +3302,26 @@ player_menu = function(pid)
         menu.player_root(pid):divider('1 PIP Girl')
         local Bad_Modder = menu.list(menu.player_root(pid), 'Bad Modder?', {""}, '', function() end)
         menu.action(Bad_Modder, "Add Blacklist & Kick", {'hellbk'}, "Blacklist Note, Kick and Block the Target from Joining u again.", function ()
-            add_in_stand(pid, name, rid)
+            add_in_stand(pid)
+            StrategicKick(pid)
             if not is_player_in_blacklist(rid) then
                 add_player_to_blacklist(rid)
             end
-            StrategicKick(pid)
-        end)
-        menu.action(Bad_Modder, "Add Blacklist ,Phone Call & Kick", {'hellp'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
-            add_in_stand(pid, name, rid)
-            if not is_player_in_blacklist(rid) then
-                add_player_to_blacklist(rid)
-            end
-            menu.trigger_commands("ring " .. name)
-            util.yield(666)
-            StrategicKick(pid)
         end)
         menu.action(Bad_Modder, "Add Blacklist ,Crash & Kick", {'hellc'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
-            add_in_stand(pid, name, rid)
-            if not is_player_in_blacklist(rid) then
-                add_player_to_blacklist(rid)
-            end
+            add_in_stand(pid)
             menu.trigger_commands("choke ".. name)
             util.yield(666)
             StrategicKick(pid)
+            if not is_player_in_blacklist(rid) then
+                add_player_to_blacklist(rid)
+            end
         end)
         menu.action(Bad_Modder, "Kick", {"hellk"}, "", function()
             StrategicKick(pid)
         end)
         menu.action(Bad_Modder, "Add Blacklist Only", {'helln'}, "Blacklist Note and Block the Target from Joining u again.", function ()
-            add_in_stand(pid, name, rid)
+            add_in_stand(pid)
             if not is_player_in_blacklist(rid) then
                 add_player_to_blacklist(rid)
             end
@@ -3345,16 +3338,14 @@ player_menu = function(pid)
         end)
         menu.toggle_loop(Bad_Modder, "Blacklist Kick on Atack", {"hellaab"}, "Auto kick if they atack you, and add them to blacklist.", function()
             if players.is_marked_as_attacker(pid) then
-                add_in_stand(pid, name, rid)
+                add_in_stand(pid)
+                StrategicKick(pid)
                 if not is_player_in_blacklist(rid) then
                     add_player_to_blacklist(rid)
                 end
-                StrategicKick(pid)
                 warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
-                PlayerExists = false
                 util.yield(66666)
             else
-                PlayerExists = false
                 util.yield(1666)
             end
             util.yield(13)
