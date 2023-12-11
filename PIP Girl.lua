@@ -1932,6 +1932,24 @@ menu.toggle_loop(Vehicle, "Heli Sparrow Handling",{""},"All helicopters you ente
     util.yield(3666)
 end)
 
+menu.toggle_loop(Vehicle, "Turn Signals", {"pgturn"}, "", function()
+    local curcar = entities.get_user_vehicle_as_handle(false)
+    if curcar != -1 then
+        if PAD.IS_CONTROL_PRESSED(0, 63) then
+            VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(curcar, 1, true)
+        else
+            VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(curcar, 1, false)
+        end
+        if PAD.IS_CONTROL_PRESSED(0, 64) then
+            VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(curcar, 0, true)
+        else
+            VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(curcar, 0, false)
+        end
+    else
+        util.yield()
+    end
+end)
+
 menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     local nearbyVehicles = entities.get_all_vehicles_as_handles()
     local playerPosition = players.get_position(players.user())
