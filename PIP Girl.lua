@@ -1945,9 +1945,11 @@ menu.toggle_loop(Vehicle, "Turn Signals", {"pgturn"}, "", function()
         else
             VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(curcar, 0, false)
         end
+        util.yield(420)
     else
-        util.yield()
+        util.yield(1666)
     end
+    util.yield()
 end)
 
 menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
