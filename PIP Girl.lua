@@ -1932,34 +1932,36 @@ menu.toggle_loop(Vehicle, "Heli Sparrow Handling",{""},"All helicopters you ente
     util.yield(3666)
 end)
 
-local myturn = false
+local myturn1 = false
+local myturn2 = false
 menu.toggle_loop(Vehicle, "Turn Signals", {"pgturn"}, "", function()
     local curcar = entities.get_user_vehicle_as_handle(false)
     if curcar != -1 then
         if PAD.IS_CONTROL_PRESSED(0, 63) then
             VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(curcar, 1, true)
-            myturn = true
-            util.yield(1666)
+            myturn1 = true
+            util.yield(2666)
         else
-            if myturn then
+            if myturn1 then
                 VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(curcar, 1, false)
-                myturn = false
+                myturn1 = false
             end
         end
         if PAD.IS_CONTROL_PRESSED(0, 64) then
             VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(curcar, 0, true)
-            myturn = true
-            util.yield(1666)
+            myturn2 = true
+            util.yield(2666)
         else
-            if myturn then
+            if myturn2 then
                 VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(curcar, 0, false)
-                myturn = false
+                myturn2 = false
             end
         end
         util.yield(420)
     else
         util.yield(1666)
-        myturn = false
+        myturn1 = false
+        myturn2 = false
     end
     util.yield()
 end)
