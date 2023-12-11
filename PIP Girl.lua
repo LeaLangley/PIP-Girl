@@ -2007,6 +2007,13 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
             end
             util.yield(213)
             menu.trigger_commands("fixvehicle")
+            VEHICLE.SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
+            VEHICLE.SET_DONT_PROCESS_VEHICLE_GLASS(vehicles, true)
+            VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, false)
+            VEHICLE.SET_HELI_TAIL_BOOM_CAN_BREAK_OFF(vehicle, false)
+            VEHICLE.CAN_SHUFFLE_SEAT(vehicle, true)
+            VEHICLE.SET_VEHICLE_CAN_ENGINE_MISSFIRE(vehicle, false)
+            VEHICLE.SET_VEHICLE_ENGINE_CAN_DEGRADE(vehicle, false)
             util.yield(213)
             TASK.TASK_LEAVE_VEHICLE(my_ped, vehicle, 16)
             last_vehicle = vehicle
