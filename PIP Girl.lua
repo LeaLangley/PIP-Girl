@@ -1707,34 +1707,6 @@ menu.toggle_loop(Outfit, "Restor Outfit", {"restoreoutfit"}, "Auto Restore the S
     end
 end)
 
-local vehicleFavColor = 0
-menu.toggle_loop(Vehicle, "Set vehicle light color automatically",{"autocarlights"},"Automatically set your favorite vehicle color for vehicles with default lights.\nDefault lights: 0 & 1 | Color lights: 2-14",function()
-    util.yield(420)
-    if vehicleFavColor ~= 0 then
-        if IsInSession() then
-            local vehicle = entities.get_user_vehicle_as_handle()
-            if vehicle then
-                if entities.get_owner(vehicle) == players.user() then
-                    local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
-                    local driver = NETWORK.NETWORK_GET_PLAYER_INDEX_FROM_PED(driverPed)
-                    if driver == players.user() then
-                        if VEHICLE.GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 then
-                            vehicleLightsSet = vehicle
-                            menu.trigger_commands("headlights "..vehicleFavColor)
-                        end
-                    end
-                end
-            end
-            util.yield(3666)
-        else
-            util.yield(13666)
-        end
-    else
-        notify("Pls Select ur Fav Vehicle light color first.")
-        util.yield(6666)
-    end
-end)
-
 menu.toggle_loop(Vehicle_Light, "S.O.S. Morse",{"sosmorse"},"",function()
     local vehicle = entities.get_user_vehicle_as_handle()
     if vehicle then
@@ -1800,8 +1772,37 @@ end, function()
     closedDoors = false
 end)
 
+local vehicleFavColor = 0
+
 menu.slider(Vehicle, "Vehicle light color", {"favheadlights"}, "Default lights: 0 & 1 | Color lights: 2-14", 2, 14, vehicleFavColor, 1, function (new_value)
     vehicleFavColor = new_value
+end)
+
+menu.toggle_loop(Vehicle, "Set vehicle light color automatically",{"autocarlights"},"Automatically set your favorite vehicle color for vehicles with default lights.\nDefault lights: 0 & 1 | Color lights: 2-14",function()
+    util.yield(420)
+    if vehicleFavColor ~= 0 then
+        if IsInSession() then
+            local vehicle = entities.get_user_vehicle_as_handle()
+            if vehicle then
+                if entities.get_owner(vehicle) == players.user() then
+                    local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
+                    local driver = NETWORK.NETWORK_GET_PLAYER_INDEX_FROM_PED(driverPed)
+                    if driver == players.user() then
+                        if VEHICLE.GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 then
+                            vehicleLightsSet = vehicle
+                            menu.trigger_commands("headlights "..vehicleFavColor)
+                        end
+                    end
+                end
+            end
+            util.yield(3666)
+        else
+            util.yield(13666)
+        end
+    else
+        notify("Pls Select ur Fav Vehicle light color first.")
+        util.yield(6666)
+    end
 end)
 
 local sparrowHandeling = nil
