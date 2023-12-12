@@ -2147,6 +2147,7 @@ local avoidCutsceneSkipHere = {
     { x = 4991.81, y = -5715.11, z = 19.88 },
     { x = 4982.63, y = -5710.30, z = 19.73 }, -- Cayo gate enter
     { x = 4975.27, y = -5708.02, z = 19.89 },
+    { x = 5054.02, y = -5773.01, z = -3.76 }, -- Cayo Drainage
 }
 menu.toggle_loop(Game, "Auto Skip Cutscene", {"pgascut"}, "Automatically skip all cutscenes.", function()
     if IsInSession() and CUTSCENE.IS_CUTSCENE_PLAYING() then
@@ -2154,14 +2155,16 @@ menu.toggle_loop(Game, "Auto Skip Cutscene", {"pgascut"}, "Automatically skip al
         local skipCutscene = true
 
         for i, position in ipairs(avoidCutsceneSkipHere) do
-            local distance = math.sqrt((playerPosition.x - position.x) ^ 2 + (playerPosition.y - position.y) ^ 2 + (playerPosition.z - position.z) ^ 2)
+            local distance = SYSTEM.VDIST(playerPosition.x, playerPosition.y, playerPosition.z, position.x, position.y, position.z)
             local radius = 25
-
+            distance = math.floor(distance + 0.5)
+        
             if distance <= radius then
                 skipCutscene = false
                 break
             end
         end
+        
 
         if skipCutscene then
             CUTSCENE.STOP_CUTSCENE_IMMEDIATELY()
@@ -2213,17 +2216,17 @@ local avoidWarningSkipHere = {
 }
 local lastWarnifyTime = {}
 menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warnings in the game.", function()
-    local playerPosition = players.get_position(players.user())
     local mess_hash = math.abs(HUD.GET_WARNING_SCREEN_MESSAGE_HASH())
 
     if mess_hash ~= 0 then
         if not HUD.IS_PAUSE_MENU_ACTIVE() then
             local skipWarning = true
-
+            local playerPosition = players.get_position(players.user())
             for i, position in ipairs(avoidWarningSkipHere) do
-                local distance = math.sqrt((playerPosition.x - position.x) ^ 2 + (playerPosition.y - position.y) ^ 2 + (playerPosition.z - position.z) ^ 2)
-                local radius = 3
-
+                local distance = SYSTEM.VDIST(playerPosition.x, playerPosition.y, playerPosition.z, position.x, position.y, position.z)
+                local radius = 25
+                distance = math.floor(distance + 0.5)
+            
                 if distance <= radius then
                     skipWarning = false
                     break
@@ -2349,6 +2352,18 @@ menu.toggle_loop(Game, "ESP", {"pgesp"}, "ESP", function ()
         espOnPlayer(playerlist[i])
     end
 end)
+
+if menu.get_edition() > 1 then
+    menu.toggle_loop(Game,"Bone ESP While Aiming", {"aimboneesp"}, "", function()
+        if PLAYER.IS_PLAYER_FREE_AIMING(players.user()) then
+            menu.trigger_command(menu.ref_by_path("World>Inhabitants>Player ESP>Bone ESP>Low Latency Rendering"))
+        else
+            menu.trigger_command(menu.ref_by_path("World>Inhabitants>Player ESP>Bone ESP>Disabled"))
+        end
+    end, function()
+        menu.trigger_command(menu.ref_by_path("World>Inhabitants>Player ESP>Bone ESP>Disabled"))
+    end)
+end
 
 --local thermal_command = menu.ref_by_path('Game>Rendering>Thermal Vision')
 --menu.toggle_loop(Game, "Thermal Scope",{},"Press E while aiming to activate.",function() -- From mehScript <3 /but respects if u use another hotkey for thermal.
