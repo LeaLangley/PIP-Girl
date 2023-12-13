@@ -2933,9 +2933,9 @@ menu.toggle_loop(Session, "Soft Clear Traffic", {"antitrafic"}, "Clears the traf
             util.yield(420)
         end
         local pos = players.get_position(players.user())
-        MISC.CLEAR_AREA_OF_PEDS(pos.x, pos.y, pos.z, 13666, 0)
+        MISC.CLEAR_AREA_OF_PEDS(pos.x, pos.y, pos.z, 6666, 0)
         util.yield(666)
-        MISC.CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, 13666, false, false, false, false, false, false)
+        MISC.CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, 6666, false, false, false, false, false, false)
     end
 end)
 
