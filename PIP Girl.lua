@@ -2228,7 +2228,8 @@ local warningMessages = {
     [705668975] = "You have already been voted out of this game session. Joining a new GTA Online session.",
     [2052473979] = "Failed to find a compatible GTA Online session containing friends. Joining a new GTA Online session.",
     [2055607490] = "XD\nUsing more then your allotted graphics card memory can result in serious performance drops and stability issues. Proceed with caution. :clown:",
-    [446584149] = "The session you're trying to join is currently full of players. Joined queue."
+    [446584149] = "The session you're trying to join is currently full of players. Joined queue.",
+    [1691856278] = "The session you are trying to join is private and friends only. You must be invited by a friend to join this session. Joining a new GTA Online session."
 }
 local avoidWarningSkipHere = {
     { x = 1561.00, y = 385.89, z = -49.69 }, -- Cayo Planning Room
