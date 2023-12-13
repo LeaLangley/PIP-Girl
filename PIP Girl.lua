@@ -425,8 +425,8 @@ local function SpawnCheck(entity, hash, locationV3, heading, timeout)
         local PlayerList = players.list()
         for _, pid in pairs(PlayerList) do
             if pid == players.user() or isFriend(pid) then
-                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED(pid), false)
-                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(PLAYER.GET_PLAYER_PED(pid), entity, false)
+                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid), false)
+                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid), entity, false)
             else
                 util.yield(13)
             end
@@ -437,8 +437,8 @@ local function SpawnCheck(entity, hash, locationV3, heading, timeout)
         local PlayerList = players.list()
         for _, pid in pairs(PlayerList) do
             if pid == players.user() or isFriend(pid) then
-                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED(pid), false)
-                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(PLAYER.GET_PLAYER_PED(pid), entity, false)
+                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid), false)
+                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid), entity, false)
                 util.yield(666)
             else
                 util.yield(13)
@@ -1069,18 +1069,18 @@ end)
 
 local function inviteToCEO(pid)
     if players.get_boss(players.user()) ~= -1 then
-        util.trigger_script_event(1 << pid, {
-            -245642440,
-            players.user(),
-            4,
-            10000, -- wage?
-            0,
-            0,
-            0,
-            0,
-            memory.read_int(memory.script_global(1924276 + 9)), -- f_8
-            memory.read_int(memory.script_global(1924276 + 10)), -- f_9
-        })
+        --util.trigger_script_event(1 << pid, {
+        --    -245642440,
+        --    players.user(),
+        --    4,
+        --    10000, -- wage?
+        --    0,
+        --    0,
+        --    0,
+        --    0,
+        --    memory.read_int(memory.script_global(1924276 + 9)), -- f_8
+        --    memory.read_int(memory.script_global(1924276 + 10)), -- f_9
+        --})
     end
 end
 
@@ -1935,7 +1935,7 @@ end)
 menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     local nearbyVehicles = entities.get_all_vehicles_as_handles()
     local playerPosition = players.get_position(players.user())
-    local my_ped = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(players.user())
+    local my_ped = players.user_ped()
     local fullfixed = 0
     local couldbefixed = 0
     local indistance = 0
@@ -2301,7 +2301,7 @@ function getOrgColor(pid)
 end
 
 local function espOnPlayer(pid, namesync)
-    local targetped = PLAYER.GET_PLAYER_PED(pid)
+    local targetped = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)
     local ppos = ENTITY.GET_ENTITY_COORDS(targetped)
     if ppos.z < -10 or ENTITY.HAS_ENTITY_CLEAR_LOS_TO_ENTITY(players.user_ped(), targetped, 256) then
         --coordinate stuff
@@ -2354,8 +2354,9 @@ menu.toggle_loop(Game, "ESP", {"pgesp"}, "ESP", function ()
 end)
 
 if menu.get_edition() > 1 then
-    menu.toggle_loop(Game,"Bone ESP While Aiming", {"aimboneesp"}, "", function()
-        if PLAYER.IS_PLAYER_FREE_AIMING(players.user()) then
+    menu.toggle_loop(Game,"Bone ESP While Armed", {"aimboneesp"}, "Also counts for armed vehicles.", function()
+        local weapon = math.abs(WEAPON.GET_SELECTED_PED_WEAPON(players.user_ped()))
+        if weapon != 1122011548 and weapon != 1569615261 then
             menu.trigger_command(menu.ref_by_path("World>Inhabitants>Player ESP>Bone ESP>Low Latency Rendering"))
         else
             menu.trigger_command(menu.ref_by_path("World>Inhabitants>Player ESP>Bone ESP>Disabled"))
