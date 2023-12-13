@@ -6,9 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.90"
+local SCRIPT_VERSION = "0.1.91"
 
-local startupmsg = "If settings are missing PLS restart lua.\nI love u."
+local startupmsg = "If settings are missing PLS restart lua.\nAdded new auto accepts.\nI love u."
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -2207,7 +2207,8 @@ local warningMessages = {
     [496145784] = "There has been an error with this session. Please return to Grand Theft Auto V and try again.",
     [705668975] = "You have already been voted out of this game session. Joining a new GTA Online session.",
     [2052473979] = "Failed to find a compatible GTA Online session containing friends. Joining a new GTA Online session.",
-    [2055607490] = "XD\nUsing more then your allotted graphics card memory can result in serious performance drops and stability issues. Proceed with caution. :clown:"
+    [2055607490] = "XD\nUsing more then your allotted graphics card memory can result in serious performance drops and stability issues. Proceed with caution. :clown:",
+    [446584149] = "The session you're trying to join is currently full of players. Joined queue."
 }
 local avoidWarningSkipHere = {
     { x = 1561.00, y = 385.89, z = -49.69 }, -- Cayo Planning Room
