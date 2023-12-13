@@ -380,6 +380,22 @@ local function isFriend(pid)
     return false
 end
 
+local function session_type()
+    if NETWORK.NETWORK_SESSION_IS_PRIVATE() then
+        return "privat"
+    end
+    if NETWORK.NETWORK_SESSION_IS_CLOSED_FRIENDS() then
+        return "friends"
+    end
+    if NETWORK.NETWORK_SESSION_IS_CLOSED_CREW() then
+        return "crew"
+    end
+    if NETWORK.NETWORK_SESSION_IS_SOLO() then
+        return "solo"
+    end
+    return "online"
+end
+
 local function requestModel(hash, timeout)
     if not STREAMING.HAS_MODEL_LOADED(hash) then
         STREAMING.REQUEST_MODEL(hash)
@@ -2016,7 +2032,11 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
         message = message .. "Out of " .. indistance .. " Vehicles in 100m Distance."
     end
     if message ~= "" then
-        warnify_ses(message)
+        if session_type() == "online" then
+            warnify_net(message)
+        else
+            warnify_ses(message)
+        end
     end
     if temp_auto_light then
         menu.trigger_commands("autocarlights on")
