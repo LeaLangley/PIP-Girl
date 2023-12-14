@@ -76,7 +76,8 @@ for _, dependency in pairs(auto_update_config.dependencies) do
     end
 end
 
-util.require_natives(1663599433)
+util.require_natives(1681379138)
+--util.require_natives("2944b", "g")
 
 resources_dir = filesystem.resources_dir() .. '/1 PIP Girl/'
 logo = directx.create_texture(resources_dir .. 'logo.png')
