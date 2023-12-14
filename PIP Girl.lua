@@ -3258,21 +3258,27 @@ local function add_in_stand(pid)
     end
 end
 
+local startupCheckCD = true
 local function is_player_in_blacklist(rid)
-    if pid ~= players.user() then
-        for pairs(data_g) as blacklistedId do
-            if tonumber(blacklistedId) == tonumber(rid) then
-                return true
-            end
-            util.yield()
+    for pairs(data_g) as blacklistedId do
+        if tonumber(blacklistedId) == tonumber(rid) then
+            startupCheckCD = false
+            return true
         end
-        for pairs(data_e) as blacklistedId do
-            if tonumber(blacklistedId) == tonumber(rid) then
-                return true
-            end
+        if not startupCheckCD then
             util.yield()
         end
     end
+    for pairs(data_e) as blacklistedId do
+        if tonumber(blacklistedId) == tonumber(rid) then
+            startupCheckCD = false
+            return true
+        end
+        if not startupCheckCD then
+            util.yield()
+        end
+    end
+    startupCheckCD = false
     return false
 end
 
@@ -3313,33 +3319,29 @@ local function startupCheck()
         auto_updater.run_auto_update(auto_update_config)
     else
         auto_updater.run_auto_update(auto_update_config)
-
         util.yield(restart_delay)
-
-        if menu.get_state(menu.ref_by_path("Online>Session>Block Joins>From Removed Players")) == "Off" then
-            menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Removed Players"), "On")
-        end
-
-        menu.trigger_command(menu.ref_by_path("Online>Session>Block Joins>Message>Your Account Has A Bad Reputation"))
-        
-        if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Blacklist")) then
-            for menu.ref_by_path("Online>Player History>Noted Players>Blacklist"):getChildren() as rat do
-                util.yield(13)
-                local rat_target = rat.target
-                rat_target:refByRelPath("Player Join Reactions>Notification").value = true
-                rat_target:refByRelPath("Player Join Reactions>Write To Console").value = true
-                rat_target:refByRelPath("Player Join Reactions>Block Join").value = true
-                rat_target:refByRelPath("Player Join Reactions>Crash").value = true
-                rat_target:refByRelPath("Player Join Reactions>Timeout").value = true
-                rat_target:refByRelPath("Player Join Reactions>Block Their Network Events").value = true
-                rat_target:refByRelPath("Player Join Reactions>Block Incoming Syncs").value = true
-                rat_target:refByRelPath("Player Join Reactions>Block Outgoing Syncs").value = true
-            end
-        end
-
-        util.yield(restart_delay)
-
         notify(SCRIPT_VERSION.."\nStartup Message:\n"..startupmsg)
+    end
+end
+
+local function startupConfig()
+    if menu.get_state(menu.ref_by_path("Online>Session>Block Joins>From Removed Players")) == "Off" then
+        menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Removed Players"), "On")
+    end
+    menu.trigger_command(menu.ref_by_path("Online>Session>Block Joins>Message>Your Account Has A Bad Reputation"))
+    if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Blacklist")) then
+        for menu.ref_by_path("Online>Player History>Noted Players>Blacklist"):getChildren() as rat do
+            util.yield(13)
+            local rat_target = rat.target
+            rat_target:refByRelPath("Player Join Reactions>Notification").value = true
+            rat_target:refByRelPath("Player Join Reactions>Write To Console").value = true
+            rat_target:refByRelPath("Player Join Reactions>Block Join").value = true
+            rat_target:refByRelPath("Player Join Reactions>Crash").value = true
+            rat_target:refByRelPath("Player Join Reactions>Timeout").value = true
+            rat_target:refByRelPath("Player Join Reactions>Block Their Network Events").value = true
+            rat_target:refByRelPath("Player Join Reactions>Block Incoming Syncs").value = true
+            rat_target:refByRelPath("Player Join Reactions>Block Outgoing Syncs").value = true
+        end
     end
 end
 
@@ -3471,6 +3473,7 @@ end)
 
 menu.divider(Credits, "<3")
 util.create_thread(startupCheck)
+util.create_thread(startupConfig)
 
 menu.action(Credits, "And you!", {""}, "Ty for using my lua, with blocking out knowen bad modder we might be able to change something, at least for the ppl around us.", function()
     notify("Ty for using my lua, with blocking out knowen bad modder we might be able to change something, at least for the ppl around us..")
