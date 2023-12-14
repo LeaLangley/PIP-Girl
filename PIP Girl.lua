@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.92"
+local SCRIPT_VERSION = "0.1.93"
 
 local startupmsg = "If settings are missing PLS restart lua.\nAdded new auto accepts.\nImproved and Lea-rned alot.\nI love u."
 
@@ -169,19 +169,22 @@ local function notify_cmd(msg)
 end
 
 local function warnify(msg)
-    chat.send_message("<[Pip Girl]>:\n " .. msg, true, true, false)
+    local formattedMsg = string.gsub(msg, "\n", " | ")
+    chat.send_message("<[Pip Girl]>: " .. formattedMsg, true, true, false)
     util.toast("<[Pip Girl]>: " .. msg, TOAST_CONSOLE)
     util.toast("<[Pip Girl]>\n" .. msg)
 end
 
 local function warnify_net(msg)
-    chat.send_message("<[Pip Girl]>:\n " .. msg, true, true, true)
+    local formattedMsg = string.gsub(msg, "\n", " | ")
+    chat.send_message("<[Pip Girl]>: " .. formattedMsg, true, true, true)
     util.toast("<[Pip Girl]>: " .. msg, TOAST_CONSOLE)
     util.toast("<[Pip Girl]>\n" .. msg)
 end
 
 local function warnify_ses(msg)
-    chat.send_message(msg, false, true, true)
+    local formattedMsg = string.gsub(msg, "\n", " | ")
+    chat.send_message(formattedMsg, false, true, true)
     util.toast("<[Pip Girl]>: " .. msg, TOAST_CONSOLE)
     util.toast(msg)
 end
@@ -500,11 +503,21 @@ local function StrategicKick(pid)
             Wait_for_IsInSession()
         else
             local name = players.get_name(pid)
-            if players.user() == players.get_host() then
-                if not isLoading(pid) and not isLoading(players.user()) then
-                    menu.trigger_commands("ban " .. name)
+            if menu.get_edition() > 1 then
+                if players.user() == players.get_host() then
+                    if not isLoading(pid) and not isLoading(players.user()) then
+                        menu.trigger_commands("ban " .. name)
+                    else
+                        menu.trigger_commands("loveletterkick " .. name)
+                    end
                 else
-                    menu.trigger_commands("loveletterkick " .. name)
+                    menu.trigger_commands("kick " .. name)
+                    if IsInSession() then
+                        menu.trigger_commands("ignore " .. name .. " on")
+                        menu.trigger_commands("desync " .. name .. " on")
+                        menu.trigger_commands("blocksync " .. name .. " on")
+                        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+                    end
                 end
             else
                 menu.trigger_commands("kick " .. name)
@@ -2945,45 +2958,48 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
             if players.user() == players.get_host() or players.user() == players.get_script_host() then
                 if not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
-                    local Player_List = players.list()
-                    for _, pid in pairs(Player_List) do
-                        local name = players.get_name(pid)
-                        if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not wannabeGod(pid) then
-                            util.yield(13666)
-                            if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not wannabeGod(pid) then
-                                menu.trigger_commands("givesh " .. name)
-                                notify_cmd(name .. " is Loading too Long.")
-                                util.yield(13666)
-                                local timeout = os.time() + 30 -- Set timeout to 1 minute
-                                local fail = false
-                                while player_Exist(pid) and isStuck(pid) and not wannabeGod(pid) do
-                                    util.yield(2666)
-                                    if os.time() > timeout then
-                                        notify_cmd(name .. " took too long to load. Timeout reached.")
-                                        fail = true
-                                        break
-                                    end
-                                    if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) and not wannabeGod(pid) then
-                                        menu.trigger_commands("givesh " .. name)
-                                        notify_cmd(name .. " is Still Loading too Long.")
-                                        util.yield(18666)
-                                    end
-                                end
-                                if not fail then
-                                    if player_Exist(pid) then
-                                        notify_cmd(name .. " Finished Loading.")
-                                    else
-                                        notify(name .. " got Lost in the Void.")
-                                        menu.trigger_commands("scripthost")
-                                    end
-                                else
-                                    menu.trigger_commands("scripthost")
-                                end
-                                if not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
-                                    menu.trigger_commands("scripthost")
-                                end
-                                util.yield(13666)
+                    for players.list() as pid do
+                        local check_timeout = os.time() + 13
+                        while player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not wannabeGod(pid) do
+                            if os.time() > check_timeout then
+                                break
                             end
+                            util.yield(666)
+                        end
+                        if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not wannabeGod(pid) then
+                            local name = players.get_name(pid)
+                            menu.trigger_commands("givesh " .. name)
+                            notify_cmd(name .. " is Loading too Long.")
+                            util.yield(13666)
+                            local loading_timeout = os.time() + 30
+                            local fail = false
+                            while player_Exist(pid) and isStuck(pid) and not wannabeGod(pid) do
+                                util.yield(2666)
+                                if os.time() > loading_timeout then
+                                    notify_cmd(name .. " took too long to load. Timeout reached.")
+                                    fail = true
+                                    break
+                                end
+                                if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) and not wannabeGod(pid) then
+                                    menu.trigger_commands("givesh " .. name)
+                                    notify_cmd(name .. " is Still Loading too Long.")
+                                    util.yield(13666)
+                                end
+                            end
+                            if not fail then
+                                if player_Exist(pid) then
+                                    notify_cmd(name .. " Finished Loading.")
+                                else
+                                    notify(name .. " got Lost in the Void.")
+                                    menu.trigger_commands("scripthost")
+                                end
+                            else
+                                menu.trigger_commands("scripthost")
+                            end
+                            if not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
+                                menu.trigger_commands("scripthost")
+                            end
+                            util.yield(13666)
                         end
                     end
                 end
