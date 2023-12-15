@@ -426,24 +426,24 @@ local function requestControl(entity, timeout)
     end
 end
 
-local function SpawnCheck(entity, hash, locationV3, heading, timeout)
+local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout)
     if not ENTITY.DOES_ENTITY_EXIST(entity) then
+        if order == nil then order = 2 end
         requestModel(hash, 13)
         entity = entities.create_object(hash, locationV3)
         util.yield(13)
-        if heading != 0 then
-            local startTime = os.time()
-            while math.abs(ENTITY.GET_ENTITY_HEADING(entity) - heading ) > 1 do
-                ENTITY.SET_ENTITY_HEADING(entity, heading)
-                if os.time() - startTime > timeout or timeout == 0 then
-                    break
-                end
-                util.yield(13)
+        local startTime = os.time()
+        while not ENTITY.DOES_ENTITY_EXIST(entity) do
+            if os.time() - startTime > timeout or timeout == 0 then
+                break
             end
+            util.yield(13)
         end
+        requestControl(entity, 13)
         ENTITY.FREEZE_ENTITY_POSITION(entity, true)
-        local PlayerList = players.list()
-        for _, pid in pairs(PlayerList) do
+        util.yield(13)
+        ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
+        for players.list() as pid do
             if pid == players.user() or isFriend(pid) then
                 ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid), false)
                 ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid), entity, false)
@@ -453,9 +453,9 @@ local function SpawnCheck(entity, hash, locationV3, heading, timeout)
         end
         return entity
     else
-        requestControl(entity, 13)
+        requestControl(entity, timeout)
         local PlayerList = players.list()
-        for _, pid in pairs(PlayerList) do
+        for players.list() as pid do
             if pid == players.user() or isFriend(pid) then
                 ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid), false)
                 ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid), entity, false)
@@ -2786,21 +2786,39 @@ end)
 local SessionWorld = menu.list(Session, 'World', {}, 'Session World Manipulation.', function(); end)
 
 local orbRoomGlass = nil
+local orbRoomTable = nil
+local orbRoomTable2 = nil
+local orbRoomDoorDMG = nil
 menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for the Orb Room", function()
-    orbRoomGlass = SpawnCheck(orbRoomGlass, -1829309699, v3.new(335.882996, 4833.833008, -59.023998), 125, 6)
+    orbRoomGlass = SpawnCheck(orbRoomGlass, -1829309699, v3.new(335.882996, 4833.833008, -59.023998), 0, 0, 125, nil, 13)
+    orbRoomTable = SpawnCheck(orbRoomTable, 81317377, v3.new(328.2, 4829, -58.9), 0, 0, 0, nil, 13)
+    orbRoomTable2 = SpawnCheck(orbRoomTable2, 81317377, v3.new(328.2, 4829, -59.4), 0, 0, 0, nil, 13)
+    orbRoomDoorDMG = SpawnCheck(orbRoomDoorDMG, -1184972439, v3.new(337.611, 4832.954, -58.595), 10, 0, 125, nil, 13)
     util.yield(666)
 end, function()
     if ENTITY.DOES_ENTITY_EXIST(orbRoomGlass) then
         requestControl(orbRoomGlass, 0)
         entities.delete(orbRoomGlass)
     end
+    if ENTITY.DOES_ENTITY_EXIST(orbRoomTable) then
+        requestControl(orbRoomTable, 0)
+        entities.delete(orbRoomTable)
+    end
+    if ENTITY.DOES_ENTITY_EXIST(orbRoomTable2) then
+        requestControl(orbRoomTable2, 0)
+        entities.delete(orbRoomTable2)
+    end
+    if ENTITY.DOES_ENTITY_EXIST(orbRoomDoorDMG) then
+        requestControl(orbRoomDoorDMG, 0)
+        entities.delete(orbRoomDoorDMG)
+    end
 end)
 
 local kosatkaMissile1 = nil
 local kosatkaMissile2 = nil
 menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {""}, "Blocks the Entrance for the Orb Room", function()
-    kosatkaMissile1 = SpawnCheck(kosatkaMissile1, 1228076166, v3.new(1558.9, 387.111, -50.666), 0, 0)
-    kosatkaMissile2 = SpawnCheck(kosatkaMissile2, 1228076166, v3.new(1558.9, 388.777, -50.666), 0, 0)
+    kosatkaMissile1 = SpawnCheck(kosatkaMissile1, 1228076166, v3.new(1558.9, 387.111, -50.666), 0, 0, 0, nil, 13)
+    kosatkaMissile2 = SpawnCheck(kosatkaMissile2, 1228076166, v3.new(1558.9, 388.777, -50.666), 0, 0, 0, nil, 13)
     util.yield(666)
 end, function()
     if ENTITY.DOES_ENTITY_EXIST(kosatkaMissile1) then
@@ -2816,8 +2834,8 @@ end)
 local antiTerrorMK2 = nil
 local antiTerrorGlass = nil
 menu.toggle_loop(SessionWorld, "Anti Terrorbyte", {""}, "Blocks the MK2 acces", function()
-    antiTerrorMK2 = SpawnCheck(antiTerrorMK2, 656641197, v3.new(-1421.420, -3016.256, -80.1), -90, 6)
-    antiTerrorGlass = SpawnCheck(antiTerrorGlass, -1829309699, v3.new(-1420.666, -3014.579, -79.0), -20, 6)
+    antiTerrorMK2 = SpawnCheck(antiTerrorMK2, 656641197, v3.new(-1421.420, -3016.256, -80.1), 0, 0, -90, nil, 13)
+    antiTerrorGlass = SpawnCheck(antiTerrorGlass, -1829309699, v3.new(-1420.666, -3014.579, -79.0), 0, 0, -20, nil, 13)
     util.yield(666)
 end, function()
     if ENTITY.DOES_ENTITY_EXIST(antiTerrorMK2) then
