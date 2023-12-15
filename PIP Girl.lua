@@ -3281,9 +3281,12 @@ local function add_in_stand(pid)
     if pid != players.user() then
         if not isFriend(pid) then
             local name = players.get_name(pid)
-            players.add_detection(pid, "Blacklist", TOAST_DEFAULT, 100)
-            menu.trigger_commands("historynote ".. name .." Blacklist")
-            menu.trigger_commands("historyblock ".. name .." on")
+            if name != players.get_name(players.user()) then
+                players.add_detection(pid, "Blacklist", TOAST_DEFAULT, 100)
+                menu.trigger_commands("historynote ".. name .." Blacklist")
+                menu.trigger_commands("historyblock ".. name .." on")
+                util.create_thread(startupConfig)
+            end
         end
     end
 end
