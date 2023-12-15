@@ -2268,7 +2268,8 @@ local warningMessages = {
     [2055607490] = "XD\nUsing more then your allotted graphics card memory can result in serious performance drops and stability issues. Proceed with caution. :clown:",
     [446584149] = "The session you're trying to join is currently full of players. Joined queue.",
     [1691856278] = "The session you are trying to join is private and friends only. You must be invited by a friend to join this session. Joining a new GTA Online session.",
-    [1910579138] = "The session you are trying to join is private and friends only. You must be invited by a friend to join this session. Joining a new GTA Online session."
+    [1910579138] = "The session you are trying to join is private and friends only. You must be invited by a friend to join this session. Joining a new GTA Online session.",
+    [1073504880] = "There is a slot available in the GTA Online session you are currently queuing for. Joining Session"
 }
 local avoidWarningSkipHere = {
     { x = 1561.00, y = 385.89, z = -49.69 }, -- Cayo Planning Room
