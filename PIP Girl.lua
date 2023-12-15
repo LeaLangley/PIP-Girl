@@ -501,6 +501,7 @@ end
 local function StrategicKick(pid)
     if player_Exist(pid) and pid ~= players.user() then
         if not IsInSession() then
+            menu.trigger_commands("kick " .. name)
             Wait_for_IsInSession()
         else
             local name = players.get_name(pid)
@@ -3390,17 +3391,19 @@ end
 
 local function SessionCheck(pid)
     util.yield(666)
-    local rid = players.get_rockstar_id(pid)
-    if is_player_in_blacklist(rid) or rid == Admin or fillup_size == rid then
-        if not isFriend(pid) then
-            local name = players.get_name(pid)
-            notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
-            add_in_stand(pid)
-            if StandUser(pid) then
-                notify("This Blacklist is a Stand User, we don't kick them until they attack: \n" .. name .. " - " .. rid)
-                menu.trigger_commands("hellaa " .. name .. " on")
-            else
-                StrategicKick(pid)
+    if pid ~= players.user() then
+        local rid = players.get_rockstar_id(pid)
+        if is_player_in_blacklist(rid) or rid == Admin or fillup_size == rid then
+            if not isFriend(pid) then
+                local name = players.get_name(pid)
+                notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
+                add_in_stand(pid)
+                if StandUser(pid) then
+                    notify("This Blacklist is a Stand User, we don't kick them until they attack: \n" .. name .. " - " .. rid)
+                    menu.trigger_commands("hellaa " .. name .. " on")
+                else
+                    StrategicKick(pid)
+                end
             end
         end
     end
