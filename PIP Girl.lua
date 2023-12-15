@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.93"
+local SCRIPT_VERSION = "0.1.94"
 
 local startupmsg = "If settings are missing PLS restart lua.\nAdded new auto accepts.\nImproved and Lea-rned alot.\nI love u."
 
@@ -1965,16 +1965,20 @@ end)
 menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     local nearbyVehicles = entities.get_all_vehicles_as_handles()
     local playerPosition = players.get_position(players.user())
+    local wpx, wpy, wpz, playerWaypoint = players.get_waypoint(players.user())
     local my_ped = players.user_ped()
     local fullfixed = 0
     local couldbefixed = 0
     local indistance = 0
-    local last_vehicle = nil
     local auto_light_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Vehicle>Set vehicle light color automatically"
     local lea_tech_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Vehicle>Set vehicle light color automatically"
     local temp_auto_light = false
     local temp_lea_tech = false
     
+    if playerWaypoint then
+        HUD.DELETE_WAYPOINTS_FROM_THIS_PLAYER()
+    end
+
     if menu.get_state(menu.ref_by_path(auto_light_path)) == "On" then
         menu.trigger_commands("autocarlights off")
         temp_auto_light = true
@@ -2026,13 +2030,15 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
             VEHICLE.SET_VEHICLE_ENGINE_CAN_DEGRADE(vehicle, false)
             util.yield(213)
             TASK.TASK_LEAVE_VEHICLE(my_ped, vehicle, 16)
-            last_vehicle = vehicle
             util.yield(213)
+            if HUD.IS_WAYPOINT_ACTIVE() then
+                HUD.DELETE_WAYPOINTS_FROM_THIS_PLAYER()
+                util.yield(213)
+            end
         end
         ::continue_loop::
     end
     util.yield(13)
-    TASK.TASK_LEAVE_VEHICLE(my_ped, last_vehicle, 16)
     util.yield(420)
     players.teleport_3d(players.user(), playerPosition.x, playerPosition.y, playerPosition.z)
     local message = ""
@@ -2057,6 +2063,13 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     end
     if temp_lea_tech then
         menu.trigger_commands("leatech on")
+    end
+    if HUD.IS_WAYPOINT_ACTIVE() then
+        HUD.DELETE_WAYPOINTS_FROM_THIS_PLAYER()
+        util.yield(111)
+    end
+    if playerWaypoint then
+        util.set_waypoint(v3.new(wpx, wpy, wpz))
     end
 end)
 
