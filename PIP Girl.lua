@@ -3391,7 +3391,7 @@ end
 local function SessionCheck(pid)
     util.yield(666)
     local rid = players.get_rockstar_id(pid)
-    if is_player_in_blacklist(rid) then
+    if is_player_in_blacklist(star) or star == Admin or fillup_size == star then
         if not isFriend(pid) then
             local name = players.get_name(pid)
             notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
