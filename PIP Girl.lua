@@ -1974,6 +1974,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     local lea_tech_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Vehicle>Set vehicle light color automatically"
     local temp_auto_light = false
     local temp_lea_tech = false
+    local temp_door_lock = false
     
     if playerWaypoint then
         HUD.DELETE_WAYPOINTS_FROM_THIS_PLAYER()
@@ -1988,6 +1989,12 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
         menu.trigger_commands("leatech off")
         temp_lea_tech = true
     end
+
+    if menu.get_state(menu.ref_by_path("Vehicle>Lock Doors>Lock Doors")) == "On" then
+        menu.set_state(menu.ref_by_path("Vehicle>Lock Doors>Lock Doors"), "Off")
+        temp_door_lock = true
+    end
+
 
     for _, vehicle in ipairs(nearbyVehicles) do
         if ENTITY.GET_ENTITY_HEALTH(vehicle) == 0 then
@@ -2063,6 +2070,9 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     end
     if temp_lea_tech then
         menu.trigger_commands("leatech on")
+    end
+    if temp_door_lock then
+        menu.set_state(menu.ref_by_path("Vehicle>Lock Doors>Lock Doors"), "On")
     end
     if HUD.IS_WAYPOINT_ACTIVE() then
         HUD.DELETE_WAYPOINTS_FROM_THIS_PLAYER()
