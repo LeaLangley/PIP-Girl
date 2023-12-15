@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "0.1.94"
+local SCRIPT_VERSION = "1.94"
 
 local startupmsg = "If settings are missing PLS restart lua.\nAdded new auto accepts.\nImproved and Lea-rned alot.\nI love u."
 
