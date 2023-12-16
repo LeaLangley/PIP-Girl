@@ -6,9 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.94"
+local SCRIPT_VERSION = "1.95"
 
-local startupmsg = "If settings are missing PLS restart lua.\nAdded new auto accepts.\nImproved and Lea-rned alot.\nI love u."
+local startupmsg = "If settings are missing PLS restart lua.\nImproved and Lea-rned alot.\nI love u."
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -318,6 +318,15 @@ local function pid_to_handle(pid)
     return handle_ptr
 end
 
+local function contains(tbl, value)
+    for ipairs(tbl) as v do
+        if v == value then
+            return true
+        end
+    end
+    return false
+end
+
 local function isStuck(pid)
     if not IsInSession() then
         return false
@@ -460,7 +469,7 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
             if pid == players.user() or isFriend(pid) then
                 ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid), false)
                 ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid), entity, false)
-                util.yield(666)
+                util.yield(111)
             else
                 util.yield(13)
             end
@@ -2798,13 +2807,38 @@ local orbRoomGlass = nil
 local orbRoomTable = nil
 local orbRoomTable2 = nil
 local orbRoomDoorDMG = nil
+local in_orb_room = {}
+local wannabeGOD = {}
+
 menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for the Orb Room", function()
     orbRoomGlass = SpawnCheck(orbRoomGlass, -1829309699, v3.new(335.882996, 4833.833008, -59.023998), 0, 0, 125, nil, 13)
     orbRoomTable = SpawnCheck(orbRoomTable, 81317377, v3.new(328.2, 4829, -58.9), 0, 0, 0, nil, 13)
     orbRoomTable2 = SpawnCheck(orbRoomTable2, 81317377, v3.new(328.2, 4829, -59.4), 0, 0, 0, nil, 13)
     orbRoomDoorDMG = SpawnCheck(orbRoomDoorDMG, -1184972439, v3.new(337.611, 4832.954, -58.595), 10, 0, 125, nil, 13)
-    util.yield(666)
+    for players.list() as pid do
+        if pid != players.user() then
+            if not contains(wannabeGOD, pid) then
+                local players_position = players.get_position(pid)
+                local distance = SYSTEM.VDIST(players_position.x, players_position.y, players_position.z, 328.47, 4828.87, -58.54)
+                if distance <= 9 then
+                    if not contains(in_orb_room, pid) then
+                        table.insert(in_orb_room, pid)
+                        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+                    end
+                elseif contains(in_orb_room, pid) then
+                    table.remove(in_orb_room, index)
+                    NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+                end
+            end
+        end
+        util.yield()
+    end
+    util.yield(420)
 end, function()
+    for ipairs(in_orb_room) as pid do
+        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+    end
+    in_orb_room = {}
     if ENTITY.DOES_ENTITY_EXIST(orbRoomGlass) then
         requestControl(orbRoomGlass, 0)
         entities.delete(orbRoomGlass)
@@ -3083,8 +3117,6 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
         util.yield(13666)
     end
 end)
-
-local wannabeGOD = {}
 
 menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost everyone who triggers \"Attacking While Invulnerable\" except Friends or Stand user.", function()
     if IsInSession() then
