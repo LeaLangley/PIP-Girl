@@ -318,6 +318,16 @@ local function pid_to_handle(pid)
     return handle_ptr
 end
 
+local function find_in_table(tbl, value)
+    for i, v in ipairs(tbl) do
+        if v == value then
+            return i
+        end
+    end
+    return nil
+end
+
+
 local function contains(tbl, value)
     for ipairs(tbl) as v do
         if v == value then
@@ -2808,7 +2818,7 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for 
     orbRoomDoorDMG = SpawnCheck(orbRoomDoorDMG, -1184972439, v3.new(337.611, 4832.954, -58.595), 10, 0, 125, nil, 13)
     for players.list() as pid do
         if pid != players.user() then
-            if not contains(sussy_god. pid) then
+            if not contains(sussy_god, pid) then
                 if not contains(wannabeGOD, pid) then
                     local players_position = players.get_position(pid)
                     local distance = SYSTEM.VDIST(players_position.x, players_position.y, players_position.z, 328.47, 4828.87, -58.54)
@@ -2817,9 +2827,12 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for 
                             table.insert(in_orb_room, pid)
                             NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
                         end
-                    elseif contains(in_orb_room, pid) then
-                        table.remove(in_orb_room, index)
-                        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+                    else
+                        local index = find_in_table(in_orb_room, pid)
+                        if index then
+                            table.remove(in_orb_room, index)
+                            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+                        end
                     end
                 end
             end
@@ -2905,13 +2918,7 @@ menu.toggle_loop(SessionWorld, "Spinning MK2s", {""}, "Spin all MK2's, except Mo
                 util.yield(13)
             end
         else
-            local index
-            for i, plid in ipairs(mk2noob) do
-                if plid == pid then
-                    index = i
-                    break
-                end
-            end
+            local index = find_in_table(mk2noob, pid)
             if index then
                 table.remove(mk2noob, index)
                 menu.trigger_commands("spin"..playerName.." off")
@@ -2922,6 +2929,7 @@ menu.toggle_loop(SessionWorld, "Spinning MK2s", {""}, "Spin all MK2's, except Mo
     util.yield(666)
 end, function()
     for _, plid in pairs(mk2noob) do
+        local index = find_in_table(mk2noob, pid)
         if PlayerExists(plid) then
             menu.trigger_commands("spin"..playerName.." off")
             menu.trigger_commands("slippery"..playerName.." off")
@@ -3127,7 +3135,8 @@ menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost
                             NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
                         end
                     else
-                        if contains(sussy_god, pid) then
+                        local index = find_in_table(sussy_god, pid)
+                        if index then
                             table.remove(sussy_god, index)
                             NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
                         end
@@ -3144,14 +3153,14 @@ end, function()
         if player_Exist(pid) then
             NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
         end
-        table.remove(wannabeGOD, index)
     end
+    wannabeGOD = {}
     for pairs(sussy_god) as pid do
         if player_Exist(pid) then
             NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
         end
-        table.remove(sussy_god, index)
     end
+    sussy_god = {}
 end)
 
 menu.toggle_loop(Session, "Ghost entire Session", {"imaghost"}, "Ghost everyone , like a passive mode but better.", function()
@@ -3210,13 +3219,10 @@ end)
 
 menu.action(Session, "de-Ghost entire Session", {""}, "", function()
     if IsInSession() then
-        local Player_List = players.list()
-        for _, pid in pairs(Player_List) do
+        for players.list() as pid do
             NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
         end
-        for _, pid in pairs(wannabeGOD) do
-            table.remove(wannabeGOD, index)
-        end
+        wannabeGOD = {}
     end
 end)
 
