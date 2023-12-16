@@ -2799,6 +2799,7 @@ local orbRoomTable2 = nil
 local orbRoomDoorDMG = nil
 local in_orb_room = {}
 local wannabeGOD = {}
+local sussy_god = {}
 
 menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for the Orb Room", function()
     orbRoomGlass = SpawnCheck(orbRoomGlass, -1829309699, v3.new(335.882996, 4833.833008, -59.023998), 0, 0, 125, nil, 13)
@@ -2807,17 +2808,19 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for 
     orbRoomDoorDMG = SpawnCheck(orbRoomDoorDMG, -1184972439, v3.new(337.611, 4832.954, -58.595), 10, 0, 125, nil, 13)
     for players.list() as pid do
         if pid != players.user() then
-            if not contains(wannabeGOD, pid) then
-                local players_position = players.get_position(pid)
-                local distance = SYSTEM.VDIST(players_position.x, players_position.y, players_position.z, 328.47, 4828.87, -58.54)
-                if distance <= 9 then
-                    if not contains(in_orb_room, pid) then
-                        table.insert(in_orb_room, pid)
-                        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+            if not contains(sussy_god. pid) then
+                if not contains(wannabeGOD, pid) then
+                    local players_position = players.get_position(pid)
+                    local distance = SYSTEM.VDIST(players_position.x, players_position.y, players_position.z, 328.47, 4828.87, -58.54)
+                    if distance <= 9 then
+                        if not contains(in_orb_room, pid) then
+                            table.insert(in_orb_room, pid)
+                            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+                        end
+                    elseif contains(in_orb_room, pid) then
+                        table.remove(in_orb_room, index)
+                        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
                     end
-                elseif contains(in_orb_room, pid) then
-                    table.remove(in_orb_room, index)
-                    NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
                 end
             end
         end
@@ -3108,7 +3111,6 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
     end
 end)
 
-local sussy_god = {}
 menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost everyone who triggers \"Attacking While Invulnerable\" except Friends.", function()
     if IsInSession() then
         for players.list_except(true) as pid do
