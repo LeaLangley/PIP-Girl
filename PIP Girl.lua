@@ -2985,14 +2985,18 @@ end)
 
 menu.toggle_loop(Session, "Soft Clear Traffic", {"antitrafic"}, "Clears the traffic around you.", function()
     if IsInSession() then
-        if players.user() != players.get_host() then
-            util.yield(666)
-        else
-            util.yield(420)
-        end
+        local waiting_for_clear = nil
         local pos = players.get_position(players.user())
+        if players.user() == players.get_host() then
+            waiting_for_clear = 113
+        else
+            waiting_for_clear = 213
+        end
+        util.yield(waiting_for_clear)
+        MISC.CLEAR_AREA_OF_COPS(pos.x, pos.y, pos.z, 6666, 0)
+        util.yield(waiting_for_clear)
         MISC.CLEAR_AREA_OF_PEDS(pos.x, pos.y, pos.z, 6666, 0)
-        util.yield(666)
+        util.yield(waiting_for_clear)
         MISC.CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, 6666, false, false, false, false, false, false)
     end
 end)
