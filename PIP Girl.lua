@@ -3223,6 +3223,7 @@ menu.action(Session, "de-Ghost entire Session", {""}, "", function()
             NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
         end
         wannabeGOD = {}
+        sussy_god = {}
     end
 end)
 
