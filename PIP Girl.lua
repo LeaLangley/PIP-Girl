@@ -2383,18 +2383,16 @@ end
 local function espOnPlayer(pid, namesync)
     local targetped = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)
     local ppos = ENTITY.GET_ENTITY_COORDS(targetped)
-    if ppos.z < -10 or ENTITY.HAS_ENTITY_CLEAR_LOS_TO_ENTITY(players.user_ped(), targetped, 256) then
+    if ppos.z > -10 then --ENTITY.HAS_ENTITY_CLEAR_LOS_TO_ENTITY(players.user_ped(), targetped, 256)
         --coordinate stuff
         local mypos = ENTITY.GET_ENTITY_COORDS(getLocalPed())
         local playerHeadOffset = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(targetped, 0, 0, 1.0)
         local centerPlayer = ENTITY.GET_ENTITY_COORDS(targetped)
-        local vdist = SYSTEM.VDIST2(mypos.x, mypos.y, mypos.z, ppos.x, ppos.y, ppos.z)
-
-        --color settings
+        local vdist = SYSTEM.VDIST(mypos.x, mypos.y, mypos.z, ppos.x, ppos.y, ppos.z)
         local blipColor = getOrgColor(pid)
         local colText
         if blipColor == -1 then
-            colText = { r = 1.0, g = 1.0, b = 1.0, a = 1.0 } -- Default color if no organization blip color available
+            colText = { r = 1.0, g = 1.0, b = 1.0, a = 1.0 }
         else
             colText = {
                 r = blipColor.r,
@@ -2403,15 +2401,10 @@ local function espOnPlayer(pid, namesync)
                 a = blipColor.a
             }
         end
-        --head offset for all texts
         local screenName = worldToScreen(playerHeadOffset)
         local txtscale = 0.42
 
-        -- Maximum distance at which to draw the ESP (adjust this value as needed)
-        local maxDrawDistance = 313666 -- Change this value to your desired maximum distance.
-
-        if screenName.success and vdist <= maxDrawDistance then -- Check if it should be drawn based on distance and screen position.
-            --name ESP
+        if screenName.success and vdist <= 666 then
             local rank = players.get_rank(pid)
             drawESPText(screenName, -0.10, "("..rank..") "..players.get_name_with_tags(pid), txtscale, colText)
             local health = ENTITY.GET_ENTITY_HEALTH(targetped) - 100
@@ -2419,9 +2412,6 @@ local function espOnPlayer(pid, namesync)
             local armour = PED.GET_PED_ARMOUR(targetped)
             local maxarmour = PLAYER.GET_PLAYER_MAX_ARMOUR(pid)
             drawESPText(screenName, -0.10 * 1.2, "(" .. health .. " / " .. maxhealth .. ")HP | (" .. armour .. " / " .. maxarmour .. ")AP", txtscale, colText)
-            
-            -- Draw other ESP elements with the appropriate color
-            -- (Add your code here to draw other ESP elements if needed)
         end
     end
 end
@@ -3118,38 +3108,47 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
     end
 end)
 
-menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost everyone who triggers \"Attacking While Invulnerable\" except Friends or Stand user.", function()
+local sussy_god = {}
+menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost everyone who triggers \"Attacking While Invulnerable\" except Friends.", function()
     if IsInSession() then
-        local Player_List = players.list()
-        for _, pid in pairs(Player_List) do
+        for players.list_except(true) as pid do
             if not isFriend(pid) then
-                if wannabeGod(pid) and not StandUser(pid) then
-                    local found = false
-                    for _, plid in ipairs(wannabeGOD) do
-                        if plid == pid then
-                            found = true
-                            break
-                        end
-                    end
-                    if not found then
+                if wannabeGod(pid) then
+                    if not contains(wannabeGOD, pid) then
                         table.insert(wannabeGOD, pid)
                         NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
-                        players.add_detection(pid, "Ghosted to you. By PIP Girl.", TOAST_DEFAULT, 0)
+                    end
+                else
+                    if players.is_godmode(pid) and not players.is_in_interior(pid) and not isStuck(pid) then
+                        if not contains(sussy_god, pid) then
+                            table.insert(sussy_god, pid)
+                            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+                        end
+                    else
+                        if contains(sussy_god, pid) then
+                            table.remove(sussy_god, index)
+                            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+                        end
                     end
                 end
             end
         end
-        util.yield(6666)
+        util.yield(1666)
     else
         util.yield(13666)
     end
 end, function()
-    for _, pid in pairs(wannabeGOD) do
+    for pairs(wannabeGOD) as pid do
         if player_Exist(pid) then
-            local playerName = players.get_name(pid)
             NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
         end
         table.remove(wannabeGOD, index)
+    end
+    for pairs(sussy_god) as pid do
+        if player_Exist(pid) then
+            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+        end
+        table.remove(sussy_god, index)
     end
 end)
 
