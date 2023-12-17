@@ -2911,13 +2911,13 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for 
                     if distance <= 9 then
                         if not contains(in_orb_room, pid) then
                             table.insert(in_orb_room, pid)
-                            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+                            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true) -- Entered the Orb Room
                         end
                     else
                         local index = find_in_table(in_orb_room, pid)
                         if index then
                             table.remove(in_orb_room, index)
-                            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+                            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false) -- Left the Orb Room
                         end
                     end
                 end
@@ -3145,19 +3145,19 @@ menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost
                 if wannabeGod(pid) then
                     if not contains(wannabeGOD, pid) then
                         table.insert(wannabeGOD, pid)
-                        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+                        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true) -- Modded God mode.
                     end
                 else
                     if players.is_godmode(pid) and not players.is_in_interior(pid) and not isStuck(pid) then
                         if not contains(sussy_god, pid) then
                             table.insert(sussy_god, pid)
-                            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+                            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true) -- Sussy God mode.
                         end
                     else
                         local index = find_in_table(sussy_god, pid)
                         if index then
                             table.remove(sussy_god, index)
-                            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+                            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false) -- Sussy God mode is legit.
                         end
                     end
                 end
