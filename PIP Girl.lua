@@ -399,6 +399,9 @@ local function isFriend(pid)
             return true
         end
     end
+    if pid == players.user() then
+        return true
+    end
     return false
 end
 
