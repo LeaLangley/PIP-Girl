@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.96"
+local SCRIPT_VERSION = "1.97"
 
 local startupmsg = "If settings are missing PLS restart lua.\nImproved and Lea-rned alot.\nI love u."
 
@@ -2856,6 +2856,37 @@ end)
 
 menu.divider(Session, "<3")
 
+menu.action(Session, "Create \"Friend's\" Group", {"createfriendsgroup"}, "Create a group called \"Friend's\" , turns on Whitelist and Tracking.", function()
+    menu.trigger_commands("friendsupdate")
+    util.yield(13)
+    menu.trigger_commands("friendsnote Friend's")
+    util.yield(13)
+    menu.trigger_commands("friendstrack")
+    util.yield(13)
+    menu.trigger_commands("friendswhitelist")
+end)
+
+menu.action(Session, "Invite Friend's", {"invitefriends"}, "invite all friends.", function()
+    if IsInSession() then
+        local invited = 0
+        if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Friend's")) then
+            for menu.ref_by_path("Online>Player History>Noted Players>Friend's"):getChildren() as friend do
+                local friend_target = friend.target
+                if friend_target:getState() != "Offline" then
+                    menu.trigger_command(friend_target:refByRelPath("Invite To Session"))
+                    invited = invited + 1
+                    util.yield(666)
+                end
+            end
+        else
+            notify("Please create a \"Friend's\" group first.\nYou can do that with \"createfriendsgroup\" Command.")
+        end
+        notify("Invited "..invited.." Friends.")
+    else     
+        notify("Wait until you are loaded in.")
+    end
+end)
+
 local SessionWorld = menu.list(Session, 'World', {}, 'Session World Manipulation.', function(); end)
 
 local orbRoomGlass = nil
@@ -3582,16 +3613,6 @@ menu.action(Settings, 'Open Export Blacklist Folder', {'oef'}, '', function()
 end)
 
 menu.divider(Settings, "<3")
-
-menu.action(Settings, "Create \"Friend's\" Group", {""}, "Create a group called \"Friend's\" , turns on Whitelist and Tracking.", function()
-    menu.trigger_commands("friendsupdate")
-    util.yield(13)
-    menu.trigger_commands("friendsnote Friend's")
-    util.yield(13)
-    menu.trigger_commands("friendstrack")
-    util.yield(13)
-    menu.trigger_commands("friendswhitelist")
-end)
 
 menu.action(Settings, "Copy Position to Clipboard", {}, "", function()
     local playerPosition = players.get_position(players.user())
