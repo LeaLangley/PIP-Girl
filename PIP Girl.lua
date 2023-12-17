@@ -3015,7 +3015,7 @@ menu.toggle_loop(SessionWorld, "Spinning MK2s", {""}, "Spin all MK2's, except Mo
             end
         end    
     end
-    util.yield(666)
+    util.yield(1666)
 end, function()
     for _, plid in pairs(mk2noob) do
         local index = find_in_table(mk2noob, pid)
