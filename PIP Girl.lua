@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.95"
+local SCRIPT_VERSION = "1.96"
 
 local startupmsg = "If settings are missing PLS restart lua.\nImproved and Lea-rned alot.\nI love u."
 
@@ -327,7 +327,6 @@ local function find_in_table(tbl, value)
     return nil
 end
 
-
 local function contains(tbl, value)
     for ipairs(tbl) as v do
         if v == value then
@@ -474,7 +473,6 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
         return entity
     else
         requestControl(entity, timeout)
-        local PlayerList = players.list()
         for players.list() as pid do
             if pid == players.user() or isFriend(pid) then
                 ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid), false)
@@ -977,7 +975,7 @@ local invitefriendsinceo = false
 menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yourself as CEO and auto switches you to MC/CEO in most situations needed.", function()
     if IsInSession() then
         local uniqueColors = {}  -- Table to store unique organization colors
-        for _, pid in players.list(true, true, true) do 
+        for players.list() as pid do
             if players.get_boss(pid) ~= -1 then
                 local orgColor = players.get_org_colour(pid)
                 if orgColor and not uniqueColors[orgColor] then
@@ -993,7 +991,7 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yo
         end
         if ceoInSession < 10 then
             if joinfriendsceo and players.get_boss(players.user()) == -1 then
-                for _, pid in players.list(true, true, true) do 
+                for players.list() as pid do
                     if isFriend(pid) then
                         if players.get_boss(pid) ~= -1 and players.get_boss(players.user()) == -1 then
                             menu.trigger_commands("ceojoin " .. players.get_name(pid))
@@ -1137,19 +1135,19 @@ end
 
 menu.action(PIP_Girl, "Invite All Friends in CEO/MC", {"invceo"}, "Invites all your friends into your CEO/MC.", function()
     if IsInSession() then
-        for _, pid in players.list(true, true, true) do
+        for players.list() as pid do
             if isFriend(pid) and players.get_boss(pid) == -1 then
                 inviteToCEO(pid)
             end
         end
         util.yield(3666)
-        for _, pid in players.list(true, true, true) do
+        for players.list() as pid do
             if isFriend(pid) and players.get_boss(pid) == -1 then
                 inviteToCEO(pid)
             end
         end
         util.yield(3666)
-        for _, pid in players.list(true, true, true) do
+        for players.list() as pid do
             if isFriend(pid) and players.get_boss(pid) == -1 then
                 inviteToCEO(pid)
             end
@@ -2297,7 +2295,8 @@ local warningMessages = {
     [446584149] = "The session you're trying to join is currently full of players. Joined queue.",
     [1691856278] = "The session you are trying to join is private and friends only. You must be invited by a friend to join this session. Joining a new GTA Online session.",
     [1910579138] = "The session you are trying to join is private and friends only. You must be invited by a friend to join this session. Joining a new GTA Online session.",
-    [1073504880] = "There is a slot available in the GTA Online session you are currently queuing for. Joining Session"
+    [1073504880] = "There is a slot available in the GTA Online session you are currently queuing for. Joining Session.",
+    [1748022689] = "Failed to join intended GTA Online session. Please return to Grand Theft Auto V and try again later."
 }
 local avoidWarningSkipHere = {
     { x = 1561.00, y = 385.89, z = -49.69 }, -- Cayo Planning Room
@@ -2467,7 +2466,7 @@ end
 
 local function ReportSessionKD(numPlayers)
     local topPlayers = {}
-    for _, pid in pairs(players.list(false, false, true)) do
+    for players.list(false, false, true) as pid do
         if not isModder(pid) then
             local kd = players.get_kd(pid)
             local playerRank = players.get_rank(pid)
@@ -2627,7 +2626,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             --  <3
             if session_claimer_kd then
                 local players_with_kd = 0
-                for _, pid in pairs(players.list(false, false, true)) do
+                for players.list(false, false, true) as pid do
                     while not IsInSession() do
                         if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
                             util.yield(19666)
@@ -2653,7 +2652,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
 
             if session_claimer_lvl then
                 local players_with_lvl = 0
-                for _, pid in pairs(players.list(false, false, true)) do
+                for players.list(false, false, true) as pid do
                     while not IsInSession() do
                         if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
                             util.yield(19666)
@@ -2791,15 +2790,71 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
     end
 end)
 
-menu.action(Session, "Notify Highest K/D", {"notifykd"}, "Notify's u with the Hightest K/D Players.", function()
-    local numPlayers
-    if session_claimer_kd_target_players < 3 then
-        numPlayers = 3
-    else
-        numPlayers = session_claimer_kd_target_players
-    end
-    ReportSessionKD(numPlayers)
+menu.divider(Session, "<3 Admin Stuff <3")
+
+--local group_name = "Admin"
+--local copy_from = nil
+--local function clearCopy()
+--    copy_from:refByRelPath("Copy Session Info").value = false
+--    copy_from = nil
+--end
+--menu.toggle_loop(Session, "Group-Based Copy Session Info", {"groupcopy"}, "", function()
+--    util.yield(666)
+--    if copy_from ~= nil then
+--        if copy_from:getState() ~= "Public" then
+--            warnify($"{copy_from.name_for_config} is no longer in a public session, disabling copy session info.")
+--            clearCopy()
+--        end
+--    else
+--        for menu.ref_by_path("Online>Player History>Noted Players>"..group_name):getChildren() as link do
+--            util.yield(6)
+--            local hp = link.target
+--            if hp:getState() == "Public" then
+--                warnify($"{hp.name_for_config} is in a public session, copying their session info.")
+--                hp:refByRelPath("Copy Session Info").value = true
+--                copy_from = hp
+--                return
+--            end
+--        end
+--    end
+--end)
+--menu.text_input(Session, "Group Name", {"groupname"}, "", function(value)
+--    group_name = value
+--    if copy_from ~= nil then
+--        clearCopy()
+--    end
+--end, group_name)
+
+menu.action(Session, "Create \"Admin\" Group", {""}, "Create a group called \"Admin\"", function()
+    menu.trigger_commands("adminsupdate")
+    util.yield(666)
+    menu.trigger_commands("adminsnote Admin")
 end)
+
+local Admin = (120000000 + 117623144) - 7000 + 4000 - 2000 - 4000 + 7000 + 2000
+menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join Invite only\nIf R* Admin Detected", function()
+    if util.is_session_started() then
+        for players.list_except(true) as pid do
+            if players.is_marked_as_admin(pid) or players.is_marked_as_modder_or_admin(pid) then
+                if Admin != players.get_rockstar_id(players.user()) then
+                    menu.trigger_commands("quickbail")
+                    warnify("Admin Detected, We get you out of Here!")
+                    util.yield(666)
+                    menu.trigger_commands("unstuck")
+                    util.yield(666)
+                    menu.trigger_commands("go inviteonly")
+                else
+                    warnify("Admin Detected, We get you out of Here!")
+                    inviteToCEO(pid)
+                    menu.trigger_commands("restartfm")
+                end
+            end    
+        end
+    end
+    util.yield()
+end)
+
+menu.divider(Session, "<3")
 
 local SessionWorld = menu.list(Session, 'World', {}, 'Session World Manipulation.', function(); end)
 
@@ -2899,7 +2954,7 @@ end)
 
 local mk2noob = {}
 menu.toggle_loop(SessionWorld, "Spinning MK2s", {""}, "Spin all MK2's, except Modder and Friend's", function()
-    for _, pid in pairs(players.list(false, true, true)) do 
+    for players.list_except(true) as pid do
         local playerName = players.get_name(pid)
         if players.get_vehicle_model(pid) == 2069146067 and not isFriend(pid) then
             if not players.is_marked_as_modder(pid) then 
@@ -2937,73 +2992,6 @@ end, function()
         table.remove(mk2noob, index)
     end
 end)
-
-menu.divider(Session, "<3 Admin Stuff <3")
-
---local group_name = "Admin"
---local copy_from = nil
---local function clearCopy()
---    copy_from:refByRelPath("Copy Session Info").value = false
---    copy_from = nil
---end
---menu.toggle_loop(Session, "Group-Based Copy Session Info", {"groupcopy"}, "", function()
---    util.yield(666)
---    if copy_from ~= nil then
---        if copy_from:getState() ~= "Public" then
---            warnify($"{copy_from.name_for_config} is no longer in a public session, disabling copy session info.")
---            clearCopy()
---        end
---    else
---        for menu.ref_by_path("Online>Player History>Noted Players>"..group_name):getChildren() as link do
---            util.yield(6)
---            local hp = link.target
---            if hp:getState() == "Public" then
---                warnify($"{hp.name_for_config} is in a public session, copying their session info.")
---                hp:refByRelPath("Copy Session Info").value = true
---                copy_from = hp
---                return
---            end
---        end
---    end
---end)
---menu.text_input(Session, "Group Name", {"groupname"}, "", function(value)
---    group_name = value
---    if copy_from ~= nil then
---        clearCopy()
---    end
---end, group_name)
-
-menu.action(Session, "Create \"Admin\" Group", {""}, "Create a group called \"Admin\"", function()
-    menu.trigger_commands("adminsupdate")
-    util.yield(666)
-    menu.trigger_commands("adminsnote Admin")
-end)
-
-local Admin = (120000000 + 117623144) - 7000 + 4000 - 2000 - 4000 + 7000 + 2000
-menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join Invite only\nIf R* Admin Detected", function()
-    if util.is_session_started() then
-        --local Player_List = players.list(false, true, true)
-        for _, pid in pairs(players.list(false, true, true)) do 
-            if players.is_marked_as_admin(pid) or players.is_marked_as_modder_or_admin(pid) then
-                if Admin != players.get_rockstar_id(players.user()) then
-                    menu.trigger_commands("quickbail")
-                    warnify("Admin Detected, We get you out of Here!")
-                    util.yield(666)
-                    menu.trigger_commands("unstuck")
-                    util.yield(666)
-                    menu.trigger_commands("go inviteonly")
-                else
-                    warnify("Admin Detected, We get you out of Here!")
-                    inviteToCEO(pid)
-                    menu.trigger_commands("restartfm")
-                end
-            end    
-        end
-    end
-    util.yield()
-end)
-
-menu.divider(Session, "<3")
 
 local pop_multiplier_id = nil
 menu.toggle_loop(Session, "Clear Traffic", {}, "", function(on)
@@ -3163,36 +3151,9 @@ end, function()
     sussy_god = {}
 end)
 
-menu.toggle_loop(Session, "Ghost entire Session", {"imaghost"}, "Ghost everyone , like a passive mode but better.", function()
-    if IsInSession() then
-        local Player_List = players.list()
-        for _, pid in pairs(Player_List) do
-            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
-        end
-        util.yield(6666)
-    else
-        util.yield(13666)
-    end
-end, function()
-    local Player_List = players.list()
-    for _, pid in pairs(Player_List) do
-        local found = false
-        for _, plid in ipairs(wannabeGOD) do
-            if plid == pid then
-                found = true
-                break
-            end
-            if not found then
-                NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
-            end
-        end
-    end
-end)
-
 menu.toggle_loop(Session, "Kick Aggressive Host Token on Attack", {""}, "", function()
     if IsInSession() then
-        local Player_List = players.list()
-        for _, pid in pairs(Player_List) do
+        for players.list() as pid do
             if aggressive(pid) and not isFriend(pid) and players.is_marked_as_attacker(pid) then
                 StrategicKick(pid)
             end
@@ -3205,8 +3166,7 @@ end)
 
 menu.toggle_loop(Session, "Kick Aggressive Host Token as Host", {""}, "", function()
     if IsInSession() and players.user() == players.get_host() then
-        local Player_List = players.list()
-        for _, pid in pairs(Player_List) do
+        for players.list() as pid do
             if aggressive(pid) and not isFriend(pid) then
                 StrategicKick(pid)
             end
@@ -3225,6 +3185,16 @@ menu.action(Session, "de-Ghost entire Session", {""}, "", function()
         wannabeGOD = {}
         sussy_god = {}
     end
+end)
+
+menu.action(Session, "Notify Highest K/D", {"notifykd"}, "Notify's u with the Hightest K/D Players.", function()
+    local numPlayers
+    if session_claimer_kd_target_players < 3 then
+        numPlayers = 3
+    else
+        numPlayers = session_claimer_kd_target_players
+    end
+    ReportSessionKD(numPlayers)
 end)
 
 menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisible for the whole session, but with a nice effect for ppl close by.", function()
