@@ -3070,7 +3070,7 @@ end)
 menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
     if IsInSession() then
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
-            if players.user() == players.get_host() or players.user() == players.get_script_host() then
+            if players.user() == players.get_host() or (players.user() == players.get_script_host() and not isFriend(players.get_host())) then
                 if not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
                     for players.list() as pid do
                         local check_timeout = os.time() + 13
