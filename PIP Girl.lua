@@ -2875,8 +2875,10 @@ menu.action(Session, "Invite Friend's", {"invitefriends"}, "invite all friends."
                 local friend_target = friend.target
                 if friend_target:getState() != "Offline" then
                     menu.trigger_command(friend_target:refByRelPath("Invite To Session"))
+                    util.yield(113)
+                    menu.trigger_command(friend_target:refByRelPath("Invite To Session"))
                     invited = invited + 1
-                    util.yield(666)
+                    util.yield(420)
                 end
             end
         else
