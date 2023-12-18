@@ -2123,12 +2123,10 @@ local function SuperClean(fix, ignoreMission)
     for k,ent in pairs(entities.get_all_peds_as_handles()) do
         if not PED.IS_PED_A_PLAYER(ent) then
             if not ignoreMission then
-                requestControl(ent, 0)
                 entities.delete(ent)
                 ct += 1
             else
                 if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
-                    requestControl(ent, 0)
                     entities.delete(ent)
                     ct += 1
                 end
@@ -2141,12 +2139,10 @@ local function SuperClean(fix, ignoreMission)
         local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
         if not PED.IS_PED_A_PLAYER(driver) then
             if not ignoreMission then
-                requestControl(ent, 0)
                 entities.delete(ent)
                 ct += 1
             else
                 if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
-                    requestControl(ent, 0)
                     entities.delete(ent)
                     ct += 1
                 end
@@ -2157,12 +2153,10 @@ local function SuperClean(fix, ignoreMission)
     util.yield(13)
     for k,ent in pairs(entities.get_all_objects_as_handles()) do
         if not ignoreMission then
-            requestControl(ent, 0)
             entities.delete(ent)
             ct += 1
         else
             if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
-                requestControl(ent, 0)
                 entities.delete(ent)
                 ct += 1
             end
@@ -2172,12 +2166,10 @@ local function SuperClean(fix, ignoreMission)
     util.yield(13)
     for k,ent in pairs(entities.get_all_pickups_as_handles()) do
         if not ignoreMission then
-            requestControl(ent, 0)
             entities.delete(ent)
             ct += 1
         else
             if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
-                requestControl(ent, 0)
                 entities.delete(ent)
                 ct += 1
             end
