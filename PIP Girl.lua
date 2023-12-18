@@ -396,7 +396,7 @@ local function isFriend(pid)
     if NETWORK.NETWORK_IS_FRIEND(hdl) then
         return true
     end
-    for players.list(false, true, false) as plid do
+    for players.list_only(false, true, false, true) as plid do
         if plid == pid then
             return true
         end
