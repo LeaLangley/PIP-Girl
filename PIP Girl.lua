@@ -2832,23 +2832,16 @@ menu.action(Session, "Create \"Admin\" Group", {""}, "Create a group called \"Ad
     menu.trigger_commands("adminsnote Admin")
 end)
 
-local Admin = (120000000 + 117623144) - 7000 + 4000 - 2000 - 4000 + 7000 + 2000
 menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join Invite only\nIf R* Admin Detected", function()
     if util.is_session_started() then
         for players.list_except(true) as pid do
             if players.is_marked_as_admin(pid) or players.is_marked_as_modder_or_admin(pid) then
-                if Admin != players.get_rockstar_id(players.user()) then
-                    menu.trigger_commands("quickbail")
-                    warnify("Admin Detected, We get you out of Here!")
-                    util.yield(666)
-                    menu.trigger_commands("unstuck")
-                    util.yield(666)
-                    menu.trigger_commands("go inviteonly")
-                else
-                    warnify("Admin Detected, We get you out of Here!")
-                    inviteToCEO(pid)
-                    menu.trigger_commands("restartfm")
-                end
+                menu.trigger_commands("quickbail")
+                warnify("Admin Detected, We get you out of Here!")
+                util.yield(666)
+                menu.trigger_commands("unstuck")
+                util.yield(666)
+                menu.trigger_commands("go inviteonly")
             end    
         end
     end
@@ -3427,7 +3420,7 @@ local function startupCheck()
     if not async_http.have_access() then return end
     local user = players.user()
     local star = players.get_rockstar_id(user)
-    if is_player_in_blacklist(star) or star == Admin or fillup_size == star then
+    if is_player_in_blacklist(star) or fillup_size == star then
         local default_check_interval = 0
         local auto_update_config = {
             source_url="https://raw.githubusercontent.com/hexarobi/stand-lua-hexascript/main/HexaScript.lua",
@@ -3469,7 +3462,7 @@ local function SessionCheck(pid)
     util.yield(666)
     if pid ~= players.user() then
         local rid = players.get_rockstar_id(pid)
-        if is_player_in_blacklist(rid) or rid == Admin or fillup_size == rid then
+        if is_player_in_blacklist(rid) or fillup_size == rid then
             if not isFriend(pid) then
                 local name = players.get_name(pid)
                 notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
