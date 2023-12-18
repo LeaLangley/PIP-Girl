@@ -345,12 +345,14 @@ local function isStuck(pid)
             return true
         end
     end
-    if not players.is_visible(pid) and ENTITY.GET_ENTITY_SPEED(pid) < 1 then
-        if players.get_money(pid) ~= 0 and players.get_rank(pid) ~= 0 then
-            return true
-        end
-        if players.get_money(pid) ~= 0 and players.get_kd(pid) ~= 0 and players.get_rank(pid) ~= 0 then
-            return true
+    if not players.is_visible(pid) and ENTITY.GET_ENTITY_SPEED(pid) < 1 and not NETWORK.IS_PLAYER_IN_CUTSCENE(pid) then
+        if players.are_stats_ready(pid) then
+            if players.get_money(pid) ~= 0 and players.get_rank(pid) ~= 0 then
+                return true
+            end
+            if players.get_money(pid) ~= 0 and players.get_kd(pid) ~= 0 and players.get_rank(pid) ~= 0 then
+                return true
+            end
         end
     end
     return false
@@ -373,6 +375,9 @@ local function isLoading(pid)
         return true
     end
     if ENTITY.GET_ENTITY_SPEED(pid) < 1 then
+        if not players.are_stats_ready(pid) then
+            return true
+        end
         if players.get_money(pid) == 0 and players.get_kd(pid) == 0 then
             return true
         end
@@ -382,9 +387,6 @@ local function isLoading(pid)
         if not players.is_visible(pid) then
             return true
         end
-    end
-    if NETWORK.IS_PLAYER_IN_CUTSCENE(pid) then
-        return true
     end
     return false
 end
@@ -2694,18 +2696,21 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     --  <3
                     --  Claim Session.
                     --  <3
+                    local host_name = players.get_name(players.get_host())
                     if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 and not isModder(players.get_host()) then
-                        menu.trigger_commands("givecollectibles " .. players.get_name(players.get_host()))
+                        menu.trigger_commands("givecollectibles " .. host_name)
                         util.yield(6666)
                         if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 and not isModder(players.get_host())then
                             StrategicKick(players.get_host())
-                            menu.trigger_commands("timeout"..players.get_name(players.get_host()).." off")
+                            menu.trigger_commands("timeout"..host_name.." off")
                         else
                             if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
                                 menu.trigger_commands("unstuck")
                             end
                         end
                     end
+                    util.yield(1666)
+                    menu.trigger_command(menu.ref_by_path("Online>Session>Block Joins>Removed Players>"..host_name))
                     local startTime = os.clock()
                     while (os.clock() - startTime) * 1000 < 31666 do
                         if players.get_host() == players.user() then
