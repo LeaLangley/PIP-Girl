@@ -3157,6 +3157,12 @@ menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost
                         end
                     end
                 end
+            else
+                local index = find_in_table(sussy_god, pid)
+                if index then
+                    table.remove(sussy_god, index)
+                    NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false) -- Sussy God mode is legit.
+                end
             end
         end
         util.yield(1666)
