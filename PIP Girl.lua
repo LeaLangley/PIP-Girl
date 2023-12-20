@@ -3063,36 +3063,44 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
             if players.user() == players.get_host() or (players.user() == players.get_script_host() and not isFriend(players.get_host()) and not isModder(players.get_host())) then
                 if not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
-                    for players.list() as pid do
+                    local targetPid = nil
+                    for players.list() as pid1 do
+                        targetPid = pid1
+                        for players.list() as pid2 do
+                            if isFriend(pid2) and isStuck(pid2) then
+                                targetPid = pid2
+                                break
+                            end
+                        end
                         local check_timeout = os.time() + 13
-                        while player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not wannabeGod(pid) do
+                        while player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not wannabeGod(targetPid) do
                             if os.time() > check_timeout then
                                 break
                             end
                             util.yield(666)
                         end
-                        if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not wannabeGod(pid) then
-                            local name = players.get_name(pid)
+                        if player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not wannabeGod(targetPid) then
+                            local name = players.get_name(targetPid)
                             menu.trigger_commands("givesh " .. name)
                             notify_cmd(name .. " is Loading too Long.")
                             util.yield(13666)
                             local loading_timeout = os.time() + 30
                             local fail = false
-                            while player_Exist(pid) and isStuck(pid) and not wannabeGod(pid) do
+                            while player_Exist(targetPid) and isStuck(targetPid) and not wannabeGod(targetPid) do
                                 util.yield(2666)
                                 if os.time() > loading_timeout then
                                     notify_cmd(name .. " took too long to load. Timeout reached.")
                                     fail = true
                                     break
                                 end
-                                if player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid and not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) and not wannabeGod(pid) then
+                                if player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) and not wannabeGod(targetPid) then
                                     menu.trigger_commands("givesh " .. name)
                                     notify_cmd(name .. " is Still Loading too Long.")
                                     util.yield(13666)
                                 end
                             end
                             if not fail then
-                                if player_Exist(pid) then
+                                if player_Exist(targetPid) then
                                     notify_cmd(name .. " Finished Loading.")
                                 else
                                     notify(name .. " got Lost in the Void.")
