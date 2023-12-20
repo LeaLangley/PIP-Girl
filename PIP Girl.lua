@@ -3019,7 +3019,10 @@ end, function()
 end)
 
 local pop_multiplier_id = nil
-menu.toggle_loop(Session, "Clear Traffic", {}, "", function(on)
+menu.toggle_loop(Session, "Clear Traffic", {}, "", function()
+    if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "On" then
+        menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "Off")
+    end
     if IsInSession() then
         if not pop_multiplier_id then
             pop_multiplier_id = MISC.ADD_POP_MULTIPLIER_SPHERE(1.1, 1.1, 1.1, 15000.0, 0.0, 0.0, false, true)
@@ -3036,6 +3039,11 @@ menu.toggle_loop(Session, "Clear Traffic", {}, "", function(on)
         end
     end
 end, function()
+    if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "Off" then
+        menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "On")
+        util.yield(666)
+        menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "Off")
+    end
     MISC.REMOVE_POP_MULTIPLIER_SPHERE(pop_multiplier_id, false)
     pop_multiplier_id = nil
 end)
