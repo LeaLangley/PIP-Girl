@@ -1385,6 +1385,22 @@ end)
 
 menu.divider(Stimpak, "Vehicle Related Health")
 
+local function getTrailer(vehicle)
+    local trailer = nil
+    local vehiclePosition = ENTITY.GET_ENTITY_COORDS(vehicle, true)
+    for entities.get_all_vehicles_as_handles() as veh_ent do
+        local trailerPosition = ENTITY.GET_ENTITY_COORDS(veh_ent, true)
+        local distance = SYSTEM.VDIST(vehiclePosition.x, vehiclePosition.y, vehiclePosition.z, trailerPosition.x, trailerPosition.y, trailerPosition.z)
+        if distance <= 20.0 then
+            local tailer_p = VEHICLE._GET_VEHICLE_TRAILER_PARENT_VEHICLE(veh_ent)
+            if tailer_p == vehicle then
+                trailer = veh_ent
+                break
+            end
+        end
+    end
+    return trailer
+end
 local function LeaTech()
     local vehicle = entities.get_user_vehicle_as_handle()
     if vehicle then
