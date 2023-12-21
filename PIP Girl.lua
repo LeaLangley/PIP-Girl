@@ -3041,8 +3041,6 @@ menu.toggle_loop(Session, "Clear Traffic", {}, "", function()
 end, function()
     if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "Off" then
         menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "On")
-        util.yield(666)
-        menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "Off")
     end
     MISC.REMOVE_POP_MULTIPLIER_SPHERE(pop_multiplier_id, false)
     pop_multiplier_id = nil
