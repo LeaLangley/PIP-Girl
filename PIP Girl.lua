@@ -524,7 +524,6 @@ end
 local function StrategicKick(pid)
     if player_Exist(pid) and pid ~= players.user() then
         if not IsInSession() then
-            menu.trigger_commands("kick " .. name)
             Wait_for_IsInSession()
         else
             local name = players.get_name(pid)
