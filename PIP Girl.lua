@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.97"
+local SCRIPT_VERSION = "1.98"
 
 local startupmsg = "If settings are missing PLS restart lua.\nImproved and Lea-rned alot.\nI love u."
 
@@ -193,8 +193,8 @@ end
 local function player_Exist(pid)
     if players.exists(pid) then
         local name = players.get_name(pid)
-        if name != "undiscoveredplayer" then
-            if name != "InvalidPlayer" then
+        if name ~= "undiscoveredplayer" then
+            if name ~= "InvalidPlayer" then
                 for players.list() as plid do
                     if plid == pid then
                         return true
@@ -207,9 +207,9 @@ local function player_Exist(pid)
 end
 
 local function StandUser(pid) -- credit to sapphire for this and jinx script
-    if player_Exist(pid) and pid != players.user() then
+    if player_Exist(pid) and pid ~= players.user() then
         util.yield(666)
-        if player_Exist(pid) and pid != players.user() then
+        if player_Exist(pid) and pid ~= players.user() then
             for menu.player_root(pid):getChildren() as cmd do
                 if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Stand User"):isValid() then
                     return true
@@ -221,9 +221,9 @@ local function StandUser(pid) -- credit to sapphire for this and jinx script
 end
 
 local function wannabeGod(pid)
-    if player_Exist(pid) and pid != players.user() then
+    if player_Exist(pid) and pid ~= players.user() then
         util.yield(666)
-        if player_Exist(pid) and pid != players.user() then
+        if player_Exist(pid) and pid ~= players.user() then
             for menu.player_root(pid):getChildren() as cmd do
                 if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Attacking While Invulnerable"):isValid() then
                     return true
@@ -238,9 +238,9 @@ local function wannabeGod(pid)
 end
 
 local function aggressive(pid)
-    if player_Exist(pid) and pid != players.user() then
+    if player_Exist(pid) and pid ~= players.user() then
         util.yield(666)
-        if player_Exist(pid) and pid != players.user() then
+        if player_Exist(pid) and pid ~= players.user() then
             for menu.player_root(pid):getChildren() as cmd do
                 if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Spoofed Host Token (Aggressive)"):isValid() then
                     return true
@@ -946,7 +946,7 @@ menu.divider(PIP_Girl, "CEO/MC Options")
 --            end
 --            local ceo_color_slot = ceo_color_slot_found or 0
 --            local fallback_color = 14
---            if players.get_org_colour(players.user()) != ceo_color then
+--            if players.get_org_colour(players.user()) ~= ceo_color then
 --                while ceo_color_slot <= 9 do
 --                    menu.trigger_commands("ceocolour" .. ceo_color_slot .. " " .. ceo_color)
 --                    util.yield(666)
@@ -960,7 +960,7 @@ menu.divider(PIP_Girl, "CEO/MC Options")
 --                    end
 --                end
 --            end
---            if players.get_org_colour(players.user()) != ceo_color and not first_ceo_color_check then
+--            if players.get_org_colour(players.user()) ~= ceo_color and not first_ceo_color_check then
 --                ceo_color_slot_found = true
 --            end
 --        end
@@ -1057,7 +1057,7 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yo
                     if players.get_org_type(players.user()) == 1 then menu.trigger_commands("ceotomc") end
                     util.yield(1666)
                     if players.get_boss(players.user()) ~= -1 then
-                        if urceoname != "" then
+                        if urceoname ~= "" then
                             menu.trigger_commands("ceoname " .. urceoname)
                         end
                         --if ceo_color ~= -1 then
@@ -1079,7 +1079,7 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yo
                     if players.get_org_type(players.user()) == 0 then menu.trigger_commands("ceotomc") end
                     util.yield(1666)
                     if players.get_boss(players.user()) ~= -1 then
-                        if urceoname != "" then
+                        if urceoname ~= "" then
                             menu.trigger_commands("ceoname " .. urceoname)
                         end
                         --if ceo_color ~= -1 then
@@ -1728,9 +1728,9 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
     else
         menu.trigger_commands("lockoutfit on")
     end
-    if OutfitLockHelmet != -1 then
+    if OutfitLockHelmet ~= -1 then
         if PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) then
-            if menu.get_state(menu.ref_by_path("Self>Appearance>Outfit>Hat")) == "-1" and focused != "Profiles" then
+            if menu.get_state(menu.ref_by_path("Self>Appearance>Outfit>Hat")) == "-1" and focused ~= "Profiles" then
                 local vehicle = entities.get_user_vehicle_as_handle()
                 if vehicle then
                     local getclass = VEHICLE.GET_VEHICLE_CLASS(vehicle)
@@ -2046,7 +2046,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
             goto continue_loop
         end
         local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
-        if not PED.IS_PED_A_PLAYER(driver) and driver != 0 then
+        if not PED.IS_PED_A_PLAYER(driver) and driver ~= 0 then
             goto continue_loop
         end
         local vehiclePosition = ENTITY.GET_ENTITY_COORDS(vehicle, true)
@@ -2448,7 +2448,7 @@ end)
 if menu.get_edition() > 1 then
     menu.toggle_loop(Game,"Bone ESP While Armed", {"aimboneesp"}, "Also counts for armed vehicles.", function()
         local weapon = math.abs(WEAPON.GET_SELECTED_PED_WEAPON(players.user_ped()))
-        if weapon != 1122011548 and weapon != 1569615261 then
+        if weapon ~= 1122011548 and weapon ~= 1569615261 then
             menu.trigger_command(menu.ref_by_path("World>Inhabitants>Player ESP>Bone ESP>Low Latency Rendering"))
         else
             menu.trigger_command(menu.ref_by_path("World>Inhabitants>Player ESP>Bone ESP>Disabled"))
@@ -2740,7 +2740,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                         --menu.trigger_command(menu.ref_by_path(host_remove_block))
                         warnify("Found u a new Home <3")
                         menu.trigger_commands("claimsession off")
-                        if players.user() != players.get_script_host() then
+                        if players.user() ~= players.get_script_host() then
                             menu.trigger_commands("scripthost")
                         end
                         if temp_admin then
@@ -2765,7 +2765,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                         menu.trigger_commands("fillinventory")
                         menu.trigger_commands("fillammo")
                         menu.trigger_commands("claimsession off")
-                        if thunderMin != 0 then
+                        if thunderMin ~= 0 then
                             thunderForMin(thunderMin)
                         end
                         util.yield(6666)
@@ -2881,7 +2881,7 @@ menu.action(Session, "Invite Friend's", {"invitefriends"}, "invite all friends."
         if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Friend's")) then
             for menu.ref_by_path("Online>Player History>Noted Players>Friend's"):getChildren() as friend do
                 local friend_target = friend.target
-                if friend_target:getState() != "Offline" then
+                if friend_target:getState() ~= "Offline" then
                     menu.trigger_command(friend_target:refByRelPath("Invite To Session"))
                     invited = invited + 1
                     util.yield(420)
@@ -2912,7 +2912,7 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for 
     orbRoomTable2 = SpawnCheck(orbRoomTable2, 81317377, v3.new(328.2, 4829, -59.4), 0, 0, 0, nil, 13)
     orbRoomDoorDMG = SpawnCheck(orbRoomDoorDMG, -1184972439, v3.new(337.611, 4832.954, -58.595), 10, 0, 125, nil, 13)
     for players.list() as pid do
-        if pid != players.user() then
+        if pid ~= players.user() then
             if not contains(sussy_god, pid) then
                 if not contains(wannabeGOD, pid) then
                     local players_position = players.get_position(pid)
@@ -3384,7 +3384,7 @@ load_data_e()
 load_data_g()
 
 local function add_player_to_blacklist(rid)
-    if pid != players.user() then
+    if pid ~= players.user() then
         table.insert(data_e, tostring(rid))
         save_data_e()
     end
@@ -3396,29 +3396,34 @@ local function startupConfig()
     end
     menu.trigger_command(menu.ref_by_path("Online>Session>Block Joins>Message>Your Account Has A Bad Reputation"))
     if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Blacklist")) then
+        local noexceptions = true
+        if session_type() == "online" then
+            noexceptions = true
+        else
+            noexceptions = false
+        end
         for menu.ref_by_path("Online>Player History>Noted Players>Blacklist"):getChildren() as rat do
             util.yield(13)
             local rat_target = rat.target
             rat_target:refByRelPath("Player Join Reactions>Notification").value = true
             rat_target:refByRelPath("Player Join Reactions>Write To Console").value = true
-            rat_target:refByRelPath("Player Join Reactions>Block Join").value = true
-            rat_target:refByRelPath("Player Join Reactions>Crash").value = true
-            rat_target:refByRelPath("Player Join Reactions>Timeout").value = true
-            rat_target:refByRelPath("Player Join Reactions>Block Their Network Events").value = true
-            rat_target:refByRelPath("Player Join Reactions>Block Incoming Syncs").value = true
-            rat_target:refByRelPath("Player Join Reactions>Block Outgoing Syncs").value = true
+            rat_target:refByRelPath("Player Join Reactions>Block Join").value = noexceptions
+            rat_target:refByRelPath("Player Join Reactions>Crash").value = noexceptions
+            rat_target:refByRelPath("Player Join Reactions>Timeout").value = noexceptions
+            rat_target:refByRelPath("Player Join Reactions>Block Their Network Events").value = noexceptions
+            rat_target:refByRelPath("Player Join Reactions>Block Incoming Syncs").value = noexceptions
+            rat_target:refByRelPath("Player Join Reactions>Block Outgoing Syncs").value = noexceptions
         end
     end
 end
 
 local function add_in_stand(pid)
-    if pid != players.user() then
+    if pid ~= players.user() then
         if not isFriend(pid) then
             local name = players.get_name(pid)
-            if name != players.get_name(players.user()) then
+            if name ~= players.get_name(players.user()) then
                 players.add_detection(pid, "Blacklist", TOAST_DEFAULT, 100)
                 menu.trigger_commands("historynote ".. name .." Blacklist")
-                menu.trigger_commands("historyblock ".. name .." on")
                 util.create_thread(startupConfig)
             end
         end
@@ -3491,7 +3496,12 @@ local function startupCheck()
     end
 end
 
+local current_session_type = nil
 local function SessionCheck(pid)
+    if session_type() ~= current_session_type then
+        current_session_type = session_type()
+        startupConfig()
+    end
     util.yield(666)
     if pid ~= players.user() then
         local rid = players.get_rockstar_id(pid)
@@ -3504,7 +3514,11 @@ local function SessionCheck(pid)
                     notify("This Blacklist is a Stand User, we don't kick them until they attack: \n" .. name .. " - " .. rid)
                     menu.trigger_commands("hellaa " .. name .. " on")
                 else
-                    StrategicKick(pid)
+                    if session_type() == "online" then
+                        StrategicKick(pid)
+                    else
+                        menu.trigger_commands("hellaa " .. name .. " on")
+                    end
                 end
             end
         end
