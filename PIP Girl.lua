@@ -2398,6 +2398,8 @@ menu.toggle_loop(Game, "Enhanced Name Tag's", {""}, startupmsg, function()
         else
             if players.get_boss(pid) ~= -1 then
                 HUD.SET_MP_GAMER_TAG_COLOUR(playerthing, 0, players.get_org_colour(pid) + 192)
+            else
+                HUD.SET_MP_GAMER_TAG_COLOUR(playerthing, 0, 0)
             end
         end
         if not HUD.IS_MP_GAMER_TAG_ACTIVE(playerthing) then
