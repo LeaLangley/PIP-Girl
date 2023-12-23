@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.98"
+local SCRIPT_VERSION = "1.99"
 
 local startupmsg = "If settings are missing PLS restart lua.\nImproved and Lea-rned alot.\nI love u."
 
@@ -334,6 +334,14 @@ local function contains(tbl, value)
         end
     end
     return false
+end
+
+local function getEntryByValue(tbl, value)
+    for _, entry in ipairs(tbl) do
+        if entry == value then
+            return entry
+        end
+    end
 end
 
 local function isStuck(pid)
@@ -2370,6 +2378,39 @@ end)
 
 menu.divider(Game, "<3")
 
+local playerthingy = {}
+menu.toggle_loop(Game, "Enhanced Name Tag's", {""}, startupmsg, function()
+    for players.list_except(true) as pid do
+        local playerthing
+        local entryIndex = nil
+        for i, entry in ipairs(playerthingy) do
+            if entry.pid == pid then
+                entryIndex = i
+                playerthing = entry.playerthing
+                break
+            end
+        end
+        local targetped = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)
+        if not entryIndex then
+            playerthing = HUD.CREATE_FAKE_MP_GAMER_TAG(targetped, players.get_name(pid), false, false, 0, 0)
+            table.insert(playerthingy, {pid = pid, playerthing = playerthing})
+        else
+            if players.get_boss(pid) ~= -1 then
+                HUD.SET_MP_GAMER_TAG_COLOUR(playerthing, 0, players.get_org_colour(pid) + 192)
+            end
+        end
+        if not HUD.IS_MP_GAMER_TAG_ACTIVE(playerthing) then
+            table.remove(playerthingy, entryIndex)
+        end
+    end
+    util.yield(113)
+end, function()
+    for _, entry in ipairs(playerthingy) do
+        HUD.REMOVE_MP_GAMER_TAG(entry.playerthing)
+    end
+    playerthingy = {}
+end)
+
 local function getLocalPed()
     return PLAYER.PLAYER_PED_ID()
 end
@@ -2439,7 +2480,7 @@ local function espOnPlayer(pid, namesync)
     end
 end
 
-menu.toggle_loop(Game, "ESP", {"pgesp"}, "ESP", function ()
+menu.toggle_loop(Game, "Name ESP", {"pgesp"}, "ESP", function ()
     local playerlist = players.list(false, true, true)
     for i = 1, #playerlist do
         espOnPlayer(playerlist[i])
