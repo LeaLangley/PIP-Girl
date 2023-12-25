@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.99"
+local SCRIPT_VERSION = "1.100"
 
 local startupmsg = "If settings are missing PLS restart lua.\nImproved and Lea-rned alot.\nI love u."
 
@@ -1522,21 +1522,22 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
                     closedDoors = true
                     saved_vehicle_id = nil
                 end
-                --if VEHICLE.IS_VEHICLE_ATTACHED_TO_TRAILER(vehicle) then
-                --    local vehicle_mm = VEHICLE._GET_VEHICLE_TRAILER_PARENT_VEHICLE(saved_trailer_id)
-                --    if vehicle_mm == vehicle then
-                --        local trailer = saved_trailer_id
-                --    else
-                --        local trailer = getTrailer(vehicle)
-                --    end
-                --    repair_lea_tech(trailer)
-                --    if saved_trailer_id == nil or saved_trailer_id ~= trailer then
-                --        saved_trailer_id = trailer
-                --        buff_lea_tech(trailer)
-                --    end
-                --else
-                --    saved_trailer_id = nil
-                --end
+                if VEHICLE.IS_VEHICLE_ATTACHED_TO_TRAILER(vehicle) then
+                    local vehicle_mm = VEHICLE._GET_VEHICLE_TRAILER_PARENT_VEHICLE(saved_trailer_id)
+                    local trailer = nil
+                    if vehicle_mm == vehicle then
+                        trailer = saved_trailer_id
+                    else
+                        trailer = getTrailer(vehicle)
+                    end
+                    repair_lea_tech(trailer)
+                    if saved_trailer_id == nil or saved_trailer_id ~= trailer then
+                        saved_trailer_id = trailer
+                        buff_lea_tech(trailer)
+                    end
+                else
+                    saved_trailer_id = nil
+                end
             else
                 util.yield(1666)
             end
