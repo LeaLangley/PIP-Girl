@@ -6,9 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.100"
+local SCRIPT_VERSION = "1.101"
 
-local startupmsg = "If settings are missing PLS restart lua.\nImproved and Lea-rned alot.\nI love u."
+local startupmsg = "If settings are missing PLS restart lua.\n\nImproved: Lea Tech and Smart Outfit Lock\n\nImproved and Lea-rned alot.\nI love u."
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1753,12 +1753,27 @@ menu.divider(Outfit, "<3")
 
 local OutfitLockHelmet = -1
 local ChangedHelmet = false
+local temp_holding_outfit = nil
 menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you outfit only if u dont have interaction menu open.", function()
     local focused = lang.get_string(menu.get_current_menu_list():getParent().menu_name)
     if util.is_interaction_menu_open() then
         menu.trigger_commands("lockoutfit off")
     else
-        menu.trigger_commands("lockoutfit on")
+        if HUD.IS_MESSAGE_BEING_DISPLAYED() then
+            menu.trigger_commands("lockoutfit off")
+            if not temp_holding_outfit then
+                menu.trigger_commands("saveoutfit 1 PIP Girl Temp")
+                temp_holding_outfit = true
+                notify("saved")
+            end 
+        else
+            menu.trigger_commands("lockoutfit on")
+            if temp_holding_outfit then
+                menu.trigger_commands("outfit 1PIPGirlTemp")
+                temp_holding_outfit = false
+                notify("applyed")
+            end 
+        end
     end
     if OutfitLockHelmet ~= -1 then
         if PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) then
@@ -1792,25 +1807,6 @@ end)
 
 menu.slider(Outfit, 'Smart Outfit Lock Helmet', {'SmartLockHelmet'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet.', -1, 201, OutfitLockHelmet, 1, function (new_value)
     OutfitLockHelmet = new_value
-end)
-
-menu.divider(Outfit, "Restoring")
-
-menu.action(Outfit, "Saves the Current O. as Restore O.", {}, "This will save you current Oufit as Restor Outfit.", function()
-    menu.trigger_commands("saveoutfit 1 Pip Girl")
-end)
-
-local outfit_restored = false
-menu.toggle_loop(Outfit, "Restor Outfit", {"restoreoutfit"}, "Auto Restore the Saved Outfit when Joining a session or (soon) entering a vehicle.", function()
-    if not outfit_restored and IsInSession() then
-        menu.trigger_commands("outfit1pipgirl")
-        outfit_restored = true
-        util.yield(13666)
-    end
-    if not IsInSession() then
-        outfit_restored = false
-        util.yield(13666)
-    end
 end)
 
 menu.toggle_loop(Vehicle_Light, "S.O.S. Morse",{"sosmorse"},"",function()
@@ -3756,8 +3752,6 @@ menu.action(Settings, "Activate Everyday Goodies", {"pggoodies"}, "Activates all
     menu.trigger_commands("pgssh on")
     menu.trigger_commands("pgbll on")    
 end)
-
---HUD.IS_MESSAGE_BEING_DISPLAYED()
 
 menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
     notify(startupmsg)
