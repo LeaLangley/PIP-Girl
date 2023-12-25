@@ -3733,6 +3733,8 @@ menu.action(Settings, "Activate Everyday Goodies", {"pggoodies"}, "Activates all
     menu.trigger_commands("pgbll on")    
 end)
 
+--HUD.IS_MESSAGE_BEING_DISPLAYED()
+
 menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
     notify(startupmsg)
 end)
