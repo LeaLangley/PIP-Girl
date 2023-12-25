@@ -1764,14 +1764,12 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
             if not temp_holding_outfit then
                 menu.trigger_commands("saveoutfit 1 PIP Girl Temp")
                 temp_holding_outfit = true
-                notify("saved")
             end 
         else
             menu.trigger_commands("lockoutfit on")
             if temp_holding_outfit then
                 menu.trigger_commands("outfit 1PIPGirlTemp")
                 temp_holding_outfit = false
-                notify("applyed")
             end 
         end
     end
