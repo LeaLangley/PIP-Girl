@@ -1408,18 +1408,73 @@ local function getTrailer(vehicle)
     end
     return trailer
 end
-local function LeaTech()
-    local vehicle = entities.get_user_vehicle_as_handle()
-    if vehicle then
-        menu.trigger_commands("signal hazard")
-        VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, true)
-        util.yield(666)
-        VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, false)
+local function repair_lea_tech(vehicle)
+    local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
+    local petrolTankHealth = VEHICLE.GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
+    local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle)
+    local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
+    local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
+    repairing = false
+
+    requestControl(vehicle, 0)
+
+    -- Perform repairs
+    if engineHealth < 1000 then
+        local randomValue = math.random(1, 2)
+        VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + randomValue)
+        repairing = true
+    end
+    if petrolTankHealth < 1000 then
+        local randomValue = math.random(1, 2)
+        VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + randomValue)
+        repairing = true
+    end
+    if bodyHealth < 1000 then
+        local randomValue = math.random(1, 2)
+        VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + randomValue)
+        repairing = true
+    end
+    if heliTailHealth < 1000 then
+        local randomValue = math.random(1, 2)
+        VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + randomValue)
+        repairing = true
+    end
+    if heliRotorHealth < 1000 then
+        local randomValue = math.random(1, 2)
+        VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + randomValue)
+        repairing = true
+    end
+
+    -- Check if all vehicle parts are fully repaired
+    if petrolTankHealth >= 1000 and engineHealth >= 1000 and bodyHealth >= 1000 then
+        if not repairing then
+            VEHICLE.SET_VEHICLE_DEFORMATION_FIXED(vehicle)
+            VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, 1000)
+            VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, 1000)
+            VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, 1000)
+            VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, 1000)
+            VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, 1000)
+            VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, false)
+            VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, false)
+            repairing = false
+        end
     else
-        util.yield(1000)
+        VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, true)
+        VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, true)
     end
 end
+local function buff_lea_tech(vehicle)
+    VEHICLE.SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
+    VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+    VEHICLE.SET_DONT_PROCESS_VEHICLE_GLASS(vehicles, true)
+    VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, false)
+    VEHICLE.SET_HELI_TAIL_BOOM_CAN_BREAK_OFF(vehicle, false)
+    VEHICLE.CAN_SHUFFLE_SEAT(vehicle, true)
+    VEHICLE.SET_VEHICLE_CAN_ENGINE_MISSFIRE(vehicle, false)
+    VEHICLE.SET_VEHICLE_ENGINE_CAN_DEGRADE(vehicle, false)
+end
 local saved_vehicle_id = nil
+local saved_trailer_id = nil
 local isInVehicle = false
 local closedDoors = false
 local repairing = false
@@ -1454,59 +1509,12 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
                 requestControl(vehicle, 0)
 
                 -- Perform repairs
-                if engineHealth < 1000 then
-                    local randomValue = math.random(1, 2)
-                    VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + randomValue)
-                    repairing = true
-                end
-                if petrolTankHealth < 1000 then
-                    local randomValue = math.random(1, 2)
-                    VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + randomValue)
-                    repairing = true
-                end
-                if bodyHealth < 1000 then
-                    local randomValue = math.random(1, 2)
-                    VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + randomValue)
-                    repairing = true
-                end
-                if heliTailHealth < 1000 then
-                    local randomValue = math.random(1, 2)
-                    VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + randomValue)
-                    repairing = true
-                end
-                if heliRotorHealth < 1000 then
-                    local randomValue = math.random(1, 2)
-                    VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + randomValue)
-                    repairing = true
-                end
-
-                -- Check if all vehicle parts are fully repaired
-                if petrolTankHealth >= 1000 and engineHealth >= 1000 and bodyHealth >= 1000 then
-                    if not repairing then
-                        VEHICLE.SET_VEHICLE_DEFORMATION_FIXED(vehicle)
-                        VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, 1000)
-                        VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, 1000)
-                        VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, 1000)
-                        VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, 1000)
-                        VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, 1000)
-                        menu.trigger_commands("signal off")
-                        repairing = false
-                    end
-                else
-                    LeaTech()
-                end
+                repair_lea_tech(vehicle)
 
                 -- Apply additional settings to the vehicle
                 if saved_vehicle_id == nil or saved_vehicle_id ~= vehicle then
                     saved_vehicle_id = vehicle
-                    VEHICLE.SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
-                    VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
-                    VEHICLE.SET_DONT_PROCESS_VEHICLE_GLASS(vehicles, true)
-                    VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, false)
-                    VEHICLE.SET_HELI_TAIL_BOOM_CAN_BREAK_OFF(vehicle, false)
-                    VEHICLE.CAN_SHUFFLE_SEAT(vehicle, true)
-                    VEHICLE.SET_VEHICLE_CAN_ENGINE_MISSFIRE(vehicle, false)
-                    VEHICLE.SET_VEHICLE_ENGINE_CAN_DEGRADE(vehicle, false)
+                    buff_lea_tech(vehicle)
                 end
                 if not isInVehicle and not closedDoors then
                     util.yield(1666)
@@ -1514,6 +1522,21 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle"
                     closedDoors = true
                     saved_vehicle_id = nil
                 end
+                --if VEHICLE.IS_VEHICLE_ATTACHED_TO_TRAILER(vehicle) then
+                --    local vehicle_mm = VEHICLE._GET_VEHICLE_TRAILER_PARENT_VEHICLE(saved_trailer_id)
+                --    if vehicle_mm == vehicle then
+                --        local trailer = saved_trailer_id
+                --    else
+                --        local trailer = getTrailer(vehicle)
+                --    end
+                --    repair_lea_tech(trailer)
+                --    if saved_trailer_id == nil or saved_trailer_id ~= trailer then
+                --        saved_trailer_id = trailer
+                --        buff_lea_tech(trailer)
+                --    end
+                --else
+                --    saved_trailer_id = nil
+                --end
             else
                 util.yield(1666)
             end
