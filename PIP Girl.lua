@@ -3204,12 +3204,12 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     notify(name .. " got Lost in the Void.")
                                     menu.trigger_commands("scripthost")
                                 end
-                            else
-                                menu.trigger_commands("scripthost")
+                            --else
+                            --    menu.trigger_commands("scripthost")
                             end
-                            if not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
-                                menu.trigger_commands("scripthost")
-                            end
+                            --if not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
+                            --    menu.trigger_commands("scripthost")
+                            --end
                             util.yield(13666)
                         end
                     end
@@ -3610,74 +3610,72 @@ end
 players.on_join(SessionCheck)
 
 player_menu = function(pid)
-    if player_Exist(pid) then
-        if not players.exists(players.user()) or pid == players.user() or isFriend(pid) then
-            return
-        end
-        local name = players.get_name(pid)
-        local rid = players.get_rockstar_id(pid)
-        menu.player_root(pid):divider('1 PIP Girl')
-        local Bad_Modder = menu.list(menu.player_root(pid), 'Bad Modder?', {""}, '', function() end)
-        menu.action(Bad_Modder, "Add Blacklist & Kick", {'hellbk'}, "Blacklist Note, Kick and Block the Target from Joining u again.", function ()
-            add_in_stand(pid)
-            StrategicKick(pid)
-            if not is_player_in_blacklist(rid) then
-                add_player_to_blacklist(rid)
-            end
-        end)
-        menu.action(Bad_Modder, "Add Blacklist ,Crash & Kick", {'hellc'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
-            add_in_stand(pid)
-            menu.trigger_commands("choke ".. name)
-            util.yield(666)
-            StrategicKick(pid)
-            if not is_player_in_blacklist(rid) then
-                add_player_to_blacklist(rid)
-            end
-        end)
-        menu.action(Bad_Modder, "Kick", {"hellk"}, "", function()
-            StrategicKick(pid)
-        end)
-        menu.action(Bad_Modder, "Add Blacklist Only", {'helln'}, "Blacklist Note and Block the Target from Joining u again.", function ()
-            add_in_stand(pid)
-            if not is_player_in_blacklist(rid) then
-                add_player_to_blacklist(rid)
-            end
-        end)
-        menu.toggle_loop(Bad_Modder, "Ghost Player", {""}, "Ghost the selected player.", function()
-            if IsInSession() and player_Exist(pid) then
-                NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
-            end
-            util.yield(666)
-        end, function()
-            if player_Exist(pid) then
-                NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
-            end
-        end)
-        menu.toggle_loop(Bad_Modder, "Blacklist Kick on Atack", {"hellaab"}, "Auto kick if they atack you, and add them to blacklist.", function()
-            if players.is_marked_as_attacker(pid) then
-                add_in_stand(pid)
-                StrategicKick(pid)
-                if not is_player_in_blacklist(rid) then
-                    add_player_to_blacklist(rid)
-                end
-                warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
-                util.yield(66666)
-            else
-                util.yield(1666)
-            end
-            util.yield(13)
-        end)
-        menu.toggle_loop(Bad_Modder, "Kick on Atack", {"hellaa"}, "Auto kick if they atack you.", function()
-            if players.is_marked_as_attacker(pid) then
-                StrategicKick(pid)
-                warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
-                util.yield(66666)
-            else
-                util.yield(1666)
-            end
-            util.yield(13)
-        end)
+    if not players.exists(players.user()) or pid == players.user() or isFriend(pid) then
+        return
     end
+    local name = players.get_name(pid)
+    local rid = players.get_rockstar_id(pid)
+    menu.player_root(pid):divider('PIP Girl')
+    local Bad_Modder = menu.list(menu.player_root(pid), 'Bad Modder?', {""}, '', function() end)
+    menu.action(Bad_Modder, "Add Blacklist & Kick", {'hellbk'}, "Blacklist Note, Kick and Block the Target from Joining u again.", function ()
+        add_in_stand(pid)
+        StrategicKick(pid)
+        if not is_player_in_blacklist(rid) then
+            add_player_to_blacklist(rid)
+        end
+    end)
+    menu.action(Bad_Modder, "Add Blacklist ,Crash & Kick", {'hellc'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
+        add_in_stand(pid)
+        menu.trigger_commands("choke ".. name)
+        util.yield(666)
+        StrategicKick(pid)
+        if not is_player_in_blacklist(rid) then
+            add_player_to_blacklist(rid)
+        end
+    end)
+    menu.action(Bad_Modder, "Kick", {"hellk"}, "", function()
+        StrategicKick(pid)
+    end)
+    menu.action(Bad_Modder, "Add Blacklist Only", {'helln'}, "Blacklist Note and Block the Target from Joining u again.", function ()
+        add_in_stand(pid)
+        if not is_player_in_blacklist(rid) then
+            add_player_to_blacklist(rid)
+        end
+    end)
+    menu.toggle_loop(Bad_Modder, "Ghost Player", {""}, "Ghost the selected player.", function()
+        if IsInSession() and player_Exist(pid) then
+            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+        end
+        util.yield(666)
+    end, function()
+        if player_Exist(pid) then
+            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+        end
+    end)
+    menu.toggle_loop(Bad_Modder, "Blacklist Kick on Atack", {"hellaab"}, "Auto kick if they atack you, and add them to blacklist.", function()
+        if players.is_marked_as_attacker(pid) then
+            add_in_stand(pid)
+            StrategicKick(pid)
+            if not is_player_in_blacklist(rid) then
+                add_player_to_blacklist(rid)
+            end
+            warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
+            util.yield(66666)
+        else
+            util.yield(1666)
+        end
+        util.yield(13)
+    end)
+    menu.toggle_loop(Bad_Modder, "Kick on Atack", {"hellaa"}, "Auto kick if they atack you.", function()
+        if players.is_marked_as_attacker(pid) then
+            StrategicKick(pid)
+            warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
+            util.yield(66666)
+        else
+            util.yield(1666)
+        end
+        util.yield(13)
+    end)
 end
 
 players.on_join(player_menu)
