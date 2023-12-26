@@ -2346,6 +2346,7 @@ local warningMessages = {
     [2113044399] = "Connection to the active GTA Online session lost due to an unknown network error. Please return to Grand Theft Auto V and try again later.",
     [1869879151] = "Connection to the active GTA Online session lost due to an unknown network error. Please return to Grand Theft Auto V and try again later.",
     [496145784] = "There has been an error with this session. Please return to Grand Theft Auto V and try again.",
+    [1990323196] = "There was a network error joining this Job. Please try again. Return to GTA Online."
     [705668975] = "You have already been voted out of this game session. Joining a new GTA Online session.",
     [2052473979] = "Failed to find a compatible GTA Online session containing friends. Joining a new GTA Online session.",
     [2055607490] = "XD\nUsing more then your allotted graphics card memory can result in serious performance drops and stability issues. Proceed with caution. :clown:",
@@ -3213,10 +3214,10 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     notify_cmd(name .. " Finished Loading.")
                                 else
                                     notify(name .. " got Lost in the Void.")
-                                    menu.trigger_commands("scripthost")
+                                    --menu.trigger_commands("scripthost")
                                 end
-                            --else
-                            --    menu.trigger_commands("scripthost")
+                            else
+                                menu.trigger_commands("scripthost")
                             end
                             --if not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
                             --    menu.trigger_commands("scripthost")
