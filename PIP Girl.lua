@@ -2399,7 +2399,7 @@ end)
 menu.divider(Game, "<3")
 
 local playerthingy = {}
-menu.toggle_loop(Game, "Enhanced Name Tag's", {""}, startupmsg, function()
+menu.toggle_loop(Game, "Enhanced Name Tag's", {""}, "hai", function()
     for players.list_except(true) as pid do
         local playerthing
         local entryIndex = nil
@@ -2503,9 +2503,13 @@ local function espOnPlayer(pid, namesync)
 end
 
 menu.toggle_loop(Game, "Name ESP", {"pgesp"}, "ESP", function ()
-    local playerlist = players.list(false, true, true)
-    for i = 1, #playerlist do
-        espOnPlayer(playerlist[i])
+    if IsInSession() then
+        local playerlist = players.list(false, true, true)
+        for i = 1, #playerlist do
+            espOnPlayer(playerlist[i])
+        end
+    else
+        util.yield(1666)
     end
 end)
 
