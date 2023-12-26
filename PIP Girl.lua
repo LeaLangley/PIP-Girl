@@ -1479,7 +1479,6 @@ local function buff_lea_tech(vehicle)
     VEHICLE.SET_VEHICLE_ENGINE_CAN_DEGRADE(vehicle, false)
     VEHICLE.SET_VEHICLE_STRONG(vehicle, true)
     VEHICLE.SET_TRAILER_LEGS_RAISED(vehicle)
-    NETWORK.SET_ENTITY_GHOSTED_FOR_GHOST_PLAYERS(vehicle, true)
 end
 local saved_vehicle_id = nil
 local saved_trailer_id = nil
