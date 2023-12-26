@@ -3111,9 +3111,9 @@ menu.toggle_loop(SessionWorld, "Spinning MK2s", {""}, "Spin all MK2's, except Mo
     end
     util.yield(1666)
 end, function()
-    for _, plid in pairs(mk2noob) do
+    for pairs(mk2noob) as pid do
         local index = find_in_table(mk2noob, pid)
-        if PlayerExists(plid) then
+        if player_Exist(pid) then
             menu.trigger_commands("spin"..playerName.." off")
             menu.trigger_commands("slippery"..playerName.." off")
             menu.trigger_commands("lock"..playerName.." off")
