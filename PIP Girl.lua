@@ -1479,6 +1479,7 @@ local function buff_lea_tech(vehicle)
     VEHICLE.SET_VEHICLE_ENGINE_CAN_DEGRADE(vehicle, false)
     VEHICLE.SET_VEHICLE_STRONG(vehicle, true)
     VEHICLE.SET_TRAILER_LEGS_RAISED(vehicle)
+    NETWORK.SET_ENTITY_GHOSTED_FOR_GHOST_PLAYERS(vehicle, true)
 end
 local saved_vehicle_id = nil
 local saved_trailer_id = nil
@@ -3087,6 +3088,7 @@ menu.toggle_loop(SessionWorld, "Spinning MK2s", {""}, "Spin all MK2's, except Mo
                 end
                 menu.trigger_commands("spin"..playerName.." on")
                 menu.trigger_commands("slippery"..playerName.." on")
+                menu.trigger_commands("lock"..playerName.." on")
                 util.yield(13)
             end
         else
@@ -3095,6 +3097,7 @@ menu.toggle_loop(SessionWorld, "Spinning MK2s", {""}, "Spin all MK2's, except Mo
                 table.remove(mk2noob, index)
                 menu.trigger_commands("spin"..playerName.." off")
                 menu.trigger_commands("slippery"..playerName.." off")
+                menu.trigger_commands("lock"..playerName.." off")
             end
         end    
     end
@@ -3105,6 +3108,7 @@ end, function()
         if PlayerExists(plid) then
             menu.trigger_commands("spin"..playerName.." off")
             menu.trigger_commands("slippery"..playerName.." off")
+            menu.trigger_commands("lock"..playerName.." off")
         end
         table.remove(mk2noob, index)
     end
