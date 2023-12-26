@@ -1766,18 +1766,26 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
     if util.is_interaction_menu_open() then
         menu.trigger_commands("lockoutfit off")
     else
-        if HUD.IS_MESSAGE_BEING_DISPLAYED() then
-            menu.trigger_commands("lockoutfit off")
-            if not temp_holding_outfit then
-                menu.trigger_commands("saveoutfit 1 PIP Girl Temp")
-                temp_holding_outfit = true
-            end 
+        if session_type() ~= "online" then
+            if HUD.IS_MESSAGE_BEING_DISPLAYED() then
+                menu.trigger_commands("lockoutfit off")
+                if not temp_holding_outfit then
+                    menu.trigger_commands("saveoutfit 1 PIP Girl Temp")
+                    temp_holding_outfit = true
+                end 
+            else
+                menu.trigger_commands("lockoutfit on")
+                if temp_holding_outfit then
+                    menu.trigger_commands("outfit 1PIPGirlTemp")
+                    temp_holding_outfit = false
+                end 
+            end
         else
             menu.trigger_commands("lockoutfit on")
             if temp_holding_outfit then
                 menu.trigger_commands("outfit 1PIPGirlTemp")
                 temp_holding_outfit = false
-            end 
+            end
         end
     end
     if OutfitLockHelmet ~= -1 then
