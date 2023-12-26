@@ -3265,13 +3265,14 @@ menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost
                 local index = find_in_table(sussy_god, pid)
                 if index then
                     table.remove(sussy_god, index)
-                    NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false) -- Sussy God mode is friend.
+                    -- Sussy God mode is friend.
                 end
                 local index2 = find_in_table(wannabeGOD, pid)
                 if index2 then
                     table.remove(sussy_god, index)
-                    NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false) -- Wannabe God mode is friend.
+                    -- Wannabe God mode is friend.
                 end
+                NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
             end
         end
         util.yield(1666)
@@ -3611,6 +3612,9 @@ players.on_join(SessionCheck)
 
 player_menu = function(pid)
     if not players.exists(players.user()) or pid == players.user() or isFriend(pid) then
+        if isFriend(pid) then
+            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+        end
         return
     end
     local name = players.get_name(pid)
