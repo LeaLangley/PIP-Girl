@@ -2163,24 +2163,43 @@ local function SuperClean(fix, ignoreMission)
     util.yield(13)
     menu.trigger_commands("deleterope")
     util.yield(13)
-    for k,ent in pairs(entities.get_all_peds_as_handles()) do
+    for pairs(entities.get_all_peds_as_handles()) as ent do
         if not PED.IS_PED_A_PLAYER(ent) then
-            if not ignoreMission then
-                entities.delete(ent)
-                ct += 1
-            else
-                if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
+            if ENTITY.DOES_ENTITY_EXIST(ent) then
+                if not ignoreMission then
                     entities.delete(ent)
                     ct += 1
+                else
+                    if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
+                        entities.delete(ent)
+                        ct += 1
+                    end
                 end
             end
             util.yield(13)
         end
     end
     util.yield(13)
-    for k,ent in pairs(entities.get_all_vehicles_as_handles()) do
+    for pairs(entities.get_all_vehicles_as_handles()) as ent do
         local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
         if not PED.IS_PED_A_PLAYER(driver) then
+            if ENTITY.DOES_ENTITY_EXIST(ent) then
+                if not ignoreMission then
+                    entities.delete(ent)
+                    ct += 1
+                else
+                    if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
+                        entities.delete(ent)
+                        ct += 1
+                    end
+                end
+            end
+            util.yield(13)
+        end
+    end
+    util.yield(13)
+    for pairs(entities.get_all_objects_as_handles()) as ent do
+        if ENTITY.DOES_ENTITY_EXIST(ent) then
             if not ignoreMission then
                 entities.delete(ent)
                 ct += 1
@@ -2189,32 +2208,21 @@ local function SuperClean(fix, ignoreMission)
                     entities.delete(ent)
                     ct += 1
                 end
-            end
-            util.yield(13)
-        end
-    end
-    util.yield(13)
-    for k,ent in pairs(entities.get_all_objects_as_handles()) do
-        if not ignoreMission then
-            entities.delete(ent)
-            ct += 1
-        else
-            if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
-                entities.delete(ent)
-                ct += 1
             end
         end
         util.yield(13)
     end
     util.yield(13)
-    for k,ent in pairs(entities.get_all_pickups_as_handles()) do
-        if not ignoreMission then
-            entities.delete(ent)
-            ct += 1
-        else
-            if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
+    for pairs(entities.get_all_pickups_as_handles()) as ent do
+        if ENTITY.DOES_ENTITY_EXIST(ent) then
+            if not ignoreMission then
                 entities.delete(ent)
                 ct += 1
+            else
+                if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
+                    entities.delete(ent)
+                    ct += 1
+                end
             end
         end
         util.yield(13)
