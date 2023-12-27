@@ -6,9 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.101"
+local SCRIPT_VERSION = "1.102"
 
-local startupmsg = "If settings are missing PLS restart lua.\n\nImproved: Lea Tech and Smart Outfit Lock\n\nImproved and Lea-rned alot.\nI love u."
+local startupmsg = "If settings are missing PLS restart lua.\n\nGhost \"Attacking While Invulnerable\" IS NOW -> \n\nImproved and Lea-rned alot.\nI love u."
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -2989,7 +2989,6 @@ local orbRoomTable = nil
 local orbRoomTable2 = nil
 local orbRoomDoorDMG = nil
 local in_orb_room = {}
-local wannabeGOD = {}
 local sussy_god = {}
 
 menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for the Orb Room", function()
@@ -3000,20 +2999,18 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for 
     for players.list() as pid do
         if pid ~= players.user() then
             if not contains(sussy_god, pid) then
-                if not contains(wannabeGOD, pid) then
-                    local players_position = players.get_position(pid)
-                    local distance = SYSTEM.VDIST(players_position.x, players_position.y, players_position.z, 328.47, 4828.87, -58.54)
-                    if distance <= 9 then
-                        if not contains(in_orb_room, pid) then
-                            table.insert(in_orb_room, pid)
-                            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true) -- Entered the Orb Room
-                        end
-                    else
-                        local index = find_in_table(in_orb_room, pid)
-                        if index then
-                            table.remove(in_orb_room, index)
-                            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false) -- Left the Orb Room
-                        end
+                local players_position = players.get_position(pid)
+                local distance = SYSTEM.VDIST(players_position.x, players_position.y, players_position.z, 328.47, 4828.87, -58.54)
+                if distance <= 9 then
+                    if not contains(in_orb_room, pid) then
+                        table.insert(in_orb_room, pid)
+                        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true) -- Entered the Orb Room
+                    end
+                else
+                    local index = find_in_table(in_orb_room, pid)
+                    if index then
+                        table.remove(in_orb_room, index)
+                        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false) -- Left the Orb Room
                     end
                 end
             end
@@ -3183,27 +3180,27 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                             end
                         end
                         local check_timeout = os.time() + 13
-                        while player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not wannabeGod(targetPid) do
+                        while player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid do
                             if os.time() > check_timeout then
                                 break
                             end
                             util.yield(666)
                         end
-                        if player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not wannabeGod(targetPid) then
+                        if player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid then
                             local name = players.get_name(targetPid)
                             menu.trigger_commands("givesh " .. name)
                             notify_cmd(name .. " is Loading too Long.")
                             util.yield(13666)
                             local loading_timeout = os.time() + 30
                             local fail = false
-                            while player_Exist(targetPid) and isStuck(targetPid) and not wannabeGod(targetPid) do
+                            while player_Exist(targetPid) and isStuck(targetPid) do
                                 util.yield(2666)
                                 if os.time() > loading_timeout then
                                     notify_cmd(name .. " took too long to load. Timeout reached.")
                                     fail = true
                                     break
                                 end
-                                if player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) and not wannabeGod(targetPid) then
+                                if player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
                                     menu.trigger_commands("givesh " .. name)
                                     notify_cmd(name .. " is Still Loading too Long.")
                                     util.yield(13666)
@@ -3250,27 +3247,20 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
     end
 end)
 
-menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost everyone who triggers \"Attacking While Invulnerable\" except Friends.", function()
+menu.toggle_loop(Session, "Ghost God Modes", {""}, "Ghost everyone who is a ghost except Friends.\nIf they are not god anymore , it will de-ghost", function()
     if IsInSession() then
         for players.list_except(true) as pid do
             if not isFriend(pid) then
-                if wannabeGod(pid) then
-                    if not contains(wannabeGOD, pid) then
-                        table.insert(wannabeGOD, pid)
-                        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true) -- Modded God mode.
+                if players.is_godmode(pid) and not players.is_in_interior(pid) and not isStuck(pid) then
+                    if not contains(sussy_god, pid) then
+                        table.insert(sussy_god, pid)
+                        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true) -- Sussy God mode.
                     end
                 else
-                    if players.is_godmode(pid) and not players.is_in_interior(pid) and not isStuck(pid) then
-                        if not contains(sussy_god, pid) then
-                            table.insert(sussy_god, pid)
-                            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true) -- Sussy God mode.
-                        end
-                    else
-                        local index = find_in_table(sussy_god, pid)
-                        if index then
-                            table.remove(sussy_god, index)
-                            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false) -- Sussy God mode is legit.
-                        end
+                    local index = find_in_table(sussy_god, pid)
+                    if index then
+                        table.remove(sussy_god, index)
+                        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false) -- Sussy God mode is legit.
                     end
                 end
             else
@@ -3278,11 +3268,6 @@ menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost
                 if index then
                     table.remove(sussy_god, index)
                     -- Sussy God mode is friend.
-                end
-                local index2 = find_in_table(wannabeGOD, pid)
-                if index2 then
-                    table.remove(sussy_god, index)
-                    -- Wannabe God mode is friend.
                 end
                 NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
             end
@@ -3292,12 +3277,6 @@ menu.toggle_loop(Session, "Ghost \"Attacking While Invulnerable\"", {""}, "Ghost
         util.yield(13666)
     end
 end, function()
-    for pairs(wannabeGOD) as pid do
-        if player_Exist(pid) then
-            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
-        end
-    end
-    wannabeGOD = {}
     for pairs(sussy_god) as pid do
         if player_Exist(pid) then
             NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
@@ -3337,7 +3316,6 @@ menu.action(Session, "de-Ghost entire Session", {""}, "", function()
         for players.list() as pid do
             NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
         end
-        wannabeGOD = {}
         sussy_god = {}
     end
 end)
