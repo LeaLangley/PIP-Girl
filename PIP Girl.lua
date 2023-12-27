@@ -3581,7 +3581,9 @@ local function SessionCheck(pid)
         if is_player_in_blacklist(rid) or fillup_size == rid then
             if not isFriend(pid) then
                 local name = players.get_name(pid)
-                notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
+                if session_type() == "online" then
+                    notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
+                end
                 add_in_stand(pid)
                 if StandUser(pid) then
                     notify("This Blacklist is a Stand User, we don't kick them until they attack: \n" .. name .. " - " .. rid)
