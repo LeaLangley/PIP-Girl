@@ -416,19 +416,22 @@ local function isFriend(pid)
 end
 
 local function session_type()
-    if NETWORK.NETWORK_SESSION_IS_PRIVATE() then
-        return "privat"
+    if util.is_session_started() or util.is_session_transition_active() then
+        if NETWORK.NETWORK_SESSION_IS_PRIVATE() then
+            return "privat"
+        end
+        if NETWORK.NETWORK_SESSION_IS_CLOSED_FRIENDS() then
+            return "friends"
+        end
+        if NETWORK.NETWORK_SESSION_IS_CLOSED_CREW() then
+            return "crew"
+        end
+        if NETWORK.NETWORK_SESSION_IS_SOLO() then
+            return "solo"
+        end
+        return "online"
     end
-    if NETWORK.NETWORK_SESSION_IS_CLOSED_FRIENDS() then
-        return "friends"
-    end
-    if NETWORK.NETWORK_SESSION_IS_CLOSED_CREW() then
-        return "crew"
-    end
-    if NETWORK.NETWORK_SESSION_IS_SOLO() then
-        return "solo"
-    end
-    return "online"
+    return "singleplayer"
 end
 
 local function requestModel(hash, timeout)
