@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.102"
+local SCRIPT_VERSION = "1.103"
 
 local startupmsg = "If settings are missing PLS restart lua.\n\nGhost \"Attacking While Invulnerable\" IS NOW -> Ghost God Mode\n\nImproved and Lea-rned alot.\nI love u."
 
@@ -3123,7 +3123,7 @@ end, function()
 end)
 
 local pop_multiplier_id = nil
-menu.toggle_loop(Session, "Clear Traffic", {}, "", function()
+menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic on the session for everyone.", function()
     if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "On" then
         menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "Off")
     end
@@ -3150,7 +3150,7 @@ end, function()
     pop_multiplier_id = nil
 end)
 
-menu.toggle_loop(Session, "Soft Clear Traffic", {"antitrafic"}, "Clears the traffic around you.", function()
+menu.toggle_loop(Session, "Soft Clear Traffic", {"softantitrafic"}, "Clears the traffic around you localy in close range.\nDosnt work with many players in close range.", function()
     if IsInSession() then
         local waiting_for_clear = nil
         local pos = players.get_position(players.user())
@@ -3250,7 +3250,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
     end
 end)
 
-menu.toggle_loop(Session, "Ghost God Modes", {""}, "Ghost everyone who is a ghost except Friends.\nIf they are not god anymore , it will de-ghost", function()
+menu.toggle_loop(Session, "Ghost God Modes", {""}, "Ghost everyone who is a god mode except Friends.\nIf they are not god anymore , it will de-ghost", function()
     if IsInSession() then
         for players.list_except(true) as pid do
             if not isFriend(pid) then
