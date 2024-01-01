@@ -2448,7 +2448,7 @@ menu.toggle_loop(Game, "Enhanced Name Tag's", {""}, "hai", function()
         end
         local targetped = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)
         if not entryIndex then
-            playerthing = HUD.CREATE_FAKE_MP_GAMER_TAG(targetped, players.get_name_with_tags(pid), false, false, 0, 0)
+            playerthing = HUD.CREATE_FAKE_MP_GAMER_TAG(targetped, players.get_name(pid), false, false, 0, 0)
             table.insert(playerthingy, {pid = pid, playerthing = playerthing})
         else
             if players.get_boss(pid) ~= -1 then
