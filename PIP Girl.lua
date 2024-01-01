@@ -3177,7 +3177,7 @@ menu.toggle_loop(Session, "Soft Clear Traffic", {"softantitrafic"}, "Clears the 
     end
 end)
 
-local isFriendStuck()
+local function isFriendStuck()
     for players.list() as pid do
         if isFriend(pid) and isStuck(pid) then
             return pid
