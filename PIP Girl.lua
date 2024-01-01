@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.104"
+local SCRIPT_VERSION = "1.105"
 
 local startupmsg = "If settings are missing PLS restart lua.\n\nGhost \"Attacking While Invulnerable\" IS NOW -> Ghost God Mode\n\nImproved and Lea-rned alot.\nI love u."
 
@@ -220,6 +220,21 @@ local function StandUser(pid) -- credit to sapphire for this and jinx script
     return false
 end
 
+local function discoveredSince(pid)
+    if player_Exist(pid) then
+        local playerPath = menu.player_root(pid)
+        local timeString = playerPath:refByRelPath("Information>Discovered").value
+        if timeString and type(timeString) == "string" then
+            local minutes, seconds = timeString:match("(%d+) minutes, (%d+) seconds ago")
+            if minutes and seconds then
+                local timeInSeconds = tonumber(minutes) * 60 + tonumber(seconds)
+                return timeInSeconds
+            end
+        end
+    end
+    return nil
+end
+
 local function wannabeGod(pid)
     if player_Exist(pid) and pid ~= players.user() then
         util.yield(666)
@@ -386,7 +401,7 @@ local function isLoading(pid)
         if not players.are_stats_ready(pid) then
             return true
         end
-        if players.get_money(pid) == 0 and players.get_kd(pid) == 0 then
+        if players.get_money(pid) == 0 then
             return true
         end
         if players.get_rank(pid) == 0 then
@@ -3179,7 +3194,7 @@ end)
 
 local function isFriendStuck()
     for players.list() as pid do
-        if isFriend(pid) and isStuck(pid) then
+        if isFriend(pid) and isStuck(pid) and discoveredSince(pid) >= 160 then
             return pid
         end
     end
@@ -3198,13 +3213,13 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                             targetPid = isFriendStuck()
                         end
                         local check_timeout = os.time() + 13
-                        while player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not isFriendStuck() do
+                        while player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not isFriendStuck() and discoveredSince(pid) >= 160 do
                             if os.time() > check_timeout then
                                 break
                             end
                             util.yield(666)
                         end
-                        if player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not isFriendStuck() then
+                        if player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not isFriendStuck() and discoveredSince(pid) >= 160 then
                             local name = players.get_name(targetPid)
                             menu.trigger_commands("givesh " .. name)
                             notify_cmd(name .. " is Loading too Long.")
