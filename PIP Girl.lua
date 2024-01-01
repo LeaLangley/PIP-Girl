@@ -3078,7 +3078,7 @@ end, function()
     end
 end)
 
-menu.toggle_loop(SessionWorld, "Nerf MK2s", {""}, "Nerf Oppressor mk2, except Modder and Friend's", function()
+menu.toggle_loop(SessionWorld, "Nerf Oppressor MK2s", {""}, "Nerf Oppressor mk2 weapons, except Modder and Friend's", function()
     for players.list_except(true) as pid do
         local playerName = players.get_name(pid)
         if players.get_vehicle_model(pid) == 2069146067 and not isFriend(pid) and not players.is_marked_as_modder(pid) then
@@ -3086,7 +3086,6 @@ menu.toggle_loop(SessionWorld, "Nerf MK2s", {""}, "Nerf Oppressor mk2, except Mo
             if VEHICLE.GET_VEHICLE_MOD(vehicle, 10) ~= -1 then
                 requestControl(vehicle, 0)
                 VEHICLE.SET_VEHICLE_MOD(vehicle, 10, -1)
-                notify("nerfed")
             end
         end    
     end
@@ -3094,7 +3093,7 @@ menu.toggle_loop(SessionWorld, "Nerf MK2s", {""}, "Nerf Oppressor mk2, except Mo
 end)
 
 local mk2noob = {}
-menu.toggle_loop(SessionWorld, "Spinning MK2s", {""}, "Spin all MK2's, except Modder and Friend's", function()
+menu.toggle_loop(SessionWorld, "Spinning Oppressor MK2s", {""}, "Spin all MK2's, except Modder and Friend's", function()
     for players.list_except(true) as pid do
         local playerName = players.get_name(pid)
         if players.get_vehicle_model(pid) == 2069146067 and not isFriend(pid) then
