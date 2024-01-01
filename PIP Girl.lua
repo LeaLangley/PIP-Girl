@@ -2433,7 +2433,7 @@ menu.toggle_loop(Game, "Enhanced Name Tag's", {""}, "hai", function()
         end
         local targetped = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)
         if not entryIndex then
-            playerthing = HUD.CREATE_FAKE_MP_GAMER_TAG(targetped, players.get_name(pid), false, false, 0, 0)
+            playerthing = HUD.CREATE_FAKE_MP_GAMER_TAG(targetped, players.get_name_with_tags(pid), false, false, 0, 0)
             table.insert(playerthingy, {pid = pid, playerthing = playerthing})
         else
             if players.get_boss(pid) ~= -1 then
@@ -3212,24 +3212,24 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                             local loading_timeout = os.time() + 30
                             local fail = false
                             while player_Exist(targetPid) and isStuck(targetPid) and not isFriendStuck() do
-                                util.yield(2666)
+                                util.yield(666)
                                 if os.time() > loading_timeout then
                                     notify_cmd(name .. " took too long to load. Timeout reached.")
                                     fail = true
                                     break
                                 end
-                                if player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
-                                    menu.trigger_commands("givesh " .. name)
-                                    notify_cmd(name .. " is Still Loading too Long.")
-                                    util.yield(13666)
-                                end
+                                --if player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
+                                --    menu.trigger_commands("givesh " .. name)
+                                --    notify_cmd(name .. " is Still Loading too Long.")
+                                --    util.yield(13666)
+                                --end
                             end
                             if not fail then
                                 if player_Exist(targetPid) then
                                     notify_cmd(name .. " Finished Loading.")
                                 else
                                     notify(name .. " got Lost in the Void.")
-                                    --menu.trigger_commands("scripthost")
+                                    menu.trigger_commands("scripthost")
                                 end
                             else
                                 menu.trigger_commands("scripthost")
