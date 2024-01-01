@@ -3061,17 +3061,11 @@ end, function()
     end
 end)
 
-local antiTerrorMK2 = nil
 local antiTerrorGlass = nil
 menu.toggle_loop(SessionWorld, "Anti Terrorbyte", {""}, "Blocks the MK2 acces", function()
-    antiTerrorMK2 = SpawnCheck(antiTerrorMK2, 656641197, v3.new(-1421.420, -3016.256, -80.1), 0, 0, -90, nil, 13)
     antiTerrorGlass = SpawnCheck(antiTerrorGlass, -1829309699, v3.new(-1420.666, -3014.579, -79.0), 0, 0, -20, nil, 13)
     util.yield(666)
 end, function()
-    if ENTITY.DOES_ENTITY_EXIST(antiTerrorMK2) then
-        requestControl(antiTerrorMK2, 0)
-        entities.delete(antiTerrorMK2)
-    end
     if ENTITY.DOES_ENTITY_EXIST(antiTerrorGlass) then
         requestControl(antiTerrorGlass, 0)
         entities.delete(antiTerrorGlass)
