@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.103"
+local SCRIPT_VERSION = "1.104"
 
 local startupmsg = "If settings are missing PLS restart lua.\n\nGhost \"Attacking While Invulnerable\" IS NOW -> Ghost God Mode\n\nImproved and Lea-rned alot.\nI love u."
 
@@ -3078,6 +3078,21 @@ end, function()
     end
 end)
 
+menu.toggle_loop(SessionWorld, "Nerf MK2s", {""}, "Nerf Oppressor mk2, except Modder and Friend's", function()
+    for players.list_except(true) as pid do
+        local playerName = players.get_name(pid)
+        if players.get_vehicle_model(pid) == 2069146067 and not isFriend(pid) and not players.is_marked_as_modder(pid) then
+            local vehicle = PED.GET_VEHICLE_PED_IS_IN(PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid))
+            if VEHICLE.GET_VEHICLE_MOD(vehicle, 10) ~= -1 then
+                requestControl(vehicle, 0)
+                VEHICLE.SET_VEHICLE_MOD(vehicle, 10, -1)
+                notify("nerfed")
+            end
+        end    
+    end
+    util.yield(1666)
+end)
+
 local mk2noob = {}
 menu.toggle_loop(SessionWorld, "Spinning MK2s", {""}, "Spin all MK2's, except Modder and Friend's", function()
     for players.list_except(true) as pid do
@@ -3114,6 +3129,7 @@ end, function()
     for pairs(mk2noob) as pid do
         local index = find_in_table(mk2noob, pid)
         if player_Exist(pid) then
+            local playerName = players.get_name(pid)
             menu.trigger_commands("spin"..playerName.." off")
             menu.trigger_commands("slippery"..playerName.." off")
             menu.trigger_commands("lock"..playerName.." off")
