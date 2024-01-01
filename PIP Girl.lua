@@ -3177,6 +3177,15 @@ menu.toggle_loop(Session, "Soft Clear Traffic", {"softantitrafic"}, "Clears the 
     end
 end)
 
+local isFriendStuck()
+    for players.list() as pid do
+        if isFriend(pid) and isStuck(pid) then
+            return pid
+        end
+    end
+    return nil
+end
+
 menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
     if IsInSession() then
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
@@ -3185,27 +3194,24 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                     local targetPid = nil
                     for players.list() as pid1 do
                         targetPid = pid1
-                        for players.list() as pid2 do
-                            if isFriend(pid2) and isStuck(pid2) then
-                                targetPid = pid2
-                                break
-                            end
+                        if isFriendStuck() then
+                            targetPid = isFriendStuck()
                         end
                         local check_timeout = os.time() + 13
-                        while player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid do
+                        while player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not isFriendStuck() do
                             if os.time() > check_timeout then
                                 break
                             end
                             util.yield(666)
                         end
-                        if player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid then
+                        if player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not isFriendStuck() then
                             local name = players.get_name(targetPid)
                             menu.trigger_commands("givesh " .. name)
                             notify_cmd(name .. " is Loading too Long.")
                             util.yield(13666)
                             local loading_timeout = os.time() + 30
                             local fail = false
-                            while player_Exist(targetPid) and isStuck(targetPid) do
+                            while player_Exist(targetPid) and isStuck(targetPid) and not isFriendStuck() do
                                 util.yield(2666)
                                 if os.time() > loading_timeout then
                                     notify_cmd(name .. " took too long to load. Timeout reached.")
@@ -3237,7 +3243,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                 end
             else
                 if isStuck(players.user()) then
-                    util.yield(13666)
+                    util.yield(6666)
                     if isStuck(players.user()) then
                         menu.trigger_commands("scripthost")
                     end
