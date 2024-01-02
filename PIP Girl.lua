@@ -191,13 +191,15 @@ local function warnify_ses(msg)
 end
 
 local function player_Exist(pid)
-    if players.exists(pid) then
-        local name = players.get_name(pid)
-        if name ~= "undiscoveredplayer" then
-            if name ~= "InvalidPlayer" then
-                for players.list() as plid do
-                    if plid == pid then
-                        return true
+    if pid ~= nil then
+        if players.exists(pid) then
+            local name = players.get_name(pid)
+            if name ~= "undiscoveredplayer" then
+                if name ~= "InvalidPlayer" then
+                    for players.list() as plid do
+                        if plid == pid then
+                            return true
+                        end
                     end
                 end
             end
@@ -232,7 +234,7 @@ local function discoveredSince(pid)
             end
         end
     end
-    return nil
+    return 0
 end
 
 local function wannabeGod(pid)
@@ -419,7 +421,7 @@ local function isFriend(pid)
     if NETWORK.NETWORK_IS_FRIEND(hdl) then
         return true
     end
-    for players.list_only(false, true, false, true) as plid do
+    for players.list_only(true, true, false, true) as plid do
         if plid == pid then
             return true
         end
@@ -493,25 +495,40 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
         ENTITY.FREEZE_ENTITY_POSITION(entity, true)
         util.yield(13)
         ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
+        local closestDistance = nil
+        local closestPlayer = players.user()
         for players.list() as pid do
-            if pid == players.user() or isFriend(pid) then
-                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid), false)
-                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid), entity, false)
-            else
-                util.yield(13)
+            if isFriend(pid) then
+                local playerPos = players.get_position(pid)
+                local distance = SYSTEM.VDIST(locationV3.x, locationV3.y, locationV3.z, playerPos.x, playerPos.y, playerPos.z)
+                if not closestDistance or distance < closestDistance then
+                    closestDistance = distance
+                    closestPlayer = pid
+                end
             end
+            util.yield(13)
+        end
+        if closestPlayer then
+            ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(closestPlayer), false)
         end
         return entity
     else
         requestControl(entity, timeout)
+        local closestDistance = nil
+        local closestPlayer = players.user()
         for players.list() as pid do
-            if pid == players.user() or isFriend(pid) then
-                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid), false)
-                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid), entity, false)
-                util.yield(111)
-            else
-                util.yield(13)
+            if isFriend(pid) then
+                local playerPos = players.get_position(pid)
+                local distance = SYSTEM.VDIST(locationV3.x, locationV3.y, locationV3.z, playerPos.x, playerPos.y, playerPos.z)
+                if not closestDistance or distance < closestDistance then
+                    closestDistance = distance
+                    closestPlayer = pid
+                end
             end
+            util.yield(13)
+        end
+        if closestPlayer then
+            ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(players.user()), false)
         end
         return entity
     end
@@ -3035,7 +3052,7 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for 
         end
         util.yield()
     end
-    util.yield(420)
+    util.yield(666)
 end, function()
     for ipairs(in_orb_room) as pid do
         NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
@@ -3064,7 +3081,7 @@ local kosatkaMissile2 = nil
 menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {""}, "Blocks the Entrance for the Orb Room", function()
     kosatkaMissile1 = SpawnCheck(kosatkaMissile1, 1228076166, v3.new(1558.9, 387.111, -50.666), 0, 0, 0, nil, 13)
     kosatkaMissile2 = SpawnCheck(kosatkaMissile2, 1228076166, v3.new(1558.9, 388.777, -50.666), 0, 0, 0, nil, 13)
-    util.yield(666)
+    util.yield(1666)
 end, function()
     if ENTITY.DOES_ENTITY_EXIST(kosatkaMissile1) then
         requestControl(kosatkaMissile1, 0)
@@ -3079,7 +3096,7 @@ end)
 local antiTerrorGlass = nil
 menu.toggle_loop(SessionWorld, "Anti Terrorbyte", {""}, "Blocks the MK2 acces", function()
     antiTerrorGlass = SpawnCheck(antiTerrorGlass, -1829309699, v3.new(-1420.666, -3014.579, -79.0), 0, 0, -20, nil, 13)
-    util.yield(666)
+    util.yield(3666)
 end, function()
     if ENTITY.DOES_ENTITY_EXIST(antiTerrorGlass) then
         requestControl(antiTerrorGlass, 0)
