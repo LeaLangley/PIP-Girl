@@ -467,13 +467,14 @@ end
 local function requestControl(entity, timeout)
     if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(entity) then
         NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(entity)
-        util.yield()
-        local startTime = os.time()
-        while not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(entity) do
-            if os.time() - startTime > timeout or timeout == 0 then
-                break
+        if timeout > 0 then
+            local startTime = os.time()
+            while not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(entity) do
+                if os.time() - startTime > timeout or timeout == 0 then
+                    break
+                end
+                util.yield(13)
             end
-            util.yield(13)
         end
     end
 end
@@ -3230,13 +3231,13 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                             targetPid = isFriendStuck()
                         end
                         local check_timeout = os.time() + 13
-                        while player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not isFriendStuck() and discoveredSince(pid) >= 160 do
+                        while player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not isFriendStuck() and discoveredSince(targetPid) >= 160 do
                             if os.time() > check_timeout then
                                 break
                             end
                             util.yield(666)
                         end
-                        if player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not isFriendStuck() and discoveredSince(pid) >= 160 then
+                        if player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not isFriendStuck() and discoveredSince(targetPid) >= 160 then
                             local name = players.get_name(targetPid)
                             menu.trigger_commands("givesh " .. name)
                             notify_cmd(name .. " is Loading too Long.")
