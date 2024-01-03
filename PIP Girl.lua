@@ -3241,7 +3241,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                             local name = players.get_name(targetPid)
                             menu.trigger_commands("givesh " .. name)
                             notify_cmd(name .. " is Loading too Long.")
-                            util.yield(13666)
+                            util.yield(16666)
                             local loading_timeout = os.time() + 30
                             local fail = false
                             while player_Exist(targetPid) and isStuck(targetPid) and not isFriendStuck() do
@@ -3249,6 +3249,9 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                 if os.time() > loading_timeout then
                                     notify_cmd(name .. " took too long to load. Timeout reached.")
                                     fail = true
+                                    break
+                                end
+                                if players.get_script_host() ~= targetPid then
                                     break
                                 end
                                 --if player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
@@ -3270,13 +3273,13 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                             --if not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
                             --    menu.trigger_commands("scripthost")
                             --end
-                            util.yield(13666)
+                            util.yield(16666)
                         end
                     end
                 end
             else
                 if isStuck(players.user()) then
-                    util.yield(6666)
+                    util.yield(13666)
                     if isStuck(players.user()) then
                         menu.trigger_commands("scripthost")
                     end
@@ -3296,6 +3299,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
     else
         util.yield(13666)
     end
+    util.yield(666)
 end)
 
 menu.toggle_loop(Session, "Ghost God Modes", {""}, "Ghost everyone who is a god mode except Friends.\nIf they are not god anymore , it will de-ghost", function()
