@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.106"
+local SCRIPT_VERSION = "1.107"
 
 local startupmsg = "If settings are missing PLS restart lua.\n\nGhost \"Attacking While Invulnerable\" IS NOW -> Ghost God Mode\n\nImproved and Lea-rned alot.\nI love u."
 
@@ -3545,6 +3545,18 @@ local function startupConfig()
     end
 end
 
+local function crashlistConfig()
+    if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Crash :3")) then
+        for menu.ref_by_path("Online>Player History>Noted Players>Crash :3"):getChildren() as rat do
+            util.yield(13)
+            local rat_target = rat.target
+            rat_target:refByRelPath("Player Join Reactions>Notification").value = true
+            rat_target:refByRelPath("Player Join Reactions>Write To Console").value = true
+            rat_target:refByRelPath("Player Join Reactions>Crash").value = true
+        end
+    end
+end
+
 local function add_in_stand(pid)
     if pid ~= players.user() then
         if not isFriend(pid) then
@@ -3677,9 +3689,15 @@ player_menu = function(pid)
     end)
     menu.action(Bad_Modder, "Add Blacklist ,Crash & Kick", {'hellc'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
         add_in_stand(pid)
-        menu.trigger_commands("choke ".. name)
+        menu.trigger_commands("crash ".. name)
         util.yield(666)
         StrategicKick(pid)
+        if not is_player_in_blacklist(rid) then
+            add_player_to_blacklist(rid)
+        end
+    end)
+    menu.action(Bad_Modder, "Add Blacklist Only", {'helln'}, "Blacklist Note and Block the Target from Joining u again.", function ()
+        add_in_stand(pid)
         if not is_player_in_blacklist(rid) then
             add_player_to_blacklist(rid)
         end
@@ -3687,11 +3705,11 @@ player_menu = function(pid)
     menu.action(Bad_Modder, "Kick", {"hellk"}, "", function()
         StrategicKick(pid)
     end)
-    menu.action(Bad_Modder, "Add Blacklist Only", {'helln'}, "Blacklist Note and Block the Target from Joining u again.", function ()
-        add_in_stand(pid)
-        if not is_player_in_blacklist(rid) then
-            add_player_to_blacklist(rid)
-        end
+    menu.action(Bad_Modder, "Add Crash list and Crash", {'hellcrash'}, "Blacklist Note and Block the Target from Joining u again.", function ()
+        menu.trigger_commands("historynote "..name.." Crash :3")
+        menu.trigger_commands("crash "..name)
+        util.yield(666)
+        crashlistConfig()
     end)
     menu.toggle_loop(Bad_Modder, "Ghost Player", {""}, "Ghost the selected player.", function()
         if IsInSession() and player_Exist(pid) then
