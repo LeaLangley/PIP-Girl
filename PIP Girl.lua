@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.107"
+local SCRIPT_VERSION = "1.108"
 
 local startupmsg = "If settings are missing PLS restart lua.\n\nGhost \"Attacking While Invulnerable\" IS NOW -> Ghost God Mode\n\nImproved and Lea-rned alot.\nI love u."
 
@@ -1408,7 +1408,7 @@ end)
 
 menu.toggle_loop(Stimpak, "Oxygen", {"pgbreath"}, "Just breath.\nAlso gives u Movement and light from Scuba gear without having one equiped.", function()
     if IsInSession() then
-        if ENTITY.IS_ENTITY_IN_WATER(players.user_ped()) or not STATS.STAT_IS_PLAYER_VEHICLE_ABOVE_OCEAN() and PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) then
+        if ENTITY.IS_ENTITY_IN_WATER(players.user_ped()) or ENTITY.IS_ENTITY_IN_WATER(entities.get_user_vehicle_as_handle()) then
             PED.SET_ENABLE_SCUBA(players.user_ped(), true)
             PED.ENABLE_MP_LIGHT(players.user_ped(), true)
             --local air = PLAYER.GET_PLAYER_UNDERWATER_TIME_REMAINING(players.user())
@@ -3105,6 +3105,24 @@ end, function()
         requestControl(antiTerrorGlass, 0)
         entities.delete(antiTerrorGlass)
     end
+end)
+
+local save_zone = nil
+menu.toggle_loop(SessionWorld, "LSC Save Zone", {""}, "", function()
+    if not WEAPON.DOES_AIR_DEFENCE_SPHERE_EXIST(save_zone) then
+        save_zone = WEAPON.CREATE_AIR_DEFENCE_SPHERE(-348.33, -110.81, 39.43, 66.6, 0, 0, 0, 4026734011)
+    else
+        for players.list() as pid do
+            if isFriend(pid) then
+                WEAPON.SET_PLAYER_TARGETTABLE_FOR_AIR_DEFENCE_SPHERE(pid, save_zone, false)
+            else
+                WEAPON.SET_PLAYER_TARGETTABLE_FOR_AIR_DEFENCE_SPHERE(pid, save_zone, true)
+            end
+        end
+    end
+    util.yield(6666)
+end, function()
+    WEAPON.REMOVE_AIR_DEFENCE_SPHERE(save_zone)
 end)
 
 menu.toggle_loop(SessionWorld, "Nerf Oppressor MK2s", {""}, "Nerf Oppressor mk2 weapons, except Modder and Friend's", function()
