@@ -1523,7 +1523,7 @@ local saved_trailer_id = nil
 local isInVehicle = false
 local closedDoors = false
 local repairing = false
-menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle", function()
+menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle, and gives it some modern enhancements.", function()
     local cmd_path = "Vehicle>Light Signals>Use Brake Lights When Stopped"
     if IsInSession() then
         if menu.get_state(menu.ref_by_path(cmd_path)) ~= "On" then
