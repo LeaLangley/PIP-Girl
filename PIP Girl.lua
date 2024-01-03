@@ -1799,7 +1799,7 @@ menu.divider(Outfit, "<3")
 local OutfitLockHelmet = -1
 local ChangedHelmet = false
 local temp_holding_outfit = nil
-menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you outfit only if u dont have interaction menu open.", function()
+menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you outfit only if u dont have interaction menu open or in some critical mission.", function()
     local focused = lang.get_string(menu.get_current_menu_list():getParent().menu_name)
     if util.is_interaction_menu_open() then
         menu.trigger_commands("lockoutfit off")
@@ -2860,8 +2860,9 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     --  Is session under controll?
                     --  <3
                     if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 and (players.get_host() == players.user() or isHostFriendly) then
-                        --local host_remove_block = "Online>Session>Block Joins>Removed Players>"..host_name
-                        --menu.trigger_command(menu.ref_by_path(host_remove_block))
+                        if menu.is_ref_valid(menu.ref_by_path("Online>Session>Block Joins>Removed Players>"..host_name)) then
+                            menu.trigger_command(menu.ref_by_path("Online>Session>Block Joins>Removed Players>"..host_name))
+                        end
                         warnify("Found u a new Home <3")
                         menu.trigger_commands("claimsession off")
                         if players.user() ~= players.get_script_host() then
