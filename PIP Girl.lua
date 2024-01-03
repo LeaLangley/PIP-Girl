@@ -3285,7 +3285,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                 if player_Exist(targetPid) then
                                     notify_cmd(name .. " Finished Loading.")
                                 else
-                                    notify(name .. " got Lost in the Void.")
+                                    notify_cmd(name .. " got Lost in the Void.")
                                     menu.trigger_commands("scripthost")
                                 end
                             else
