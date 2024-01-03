@@ -1406,19 +1406,20 @@ menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {"pgva
     end
 end)
 
-menu.toggle_loop(Stimpak, "Oxygen", {"pgbreath"}, "Just breath.", function()
+menu.toggle_loop(Stimpak, "Oxygen", {"pgbreath"}, "Just breath.\nAlso gives u Movement and light from Scuba gear without having one equiped.", function()
     if IsInSession() then
-        if ENTITY.IS_ENTITY_IN_WATER(players.user_ped()) or not STATS.STAT_IS_PLAYER_VEHICLE_ABOVE_OCEAN() then
+        if ENTITY.IS_ENTITY_IN_WATER(players.user_ped()) or not STATS.STAT_IS_PLAYER_VEHICLE_ABOVE_OCEAN() and PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) then
             PED.SET_ENABLE_SCUBA(players.user_ped(), true)
+            PED.ENABLE_MP_LIGHT(players.user_ped(), true)
             local air = PLAYER.GET_PLAYER_UNDERWATER_TIME_REMAINING(players.user())
             if 13 >= air then
                 PLAYER.SET_PLAYER_UNDERWATER_BREATH_PERCENT_REMAINING(players.user(), 100)
                 util.yield(666)
-            else
-                util.yield(666)
             end
+            util.yield(666)
         else
             PED.SET_ENABLE_SCUBA(players.user_ped(), false)
+            PED.ENABLE_MP_LIGHT(players.user_ped(), false)
             util.yield(3666)
         end
     else
