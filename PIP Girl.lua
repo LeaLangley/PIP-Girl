@@ -3107,23 +3107,23 @@ end, function()
     end
 end)
 
-local save_zone = nil
-menu.toggle_loop(SessionWorld, "LSC Save Zone", {""}, "", function()
-    if not WEAPON.DOES_AIR_DEFENCE_SPHERE_EXIST(save_zone) then
-        save_zone = WEAPON.CREATE_AIR_DEFENCE_SPHERE(-348.33, -110.81, 39.43, 66.6, 0, 0, 0, 4026734011)
-    else
-        for players.list() as pid do
-            if isFriend(pid) then
-                WEAPON.SET_PLAYER_TARGETTABLE_FOR_AIR_DEFENCE_SPHERE(pid, save_zone, false)
-            else
-                WEAPON.SET_PLAYER_TARGETTABLE_FOR_AIR_DEFENCE_SPHERE(pid, save_zone, true)
-            end
-        end
-    end
-    util.yield(6666)
-end, function()
-    WEAPON.REMOVE_AIR_DEFENCE_SPHERE(save_zone)
-end)
+--local save_zone = nil
+--menu.toggle_loop(SessionWorld, "LSC Save Zone", {""}, "", function()
+--    if not WEAPON.DOES_AIR_DEFENCE_SPHERE_EXIST(save_zone) then
+--        save_zone = WEAPON.CREATE_AIR_DEFENCE_SPHERE(-348.33, -110.81, 39.43, 66.6, 0, 0, 0, 4026734011)
+--    else
+--        for players.list() as pid do
+--            if isFriend(pid) then
+--                WEAPON.SET_PLAYER_TARGETTABLE_FOR_AIR_DEFENCE_SPHERE(pid, save_zone, false)
+--            else
+--                WEAPON.SET_PLAYER_TARGETTABLE_FOR_AIR_DEFENCE_SPHERE(pid, save_zone, true)
+--            end
+--        end
+--    end
+--    util.yield(6666)
+--end, function()
+--    WEAPON.REMOVE_AIR_DEFENCE_SPHERE(save_zone)
+--end)
 
 menu.toggle_loop(SessionWorld, "Nerf Oppressor MK2s", {""}, "Nerf Oppressor mk2 weapons, except Modder and Friend's", function()
     for players.list_except(true) as pid do
