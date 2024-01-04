@@ -332,8 +332,11 @@ end
 
 local handle_ptr = memory.alloc(13*8)
 local function pid_to_handle(pid)
-    NETWORK.NETWORK_HANDLE_FROM_PLAYER(pid, handle_ptr, 13)
-    return handle_ptr
+    if pid ~= nil then
+        NETWORK.NETWORK_HANDLE_FROM_PLAYER(pid, handle_ptr, 13)
+        return handle_ptr
+    end
+    return nil
 end
 
 local function find_in_table(tbl, value)
@@ -419,8 +422,10 @@ end
 
 local function isFriend(pid)
     local hdl = pid_to_handle(pid)
-    if NETWORK.NETWORK_IS_FRIEND(hdl) then
-        return true
+    if hd1 ~= nil then
+        if NETWORK.NETWORK_IS_FRIEND(hdl) then
+            return true
+        end
     end
     for players.list_only(true, true, false, true) as plid do
         if plid == pid then
@@ -3680,6 +3685,9 @@ local function SessionCheck(pid)
         if is_player_in_blacklist(rid) or fillup_size == rid then
             if not isFriend(pid) then
                 local name = players.get_name(pid)
+                if name == players.get_name(players.user()) then
+                    name = "N/A"
+                end
                 if session_type() == "online" then
                     notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
                 end
