@@ -63,6 +63,7 @@ local auto_update_config = {
         },
     }
 }
+auto_updater.run_auto_update(auto_update_config)
 
 -- Load required dependencies into global namespace
 for _, dependency in pairs(auto_update_config.dependencies) do
