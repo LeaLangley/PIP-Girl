@@ -495,6 +495,8 @@ local function does_entity_exist(entity)
 end
 
 local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout)
+    local closestDistance = nil
+    local closestPlayer = nil
     if not does_entity_exist(entity) then
         if order == nil then order = 2 end
         requestModel(hash, 13)
@@ -511,8 +513,6 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
         ENTITY.FREEZE_ENTITY_POSITION(entity, true)
         util.yield(13)
         ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
-        local closestDistance = nil
-        local closestPlayer = players.user()
         for players.list() as pid do
             if isFriend(pid) then
                 local playerPos = players.get_position(pid)
@@ -530,8 +530,6 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
         return entity
     else
         requestControl(entity, timeout)
-        local closestDistance = nil
-        local closestPlayer = players.user()
         for players.list() as pid do
             if isFriend(pid) then
                 local playerPos = players.get_position(pid)
@@ -3063,6 +3061,14 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for 
                     if not contains(in_orb_room, pid) then
                         table.insert(in_orb_room, pid)
                         NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true) -- Entered the Orb Room
+                        if not isFriend(pid) then
+                            players.add_detection(pid, "Glitched Orb Room Access", TOAST_DEFAULT, 50)
+                        end
+                    end
+                    if not menu.is_ref_valid(menu.ref_by_path("Stand>Lua Scripts>JinxScript>Detections>Normal Detections>Orbital Cannon")) or menu.get_state(menu.ref_by_path("Stand>Lua Scripts>JinxScript>Detections>Normal Detections>Orbital Cannon")) == "Off" then
+                        if not isFriend(pid) then
+                            notify(players.get_name(pid).." is in Orb Room.")
+                        end
                     end
                 else
                     local index = find_in_table(in_orb_room, pid)
