@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.108"
+local SCRIPT_VERSION = "1.109"
 
 local startupmsg = "If settings are missing PLS restart lua.\n\nGhost \"Attacking While Invulnerable\" IS NOW -> Ghost God Mode\n\nImproved and Lea-rned alot.\nI love u."
 
@@ -76,8 +76,8 @@ for _, dependency in pairs(auto_update_config.dependencies) do
     end
 end
 
-util.require_natives(1681379138)
---util.require_natives("3098a", "g")
+--util.require_natives(1681379138)
+util.require_natives("3095a")
 
 resources_dir = filesystem.resources_dir() .. '/1 PIP Girl/'
 logo = directx.create_texture(resources_dir .. 'logo.png')
@@ -479,14 +479,23 @@ local function requestControl(entity, timeout)
     end
 end
 
+local function does_entity_exist(entity)
+    if entity ~= nil then
+        if ENTITY.DOES_ENTITY_EXIST(entity) then
+            return true
+        end
+    end
+    return false
+end
+
 local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout)
-    if not ENTITY.DOES_ENTITY_EXIST(entity) then
+    if not does_entity_exist(entity) then
         if order == nil then order = 2 end
         requestModel(hash, 13)
         entity = entities.create_object(hash, locationV3)
         util.yield(13)
         local startTime = os.time()
-        while not ENTITY.DOES_ENTITY_EXIST(entity) do
+        while not does_entity_exist(entity) do
             if os.time() - startTime > timeout or timeout == 0 then
                 break
             end
@@ -1504,10 +1513,10 @@ end
 local function buff_lea_tech(vehicle)
     VEHICLE.SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
     VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
-    VEHICLE.SET_DONT_PROCESS_VEHICLE_GLASS(vehicles, true)
+    --VEHICLE.SET_DONT_PROCESS_VEHICLE_GLASS(vehicles, true)
     VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, false)
     VEHICLE.SET_HELI_TAIL_BOOM_CAN_BREAK_OFF(vehicle, false)
-    VEHICLE.CAN_SHUFFLE_SEAT(vehicle, true)
+    --VEHICLE.CAN_SHUFFLE_SEAT(vehicle, true)
     VEHICLE.SET_VEHICLE_CAN_ENGINE_MISSFIRE(vehicle, false)
     VEHICLE.SET_VEHICLE_CAN_LEAK_PETROL(vehicle, false)
     VEHICLE.SET_VEHICLE_CAN_LEAK_OIL(vehicle, false)
@@ -1541,6 +1550,7 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
                     isInVehicle = true
                     closedDoors = false
                 end
+                
                 if driver == -1 then
                     isInVehicle = false
                 end
@@ -2121,7 +2131,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
         if ENTITY.IS_ENTITY_ATTACHED_TO_ANY_VEHICLE(vehicle) then
             goto continue_loop
         end
-        if not ENTITY.DOES_ENTITY_EXIST(vehicle) then
+        if not does_entity_exist(vehicle) then
             goto continue_loop
         end
         local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
@@ -2212,7 +2222,7 @@ local function SuperClean(fix, ignoreMission)
     util.yield(13)
     for pairs(entities.get_all_peds_as_handles()) as ent do
         if not PED.IS_PED_A_PLAYER(ent) then
-            if ENTITY.DOES_ENTITY_EXIST(ent) then
+            if does_entity_exist(ent) then
                 if not ignoreMission then
                     entities.delete(ent)
                     ct += 1
@@ -2230,7 +2240,7 @@ local function SuperClean(fix, ignoreMission)
     for pairs(entities.get_all_vehicles_as_handles()) as ent do
         local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
         if not PED.IS_PED_A_PLAYER(driver) then
-            if ENTITY.DOES_ENTITY_EXIST(ent) then
+            if does_entity_exist(ent) then
                 if not ignoreMission then
                     entities.delete(ent)
                     ct += 1
@@ -2246,7 +2256,7 @@ local function SuperClean(fix, ignoreMission)
     end
     util.yield(13)
     for pairs(entities.get_all_objects_as_handles()) as ent do
-        if ENTITY.DOES_ENTITY_EXIST(ent) then
+        if does_entity_exist(ent) then
             if not ignoreMission then
                 entities.delete(ent)
                 ct += 1
@@ -2261,7 +2271,7 @@ local function SuperClean(fix, ignoreMission)
     end
     util.yield(13)
     for pairs(entities.get_all_pickups_as_handles()) as ent do
-        if ENTITY.DOES_ENTITY_EXIST(ent) then
+        if does_entity_exist(ent) then
             if not ignoreMission then
                 entities.delete(ent)
                 ct += 1
@@ -3062,19 +3072,19 @@ end, function()
         NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
     end
     in_orb_room = {}
-    if ENTITY.DOES_ENTITY_EXIST(orbRoomGlass) then
+    if does_entity_exist(orbRoomGlass) then
         requestControl(orbRoomGlass, 0)
         entities.delete(orbRoomGlass)
     end
-    if ENTITY.DOES_ENTITY_EXIST(orbRoomTable) then
+    if does_entity_exist(orbRoomTable) then
         requestControl(orbRoomTable, 0)
         entities.delete(orbRoomTable)
     end
-    if ENTITY.DOES_ENTITY_EXIST(orbRoomTable2) then
+    if does_entity_exist(orbRoomTable2) then
         requestControl(orbRoomTable2, 0)
         entities.delete(orbRoomTable2)
     end
-    if ENTITY.DOES_ENTITY_EXIST(orbRoomDoorDMG) then
+    if does_entity_exist(orbRoomDoorDMG) then
         requestControl(orbRoomDoorDMG, 0)
         entities.delete(orbRoomDoorDMG)
     end
@@ -3087,11 +3097,11 @@ menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {""}, "Blocks t
     kosatkaMissile2 = SpawnCheck(kosatkaMissile2, 1228076166, v3.new(1558.9, 388.777, -50.666), 0, 0, 0, nil, 13)
     util.yield(1666)
 end, function()
-    if ENTITY.DOES_ENTITY_EXIST(kosatkaMissile1) then
+    if does_entity_exist(kosatkaMissile1) then
         requestControl(kosatkaMissile1, 0)
         entities.delete(kosatkaMissile1)
     end
-    if ENTITY.DOES_ENTITY_EXIST(kosatkaMissile2) then
+    if does_entity_exist(kosatkaMissile2) then
         requestControl(kosatkaMissile2, 0)
         entities.delete(kosatkaMissile2)
     end
@@ -3102,7 +3112,7 @@ menu.toggle_loop(SessionWorld, "Anti Terrorbyte", {""}, "Blocks the MK2 acces", 
     antiTerrorGlass = SpawnCheck(antiTerrorGlass, -1829309699, v3.new(-1420.666, -3014.579, -79.0), 0, 0, -20, nil, 13)
     util.yield(3666)
 end, function()
-    if ENTITY.DOES_ENTITY_EXIST(antiTerrorGlass) then
+    if does_entity_exist(antiTerrorGlass) then
         requestControl(antiTerrorGlass, 0)
         entities.delete(antiTerrorGlass)
     end
@@ -3227,7 +3237,7 @@ menu.toggle_loop(Session, "Soft Clear Traffic", {"softantitrafic"}, "Clears the 
         util.yield(waiting_for_clear)
         MISC.CLEAR_AREA_OF_PEDS(pos.x, pos.y, pos.z, 6666, 0)
         util.yield(waiting_for_clear)
-        MISC.CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, 6666, false, false, false, false, false, false)
+        MISC.CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, 6666, false, false, false, false, false, false, 0)
     end
 end)
 
