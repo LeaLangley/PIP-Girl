@@ -1223,9 +1223,9 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all pickups on yo
     if on then
         local counter = 0
         local playerPed = PLAYER.PLAYER_PED_ID()
-        for _, pickup in entities.get_all_pickups_as_handles() do
+        for entities.get_all_pickups_as_handles() as pickup do
             if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
-                --requestControl(pickup, 0)
+                requestControl(pickup, 0)
                 util.yield(111)
                 ENTITY.ATTACH_ENTITY_TO_ENTITY(pickup, playerPed, PED.GET_PED_BONE_INDEX(playerPed, 24818), 0.0, -0.3, 0.0, 0.0, 90, 0.0, true, true, true, true, 1, true)
                 table.insert(carryingPickups, pickup)
@@ -1237,9 +1237,9 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all pickups on yo
         local counter = 0
         local playerPed = PLAYER.PLAYER_PED_ID()
         local pos = players.get_position(players.user())
-        for _, pickup in ipairs(carryingPickups) do
+        for ipairs(carryingPickups) as pickup do
             if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
-                --requestControl(pickup, 0)
+                requestControl(pickup, 0)
                 util.yield(13)
                 ENTITY.DETACH_ENTITY(pickup, true, true)
                 util.yield(13)
@@ -1258,7 +1258,7 @@ menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a shower in all existing p
     if IsInSession() then
         local pos = players.get_position(players.user())
         local in_vehicle = is_user_driving_vehicle()
-        for _, pickup in entities.get_all_pickups_as_handles() do
+        for entities.get_all_pickups_as_pointer() as pickup do
             if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
                 if in_vehicle then
                     ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z , false, false, false, false)
@@ -1281,12 +1281,12 @@ menu.action(PIP_Girl, "Teleport Pickups To Me", {"tppickups"}, "Teleports all pi
     if IsInSession() then
         local counter = 0
         local pos = players.get_position(players.user())
-        for _, pickup in entities.get_all_pickups_as_handles() do
+        for entities.get_all_pickups_as_pointer() as pickup do
             if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
-                --requestControl(pickup, 0)
+                requestControl(pickup, 0)
                 util.yield(13)
                 ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z-0.8, false, false, false, false)
-                --util.yield(13)
+                util.yield(13)
                 --ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
                 counter = counter + 1
             end
@@ -1446,7 +1446,7 @@ menu.divider(Stimpak, "Vehicle Related Health")
 local function getTrailer(vehicle)
     local trailer = nil
     local vehiclePosition = ENTITY.GET_ENTITY_COORDS(vehicle, true)
-    for entities.get_all_vehicles_as_handles() as veh_ent do
+    for entities.get_all_vehicles_as_pointer() as veh_ent do
         local trailerPosition = ENTITY.GET_ENTITY_COORDS(veh_ent, true)
         local distance = SYSTEM.VDIST(vehiclePosition.x, vehiclePosition.y, vehiclePosition.z, trailerPosition.x, trailerPosition.y, trailerPosition.z)
         if distance <= 20.0 then
