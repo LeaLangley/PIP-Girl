@@ -2742,7 +2742,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         --  Waiting to Join a Session
         --  <3
         while not util.is_session_started() do
-            if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
+            if session_type() == "singleplayer" then
                 if first_run then
                     util.yield(1666)
                 else
@@ -2784,7 +2784,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 local players_with_kd = 0
                 for players.list(false, false, true) as pid do
                     while not IsInSession() do
-                        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
+                        if session_type() == "singleplayer" then
                             util.yield(19666)
                             notify("U r in Story Mode ? Getting u online.")
                             menu.trigger_commands("go public")
@@ -2810,7 +2810,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 local players_with_lvl = 0
                 for players.list(false, false, true) as pid do
                     while not IsInSession() do
-                        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
+                        if session_type() == "singleplayer" then
                             util.yield(19666)
                             notify("U r in Story Mode ? Getting u online.")
                             menu.trigger_commands("go public")
@@ -2843,7 +2843,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 --  <3
                 if (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
                     while not IsInSession() do
-                        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 and not util.is_session_transition_active() and PLAYER.PLAYER_ID() == 0 then
+                        if session_type() == "singleplayer" then
                             util.yield(19666)
                             notify("U r in Story Mode ? Getting u online.")
                             menu.trigger_commands("go public")
@@ -3228,7 +3228,9 @@ end, function()
     if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "Off" then
         menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "On")
     end
-    MISC.REMOVE_POP_MULTIPLIER_SPHERE(pop_multiplier_id, false)
+    if pop_multiplier_id ~= nil then
+        MISC.REMOVE_POP_MULTIPLIER_SPHERE(pop_multiplier_id, false)
+    end
     pop_multiplier_id = nil
 end)
 
@@ -3281,7 +3283,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                             local name = players.get_name(targetPid)
                             menu.trigger_commands("givesh " .. name)
                             notify_cmd(name .. " is Loading too Long.")
-                            util.yield(16666)
+                            util.yield(666)
                             local loading_timeout = os.time() + 30
                             local fail = false
                             while player_Exist(targetPid) and isStuck(targetPid) and not isFriendStuck() do
