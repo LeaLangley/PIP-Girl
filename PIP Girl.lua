@@ -461,7 +461,7 @@ local function requestModel(hash, timeout)
     if not STREAMING.HAS_MODEL_LOADED(hash) then
         STREAMING.REQUEST_MODEL(hash)
         local startTime = os.time()
-        while not STREAMING.HAS_MODEL_LOADED(entity) do
+        while not STREAMING.HAS_MODEL_LOADED(hash) do
             if os.time() - startTime > timeout or timeout == 0 then
                 break
             end
@@ -1584,7 +1584,10 @@ menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
                     saved_vehicle_id = nil
                 end
                 if VEHICLE.IS_VEHICLE_ATTACHED_TO_TRAILER(vehicle) then
-                    local vehicle_mm = VEHICLE._GET_VEHICLE_TRAILER_PARENT_VEHICLE(saved_trailer_id)
+                    local vehicle_mm = nil
+                    if saved_trailer_id ~= nil then
+                        vehicle_mm = VEHICLE._GET_VEHICLE_TRAILER_PARENT_VEHICLE(saved_trailer_id)
+                    end
                     local trailer = nil
                     if vehicle_mm == vehicle then
                         trailer = saved_trailer_id
