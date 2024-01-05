@@ -3887,4 +3887,14 @@ menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
     notify(startupmsg)
 end)
 
+local candle1 = nil
+local candle2 = nil
+local gravestone = nil
+while true do
+    candle1 = SpawnCheck(gravestone, 199039671, v3.new(-1811.891, -128.114, 77.788), 0, 0, 0, nil, 13)
+    candle2 = SpawnCheck(gravestone, 199039671, v3.new(-1812.547, -126.255, 77.788), 0, 0, 0, nil, 13)
+    gravestone = SpawnCheck(gravestone, 1667673456, v3.new(-1812.212, -127.127, 80.265), 0, 180, -69, nil, 13)
+    util.yield(13666)
+end
+
 util.keep_running()
