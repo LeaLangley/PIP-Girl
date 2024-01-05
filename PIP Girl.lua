@@ -3247,6 +3247,12 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic o
     if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "On" then
         menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "Off")
     end
+    if menu.get_state(menu.ref_by_path("World>Inhabitants>Traffic>Disable")) == "Disabled" then
+        menu.trigger_command(menu.ref_by_path("World>Inhabitants>Traffic>Disable>Enabled, Including Parked Cars"))
+    end
+    if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "Off" then
+        menu.set_state(menu.ref_by_path("World>Inhabitants>Pedestrians>Disable"), "On")
+    end
     if IsInSession() then
         if not pop_multiplier_id then
             pop_multiplier_id = MISC.ADD_POP_MULTIPLIER_SPHERE(1.1, 1.1, 1.1, 15000.0, 0.0, 0.0, false, true)
@@ -3265,6 +3271,12 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic o
 end, function()
     if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "Off" then
         menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "On")
+    end
+    if menu.get_state(menu.ref_by_path("World>Inhabitants>Traffic>Disable")) ~= "Disabled" then
+        menu.trigger_command(menu.ref_by_path("World>Inhabitants>Traffic>Disable>Disabled"))
+    end
+    if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "On" then
+        menu.set_state(menu.ref_by_path("World>Inhabitants>Pedestrians>Disable"), "Off")
     end
     if pop_multiplier_id ~= nil then
         MISC.REMOVE_POP_MULTIPLIER_SPHERE(pop_multiplier_id, false)
