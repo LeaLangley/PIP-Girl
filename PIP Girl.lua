@@ -1263,7 +1263,7 @@ menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a shower in all existing p
     if IsInSession() then
         local pos = players.get_position(players.user())
         local in_vehicle = is_user_driving_vehicle()
-        for entities.get_all_pickups_as_pointer() as pickup do
+        for entities.get_all_pickups_as_handles() as pickup do
             if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
                 if in_vehicle then
                     ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z , false, false, false, false)
@@ -1286,7 +1286,7 @@ menu.action(PIP_Girl, "Teleport Pickups To Me", {"tppickups"}, "Teleports all pi
     if IsInSession() then
         local counter = 0
         local pos = players.get_position(players.user())
-        for entities.get_all_pickups_as_pointer() as pickup do
+        for entities.get_all_pickups_as_handles() as pickup do
             if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
                 requestControl(pickup, 0)
                 util.yield(13)
@@ -1451,7 +1451,7 @@ menu.divider(Stimpak, "Vehicle Related Health")
 local function getTrailer(vehicle)
     local trailer = nil
     local vehiclePosition = ENTITY.GET_ENTITY_COORDS(vehicle, true)
-    for entities.get_all_vehicles_as_pointer() as veh_ent do
+    for entities.get_all_vehicles_as_handles() as veh_ent do
         local trailerPosition = ENTITY.GET_ENTITY_COORDS(veh_ent, true)
         local distance = SYSTEM.VDIST(vehiclePosition.x, vehiclePosition.y, vehiclePosition.z, trailerPosition.x, trailerPosition.y, trailerPosition.z)
         if distance <= 20.0 then
