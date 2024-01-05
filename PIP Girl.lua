@@ -499,7 +499,7 @@ local function does_entity_exist(entity)
     return false
 end
 
-local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout)
+local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
     local closestDistance = nil
     local closestPlayer = nil
     if not does_entity_exist(entity) then
@@ -518,36 +518,40 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
         ENTITY.FREEZE_ENTITY_POSITION(entity, true)
         util.yield(13)
         ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
-        for players.list() as pid do
-            if isFriend(pid) then
-                local playerPos = players.get_position(pid)
-                local distance = SYSTEM.VDIST(locationV3.x, locationV3.y, locationV3.z, playerPos.x, playerPos.y, playerPos.z)
-                if not closestDistance or distance < closestDistance then
-                    closestDistance = distance
-                    closestPlayer = pid
+        if anti_collision then
+            for players.list() as pid do
+                if isFriend(pid) then
+                    local playerPos = players.get_position(pid)
+                    local distance = SYSTEM.VDIST(locationV3.x, locationV3.y, locationV3.z, playerPos.x, playerPos.y, playerPos.z)
+                    if not closestDistance or distance < closestDistance then
+                        closestDistance = distance
+                        closestPlayer = pid
+                    end
                 end
+                util.yield(13)
             end
-            util.yield(13)
-        end
-        if closestPlayer then
-            ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(closestPlayer), false)
+            if closestPlayer then
+                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(closestPlayer), false)
+            end
         end
         return entity
     else
         requestControl(entity, timeout)
-        for players.list() as pid do
-            if isFriend(pid) then
-                local playerPos = players.get_position(pid)
-                local distance = SYSTEM.VDIST(locationV3.x, locationV3.y, locationV3.z, playerPos.x, playerPos.y, playerPos.z)
-                if not closestDistance or distance < closestDistance then
-                    closestDistance = distance
-                    closestPlayer = pid
+        if anti_collision then
+            for players.list() as pid do
+                if isFriend(pid) then
+                    local playerPos = players.get_position(pid)
+                    local distance = SYSTEM.VDIST(locationV3.x, locationV3.y, locationV3.z, playerPos.x, playerPos.y, playerPos.z)
+                    if not closestDistance or distance < closestDistance then
+                        closestDistance = distance
+                        closestPlayer = pid
+                    end
                 end
+                util.yield(13)
             end
-            util.yield(13)
-        end
-        if closestPlayer then
-            ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(players.user()), false)
+            if closestPlayer then
+                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(players.user()), false)
+            end
         end
         return entity
     end
@@ -3053,10 +3057,10 @@ local in_orb_room = {}
 local sussy_god = {}
 
 menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for the Orb Room", function()
-    orbRoomGlass = SpawnCheck(orbRoomGlass, -1829309699, v3.new(335.882996, 4833.833008, -59.023998), 0, 0, 125, nil, 13)
-    orbRoomTable = SpawnCheck(orbRoomTable, 81317377, v3.new(328.2, 4829, -58.9), 0, 0, 0, nil, 13)
-    orbRoomTable2 = SpawnCheck(orbRoomTable2, 81317377, v3.new(328.2, 4829, -59.4), 0, 0, 0, nil, 13)
-    orbRoomDoorDMG = SpawnCheck(orbRoomDoorDMG, -1184972439, v3.new(337.611, 4832.954, -58.595), 10, 0, 125, nil, 13)
+    orbRoomGlass = SpawnCheck(orbRoomGlass, -1829309699, v3.new(335.882996, 4833.833008, -59.023998), 0, 0, 125, nil, 13, true)
+    orbRoomTable = SpawnCheck(orbRoomTable, 81317377, v3.new(328.2, 4829, -58.9), 0, 0, 0, nil, 13, true)
+    orbRoomTable2 = SpawnCheck(orbRoomTable2, 81317377, v3.new(328.2, 4829, -59.4), 0, 0, 0, nil, 13, true)
+    orbRoomDoorDMG = SpawnCheck(orbRoomDoorDMG, -1184972439, v3.new(337.611, 4832.954, -58.595), 10, 0, 125, nil, 13, false)
     for players.list() as pid do
         if pid ~= players.user() then
             if not contains(sussy_god, pid) then
@@ -3113,8 +3117,8 @@ end)
 local kosatkaMissile1 = nil
 local kosatkaMissile2 = nil
 menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {""}, "Blocks the Entrance for the Orb Room", function()
-    kosatkaMissile1 = SpawnCheck(kosatkaMissile1, 1228076166, v3.new(1558.9, 387.111, -50.666), 0, 0, 0, nil, 13)
-    kosatkaMissile2 = SpawnCheck(kosatkaMissile2, 1228076166, v3.new(1558.9, 388.777, -50.666), 0, 0, 0, nil, 13)
+    kosatkaMissile1 = SpawnCheck(kosatkaMissile1, 1228076166, v3.new(1558.9, 387.111, -50.666), 0, 0, 0, nil, 13, true)
+    kosatkaMissile2 = SpawnCheck(kosatkaMissile2, 1228076166, v3.new(1558.9, 388.777, -50.666), 0, 0, 0, nil, 13, true)
     util.yield(1666)
 end, function()
     if does_entity_exist(kosatkaMissile1) then
@@ -3129,12 +3133,35 @@ end)
 
 local antiTerrorGlass = nil
 menu.toggle_loop(SessionWorld, "Anti Terrorbyte", {""}, "Blocks the MK2 acces", function()
-    antiTerrorGlass = SpawnCheck(antiTerrorGlass, -1829309699, v3.new(-1420.666, -3014.579, -79.0), 0, 0, -20, nil, 13)
+    antiTerrorGlass = SpawnCheck(antiTerrorGlass, -1829309699, v3.new(-1420.666, -3014.579, -79.0), 0, 0, -20, nil, 13, true)
     util.yield(3666)
 end, function()
     if does_entity_exist(antiTerrorGlass) then
         requestControl(antiTerrorGlass, 0)
         entities.delete(antiTerrorGlass)
+    end
+end)
+
+local candle1 = nil
+local candle2 = nil
+local gravestone = nil
+menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Blocks the MK2 acces", function()
+    candle1 = SpawnCheck(gravestone, 199039671, v3.new(-1811.891, -128.114, 77.788), 0, 0, 0, nil, 13, false)
+    candle2 = SpawnCheck(gravestone, 199039671, v3.new(-1812.547, -126.255, 77.788), 0, 0, 0, nil, 13, false)
+    gravestone = SpawnCheck(gravestone, 1667673456, v3.new(-1812.212, -127.127, 80.265), 0, 180, -69, nil, 13, false)
+    util.yield(13666)
+end, function()
+    if does_entity_exist(candle1) then
+        requestControl(candle1, 0)
+        entities.delete(candle1)
+    end
+    if does_entity_exist(candle2) then
+        requestControl(candle2, 0)
+        entities.delete(candle2)
+    end
+    if does_entity_exist(gravestone) then
+        requestControl(gravestone, 0)
+        entities.delete(gravestone)
     end
 end)
 
@@ -3887,14 +3914,6 @@ menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
     notify(startupmsg)
 end)
 
-local candle1 = nil
-local candle2 = nil
-local gravestone = nil
-while true do
-    candle1 = SpawnCheck(gravestone, 199039671, v3.new(-1811.891, -128.114, 77.788), 0, 0, 0, nil, 13)
-    candle2 = SpawnCheck(gravestone, 199039671, v3.new(-1812.547, -126.255, 77.788), 0, 0, 0, nil, 13)
-    gravestone = SpawnCheck(gravestone, 1667673456, v3.new(-1812.212, -127.127, 80.265), 0, 180, -69, nil, 13)
-    util.yield(13666)
-end
+menu.trigger_commands("leasshrine")
 
 util.keep_running()
