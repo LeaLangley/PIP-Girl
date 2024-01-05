@@ -1674,6 +1674,7 @@ local repairStops = {
 }
 local blipsCreated = false
 local blips = {}
+local checkpoints = {}
 local function CreateBlips(repairStops)
     for _, position in ipairs(repairStops) do
         local blip = HUD.ADD_BLIP_FOR_COORD(position.x, position.y, position.z)
@@ -1687,10 +1688,21 @@ local function CreateBlips(repairStops)
     end
     blipsCreated = true
 end
+local function CreateCheckpoints(repairStops)
+    for _, position in ipairs(repairStops) do
+        local checkpoint = GRAPHICS.CREATE_CHECKPOINT(11, position.x, position.y, position.z + 1, position.x, position.y, position.z, 6, 255, 0, 128, 66, 0)
+        table.insert(checkpoints, checkpoint)
+    end
+    blipsCreated = true
+end
 local function remove_blips()
     for blips as blip do
         util.remove_blip(blip)
         blips = {}
+    end
+    for checkpoints as check do
+        GRAPHICS.DELETE_CHECKPOINT(check)
+        checkpoints = {}
     end
 end
 util.on_stop(function()
@@ -1706,9 +1718,15 @@ local function SetInZoneTimer()
     for blips as blip do
         HUD.SET_BLIP_COLOUR(blip, 1)
     end
+    for checkpoints as check do
+        GRAPHICS.SET_CHECKPOINT_RGBA(check, 255, 13, 13, 10)
+    end
     util.yield(369666)
     for blips as blip do
         HUD.SET_BLIP_COLOUR(blip, 48)
+    end
+    for checkpoints as check do
+        GRAPHICS.SET_CHECKPOINT_RGBA(check, 255, 0, 128, 66)
     end
     wasInZone = false
 end
@@ -1718,6 +1736,7 @@ menu.toggle_loop(Stimpak, "Lea's Repair Stop", {"lears"}, "", function()
         if not blipsCreated then
             remove_blips()
             CreateBlips(repairStops)
+            CreateCheckpoints(repairStops)
         end
         closestMarker = nil
         closestDistance = math.huge
@@ -1733,10 +1752,10 @@ menu.toggle_loop(Stimpak, "Lea's Repair Stop", {"lears"}, "", function()
             local markerPosition = closestMarker
             if not wasInZone then
                 --GRAPHICS.DRAW_MARKER(1, markerPosition.x, markerPosition.y, markerPosition.z - 1, 0, 0, 0, 0, 180, 0, 2, 2, 2, 255, 0, 128, 66, false, false, 180, 0, 0, 0, false)
-                GRAPHICS.DRAW_MARKER(1, markerPosition.x, markerPosition.y, markerPosition.z - 1, 0, 0, 0, 0, 180, 0, 5, 5, 1, 255, 0, 128, 255, false, false, 180, 0, 0, 0, false)
+                --GRAPHICS.DRAW_MARKER(1, markerPosition.x, markerPosition.y, markerPosition.z - 1, 0, 0, 0, 0, 180, 0, 5, 5, 1, 255, 0, 128, 255, false, false, 180, 0, 0, 0, false)
                 GRAPHICS.DRAW_SPOT_LIGHT(markerPosition.x, markerPosition.y, markerPosition.z + 0.6, 0, 0, -1, 255, 0, 128, 5, 5, 0, 200, 1)
             else
-                GRAPHICS.DRAW_MARKER(1, markerPosition.x, markerPosition.y, markerPosition.z - 1, 0, 0, 0, 0, 180, 0, 5, 5, 1, 255, 0, 0, 255, false, false, 180, 0, 0, 0, false)
+                --GRAPHICS.DRAW_MARKER(1, markerPosition.x, markerPosition.y, markerPosition.z - 1, 0, 0, 0, 0, 180, 0, 5, 5, 1, 255, 0, 0, 255, false, false, 180, 0, 0, 0, false)
                 GRAPHICS.DRAW_SPOT_LIGHT(markerPosition.x, markerPosition.y, markerPosition.z + 0.6, 0, 0, -1, 255, 0, 0, 5, 5, 0, 200, 1)
             end
             if closestDistance <= radius then
