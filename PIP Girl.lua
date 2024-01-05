@@ -325,9 +325,14 @@ function START_SCRIPT(ceo_mc, name)
     end
 end
 
-function IS_HELP_MSG_DISPLAYED(label)
+local function IS_HELP_MSG_DISPLAYED(label)
     HUD.BEGIN_TEXT_COMMAND_IS_THIS_HELP_MESSAGE_BEING_DISPLAYED(label)
     return HUD.END_TEXT_COMMAND_IS_THIS_HELP_MESSAGE_BEING_DISPLAYED(0)
+end
+
+local function IS_TEXT_DISPLAYED(text) -- trying to be good :sob:
+    HUD.BEGIN_TEXT_COMMAND_IS_MESSAGE_DISPLAYED(text)
+    return HUD.END_TEXT_COMMAND_IS_MESSAGE_DISPLAYED()
 end
 
 local handle_ptr = memory.alloc(13*8)
