@@ -3161,6 +3161,7 @@ end, function()
     end
 end)
 
+local Leas_shrine_blip = nil
 local candle1 = nil
 local candle2 = nil
 local gravestone = nil
@@ -3172,6 +3173,18 @@ local fire1 = nil
 local fire2 = nil
 local fire3 = nil
 menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Blocks the MK2 acces", function()
+    if not Leas_shrine_blip then
+        Leas_shrine_blip = HUD.ADD_BLIP_FOR_COORD(-1812.212, -127.127, 80.265)
+        HUD.SET_BLIP_SPRITE(Leas_shrine_blip, "617")
+        HUD.SET_BLIP_COLOUR(Leas_shrine_blip, 76)
+        HUD.SET_BLIP_AS_MINIMAL_ON_EDGE(Leas_shrine_blip, true)
+        HUD.SET_RADIUS_BLIP_EDGE(Leas_shrine_blip, true)
+        HUD.SET_BLIP_AS_SHORT_RANGE(Leas_shrine_blip, true)
+        HUD.SET_BLIP_DISPLAY(Leas_shrine_blip, 2)
+        HUD.BEGIN_TEXT_COMMAND_SET_BLIP_NAME("STRING")  -- Use "STRING" for text without AddTextEntry
+        HUD.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Lea\'s Shrine')
+        HUD.END_TEXT_COMMAND_SET_BLIP_NAME(Leas_shrine_blip)
+    end
     candle1 = SpawnCheck(gravestone, 199039671, v3.new(-1811.891, -128.114, 77.788), 0, 0, 0, nil, 13, false)
     candle2 = SpawnCheck(gravestone, 199039671, v3.new(-1812.547, -126.255, 77.788), 0, 0, 0, nil, 13, false)
     gravestone = SpawnCheck(gravestone, 1667673456, v3.new(-1812.212, -127.127, 80.265), 0, 180, -70, nil, 13, false)
@@ -3184,6 +3197,8 @@ menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Blocks the MK2 a
     fire3 = SpawnCheck(fire3, 3229200997, v3.new(-1805.81, -130.20, 77.90), 0, 0, 88, nil, 13, false)
     util.yield(13666)
 end, function()
+    util.remove_blip(Leas_shrine_blip)
+    Leas_shrine_blip = nil
     if does_entity_exist(candle1) then
         requestControl(candle1, 0)
         entities.delete(candle1)
