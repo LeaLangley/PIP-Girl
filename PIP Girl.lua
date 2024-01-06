@@ -3164,10 +3164,24 @@ end)
 local candle1 = nil
 local candle2 = nil
 local gravestone = nil
+local flower1 = nil
+local candle3 = nil
+local candle4 = nil
+local firepit = nil
+local fire1 = nil
+local fire2 = nil
+local fire3 = nil
 menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Blocks the MK2 acces", function()
     candle1 = SpawnCheck(gravestone, 199039671, v3.new(-1811.891, -128.114, 77.788), 0, 0, 0, nil, 13, false)
     candle2 = SpawnCheck(gravestone, 199039671, v3.new(-1812.547, -126.255, 77.788), 0, 0, 0, nil, 13, false)
-    gravestone = SpawnCheck(gravestone, 1667673456, v3.new(-1812.212, -127.127, 80.265), 0, 180, -69, nil, 13, false)
+    gravestone = SpawnCheck(gravestone, 1667673456, v3.new(-1812.212, -127.127, 80.265), 0, 180, -70, nil, 13, false)
+    flower1 = SpawnCheck(flower1, -1751947657, v3.new(-1813.49, -131.37, 77.86), 0, 0, 0, nil, 13, false)
+    candle3 = SpawnCheck(candle3, 540021153, v3.new(-1811.97, -127.64, 77.81), 0, 0, 13, nil, 13, false)
+    candle4 = SpawnCheck(candle4, 540021153, v3.new(-1812.29, -126.63, 77.81), 0, 0, 66, nil, 13, false)
+    firepit = SpawnCheck(firepit, 1125395611, v3.new(-1806.11, -130.02, 77.79), 0, 0, 0, nil, 13, false)
+    fire1 = SpawnCheck(fire1, 3229200997, v3.new(-1806.30, -129.86, 77.90), 0, 0, 66, nil, 13, false)
+    fire2 = SpawnCheck(fire2, 3229200997, v3.new(-1806.47, -130.35, 77.90), 0, 0, 13, nil, 13, false)
+    fire3 = SpawnCheck(fire3, 3229200997, v3.new(-1805.81, -130.20, 77.90), 0, 0, 88, nil, 13, false)
     util.yield(13666)
 end, function()
     if does_entity_exist(candle1) then
@@ -3181,6 +3195,34 @@ end, function()
     if does_entity_exist(gravestone) then
         requestControl(gravestone, 0)
         entities.delete(gravestone)
+    end
+    if does_entity_exist(flower1) then
+        requestControl(flower1, 0)
+        entities.delete(flower1)
+    end
+    if does_entity_exist(candle3) then
+        requestControl(candle3, 0)
+        entities.delete(candle3)
+    end
+    if does_entity_exist(candle4) then
+        requestControl(candle4, 0)
+        entities.delete(candle4)
+    end
+    if does_entity_exist(firepit) then
+        requestControl(firepit, 0)
+        entities.delete(firepit)
+    end
+    if does_entity_exist(fire1) then
+        requestControl(fire1, 0)
+        entities.delete(fire1)
+    end
+    if does_entity_exist(fire2) then
+        requestControl(fire2, 0)
+        entities.delete(fire2)
+    end
+    if does_entity_exist(fire3) then
+        requestControl(fire3, 0)
+        entities.delete(fire3)
     end
 end)
 
