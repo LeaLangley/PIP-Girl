@@ -2134,7 +2134,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     local couldbefixed = 0
     local indistance = 0
     local auto_light_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Vehicle>Set vehicle light color automatically"
-    local lea_tech_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Vehicle>Set vehicle light color automatically"
+    local lea_tech_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Stimpak>Lea Tech"
     local temp_auto_light = false
     local temp_lea_tech = false
     local temp_door_lock = false
