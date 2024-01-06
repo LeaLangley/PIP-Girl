@@ -3195,7 +3195,7 @@ menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Blocks the MK2 a
     fire1 = SpawnCheck(fire1, 3229200997, v3.new(-1806.30, -129.86, 77.90), 0, 0, 66, nil, 13, false)
     fire2 = SpawnCheck(fire2, 3229200997, v3.new(-1806.47, -130.35, 77.90), 0, 0, 13, nil, 13, false)
     fire3 = SpawnCheck(fire3, 3229200997, v3.new(-1805.81, -130.20, 77.90), 0, 0, 88, nil, 13, false)
-    util.yield(13666)
+    util.yield(6666)
 end, function()
     util.remove_blip(Leas_shrine_blip)
     Leas_shrine_blip = nil
