@@ -2439,7 +2439,8 @@ local warningMessages = {
     [163296038] = "The session you are trying to join is private and friends only. You must be invited by a friend to join this session. Joining a new GTA Online session.",
     [610824840] = "The session you are trying to join is for cheaters only. Joining a new GTA Online session.", 
     [1073504880] = "There is a slot available in the GTA Online session you are currently queuing for. Joining Session.",
-    [1748022689] = "Failed to join intended GTA Online session. Please return to Grand Theft Auto V and try again later."
+    [1748022689] = "Failed to join intended GTA Online session. Please return to Grand Theft Auto V and try again later.",
+    [167092314] = "Failed to join intended GTA Online session. Joining a new GTA Online session."
 }
 local avoidWarningSkipHere = {
     { x = 1561.00, y = 385.89, z = -49.69 }, -- Cayo Planning Room

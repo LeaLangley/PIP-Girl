@@ -23,13 +23,14 @@ Permission is necessary for the merging process, as not everyone has the authori
 
         - CEO Name: <text input>
             (You can press Ctrl+U and select colors, but no special GTA icons, sadly.)
+			(This will be aplyed on "Auto Become a CEO/MC" for more consistency.)
 
         - Auto Become a CEO/MC <toggle>
             (Auto register youself as CEO and auto switches you to MC/CEO in most situations needed.)
 
         - Auto Join Friends CEO (!) <toggle>
-        - Invite All Friends in CEO/MC <trigger>
-
+			(Works while "Auto Become a CEO/MC".)
+			
         *Pickup Options*
         - Carry Pickups <toggle>
         - Pickup Shower <toggle>
