@@ -502,12 +502,13 @@ end
 local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
     local closestDistance = nil
     local closestPlayer = nil
+    if order == nil then order = 2 end
+    local startTime = os.time()
     if not does_entity_exist(entity) then
-        if order == nil then order = 2 end
         requestModel(hash, 13)
         entity = entities.create_object(hash, locationV3)
         util.yield(13)
-        local startTime = os.time()
+        startTime = os.time()
         while not does_entity_exist(entity) do
             if os.time() - startTime > timeout or timeout == 0 then
                 break
@@ -534,6 +535,20 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
                 ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(closestPlayer), false)
             end
         end
+        local currentCoords = ENTITY.GET_ENTITY_COORDS(entity)
+        coordinatesCorrect = (math.abs(currentCoords.x - locationV3.x) <= 1) and
+                                (math.abs(currentCoords.y - locationV3.y) <= 1) and
+                                (math.abs(currentCoords.z - locationV3.z) <= 1)
+        if not coordinatesCorrect then
+            ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3.x, locationV3.y, locationV3.z, true, true, true)
+        end
+        local currentRotation = ENTITY.GET_ENTITY_ROTATION(entity, order)
+        anglesCorrect = (math.abs(currentRotation.x - pitch) <= 1) and
+                        (math.abs(currentRotation.y - roll) <= 1) and
+                        (math.abs(currentRotation.z - yaw) <= 1)
+        if not anglesCorrect then
+            ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
+        end
         return entity
     else
         requestControl(entity, timeout)
@@ -552,6 +567,20 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
             if closestPlayer then
                 ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(players.user()), false)
             end
+        end
+        local currentCoords = ENTITY.GET_ENTITY_COORDS(entity)
+        coordinatesCorrect = (math.abs(currentCoords.x - locationV3.x) <= 1) and
+                                (math.abs(currentCoords.y - locationV3.y) <= 1) and
+                                (math.abs(currentCoords.z - locationV3.z) <= 1)
+        if not coordinatesCorrect then
+            ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3.x, locationV3.y, locationV3.z, true, true, true)
+        end
+        local currentRotation = ENTITY.GET_ENTITY_ROTATION(entity, order)
+        anglesCorrect = (math.abs(currentRotation.x - pitch) <= 1) and
+                        (math.abs(currentRotation.y - roll) <= 1) and
+                        (math.abs(currentRotation.z - yaw) <= 1)
+        if not anglesCorrect then
+            ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
         end
         return entity
     end
@@ -1454,9 +1483,9 @@ menu.divider(Stimpak, "Vehicle Related Health")
 
 local function getTrailer(vehicle)
     local trailer = nil
-    local vehiclePosition = ENTITY.GET_ENTITY_COORDS(vehicle, true)
+    local vehiclePosition = ENTITY.GET_ENTITY_COORDS(vehicle)
     for entities.get_all_vehicles_as_handles() as veh_ent do
-        local trailerPosition = ENTITY.GET_ENTITY_COORDS(veh_ent, true)
+        local trailerPosition = ENTITY.GET_ENTITY_COORDS(veh_ent)
         local distance = SYSTEM.VDIST(vehiclePosition.x, vehiclePosition.y, vehiclePosition.z, trailerPosition.x, trailerPosition.y, trailerPosition.z)
         if distance <= 20.0 then
             local tailer_p = VEHICLE._GET_VEHICLE_TRAILER_PARENT_VEHICLE(veh_ent)
@@ -2173,7 +2202,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
         if not PED.IS_PED_A_PLAYER(driver) and driver ~= 0 then
             goto continue_loop
         end
-        local vehiclePosition = ENTITY.GET_ENTITY_COORDS(vehicle, true)
+        local vehiclePosition = ENTITY.GET_ENTITY_COORDS(vehicle)
         local distance = SYSTEM.VDIST(playerPosition.x, playerPosition.y, playerPosition.z, vehiclePosition.x, vehiclePosition.y, vehiclePosition.z)
 
         if distance <= 100.0 then
@@ -3162,17 +3191,25 @@ end, function()
     end
 end)
 
+--{var = "small_candle_3", conditions = {540021153, v3.new(-1808.90, -132.25, 77.84), 0, 0, 666, 13, nil, 13, false}},
+--{var = "small_candle_4", conditions = {540021153, v3.new(-1811.70, -124.77, 77.81), 0, 0, 13, 13, nil, 13, false}},
+--{var = "small_candle_5", conditions = {540021153, v3.new(-1809.13, -122.37, 77.81), 0, 0, 420, 13, nil, 13, false}},
+--{var = "small_candle_6", conditions = {540021153, v3.new(-1805.55, -121.75, 77.81), 0, 0, 666, 13, nil, 13, false}},
+--{var = "small_candle_7", conditions = {540021153, v3.new(-1802.44, -123.53, 77.81), 0, 0, 13, 13, nil, 13, false}},
+--{var = "small_candle_8", conditions = {540021153, v3.new(-1802.08, -128.71, 78.81), 0, 0, 420, 13, nil, 13, false}},
+--{var = "small_candle_9", conditions = {540021153, v3.new(-1800.97, -126.19, 78.01), 0, 0, 666, 13, nil, 13, false}},
+--{var = "small_candle_10", conditions = {540021153, v3.new(-1802.08, -128,71, 78.81), 0, 0, 13, 13, nil, 13, false}},
+--{var = "small_candle_11", conditions = {540021153, v3.new(-1791.50, -139,58, 74.20), 0, 0, 13, 13, nil, 13, false}},
+
 local shrineElements = {
-    {var = "candle1", conditions = {199039671, v3.new(-1811.891, -128.114, 77.788), 0, 0, 0, 13, nil, 13, false}},
-    {var = "candle2", conditions = {199039671, v3.new(-1812.547, -126.255, 77.788), 0, 0, 0, 13, nil, 13, false}},
-    {var = "gravestone", conditions = {1667673456, v3.new(-1812.212, -127.127, 80.265), 0, 180, -70, 13, nil, 13, false}},
-    {var = "flower1", conditions = {-1751947657, v3.new(-1813.49, -131.37, 77.86), 0, 0, 0, 13, nil, 13, false}},
-    {var = "candle3", conditions = {540021153, v3.new(-1811.97, -127.64, 77.81), 0, 0, 13, 13, nil, 13, false}},
-    {var = "candle4", conditions = {540021153, v3.new(-1812.29, -126.63, 77.81), 0, 0, 66, 13, nil, 13, false}},
-    {var = "firepit", conditions = {1125395611, v3.new(-1806.11, -130.02, 77.79), 0, 0, 0, 13, nil, 13, false}},
-    {var = "fire1", conditions = {3229200997, v3.new(-1806.30, -129.86, 77.90), 0, 0, 66, 13, nil, 13, false}},
-    {var = "fire2", conditions = {3229200997, v3.new(-1806.47, -130.35, 77.90), 0, 0, 13, 13, nil, 13, false}},
-    {var = "fire3", conditions = {3229200997, v3.new(-1805.81, -130.20, 77.90), 0, 0, 88, 13, nil, 13, false}},
+    {var = "vamp_candle_1", conditions = {199039671, v3.new(-1811.891, -128.114, 77.788), 0, 0, 0, nil, 13, false}},
+    {var = "vamp_candle_2", conditions = {199039671, v3.new(-1812.547, -126.255, 77.788), 0, 0, 0, nil, 13, false}},
+    {var = "gravestone", conditions = {1667673456, v3.new(-1812.212, -127.127, 80.265), 0, 180, -70, nil, 13, false}},
+    {var = "flower_1", conditions = {-1751947657, v3.new(-1813.49, -131.37, 77.86), 0, 0, 0, nil, 13, false}},
+    {var = "small_candle_1", conditions = {540021153, v3.new(-1811.97, -127.64, 77.81), 0, 0, 13, nil, 13, false}},
+    {var = "small_candle_2", conditions = {540021153, v3.new(-1812.29, -126.63, 77.81), 0, 0, 420, nil, 13, false}},
+    {var = "firepit", conditions = {1125395611, v3.new(-1806.11, -130.02, 77.79), 0, 0, 0, nil, 13, false}},
+    {var = "fire1", conditions = {3229200997, v3.new(-1806.1933, -130.1367, 77.90), 0, 0, 13, nil, 13, false}},
 }
 local Leas_shrine_blip = nil
 menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Blocks the MK2 access", function()
