@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.109"
+local SCRIPT_VERSION = "1.110"
 
 local startupmsg = "If settings are missing PLS restart lua.\n\nGhost \"Attacking While Invulnerable\" IS NOW -> Ghost God Mode\n\nImproved and Lea-rned alot.\nI love u."
 
@@ -3162,18 +3162,20 @@ end, function()
     end
 end)
 
+local shrineElements = {
+    {var = "candle1", conditions = {199039671, v3.new(-1811.891, -128.114, 77.788), 0, 0, 0, 13, nil, 13, false}},
+    {var = "candle2", conditions = {199039671, v3.new(-1812.547, -126.255, 77.788), 0, 0, 0, 13, nil, 13, false}},
+    {var = "gravestone", conditions = {1667673456, v3.new(-1812.212, -127.127, 80.265), 0, 180, -70, 13, nil, 13, false}},
+    {var = "flower1", conditions = {-1751947657, v3.new(-1813.49, -131.37, 77.86), 0, 0, 0, 13, nil, 13, false}},
+    {var = "candle3", conditions = {540021153, v3.new(-1811.97, -127.64, 77.81), 0, 0, 13, 13, nil, 13, false}},
+    {var = "candle4", conditions = {540021153, v3.new(-1812.29, -126.63, 77.81), 0, 0, 66, 13, nil, 13, false}},
+    {var = "firepit", conditions = {1125395611, v3.new(-1806.11, -130.02, 77.79), 0, 0, 0, 13, nil, 13, false}},
+    {var = "fire1", conditions = {3229200997, v3.new(-1806.30, -129.86, 77.90), 0, 0, 66, 13, nil, 13, false}},
+    {var = "fire2", conditions = {3229200997, v3.new(-1806.47, -130.35, 77.90), 0, 0, 13, 13, nil, 13, false}},
+    {var = "fire3", conditions = {3229200997, v3.new(-1805.81, -130.20, 77.90), 0, 0, 88, 13, nil, 13, false}},
+}
 local Leas_shrine_blip = nil
-local candle1 = nil
-local candle2 = nil
-local gravestone = nil
-local flower1 = nil
-local candle3 = nil
-local candle4 = nil
-local firepit = nil
-local fire1 = nil
-local fire2 = nil
-local fire3 = nil
-menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Blocks the MK2 acces", function()
+menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Blocks the MK2 access", function()
     if not Leas_shrine_blip then
         Leas_shrine_blip = HUD.ADD_BLIP_FOR_COORD(-1812.212, -127.127, 80.265)
         HUD.SET_BLIP_SPRITE(Leas_shrine_blip, "617")
@@ -3182,63 +3184,27 @@ menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Blocks the MK2 a
         HUD.SET_RADIUS_BLIP_EDGE(Leas_shrine_blip, true)
         HUD.SET_BLIP_AS_SHORT_RANGE(Leas_shrine_blip, true)
         HUD.SET_BLIP_DISPLAY(Leas_shrine_blip, 2)
-        HUD.BEGIN_TEXT_COMMAND_SET_BLIP_NAME("STRING")  -- Use "STRING" for text without AddTextEntry
+        HUD.BEGIN_TEXT_COMMAND_SET_BLIP_NAME("STRING")
         HUD.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Lea\'s Shrine')
         HUD.END_TEXT_COMMAND_SET_BLIP_NAME(Leas_shrine_blip)
     end
-    candle1 = SpawnCheck(gravestone, 199039671, v3.new(-1811.891, -128.114, 77.788), 0, 0, 0, nil, 13, false)
-    candle2 = SpawnCheck(gravestone, 199039671, v3.new(-1812.547, -126.255, 77.788), 0, 0, 0, nil, 13, false)
-    gravestone = SpawnCheck(gravestone, 1667673456, v3.new(-1812.212, -127.127, 80.265), 0, 180, -70, nil, 13, false)
-    flower1 = SpawnCheck(flower1, -1751947657, v3.new(-1813.49, -131.37, 77.86), 0, 0, 0, nil, 13, false)
-    candle3 = SpawnCheck(candle3, 540021153, v3.new(-1811.97, -127.64, 77.81), 0, 0, 13, nil, 13, false)
-    candle4 = SpawnCheck(candle4, 540021153, v3.new(-1812.29, -126.63, 77.81), 0, 0, 66, nil, 13, false)
-    firepit = SpawnCheck(firepit, 1125395611, v3.new(-1806.11, -130.02, 77.79), 0, 0, 0, nil, 13, false)
-    fire1 = SpawnCheck(fire1, 3229200997, v3.new(-1806.30, -129.86, 77.90), 0, 0, 66, nil, 13, false)
-    fire2 = SpawnCheck(fire2, 3229200997, v3.new(-1806.47, -130.35, 77.90), 0, 0, 13, nil, 13, false)
-    fire3 = SpawnCheck(fire3, 3229200997, v3.new(-1805.81, -130.20, 77.90), 0, 0, 88, nil, 13, false)
+
+    for _, element in ipairs(shrineElements) do
+        local entityVar, conditions = element.var, element.conditions
+        _G[entityVar] = SpawnCheck(_G[entityVar], table.unpack(conditions))
+    end
+
     util.yield(6666)
 end, function()
     util.remove_blip(Leas_shrine_blip)
     Leas_shrine_blip = nil
-    if does_entity_exist(candle1) then
-        requestControl(candle1, 0)
-        entities.delete(candle1)
-    end
-    if does_entity_exist(candle2) then
-        requestControl(candle2, 0)
-        entities.delete(candle2)
-    end
-    if does_entity_exist(gravestone) then
-        requestControl(gravestone, 0)
-        entities.delete(gravestone)
-    end
-    if does_entity_exist(flower1) then
-        requestControl(flower1, 0)
-        entities.delete(flower1)
-    end
-    if does_entity_exist(candle3) then
-        requestControl(candle3, 0)
-        entities.delete(candle3)
-    end
-    if does_entity_exist(candle4) then
-        requestControl(candle4, 0)
-        entities.delete(candle4)
-    end
-    if does_entity_exist(firepit) then
-        requestControl(firepit, 0)
-        entities.delete(firepit)
-    end
-    if does_entity_exist(fire1) then
-        requestControl(fire1, 0)
-        entities.delete(fire1)
-    end
-    if does_entity_exist(fire2) then
-        requestControl(fire2, 0)
-        entities.delete(fire2)
-    end
-    if does_entity_exist(fire3) then
-        requestControl(fire3, 0)
-        entities.delete(fire3)
+
+    for _, element in ipairs(shrineElements) do
+        local entityVar, conditions = element.var, element.conditions
+        if does_entity_exist(_G[entityVar]) then
+            requestControl(_G[entityVar], 0)
+            entities.delete(_G[entityVar])
+        end
     end
 end)
 
