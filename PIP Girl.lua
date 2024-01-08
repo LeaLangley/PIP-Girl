@@ -498,13 +498,63 @@ local function does_entity_exist(entity)
     return false
 end
 
-local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
+local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
     local closestDistance = nil
     local closestPlayer = nil
+    if anti_collision then
+        for players.list() as pid do
+            if isFriend(pid) then
+                local playerPos = players.get_position(pid)
+                local distance = SYSTEM.VDIST(locationV3.x, locationV3.y, locationV3.z, playerPos.x, playerPos.y, playerPos.z)
+                if not closestDistance or distance < closestDistance then
+                    closestDistance = distance
+                    closestPlayer = pid
+                end
+            end
+            util.yield(13)
+        end
+        if closestPlayer then
+            requestControl(entity, timeout)
+            ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(players.user()), false)
+        end
+    end
+    local currentCoords = ENTITY.GET_ENTITY_COORDS(entity)
+    coordinatesCorrect = (math.abs(currentCoords.x - locationV3.x) <= 1) and
+                            (math.abs(currentCoords.y - locationV3.y) <= 1) and
+                            (math.abs(currentCoords.z - locationV3.z) <= 1)
+    if not coordinatesCorrect then
+        requestControl(entity, timeout)
+        ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3.x, locationV3.y, locationV3.z, true, true, true)
+        ENTITY.FREEZE_ENTITY_POSITION(entity, true)
+    end
+    local currentRotation = ENTITY.GET_ENTITY_ROTATION(entity, order)
+    anglesCorrect = (math.abs(currentRotation.x - pitch) <= 1) and
+                    (math.abs(currentRotation.y - roll) <= 1) and
+                    (math.abs(currentRotation.z - yaw) <= 1)
+    if not anglesCorrect then
+        requestControl(entity, timeout)
+        ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
+        ENTITY.FREEZE_ENTITY_POSITION(entity, true)
+    end
+    return entity
+end
+
+local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
     if order == nil then order = 2 end
     local startTime = os.time()
     if not does_entity_exist(entity) then
-        requestModel(hash, 13)
+        for entities.get_all_objects_as_pointers() as ent do
+            local entPos = entities.get_position(ent)
+            local distance = SYSTEM.VDIST(locationV3.x, locationV3.y, locationV3.z, entPos.x, entPos.y, entPos.z)
+            if 0.13 >= distance then
+                local entHash = entities.get_model_hash(ent)
+                if entHas == hash then
+                    entity = ent
+                    goto skip
+                end
+            end
+        end
+        requestModel(hash, timeout)
         entity = entities.create_object(hash, locationV3)
         util.yield(13)
         startTime = os.time()
@@ -514,73 +564,13 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
             end
             util.yield(13)
         end
-        requestControl(entity, 13)
+        requestControl(entity, timeout)
         ENTITY.FREEZE_ENTITY_POSITION(entity, true)
-        util.yield(13)
-        ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
-        if anti_collision then
-            for players.list() as pid do
-                if isFriend(pid) then
-                    local playerPos = players.get_position(pid)
-                    local distance = SYSTEM.VDIST(locationV3.x, locationV3.y, locationV3.z, playerPos.x, playerPos.y, playerPos.z)
-                    if not closestDistance or distance < closestDistance then
-                        closestDistance = distance
-                        closestPlayer = pid
-                    end
-                end
-                util.yield(13)
-            end
-            if closestPlayer then
-                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(closestPlayer), false)
-            end
-        end
-        local currentCoords = ENTITY.GET_ENTITY_COORDS(entity)
-        coordinatesCorrect = (math.abs(currentCoords.x - locationV3.x) <= 1) and
-                                (math.abs(currentCoords.y - locationV3.y) <= 1) and
-                                (math.abs(currentCoords.z - locationV3.z) <= 1)
-        if not coordinatesCorrect then
-            ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3.x, locationV3.y, locationV3.z, true, true, true)
-        end
-        local currentRotation = ENTITY.GET_ENTITY_ROTATION(entity, order)
-        anglesCorrect = (math.abs(currentRotation.x - pitch) <= 1) and
-                        (math.abs(currentRotation.y - roll) <= 1) and
-                        (math.abs(currentRotation.z - yaw) <= 1)
-        if not anglesCorrect then
-            ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
-        end
+        ::skip::
+        entity = objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
         return entity
     else
-        requestControl(entity, timeout)
-        if anti_collision then
-            for players.list() as pid do
-                if isFriend(pid) then
-                    local playerPos = players.get_position(pid)
-                    local distance = SYSTEM.VDIST(locationV3.x, locationV3.y, locationV3.z, playerPos.x, playerPos.y, playerPos.z)
-                    if not closestDistance or distance < closestDistance then
-                        closestDistance = distance
-                        closestPlayer = pid
-                    end
-                end
-                util.yield(13)
-            end
-            if closestPlayer then
-                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(players.user()), false)
-            end
-        end
-        local currentCoords = ENTITY.GET_ENTITY_COORDS(entity)
-        coordinatesCorrect = (math.abs(currentCoords.x - locationV3.x) <= 1) and
-                                (math.abs(currentCoords.y - locationV3.y) <= 1) and
-                                (math.abs(currentCoords.z - locationV3.z) <= 1)
-        if not coordinatesCorrect then
-            ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3.x, locationV3.y, locationV3.z, true, true, true)
-        end
-        local currentRotation = ENTITY.GET_ENTITY_ROTATION(entity, order)
-        anglesCorrect = (math.abs(currentRotation.x - pitch) <= 1) and
-                        (math.abs(currentRotation.y - roll) <= 1) and
-                        (math.abs(currentRotation.z - yaw) <= 1)
-        if not anglesCorrect then
-            ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
-        end
+        entity = objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
         return entity
     end
 end
@@ -3224,17 +3214,15 @@ menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Blocks the MK2 a
         HUD.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Lea\'s Shrine')
         HUD.END_TEXT_COMMAND_SET_BLIP_NAME(Leas_shrine_blip)
     end
-
     for _, element in ipairs(shrineElements) do
         local entityVar, conditions = element.var, element.conditions
         _G[entityVar] = SpawnCheck(_G[entityVar], table.unpack(conditions))
+        util.yield(113)
     end
-
     util.yield(6666)
 end, function()
     util.remove_blip(Leas_shrine_blip)
     Leas_shrine_blip = nil
-
     for _, element in ipairs(shrineElements) do
         local entityVar, conditions = element.var, element.conditions
         if does_entity_exist(_G[entityVar]) then
