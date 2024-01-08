@@ -3373,11 +3373,9 @@ menu.toggle_loop(Session, "Soft Clear Traffic", {"softantitrafic"}, "Clears the 
             waiting_for_clear = 213
         end
         util.yield(waiting_for_clear)
-        MISC.CLEAR_AREA_OF_COPS(pos.x, pos.y, pos.z, 6666, 0)
+        MISC.CLEAR_AREA_OF_PEDS(pos.x, pos.y, pos.z, 1666, 0)
         util.yield(waiting_for_clear)
-        MISC.CLEAR_AREA_OF_PEDS(pos.x, pos.y, pos.z, 6666, 0)
-        util.yield(waiting_for_clear)
-        MISC.CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, 6666, false, false, false, false, false, false, 0)
+        MISC.CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, 1666, false, false, false, false, false, false, 0)
     end
 end)
 
