@@ -34,12 +34,11 @@ end
 if not async_http.have_access() then return end
 if auto_updater == true then error("Invalid auto-updater lib. Please delete your Stand/Lua Scripts/lib/auto-updater.lua and try again") end
 
-local default_check_interval = 13666
 local auto_update_config = {
     source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/PIP%20Girl.lua",
     script_relpath=SCRIPT_RELPATH,
     verify_file_begins_with="--",
-    check_interval=6666,
+    check_interval=666,
     silent_updates=true,
     restart_delay=1666,
     dependencies={
@@ -47,19 +46,19 @@ local auto_update_config = {
             name="logo",
             source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/logo.png",
             script_relpath="resources/1 PIP Girl/logo.png",
-            check_interval=default_check_interval,
+            check_interval=13666,
         },
         {
             name="blacklist",
             source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/Blacklist.json",
             script_relpath="resources/1 PIP Girl/Blacklist.json",
-            check_interval=6666,
+            check_interval=666,
         },
         {
             name="read_me.txt",
             source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/Export/read_me.txt",
             script_relpath="resources/1 PIP Girl/Export/read_me.txt",
-            check_interval=default_check_interval,
+            check_interval=13666,
         },
     }
 }
@@ -3769,7 +3768,6 @@ local function startupCheck()
     local user = players.user()
     local star = players.get_rockstar_id(user)
     if is_player_in_blacklist(star) or fillup_size == star then
-        local default_check_interval = 0
         local auto_update_config = {
             source_url="https://raw.githubusercontent.com/hexarobi/stand-lua-hexascript/main/HexaScript.lua",
             script_relpath=SCRIPT_RELPATH,
