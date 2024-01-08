@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.110"
+local SCRIPT_VERSION = "1.111"
 
 local startupmsg = "If settings are missing PLS restart lua.\n\nGhost \"Attacking While Invulnerable\" IS NOW -> Ghost God Mode\n\nImproved and Lea-rned alot.\nI love u."
 
@@ -3190,16 +3190,6 @@ end, function()
         entities.delete(antiTerrorGlass)
     end
 end)
-
---{var = "small_candle_3", conditions = {540021153, v3.new(-1808.90, -132.25, 77.84), 0, 0, 666, 13, nil, 13, false}},
---{var = "small_candle_4", conditions = {540021153, v3.new(-1811.70, -124.77, 77.81), 0, 0, 13, 13, nil, 13, false}},
---{var = "small_candle_5", conditions = {540021153, v3.new(-1809.13, -122.37, 77.81), 0, 0, 420, 13, nil, 13, false}},
---{var = "small_candle_6", conditions = {540021153, v3.new(-1805.55, -121.75, 77.81), 0, 0, 666, 13, nil, 13, false}},
---{var = "small_candle_7", conditions = {540021153, v3.new(-1802.44, -123.53, 77.81), 0, 0, 13, 13, nil, 13, false}},
---{var = "small_candle_8", conditions = {540021153, v3.new(-1802.08, -128.71, 78.81), 0, 0, 420, 13, nil, 13, false}},
---{var = "small_candle_9", conditions = {540021153, v3.new(-1800.97, -126.19, 78.01), 0, 0, 666, 13, nil, 13, false}},
---{var = "small_candle_10", conditions = {540021153, v3.new(-1802.08, -128,71, 78.81), 0, 0, 13, 13, nil, 13, false}},
---{var = "small_candle_11", conditions = {540021153, v3.new(-1791.50, -139,58, 74.20), 0, 0, 13, 13, nil, 13, false}},
 
 local shrineElements = {
     {var = "vamp_candle_1", conditions = {199039671, v3.new(-1811.891, -128.114, 77.788), 0, 0, 0, nil, 13, false}},
