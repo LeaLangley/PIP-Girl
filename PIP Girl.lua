@@ -3213,6 +3213,7 @@ menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Blocks the MK2 a
         HUD.SET_RADIUS_BLIP_EDGE(Leas_shrine_blip, true)
         HUD.SET_BLIP_AS_SHORT_RANGE(Leas_shrine_blip, true)
         HUD.SET_BLIP_DISPLAY(Leas_shrine_blip, 2)
+        HUD.SET_BLIP_SCALE(Leas_shrine_blip, 0.8)
         HUD.BEGIN_TEXT_COMMAND_SET_BLIP_NAME("STRING")
         HUD.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Lea\'s Shrine')
         HUD.END_TEXT_COMMAND_SET_BLIP_NAME(Leas_shrine_blip)
