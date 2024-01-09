@@ -3464,7 +3464,7 @@ menu.toggle_loop(Session, "Ghost God Modes", {""}, "Ghost everyone who is a god 
     if IsInSession() then
         for players.list_except(true) as pid do
             if not isFriend(pid) then
-                if players.is_godmode(pid) and not players.is_in_interior(pid) or players.is_godmode(pid) and not players.is_using_rc_vehicle(pid) then
+                if players.is_godmode(pid) and not players.is_in_interior(pid) and not players.is_using_rc_vehicle(pid) then
                     if not contains(sussy_god, pid) then
                         table.insert(sussy_god, pid)
                         NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true) -- Sussy God mode.
