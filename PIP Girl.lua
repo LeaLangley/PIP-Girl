@@ -546,7 +546,7 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
         if share_ent then
             for entities.get_all_objects_as_pointers() as ent do
                 local entPos = entities.get_position(ent)
-                local distance = SYSTEM.VDIST(locationV3.x, locationV3.y, locationV3.z, entPos.x, entPos.y, entPos.z)
+                local distance = SYSTEM.VDIST2(locationV3.x, locationV3.y, locationV3.z, entPos.x, entPos.y, entPos.z)
                 if 0.13 >= distance then
                     local entHash = entities.get_model_hash(ent)
                     if entHas == hash then
@@ -3464,7 +3464,7 @@ menu.toggle_loop(Session, "Ghost God Modes", {""}, "Ghost everyone who is a god 
     if IsInSession() then
         for players.list_except(true) as pid do
             if not isFriend(pid) then
-                if players.is_godmode(pid) and not players.is_in_interior(pid) and not isStuck(pid) then
+                if players.is_godmode(pid) and not players.is_in_interior(pid) or players.is_godmode(pid) and not players.is_using_rc_vehicle(pid) then
                     if not contains(sussy_god, pid) then
                         table.insert(sussy_god, pid)
                         NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true) -- Sussy God mode.
