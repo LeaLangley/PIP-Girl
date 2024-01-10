@@ -2599,7 +2599,7 @@ local function espOnPlayer(pid, namesync)
         end
         if vdist <= show_distance then
             local centerPlayer = ENTITY.GET_ENTITY_COORDS(targetped)
-            local playerHeadOffset = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(targetped, 0, 0, 2.3)
+            local playerHeadOffset = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(targetped, 0, 0, 1.0)
             local blipColor = getOrgColor(pid)
             local colText
             if blipColor == -1 then
@@ -2617,12 +2617,12 @@ local function espOnPlayer(pid, namesync)
 
             if screenName.success then
                 local rank = players.get_rank(pid)
-                drawESPText(screenName, 0, "("..rank..") "..players.get_name_with_tags(pid), txtscale, colText)
+                drawESPText(screenName, -0.10, "("..rank..") "..players.get_name_with_tags(pid), txtscale, colText)
                 local health = ENTITY.GET_ENTITY_HEALTH(targetped) - 100
                 local maxhealth = ENTITY.GET_ENTITY_MAX_HEALTH(targetped) - 100
                 local armour = PED.GET_PED_ARMOUR(targetped)
                 local maxarmour = PLAYER.GET_PLAYER_MAX_ARMOUR(pid)
-                drawESPText(screenName, 0.02, "(" .. health .. " / " .. maxhealth .. ")HP | (" .. armour .. " / " .. maxarmour .. ")AP", txtscale, colText)
+                drawESPText(screenName, -0.10 * 1.2, "(" .. health .. " / " .. maxhealth .. ")HP | (" .. armour .. " / " .. maxarmour .. ")AP", txtscale, colText)
             end
         end
     end
