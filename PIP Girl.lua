@@ -4002,13 +4002,13 @@ menu.action(Settings, "Activate Everyday Goodies", {"pggoodies"}, "Activates all
     menu.trigger_commands("blockorb on")
     menu.trigger_commands("blockkosatka on")
     menu.trigger_commands("blockterror on")
+    menu.trigger_commands("leasshrine on")
 end)
 
 menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
     notify(startupmsg)
 end)
 
-menu.trigger_commands("leasshrine")
 menu.trigger_commands("antiadmin")
 
 util.keep_running()
