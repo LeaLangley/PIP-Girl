@@ -3187,6 +3187,7 @@ local shrineElements = {
     {var = "vamp_candle_1", conditions = {199039671, v3.new(-1811.891, -128.114, 77.788), 0, 0, 0, nil, 13, false, true}},
     {var = "vamp_candle_2", conditions = {199039671, v3.new(-1812.547, -126.255, 77.788), 0, 0, 0, nil, 13, false, true}},
     {var = "gravestone", conditions = {1667673456, v3.new(-1812.212, -127.127, 80.265), 0, 180, -70, nil, 13, false, true}},
+    {var = "skull", conditions = {1925085104, v3.new(-1812.212, -127.127, 79.0), 0, 0, 110, nil, 13, false, true}},
     {var = "flowers_1", conditions = {-1751947657, v3.new(-1813.49, -131.37, 77.86), 0, 0, 0, nil, 13, false, true}},
     {var = "small_candle_1", conditions = {540021153, v3.new(-1811.97, -127.64, 77.81), 0, 0, 13, nil, 13, false, true}},
     {var = "small_candle_2", conditions = {540021153, v3.new(-1812.29, -126.63, 77.81), 0, 0, 420, nil, 13, false, true}},
