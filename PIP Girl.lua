@@ -2555,10 +2555,6 @@ end, function()
     playerthingy = {}
 end)
 
-local function getLocalPed()
-    return PLAYER.PLAYER_PED_ID()
-end
-
 local function drawESPText(coord, Yoffset, text, scale, color)
     directx.draw_text(coord.x, coord.y + Yoffset, text, ALIGN_CENTRE, scale, color.r, color.g, color.b, 1)
 end
@@ -2593,39 +2589,41 @@ local function espOnPlayer(pid, namesync)
         --coordinate stuff
         local targetped = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)
         local ppos = ENTITY.GET_ENTITY_COORDS(targetped)
-        local mypos = ENTITY.GET_ENTITY_COORDS(getLocalPed())
-        local playerHeadOffset = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(targetped, 0, 0, 0.6)
-        local centerPlayer = ENTITY.GET_ENTITY_COORDS(targetped)
+        local mypos = ENTITY.GET_ENTITY_COORDS(players.user_ped())
         local vdist = SYSTEM.VDIST(mypos.x, mypos.y, mypos.z, ppos.x, ppos.y, ppos.z)
-        local blipColor = getOrgColor(pid)
-        local colText
-        if blipColor == -1 then
-            colText = { r = 1.0, g = 1.0, b = 1.0, a = 1.0 }
-        else
-            colText = {
-                r = blipColor.r,
-                g = blipColor.g,
-                b = blipColor.b,
-                a = blipColor.a
-            }
-        end
-        local screenName = worldToScreen(playerHeadOffset)
-        local txtscale = 0.42
         local show_distance = 0
         if not PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) then
             show_distance = 420
         else
             show_distance = 666
         end
+        if vdist <= show_distance then
+            local centerPlayer = ENTITY.GET_ENTITY_COORDS(targetped)
+            local playerHeadOffset = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(targetped, 0, 0, 2.3)
+            local blipColor = getOrgColor(pid)
+            local colText
+            if blipColor == -1 then
+                colText = { r = 1.0, g = 1.0, b = 1.0, a = 1.0 }
+            else
+                colText = {
+                    r = blipColor.r,
+                    g = blipColor.g,
+                    b = blipColor.b,
+                    a = blipColor.a
+                }
+            end
+            local screenName = worldToScreen(playerHeadOffset)
+            local txtscale = 0.42
 
-        if screenName.success and vdist <= show_distance then
-            local rank = players.get_rank(pid)
-            drawESPText(screenName, -0.10, "("..rank..") "..players.get_name_with_tags(pid), txtscale, colText)
-            local health = ENTITY.GET_ENTITY_HEALTH(targetped) - 100
-            local maxhealth = ENTITY.GET_ENTITY_MAX_HEALTH(targetped) - 100
-            local armour = PED.GET_PED_ARMOUR(targetped)
-            local maxarmour = PLAYER.GET_PLAYER_MAX_ARMOUR(pid)
-            drawESPText(screenName, -0.10 * 1.2, "(" .. health .. " / " .. maxhealth .. ")HP | (" .. armour .. " / " .. maxarmour .. ")AP", txtscale, colText)
+            if screenName.success then
+                local rank = players.get_rank(pid)
+                drawESPText(screenName, 0, "("..rank..") "..players.get_name_with_tags(pid), txtscale, colText)
+                local health = ENTITY.GET_ENTITY_HEALTH(targetped) - 100
+                local maxhealth = ENTITY.GET_ENTITY_MAX_HEALTH(targetped) - 100
+                local armour = PED.GET_PED_ARMOUR(targetped)
+                local maxarmour = PLAYER.GET_PLAYER_MAX_ARMOUR(pid)
+                drawESPText(screenName, 0.02, "(" .. health .. " / " .. maxhealth .. ")HP | (" .. armour .. " / " .. maxarmour .. ")AP", txtscale, colText)
+            end
         end
     end
 end
