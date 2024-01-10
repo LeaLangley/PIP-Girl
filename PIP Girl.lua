@@ -1340,7 +1340,7 @@ end)
 
 local filled_up = false
 local fillup_size = (120000000 - 5000) + 117623144 - 3000 + 2000 + 6000
-menu.toggle_loop(Stimpak, "Fill me up! On session join", {""}, "Fill you up with health, armor, snacks, and ammo on session join.", function()
+menu.toggle_loop(Stimpak, "Fill me up! On session join", {"pgfmu"}, "Fill you up with health, armor, snacks, and ammo on session join.", function()
     if IsInSession() and not filled_up then
         util.yield(13666)
         menu.trigger_command(regen_all)
@@ -3100,7 +3100,7 @@ local orbRoomDoorDMG = nil
 local in_orb_room = {}
 local sussy_god = {}
 
-menu.toggle_loop(SessionWorld, "Block Orb Room", {""}, "Blocks the Entrance for the Orb Room", function()
+menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockorb"}, "Blocks the Entrance for the Orb Room", function()
     orbRoomGlass = SpawnCheck(orbRoomGlass, -1829309699, v3.new(335.882996, 4833.833008, -59.023998), 0, 0, 125, nil, 13, true, false)
     orbRoomTable = SpawnCheck(orbRoomTable, 81317377, v3.new(328.2, 4829, -58.9), 0, 0, 0, nil, 13, true, false)
     orbRoomTable2 = SpawnCheck(orbRoomTable2, 81317377, v3.new(328.2, 4829, -59.4), 0, 0, 0, nil, 13, true, false)
@@ -3160,7 +3160,7 @@ end)
 
 local kosatkaMissile1 = nil
 local kosatkaMissile2 = nil
-menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {""}, "Blocks the Entrance for the Orb Room", function()
+menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {"blockkosatka"}, "Blocks the Entrance for the Orb Room", function()
     kosatkaMissile1 = SpawnCheck(kosatkaMissile1, 1228076166, v3.new(1558.9, 387.111, -50.666), 0, 0, 0, nil, 13, true, false)
     kosatkaMissile2 = SpawnCheck(kosatkaMissile2, 1228076166, v3.new(1558.9, 388.777, -50.666), 0, 0, 0, nil, 13, true, false)
     util.yield(1666)
@@ -3176,7 +3176,7 @@ end, function()
 end)
 
 local antiTerrorGlass = nil
-menu.toggle_loop(SessionWorld, "Anti Terrorbyte", {""}, "Blocks the MK2 acces", function()
+menu.toggle_loop(SessionWorld, "Anti Terrorbyte", {"blockterror"}, "Blocks the MK2 acces", function()
     antiTerrorGlass = SpawnCheck(antiTerrorGlass, -1829309699, v3.new(-1420.666, -3014.579, -79.0), 0, 0, -20, nil, 13, true, false)
     util.yield(3666)
 end, function()
@@ -3469,7 +3469,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
     util.yield(666)
 end)
 
-menu.toggle_loop(Session, "Ghost God Modes", {""}, "Ghost everyone who is a god mode except Friends.\nIf they are not god anymore , it will de-ghost", function()
+menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"}, "Ghost everyone who is a god mode except Friends.\nIf they are not god anymore , it will de-ghost", function()
     if IsInSession() then
         for players.list_except(true) as pid do
             if not isFriend(pid) then
@@ -3983,7 +3983,7 @@ end)
 
 menu.action(Settings, "Activate Everyday Goodies", {"pggoodies"}, "Activates all the Everyday Goodies.", function()
     menu.trigger_commands("ncpop on")
-    menu.trigger_commands("pgaceo on")
+    menu.trigger_commands("pgfmu on")
     menu.trigger_commands("pgblessing on")
     menu.trigger_commands("pghealth on")
     menu.trigger_commands("pgarmor on")
@@ -3996,8 +3996,12 @@ menu.action(Settings, "Activate Everyday Goodies", {"pggoodies"}, "Activates all
     menu.trigger_commands("pgaaw on")
     menu.trigger_commands("antiadmin on")
     menu.trigger_commands("antitrafic on")
+    menu.trigger_commands("softantitrafic on")
     menu.trigger_commands("pgssh on")
-    menu.trigger_commands("pgbll on")    
+    menu.trigger_commands("ghostgod on")
+    menu.trigger_commands("blockorb on")
+    menu.trigger_commands("blockkosatka on")
+    menu.trigger_commands("blockterror on")
 end)
 
 menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
@@ -4005,5 +4009,6 @@ menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
 end)
 
 menu.trigger_commands("leasshrine")
+menu.trigger_commands("antiadmin")
 
 util.keep_running()
