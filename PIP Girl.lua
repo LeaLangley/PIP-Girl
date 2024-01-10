@@ -210,12 +210,9 @@ end
 
 local function StandUser(pid) -- credit to sapphire for this and jinx script
     if player_Exist(pid) and pid ~= players.user() then
-        util.yield(666)
-        if player_Exist(pid) and pid ~= players.user() then
-            for menu.player_root(pid):getChildren() as cmd do
-                if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Stand User"):isValid() then
-                    return true
-                end
+        for menu.player_root(pid):getChildren() as cmd do
+            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Stand User"):isValid() then
+                return true
             end
         end
     end
@@ -239,15 +236,12 @@ end
 
 local function wannabeGod(pid)
     if player_Exist(pid) and pid ~= players.user() then
-        util.yield(666)
-        if player_Exist(pid) and pid ~= players.user() then
-            for menu.player_root(pid):getChildren() as cmd do
-                if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Attacking While Invulnerable"):isValid() then
-                    return true
-                end
-                if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Dead For Too Long"):isValid() then
-                    return true
-                end
+        for menu.player_root(pid):getChildren() as cmd do
+            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Attacking While Invulnerable"):isValid() then
+                return true
+            end
+            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Dead For Too Long"):isValid() then
+                return true
             end
         end
     end
@@ -256,12 +250,9 @@ end
 
 local function aggressive(pid)
     if player_Exist(pid) and pid ~= players.user() then
-        util.yield(666)
-        if player_Exist(pid) and pid ~= players.user() then
-            for menu.player_root(pid):getChildren() as cmd do
-                if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Spoofed Host Token (Aggressive)"):isValid() then
-                    return true
-                end
+        for menu.player_root(pid):getChildren() as cmd do
+            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Spoofed Host Token (Aggressive)"):isValid() then
+                return true
             end
         end
     end
@@ -483,7 +474,7 @@ local function requestControl(entity, timeout)
                 if os.time() - startTime > timeout or timeout == 0 then
                     break
                 end
-                util.yield(13)
+                util.yield(113)
             end
         end
     end
@@ -501,6 +492,8 @@ end
 local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
     local closestDistance = nil
     local closestPlayer = nil
+    local coordinatesCorrect = false
+    local anglesCorrect = false    
     if anti_collision then
         for players.list() as pid do
             if isFriend(pid) then
@@ -511,13 +504,14 @@ local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, ti
                     closestPlayer = pid
                 end
             end
-            util.yield(13)
+            util.yield(13 + timeout)
         end
         if closestPlayer then
             requestControl(entity, timeout)
             ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(players.user()), false)
         end
     end
+    --if entities.get_owner(entity) == players.user() then
     local currentCoords = ENTITY.GET_ENTITY_COORDS(entity)
     coordinatesCorrect = (math.abs(currentCoords.x - locationV3.x) <= 1) and
                             (math.abs(currentCoords.y - locationV3.y) <= 1) and
@@ -536,7 +530,6 @@ local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, ti
         ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
         ENTITY.FREEZE_ENTITY_POSITION(entity, true)
     end
-    return entity
 end
 
 local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision, share_ent)
@@ -549,12 +542,12 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
                 local distance = SYSTEM.VDIST2(locationV3.x, locationV3.y, locationV3.z, entPos.x, entPos.y, entPos.z)
                 if 0.13 >= distance then
                     local entHash = entities.get_model_hash(ent)
-                    if entHas == hash then
+                    if entHash == hash then
                         entity = ent
-                        notify_cmd("Reusing Entity: "..entHas.." | "..entity)
                         goto skip
                     end
                 end
+                util.yield(13 + timeout)
             end
         end
         requestModel(hash, timeout)
@@ -565,15 +558,16 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
             if os.time() - startTime > timeout or timeout == 0 then
                 break
             end
-            util.yield(13)
+            util.yield(13 + timeout)
         end
         requestControl(entity, timeout)
         ENTITY.FREEZE_ENTITY_POSITION(entity, true)
         ::skip::
-        entity = objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
+        objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
         return entity
     else
-        entity = objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
+        objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
+        util.yield(13 + timeout)
         return entity
     end
 end
@@ -3206,6 +3200,8 @@ local shrineElements = {
     {var = "roses_2", conditions = {4241635085, v3.new(-1811.66, -128.39, 77.79), 0, 0, 666, nil, 13, false, true}},
     {var = "firepit", conditions = {1125395611, v3.new(-1806.11, -130.02, 77.79), 0, 0, 0, nil, 13, false, true}},
     {var = "fire1", conditions = {3229200997, v3.new(-1806.1933, -130.1367, 77.90), 0, 0, 13, nil, 13, false, true}},
+    {var = "pc1", conditions = {2809166081, v3.new(-1801.90, -128.70, 77.99), 0, 0, 0, nil, 13, false, true}},
+    {var = "pc2", conditions = {4151318791, v3.new(-1801.91, -128.70, 78.00), 0, 0, -13, nil, 13, false, true}},
 }
 local Leas_shrine_blip = nil
 menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Blocks the MK2 access", function()
@@ -3235,13 +3231,13 @@ menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Blocks the MK2 a
 end, function()
     util.remove_blip(Leas_shrine_blip)
     Leas_shrine_blip = nil
-    for _, element in ipairs(shrineElements) do
-        local entityVar, conditions = element.var, element.conditions
-        if does_entity_exist(_G[entityVar]) then
-            requestControl(_G[entityVar], 0)
-            entities.delete(_G[entityVar])
-        end
-    end
+    --for _, element in ipairs(shrineElements) do
+    --    local entityVar, conditions = element.var, element.conditions
+    --    if does_entity_exist(_G[entityVar]) then
+    --        requestControl(_G[entityVar], 0)
+    --        entities.delete(_G[entityVar])
+    --    end
+    --end
 end)
 
 --local save_zone = nil
@@ -3268,7 +3264,7 @@ menu.toggle_loop(SessionWorld, "Nerf Oppressor MK2s", {""}, "Nerf Oppressor mk2 
         if players.get_vehicle_model(pid) == 2069146067 and not isFriend(pid) and not players.is_marked_as_modder(pid) then
             local vehicle = PED.GET_VEHICLE_PED_IS_IN(PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid))
             if VEHICLE.GET_VEHICLE_MOD(vehicle, 10) ~= -1 then
-                requestControl(vehicle, 0)
+                requestControl(vehicle, 13)
                 VEHICLE.SET_VEHICLE_MOD(vehicle, 10, -1)
             end
         end    
