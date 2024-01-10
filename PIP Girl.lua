@@ -1257,7 +1257,7 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all pickups on yo
             if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
                 requestControl(pickup, 0)
                 util.yield(111)
-                ENTITY.ATTACH_ENTITY_TO_ENTITY(pickup, playerPed, PED.GET_PED_BONE_INDEX(playerPed, 24818), 0.0, -0.3, 0.0, 0.0, 90, 0.0, true, true, true, true, 1, true)
+                ENTITY.ATTACH_ENTITY_TO_ENTITY(pickup, playerPed, PED.GET_PED_BONE_INDEX(playerPed, 24818), 0.0, -0.3, 0.0, 0.0, 90, 0.0, true, true, false, true, 1, true, 1)
                 table.insert(carryingPickups, pickup)
                 counter = counter + 1
             end
@@ -3391,7 +3391,7 @@ end
 menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
     if IsInSession() then
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
-            if players.user() == players.get_host() or (players.user() == players.get_script_host() and not isFriend(players.get_host()) and not isModder(players.get_host())) then
+            if players.user() == players.get_host() or (players.user() == players.get_script_host() and (not isFriend(players.get_host()) and not isModder(players.get_host()))) then
                 if not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
                     local targetPid = nil
                     for players.list() as pid1 do
