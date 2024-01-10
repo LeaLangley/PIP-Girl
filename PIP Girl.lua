@@ -1714,7 +1714,6 @@ local function CreateCheckpoints(repairStops)
         local checkpoint = GRAPHICS.CREATE_CHECKPOINT(11, position.x, position.y, position.z + 1, position.x, position.y, position.z, 6, 255, 0, 128, 66, 0)
         table.insert(checkpoints, checkpoint)
     end
-    blipsCreated = true
 end
 local function remove_blips()
     for blips as blip do
@@ -3206,18 +3205,22 @@ local shrineElements = {
 }
 local Leas_shrine_blip = nil
 menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Blocks the MK2 access", function()
-    if not Leas_shrine_blip then
-        Leas_shrine_blip = HUD.ADD_BLIP_FOR_COORD(-1812.212, -127.127, 80.265)
-        HUD.SET_BLIP_SPRITE(Leas_shrine_blip, "617")
-        HUD.SET_BLIP_COLOUR(Leas_shrine_blip, 76)
-        HUD.SET_BLIP_AS_MINIMAL_ON_EDGE(Leas_shrine_blip, true)
-        HUD.SET_RADIUS_BLIP_EDGE(Leas_shrine_blip, true)
-        HUD.SET_BLIP_AS_SHORT_RANGE(Leas_shrine_blip, true)
-        HUD.SET_BLIP_DISPLAY(Leas_shrine_blip, 2)
-        HUD.SET_BLIP_SCALE(Leas_shrine_blip, 0.8)
-        HUD.BEGIN_TEXT_COMMAND_SET_BLIP_NAME("STRING")
-        HUD.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Lea\'s Shrine')
-        HUD.END_TEXT_COMMAND_SET_BLIP_NAME(Leas_shrine_blip)
+    if IsInSession() then
+        if not Leas_shrine_blip then
+            Leas_shrine_blip = HUD.ADD_BLIP_FOR_COORD(-1812.212, -127.127, 80.265)
+            HUD.SET_BLIP_SPRITE(Leas_shrine_blip, "617")
+            HUD.SET_BLIP_COLOUR(Leas_shrine_blip, 76)
+            HUD.SET_BLIP_AS_MINIMAL_ON_EDGE(Leas_shrine_blip, true)
+            HUD.SET_RADIUS_BLIP_EDGE(Leas_shrine_blip, true)
+            HUD.SET_BLIP_AS_SHORT_RANGE(Leas_shrine_blip, true)
+            HUD.SET_BLIP_DISPLAY(Leas_shrine_blip, 2)
+            HUD.SET_BLIP_SCALE(Leas_shrine_blip, 0.8)
+            HUD.BEGIN_TEXT_COMMAND_SET_BLIP_NAME("STRING")
+            HUD.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Lea\'s Shrine')
+            HUD.END_TEXT_COMMAND_SET_BLIP_NAME(Leas_shrine_blip)
+        end
+    else
+        Leas_shrine_blip = nil
     end
     for _, element in ipairs(shrineElements) do
         local entityVar, conditions = element.var, element.conditions
