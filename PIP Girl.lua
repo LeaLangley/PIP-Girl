@@ -2589,10 +2589,10 @@ function getOrgColor(pid)
 end
 
 local function espOnPlayer(pid, namesync)
-    local targetped = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)
-    local ppos = ENTITY.GET_ENTITY_COORDS(targetped)
-    if ppos.z > -10 then --ENTITY.HAS_ENTITY_CLEAR_LOS_TO_ENTITY(players.user_ped(), targetped, 256)
+    if (not players.is_in_interior(pid) and not players.is_in_interior(players.user())) or (players.is_in_interior(pid) and players.is_in_interior(players.user())) then
         --coordinate stuff
+        local targetped = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)
+        local ppos = ENTITY.GET_ENTITY_COORDS(targetped)
         local mypos = ENTITY.GET_ENTITY_COORDS(getLocalPed())
         local playerHeadOffset = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(targetped, 0, 0, 1.0)
         local centerPlayer = ENTITY.GET_ENTITY_COORDS(targetped)
@@ -2611,8 +2611,14 @@ local function espOnPlayer(pid, namesync)
         end
         local screenName = worldToScreen(playerHeadOffset)
         local txtscale = 0.42
+        local show_distance = 0
+        if not PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) then
+            show_distance = 420
+        else
+            show_distance = 666
+        end
 
-        if screenName.success and vdist <= 666 then
+        if screenName.success and vdist <= show_distance then
             local rank = players.get_rank(pid)
             drawESPText(screenName, -0.10, "("..rank..") "..players.get_name_with_tags(pid), txtscale, colText)
             local health = ENTITY.GET_ENTITY_HEALTH(targetped) - 100
@@ -3804,7 +3810,6 @@ local function SessionCheck(pid)
         current_session_type = session_type()
         startupConfig()
     end
-    util.yield(666)
     if pid ~= players.user() then
         local rid = players.get_rockstar_id(pid)
         if is_player_in_blacklist(rid) or fillup_size == rid then
