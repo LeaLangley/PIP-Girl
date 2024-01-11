@@ -3383,7 +3383,7 @@ end)
 
 local function isFriendStuck()
     for players.list() as pid do
-        if isFriend(pid) and isStuck(pid) and discoveredSince(pid) >= 160 then
+        if isFriend(pid) and isStuck(pid) and discoveredSince(pid) >= 113 then
             return pid
         end
     end
@@ -3402,13 +3402,13 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                             targetPid = isFriendStuck()
                         end
                         local check_timeout = os.time() + 13
-                        while player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not isFriendStuck() and discoveredSince(targetPid) >= 160 do
+                        while player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not isFriendStuck() and discoveredSince(targetPid) >= 113 do
                             if os.time() > check_timeout then
                                 break
                             end
                             util.yield(666)
                         end
-                        if player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not isFriendStuck() and discoveredSince(targetPid) >= 160 then
+                        if player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not isFriendStuck() and discoveredSince(targetPid) >= 113 then
                             local name = players.get_name(targetPid)
                             menu.trigger_commands("givesh " .. name)
                             notify_cmd(name .. " is Loading too Long.")
