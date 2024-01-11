@@ -3485,8 +3485,8 @@ menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"}, "Ghost everyone who i
                     local index = find_in_table(sussy_god, pid)
                     if index then
                         table.remove(sussy_god, index)
-                        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false) -- Sussy God mode is legit.
                     end
+                    NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false) -- Sussy God mode is legit.
                 end
             else
                 local index = find_in_table(sussy_god, pid)
