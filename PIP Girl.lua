@@ -1172,6 +1172,11 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yo
                     end
                 end
             end
+            if players.get_boss(players.user()) ~= -1 then
+                if menu.get_value(menu.ref_by_path("Online>CEO/MC>Name")) ~= urceoname then
+                    menu.trigger_commands("ceoname " .. urceoname)
+                end
+            end
             util.yield(666)
         else
             util.yield(6666)
