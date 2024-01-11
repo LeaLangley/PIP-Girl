@@ -511,7 +511,6 @@ local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, ti
             ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(players.user()), false)
         end
     end
-    --if entities.get_owner(entity) == players.user() then
     local currentCoords = ENTITY.GET_ENTITY_COORDS(entity)
     coordinatesCorrect = (math.abs(currentCoords.x - locationV3.x) <= 1) and
                             (math.abs(currentCoords.y - locationV3.y) <= 1) and
@@ -536,23 +535,26 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
     if order == nil then order = 2 end
     local startTime = os.time()
     if not does_entity_exist(entity) then
-        if share_ent then
-            for entities.get_all_objects_as_pointers() as ent do
-                local entPos = entities.get_position(ent)
-                local distance = SYSTEM.VDIST2(locationV3.x, locationV3.y, locationV3.z, entPos.x, entPos.y, entPos.z)
-                if 0.13 >= distance then
-                    local entHash = entities.get_model_hash(ent)
-                    if entHash == hash then
-                        entity = ent
-                        goto skip
-                    end
-                end
-                util.yield(13 + timeout)
-            end
-        end
+        --if share_ent then
+        --    for entities.get_all_objects_as_pointers() as ent do
+        --        local entPos = ENTITY.GET_ENTITY_COORDS(ent)
+        --        local distance = SYSTEM.VDIST2(locationV3.x, locationV3.y, locationV3.z, entPos.x, entPos.y, entPos.z)
+        --        if 0.13 >= distance then
+        --            local entHash = entities.get_model_hash(ent)
+        --            if entHash == hash then
+        --                entity = ent
+        --                if entities.get_owner(entity) == players.user() then
+        --                    objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
+        --                end
+        --                return entity
+        --            end
+        --        end
+        --        util.yield(13 + timeout)
+        --    end
+        --end
         requestModel(hash, timeout)
         entity = entities.create_object(hash, locationV3)
-        util.yield(13)
+        util.yield(13 + timeout)
         startTime = os.time()
         while not does_entity_exist(entity) do
             if os.time() - startTime > timeout or timeout == 0 then
@@ -562,7 +564,6 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
         end
         requestControl(entity, timeout)
         ENTITY.FREEZE_ENTITY_POSITION(entity, true)
-        ::skip::
         objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
         return entity
     else
