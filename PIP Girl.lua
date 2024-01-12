@@ -3141,19 +3141,15 @@ end, function()
     end
     in_orb_room = {}
     if does_entity_exist(orbRoomGlass) then
-        requestControl(orbRoomGlass, 0)
         entities.delete(orbRoomGlass)
     end
     if does_entity_exist(orbRoomTable) then
-        requestControl(orbRoomTable, 0)
         entities.delete(orbRoomTable)
     end
     if does_entity_exist(orbRoomTable2) then
-        requestControl(orbRoomTable2, 0)
         entities.delete(orbRoomTable2)
     end
     if does_entity_exist(orbRoomDoorDMG) then
-        requestControl(orbRoomDoorDMG, 0)
         entities.delete(orbRoomDoorDMG)
     end
 end)
@@ -3166,11 +3162,9 @@ menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {"blockkosatka"
     util.yield(1666)
 end, function()
     if does_entity_exist(kosatkaMissile1) then
-        requestControl(kosatkaMissile1, 0)
         entities.delete(kosatkaMissile1)
     end
     if does_entity_exist(kosatkaMissile2) then
-        requestControl(kosatkaMissile2, 0)
         entities.delete(kosatkaMissile2)
     end
 end)
@@ -3181,7 +3175,6 @@ menu.toggle_loop(SessionWorld, "Anti Terrorbyte", {"blockterror"}, "Blocks the M
     util.yield(3666)
 end, function()
     if does_entity_exist(antiTerrorGlass) then
-        requestControl(antiTerrorGlass, 0)
         entities.delete(antiTerrorGlass)
     end
 end)
@@ -3237,13 +3230,12 @@ menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Blocks the MK2 a
 end, function()
     util.remove_blip(Leas_shrine_blip)
     Leas_shrine_blip = nil
-    --for _, element in ipairs(shrineElements) do
-    --    local entityVar, conditions = element.var, element.conditions
-    --    if does_entity_exist(_G[entityVar]) then
-    --        requestControl(_G[entityVar], 0)
-    --        entities.delete(_G[entityVar])
-    --    end
-    --end
+    for _, element in ipairs(shrineElements) do
+        local entityVar, conditions = element.var, element.conditions
+        if does_entity_exist(_G[entityVar]) then
+            entities.delete(_G[entityVar])
+        end
+    end
 end)
 
 --local save_zone = nil
