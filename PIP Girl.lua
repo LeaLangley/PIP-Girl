@@ -2590,7 +2590,7 @@ local function espOnPlayer(pid, namesync)
         --coordinate stuff
         local targetped = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)
         local ppos = ENTITY.GET_ENTITY_COORDS(targetped)
-        local mypos = ENTITY.GET_ENTITY_COORDS(players.user_ped())
+        local mypos = players.get_cam_pos(players.user())
         local vdist = SYSTEM.VDIST(mypos.x, mypos.y, mypos.z, ppos.x, ppos.y, ppos.z)
         local show_distance = 0
         if not PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) then
@@ -2599,7 +2599,6 @@ local function espOnPlayer(pid, namesync)
             show_distance = 666
         end
         if vdist <= show_distance then
-            local centerPlayer = ENTITY.GET_ENTITY_COORDS(targetped)
             local playerHeadOffset = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(targetped, 0, 0, 1.0)
             local blipColor = getOrgColor(pid)
             local colText
