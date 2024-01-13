@@ -209,6 +209,7 @@ local function player_Exist(pid)
 end
 
 local function StandUser(pid) -- credit to sapphire for this and jinx script
+    util.yield(666)
     if player_Exist(pid) and pid ~= players.user() then
         for menu.player_root(pid):getChildren() as cmd do
             if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Stand User"):isValid() then
@@ -220,6 +221,7 @@ local function StandUser(pid) -- credit to sapphire for this and jinx script
 end
 
 local function discoveredSince(pid)
+    util.yield(666)
     if player_Exist(pid) then
         local playerPath = menu.player_root(pid)
         local timeString = playerPath:refByRelPath("Information>Discovered").value
@@ -235,6 +237,7 @@ local function discoveredSince(pid)
 end
 
 local function wannabeGod(pid)
+    util.yield(666)
     if player_Exist(pid) and pid ~= players.user() then
         for menu.player_root(pid):getChildren() as cmd do
             if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Attacking While Invulnerable"):isValid() then
@@ -249,6 +252,7 @@ local function wannabeGod(pid)
 end
 
 local function aggressive(pid)
+    util.yield(666)
     if player_Exist(pid) and pid ~= players.user() then
         for menu.player_root(pid):getChildren() as cmd do
             if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Spoofed Host Token (Aggressive)"):isValid() then
@@ -260,6 +264,7 @@ local function aggressive(pid)
 end
 
 local function StandDetectionsRead(pid)
+    util.yield(666)
     local PlayerRootChildrenArray = menu.player_root(pid):getChildren()
     for PlayerRootChildrenArray as Child do
         if Child:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and lang.get_string(Child.menu_name, "en"):startswith "Classification: " then
