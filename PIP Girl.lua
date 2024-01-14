@@ -1953,7 +1953,7 @@ menu.slider(Outfit, 'Smart Outfit Lock Helmet', {'SmartLockHelmet'}, 'If u Enter
     OutfitLockHelmet = new_value
 end)
 
-menu.action(VEhicle, "Detonate Lea Tech Vehicle.", {"boomlea"}, "", function()
+menu.action(Vehicle, "Detonate Lea Tech Vehicle.", {"boomlea"}, "", function()
     VEHICLE.START_VEHICLE_ALARM(entities.get_user_vehicle_as_handle())
     util.yield(666)
     VEHICLE.DETONATE_VEHICLE_PHONE_EXPLOSIVE_DEVICE()
