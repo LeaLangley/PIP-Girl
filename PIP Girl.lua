@@ -1586,6 +1586,7 @@ local function buff_lea_tech(vehicle)
     VEHICLE.SET_VEHICLE_ENGINE_CAN_DEGRADE(vehicle, false)
     VEHICLE.SET_VEHICLE_STRONG(vehicle, true)
     VEHICLE.SET_TRAILER_LEGS_RAISED(vehicle)
+    VEHICLE.ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(vehicle)
 end
 local saved_vehicle_id = nil
 local saved_trailer_id = nil
