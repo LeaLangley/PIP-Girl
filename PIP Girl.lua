@@ -452,7 +452,7 @@ local function session_type()
         if NETWORK.NETWORK_SESSION_IS_SOLO() then
             return "Solo"
         end
-        return "Online"
+        return "Public"
     end
     return "Singleplayer"
 end
@@ -1895,7 +1895,7 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
     if util.is_interaction_menu_open() then
         menu.trigger_commands("lockoutfit off")
     else
-        if session_type() ~= "Online" then
+        if session_type() ~= "Public" then
             if HUD.IS_MESSAGE_BEING_DISPLAYED() then
                 menu.trigger_commands("lockoutfit off")
                 if not temp_holding_outfit then
@@ -2262,7 +2262,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
         message = message .. "Out of " .. indistance .. " Vehicles in 100m Distance."
     end
     if message ~= "" then
-        if session_type() == "Online" then
+        if session_type() == "Public" then
             warnify_net(message)
         else
             warnify_ses(message)
@@ -3728,7 +3728,7 @@ local function startupConfig()
     menu.trigger_command(menu.ref_by_path("Online>Session>Block Joins>Message>Your Account Has A Bad Reputation"))
     if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Blacklist")) then
         local noexceptions = true
-        if session_type() == "Online" then
+        if session_type() == "Public" then
             noexceptions = true
         else
             noexceptions = false
@@ -3852,7 +3852,7 @@ local function SessionCheck(pid)
                 if name == players.get_name(players.user()) then
                     name = "N/A"
                 end
-                if session_type() == "Online" then
+                if session_type() == "Public" then
                     notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
                 end
                 add_in_stand(pid)
@@ -3860,7 +3860,7 @@ local function SessionCheck(pid)
                     notify("This Blacklist is a Stand User, we don't kick them until they attack: \n" .. name .. " - " .. rid)
                     menu.trigger_commands("hellaa " .. name .. " on")
                 else
-                    if session_type() == "Online" then
+                    if session_type() == "Public" then
                         StrategicKick(pid)
                     else
                         menu.trigger_commands("hellaa " .. name .. " on")
