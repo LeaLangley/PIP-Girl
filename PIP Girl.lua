@@ -3366,7 +3366,7 @@ end)
 
 menu.action(SessionMisc, "Copy Discord Session invite link.", {""}, "", function()
     local code = get_session_code()
-    if code ~= "N/A" or code ~= "Please wait..." then
+    if code ~= "N/A" and code ~= "Please wait..." then
         util.copy_to_clipboard("# ***🌐 [Join GTA:O "..session_type().." Session.](https://stand.gg/join#"..code..")***", false)
         notify("Invite link for "..code.." "..session_type().." copied.")
     else
