@@ -1080,6 +1080,7 @@ menu.text_input(PIP_Girl, "CEO Name", {"pgceoname"}, "(Also works for MC) You ca
 local joinfriendsceo = false
 local invitefriendsinceo = false
 local ceo_ses_code = nil
+local lastCeoName = nil
 menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yourself as CEO and auto switches you to MC/CEO in most situations needed.", function()
     if IsInSession() then
         local uniqueColors = {}  -- Table to store unique organization colors
@@ -1194,11 +1195,12 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yo
                     end
                 end
             end
-            if ceo_ses_code ~= get_session_code() then
-                if players.get_boss(players.user()) ~= -1 then
-                    if menu.get_value(menu.ref_by_path("Online>CEO/MC>Name")) ~= urceoname then
-                        menu.trigger_commands("ceoname " .. urceoname)
-                    end
+            if players.get_boss(players.user()) ~= -1 then
+                local currentCeoName = menu.get_value(menu.ref_by_path("Online>CEO/MC>Name"))
+                if currentCeoName ~= urceoname and currentCeoName ~= lastCeoName then
+                    menu.trigger_commands("ceoname " .. urceoname)
+                    util.yield(13)
+                    lastCeoName = menu.get_value(menu.ref_by_path("Online>CEO/MC>Name"))
                 end
             end
             util.yield(666)
