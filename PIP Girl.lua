@@ -1208,6 +1208,7 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yo
             util.yield(6666)
         end
     else
+        lastCeoName = nil
         util.yield(13666)
     end
 end)
