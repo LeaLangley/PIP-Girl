@@ -1079,6 +1079,7 @@ end
 menu.text_input(PIP_Girl, "CEO Name", {"pgceoname"}, "(Also works for MC) You can press Ctrl+U and select colors, but no special GTA icons, sadly.", on_change)
 local joinfriendsceo = false
 local invitefriendsinceo = false
+local ceo_ses_code = nil
 menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yourself as CEO and auto switches you to MC/CEO in most situations needed.", function()
     if IsInSession() then
         local uniqueColors = {}  -- Table to store unique organization colors
@@ -1193,11 +1194,13 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yo
                     end
                 end
             end
-            --if players.get_boss(players.user()) ~= -1 then
-            --    if menu.get_value(menu.ref_by_path("Online>CEO/MC>Name")) ~= urceoname then
-            --        menu.trigger_commands("ceoname " .. urceoname)
-            --    end
-            --end
+            if ceo_ses_code ~= get_session_code() then
+                if players.get_boss(players.user()) ~= -1 then
+                    if menu.get_value(menu.ref_by_path("Online>CEO/MC>Name")) ~= urceoname then
+                        menu.trigger_commands("ceoname " .. urceoname)
+                    end
+                end
+            end
             util.yield(666)
         else
             util.yield(6666)
@@ -2367,9 +2370,9 @@ local function SuperClean(fix, ignoreMission)
     notify("Done " .. ct .. "+ entities removed!")
     if fix then
         util.yield(666)
-        menu.trigger_commands("lockstreamingfocus on")
-        util.yield(13)
-        menu.trigger_commands("lockstreamingfocus off")
+        menu.set_state(menu.ref_by_path("World>GeoGuessr>GeoGuessr"), "On")
+        util.yield(113)
+        menu.set_state(menu.ref_by_path("World>GeoGuessr>GeoGuessr"), "Off")
     end
 end
 menu.divider(Game, "Exclude Mission.")
