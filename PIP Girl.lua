@@ -3368,7 +3368,7 @@ menu.toggle_loop(SessionMisc, "Kick Aggressive Host Token as Host", {""}, "", fu
     end
 end)
 
-menu.action(SessionMisc, "Copy Discord Session invite link.", {""}, "", function()
+menu.action(SessionMisc, "Copy Discord Session invite link.", {"invitelink"}, "", function()
     local code = get_session_code()
     if code ~= "N/A" and code ~= "Please wait..." then
         util.copy_to_clipboard("# ***🌐 [Join GTA:O "..session_type().." Session.](https://stand.gg/join#"..code..")***", false)
