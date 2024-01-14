@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.112"
+local SCRIPT_VERSION = "1.113"
 
 local startupmsg = "If settings are missing PLS restart lua.\n\nGhost \"Attacking While Invulnerable\" IS NOW -> Ghost God Mode\n\nImproved and Lea-rned alot.\nI love u."
 
@@ -441,20 +441,31 @@ end
 local function session_type()
     if util.is_session_started() or util.is_session_transition_active() then
         if NETWORK.NETWORK_SESSION_IS_PRIVATE() then
-            return "privat"
+            return "Privat"
         end
         if NETWORK.NETWORK_SESSION_IS_CLOSED_FRIENDS() then
-            return "friends"
+            return "Priends"
         end
         if NETWORK.NETWORK_SESSION_IS_CLOSED_CREW() then
-            return "crew"
+            return "Crew"
         end
         if NETWORK.NETWORK_SESSION_IS_SOLO() then
-            return "solo"
+            return "Solo"
         end
-        return "online"
+        return "Online"
     end
-    return "singleplayer"
+    return "Singleplayer"
+end
+
+local function get_session_code()
+    local applicable, code = util.get_session_code()
+    if applicable then
+        if code then
+            return code
+        end
+        return "Please wait..."
+    end
+    return "N/A"
 end
 
 local function requestModel(hash, timeout)
@@ -602,10 +613,13 @@ local function thunderForMin(min)
 end
 
 local function Wait_for_IsInSession()
-    while not IsInSession() do
+    local ses_cod = get_session_code()
+    while not IsInSession() and ses_cod == get_session_code() do
         util.yield(666)
     end
-    players.dispatch_on_join()
+    if ses_cod == get_session_code() then
+        players.dispatch_on_join()
+    end
 end
 
 local function StrategicKick(pid)
@@ -1876,7 +1890,7 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
     if util.is_interaction_menu_open() then
         menu.trigger_commands("lockoutfit off")
     else
-        if session_type() ~= "online" then
+        if session_type() ~= "Online" then
             if HUD.IS_MESSAGE_BEING_DISPLAYED() then
                 menu.trigger_commands("lockoutfit off")
                 if not temp_holding_outfit then
@@ -2243,7 +2257,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
         message = message .. "Out of " .. indistance .. " Vehicles in 100m Distance."
     end
     if message ~= "" then
-        if session_type() == "online" then
+        if session_type() == "Online" then
             warnify_net(message)
         else
             warnify_ses(message)
@@ -2800,7 +2814,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         --  Waiting to Join a Session
         --  <3
         while not util.is_session_started() do
-            if session_type() == "singleplayer" then
+            if session_type() == "Singleplayer" then
                 if first_run then
                     util.yield(1666)
                 else
@@ -2842,7 +2856,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 local players_with_kd = 0
                 for players.list(false, false, true) as pid do
                     while not IsInSession() do
-                        if session_type() == "singleplayer" then
+                        if session_type() == "Singleplayer" then
                             util.yield(19666)
                             notify("U r in Story Mode ? Getting u online.")
                             menu.trigger_commands("go public")
@@ -2868,7 +2882,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 local players_with_lvl = 0
                 for players.list(false, false, true) as pid do
                     while not IsInSession() do
-                        if session_type() == "singleplayer" then
+                        if session_type() == "Singleplayer" then
                             util.yield(19666)
                             notify("U r in Story Mode ? Getting u online.")
                             menu.trigger_commands("go public")
@@ -2901,7 +2915,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 --  <3
                 if (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
                     while not IsInSession() do
-                        if session_type() == "singleplayer" then
+                        if session_type() == "Singleplayer" then
                             util.yield(19666)
                             notify("U r in Story Mode ? Getting u online.")
                             menu.trigger_commands("go public")
@@ -3322,6 +3336,63 @@ end, function()
     end
 end)
 
+local SessionMisc = menu.list(Session, 'Misc', {}, 'Session Misc.', function(); end)
+
+menu.toggle_loop(SessionMisc, "Kick Aggressive Host Token on Attack", {""}, "", function()
+    if IsInSession() then
+        for players.list() as pid do
+            if aggressive(pid) and not isFriend(pid) and players.is_marked_as_attacker(pid) then
+                StrategicKick(pid)
+            end
+        end
+        util.yield(3666)
+    else
+        util.yield(13666)
+    end
+end)
+
+menu.toggle_loop(SessionMisc, "Kick Aggressive Host Token as Host", {""}, "", function()
+    if IsInSession() and players.user() == players.get_host() then
+        for players.list() as pid do
+            if aggressive(pid) and not isFriend(pid) then
+                StrategicKick(pid)
+            end
+        end
+        util.yield(3666)
+    else
+        util.yield(13666)
+    end
+end)
+
+menu.action(SessionMisc, "Copy Discord Session invite link.", {""}, "", function()
+    local code = get_session_code()
+    if code ~= "N/A" or code ~= "Please wait..." then
+        util.copy_to_clipboard("# ***🌐 [Join GTA:O "..session_type().." Session.](https://stand.gg/join#"..code..")***", false)
+        notify("Invite link for "..code.." "..session_type().." copied.")
+    else
+        notify("This session dosnt have a invite code right now.\n"..code.." | "..session_type())
+    end
+end)
+
+menu.action(SessionMisc, "de-Ghost entire Session", {""}, "", function()
+    if IsInSession() then
+        for players.list() as pid do
+            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+        end
+        sussy_god = {}
+    end
+end)
+
+menu.action(SessionMisc, "Notify Highest K/D", {"notifykd"}, "Notify's u with the Hightest K/D Players.", function()
+    local numPlayers
+    if session_claimer_kd_target_players < 3 then
+        numPlayers = 3
+    else
+        numPlayers = session_claimer_kd_target_players
+    end
+    ReportSessionKD(numPlayers)
+end)
+
 local pop_multiplier_id = nil
 menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic on the session for everyone.", function()
     if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "On" then
@@ -3508,51 +3579,6 @@ end, function()
     sussy_god = {}
 end)
 
-menu.toggle_loop(Session, "Kick Aggressive Host Token on Attack", {""}, "", function()
-    if IsInSession() then
-        for players.list() as pid do
-            if aggressive(pid) and not isFriend(pid) and players.is_marked_as_attacker(pid) then
-                StrategicKick(pid)
-            end
-        end
-        util.yield(3666)
-    else
-        util.yield(13666)
-    end
-end)
-
-menu.toggle_loop(Session, "Kick Aggressive Host Token as Host", {""}, "", function()
-    if IsInSession() and players.user() == players.get_host() then
-        for players.list() as pid do
-            if aggressive(pid) and not isFriend(pid) then
-                StrategicKick(pid)
-            end
-        end
-        util.yield(3666)
-    else
-        util.yield(13666)
-    end
-end)
-
-menu.action(Session, "de-Ghost entire Session", {""}, "", function()
-    if IsInSession() then
-        for players.list() as pid do
-            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
-        end
-        sussy_god = {}
-    end
-end)
-
-menu.action(Session, "Notify Highest K/D", {"notifykd"}, "Notify's u with the Hightest K/D Players.", function()
-    local numPlayers
-    if session_claimer_kd_target_players < 3 then
-        numPlayers = 3
-    else
-        numPlayers = session_claimer_kd_target_players
-    end
-    ReportSessionKD(numPlayers)
-end)
-
 menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisible for the whole session, but with a nice effect for ppl close by.", function()
     if IsInSession() then
         playerPosition = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(players.user_ped(), 0, -23.0, 2)
@@ -3693,7 +3719,7 @@ local function startupConfig()
     menu.trigger_command(menu.ref_by_path("Online>Session>Block Joins>Message>Your Account Has A Bad Reputation"))
     if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Blacklist")) then
         local noexceptions = true
-        if session_type() == "online" then
+        if session_type() == "Online" then
             noexceptions = true
         else
             noexceptions = false
@@ -3817,7 +3843,7 @@ local function SessionCheck(pid)
                 if name == players.get_name(players.user()) then
                     name = "N/A"
                 end
-                if session_type() == "online" then
+                if session_type() == "Online" then
                     notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
                 end
                 add_in_stand(pid)
@@ -3825,7 +3851,7 @@ local function SessionCheck(pid)
                     notify("This Blacklist is a Stand User, we don't kick them until they attack: \n" .. name .. " - " .. rid)
                     menu.trigger_commands("hellaa " .. name .. " on")
                 else
-                    if session_type() == "online" then
+                    if session_type() == "Online" then
                         StrategicKick(pid)
                     else
                         menu.trigger_commands("hellaa " .. name .. " on")
