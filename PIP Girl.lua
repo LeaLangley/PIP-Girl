@@ -2813,7 +2813,11 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         --  <3
         --  Waiting to Join a Session
         --  <3
+        local join_timeout = os.time()
         while not util.is_session_started() do
+            if os.time() - join_timeout > 13 then
+                break
+            end
             if session_type() == "Singleplayer" then
                 if first_run then
                     util.yield(1666)
