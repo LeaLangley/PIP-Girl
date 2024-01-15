@@ -719,6 +719,20 @@ menu.textslider(PIP_Girl_APPS, "The Agency App", {}, "Your agency screen.", {
     START_SCRIPT("CEO", "appfixersecurity")
 end)
 
+menu.textslider(PIP_Girl_APPS, "The Avenger App", {}, "Your avenger screen.", {
+    "Open",
+    "Close",
+}, function()
+    START_SCRIPT("CEO", "appavengeroperations")
+end)
+
+menu.textslider(PIP_Girl_APPS, "The Internet App", {}, "Your internet screen.", {
+    "Open",
+    "Close",
+}, function()
+    START_SCRIPT("CEO", "appinternet")
+end)
+
 menu.action(PIP_Girl_APPS, "(Unstuck) Unstuck after starting a sale.", {}, "If you use one of the screens above and start a sale, you could get stuck.\nPerform an Suicide to unstuck.", function()
     menu.trigger_commands('ewo')
 end)
