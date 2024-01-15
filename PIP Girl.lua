@@ -2467,6 +2467,7 @@ local warningMessages = {
     [1270064450] = "Player has been invited in the Crew.",
     [991495373] = "Transaction error.",
     [675241754] = "Transaction error.",
+    [1230807380] = "Transaction error.",
     [587688989] = "Joining session.",
     [15890625] = "Joining session.",
     [99184332] = "Leaveing session.",
