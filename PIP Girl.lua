@@ -1956,10 +1956,11 @@ end)
 
 menu.action(Vehicle, "Detonate Lea Tech Vehicle.", {"boomlea"}, "", function()
     local target_vehicle = entities.get_user_vehicle_as_handle()
-    requestControl(target_vehicle, 1)
     if saved_vehicle_id then
         target_vehicle = saved_vehicle_id
     end
+    requestControl(target_vehicle, 1)
+    VEHICLE.ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(vehicle)
     local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(target_vehicle, -1)
     if driverPed ~= players.user_ped() then
         VEHICLE.APPLY_EMP_EFFECT(target_vehicle)
