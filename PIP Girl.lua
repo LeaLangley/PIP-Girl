@@ -1974,7 +1974,7 @@ menu.action(Vehicle, "Detonate Lea Tech Vehicle.", {"boomlea"}, "", function()
         target_vehicle = saved_vehicle_id
     end
     requestControl(target_vehicle, 1)
-    VEHICLE.ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(vehicle)
+    VEHICLE.ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(target_vehicle)
     local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(target_vehicle, -1)
     if driverPed ~= players.user_ped() then
         VEHICLE.APPLY_EMP_EFFECT(target_vehicle)
@@ -2488,8 +2488,9 @@ end)
 
 local warningMessages = {
     [896436592] = "This player left the session.",
-    [1575023314] = "Session timeout.",
-    [396931869] = "Session timeout",
+    [1575023314] = "Timed out joining session.",
+    [396931869] = "Timed out joining session.",
+    [1799778355] = "Timed out joining session. Please return to Grand Theft Auto V and try again later.",
     [1556811926] = "Timed out locating session. Please return to Grand Theft Auto V and try again later.",
     [1446064540] = "You are already in the session.",
     [2053095241] = "Session may no longer exist.",
