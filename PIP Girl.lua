@@ -1956,6 +1956,7 @@ end)
 
 menu.action(Vehicle, "Detonate Lea Tech Vehicle.", {"boomlea"}, "", function()
     local target_vehicle = entities.get_user_vehicle_as_handle()
+    requestControl(target_vehicle, 1)
     if saved_vehicle_id then
         target_vehicle = saved_vehicle_id
     end
@@ -1974,7 +1975,7 @@ menu.action(Vehicle, "Detonate Lea Tech Vehicle.", {"boomlea"}, "", function()
         VEHICLE.SET_VEHICLE_NEON_ENABLED(target_vehicle, 2, true)
         VEHICLE.SET_VEHICLE_NEON_ENABLED(target_vehicle, 3, true)
         VEHICLE.SET_VEHICLE_XENON_LIGHT_COLOR_INDEX(target_vehicle, 8)
-        util.yield(3666)
+        util.yield(6666)
     end
     VEHICLE.DETONATE_VEHICLE_PHONE_EXPLOSIVE_DEVICE(saved_vehicle_id)
 end)
