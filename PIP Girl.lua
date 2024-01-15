@@ -1587,6 +1587,7 @@ local function buff_lea_tech(vehicle)
     VEHICLE.SET_VEHICLE_ENGINE_CAN_DEGRADE(vehicle, false)
     VEHICLE.SET_VEHICLE_STRONG(vehicle, true)
     VEHICLE.SET_TRAILER_LEGS_RAISED(vehicle)
+    VEHICLE.SET_INCREASE_WHEEL_CRUSH_DAMAGE(vehicle, true)
     VEHICLE.ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(vehicle)
 end
 local saved_vehicle_id = nil
@@ -1954,9 +1955,28 @@ menu.slider(Outfit, 'Smart Outfit Lock Helmet', {'SmartLockHelmet'}, 'If u Enter
 end)
 
 menu.action(Vehicle, "Detonate Lea Tech Vehicle.", {"boomlea"}, "", function()
-    VEHICLE.START_VEHICLE_ALARM(entities.get_user_vehicle_as_handle())
-    util.yield(666)
-    VEHICLE.DETONATE_VEHICLE_PHONE_EXPLOSIVE_DEVICE()
+    local target_vehicle = entities.get_user_vehicle_as_handle()
+    if saved_vehicle_id then
+        target_vehicle = saved_vehicle_id
+    end
+    local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(target_vehicle, -1)
+    if driverPed ~= players.user_ped() then
+        VEHICLE.APPLY_EMP_EFFECT(target_vehicle)
+        VEHICLE.SET_VEHICLE_ALARM(target_vehicle, true)
+        VEHICLE.START_VEHICLE_ALARM(target_vehicle)
+        VEHICLE.SET_VEHICLE_IS_STOLEN(target_vehicle, true)
+        VEHICLE.IS_VEHICLE_STOLEN(target_vehicle)
+        VEHICLE.SET_VEHICLE_DOORS_LOCKED(target_vehicle, 5)
+        VEHICLE.SET_VEHICLE_OUT_OF_CONTROL(target_vehicle, false, true)
+        VEHICLE.SET_VEHICLE_NEON_COLOUR(target_vehicle, 255, 13, 13)
+        VEHICLE.SET_VEHICLE_NEON_ENABLED(target_vehicle, 0, true)
+        VEHICLE.SET_VEHICLE_NEON_ENABLED(target_vehicle, 1, true)
+        VEHICLE.SET_VEHICLE_NEON_ENABLED(target_vehicle, 2, true)
+        VEHICLE.SET_VEHICLE_NEON_ENABLED(target_vehicle, 3, true)
+        VEHICLE.SET_VEHICLE_XENON_LIGHT_COLOR_INDEX(target_vehicle, 8)
+        util.yield(3666)
+    end
+    VEHICLE.DETONATE_VEHICLE_PHONE_EXPLOSIVE_DEVICE(saved_vehicle_id)
 end)
 
 menu.toggle_loop(Vehicle_Light, "S.O.S. Morse",{"sosmorse"},"",function()
@@ -3426,6 +3446,7 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic o
         if not pop_multiplier_id then
             pop_multiplier_id = MISC.ADD_POP_MULTIPLIER_SPHERE(1.1, 1.1, 1.1, 15000.0, 0.0, 0.0, false, true)
             MISC.CLEAR_AREA(1.1, 1.1, 1.1, 19999.9, true, false, false, true)
+            VEHICLE.SET_DISTANT_CARS_ENABLED(false)
         else
             util.yield(6666)
         end
