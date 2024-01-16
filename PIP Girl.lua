@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.113"
+local SCRIPT_VERSION = "1.114"
 
 local startupmsg = "If settings are missing PLS restart lua.\n\nGhost \"Attacking While Invulnerable\" IS NOW -> Ghost God Mode\n\nImproved and Lea-rned alot.\nI love u."
 
@@ -1822,6 +1822,7 @@ local function getTrailer(vehicle)
     end
     return trailer
 end
+local lea_tech_repair_amount = 1
 local function repair_lea_tech(vehicle)
     local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
     local petrolTankHealth = VEHICLE.GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
@@ -1832,46 +1833,31 @@ local function repair_lea_tech(vehicle)
 
     requestControl(vehicle, 0)
 
-    -- Perform repairs
     if engineHealth < 1000 then
-        local randomValue = math.random(1, 2)
-        VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + randomValue)
-        repairing = true
+        VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + lea_tech_repair_amount)
     end
     if petrolTankHealth < 1000 then
-        local randomValue = math.random(1, 2)
-        VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + randomValue)
-        repairing = true
+        VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + lea_tech_repair_amount)
     end
     if bodyHealth < 1000 then
-        local randomValue = math.random(1, 2)
-        VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + randomValue)
-        repairing = true
+        VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + lea_tech_repair_amount)
     end
     if heliTailHealth < 1000 then
-        local randomValue = math.random(1, 2)
-        VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + randomValue)
-        repairing = true
+        VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + lea_tech_repair_amount)
     end
     if heliRotorHealth < 1000 then
-        local randomValue = math.random(1, 2)
-        VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + randomValue)
-        repairing = true
+        VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + lea_tech_repair_amount)
     end
 
-    -- Check if all vehicle parts are fully repaired
     if petrolTankHealth >= 1000 and engineHealth >= 1000 and bodyHealth >= 1000 then
-        if not repairing then
-            VEHICLE.SET_VEHICLE_DEFORMATION_FIXED(vehicle)
-            VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, 1000)
-            VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, 1000)
-            VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, 1000)
-            VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, 1000)
-            VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, 1000)
-            VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, false)
-            VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, false)
-            repairing = false
-        end
+        VEHICLE.SET_VEHICLE_DEFORMATION_FIXED(vehicle)
+        VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, 1000)
+        VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, 1000)
+        VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, 1000)
+        VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, 1000)
+        VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, 1000)
+        VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, false)
+        VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, false)
     else
         VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, true)
         VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, true)
@@ -1900,7 +1886,6 @@ local saved_vehicle_id = nil
 local saved_trailer_id = nil
 local isInVehicle = false
 local closedDoors = false
-local repairing = false
 menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle, and gives it some modern enhancements.", function()
     local cmd_path = "Vehicle>Light Signals>Use Brake Lights When Stopped"
     if IsInSession() then
@@ -1928,12 +1913,11 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
                 local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle)
                 local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
                 local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
-                repairing = false
 
                 requestControl(vehicle, 0)
-
-                -- Perform repairs
-                repair_lea_tech(vehicle)
+                if lea_tech_repair_amount > 0 then
+                    repair_lea_tech(vehicle)
+                end
 
                 -- Apply additional settings to the vehicle
                 if saved_vehicle_id == nil or saved_vehicle_id ~= vehicle then
@@ -1957,7 +1941,9 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
                     else
                         trailer = getTrailer(vehicle)
                     end
-                    repair_lea_tech(trailer)
+                    if lea_tech_repair_amount > 0 then
+                        repair_lea_tech(trailer)
+                    end
                     if saved_trailer_id == nil or saved_trailer_id ~= trailer then
                         saved_trailer_id = trailer
                         buff_lea_tech(trailer)
@@ -1965,8 +1951,6 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
                 else
                     saved_trailer_id = nil
                 end
-            else
-                util.yield(1666)
             end
             util.yield(1000)
         else
@@ -1975,6 +1959,11 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
     else
         util.yield(13666)
     end
+end)
+
+local Lea_Tech = menu.list(Vehicle, 'Lea Tech Settings', {}, 'Settings for Lea Tech.', function(); end)
+menu.slider(Lea_Tech, "Lea Tech Repair Amount", {"leatechrepairamount"}, "The amount that should be repaired per second, default 1.", 0, 13, lea_tech_repair_amount, 1, function (new_value)
+    lea_tech_repair_amount = new_value
 end)
 
 menu.action(Vehicle, "Detonate Lea Tech Vehicle.", {"boomlea"}, "", function()
@@ -1999,9 +1988,27 @@ menu.action(Vehicle, "Detonate Lea Tech Vehicle.", {"boomlea"}, "", function()
         VEHICLE.SET_VEHICLE_NEON_ENABLED(target_vehicle, 2, true)
         VEHICLE.SET_VEHICLE_NEON_ENABLED(target_vehicle, 3, true)
         VEHICLE.SET_VEHICLE_XENON_LIGHT_COLOR_INDEX(target_vehicle, 8)
+        if saved_trailer_id ~= nil then
+            VEHICLE.APPLY_EMP_EFFECT(saved_trailer_id)
+            VEHICLE.SET_VEHICLE_ALARM(saved_trailer_id, true)
+            VEHICLE.START_VEHICLE_ALARM(saved_trailer_id)
+            VEHICLE.SET_VEHICLE_IS_STOLEN(saved_trailer_id, true)
+            VEHICLE.IS_VEHICLE_STOLEN(saved_trailer_id)
+            VEHICLE.SET_VEHICLE_DOORS_LOCKED(saved_trailer_id, 5)
+            VEHICLE.SET_VEHICLE_OUT_OF_CONTROL(saved_trailer_id, false, true)
+            VEHICLE.SET_VEHICLE_NEON_COLOUR(saved_trailer_id, 255, 13, 13)
+            VEHICLE.SET_VEHICLE_NEON_ENABLED(saved_trailer_id, 0, true)
+            VEHICLE.SET_VEHICLE_NEON_ENABLED(saved_trailer_id, 1, true)
+            VEHICLE.SET_VEHICLE_NEON_ENABLED(saved_trailer_id, 2, true)
+            VEHICLE.SET_VEHICLE_NEON_ENABLED(saved_trailer_id, 3, true)
+            VEHICLE.SET_VEHICLE_XENON_LIGHT_COLOR_INDEX(saved_trailer_id, 8)
+        end
         util.yield(6666)
     end
     VEHICLE.DETONATE_VEHICLE_PHONE_EXPLOSIVE_DEVICE(saved_vehicle_id)
+    if saved_trailer_id ~= nil then
+        VEHICLE.DETONATE_VEHICLE_PHONE_EXPLOSIVE_DEVICE(saved_trailer_id)
+    end
 end)
 
 menu.divider(Vehicle, "Lights")
