@@ -1988,27 +1988,9 @@ menu.action(Vehicle, "Detonate Lea Tech Vehicle.", {"boomlea"}, "", function()
         VEHICLE.SET_VEHICLE_NEON_ENABLED(target_vehicle, 2, true)
         VEHICLE.SET_VEHICLE_NEON_ENABLED(target_vehicle, 3, true)
         VEHICLE.SET_VEHICLE_XENON_LIGHT_COLOR_INDEX(target_vehicle, 8)
-        if saved_trailer_id then
-            VEHICLE.APPLY_EMP_EFFECT(saved_trailer_id)
-            VEHICLE.SET_VEHICLE_ALARM(saved_trailer_id, true)
-            VEHICLE.START_VEHICLE_ALARM(saved_trailer_id)
-            VEHICLE.SET_VEHICLE_IS_STOLEN(saved_trailer_id, true)
-            VEHICLE.IS_VEHICLE_STOLEN(saved_trailer_id)
-            VEHICLE.SET_VEHICLE_DOORS_LOCKED(saved_trailer_id, 5)
-            VEHICLE.SET_VEHICLE_OUT_OF_CONTROL(saved_trailer_id, false, true)
-            VEHICLE.SET_VEHICLE_NEON_COLOUR(saved_trailer_id, 255, 13, 13)
-            VEHICLE.SET_VEHICLE_NEON_ENABLED(saved_trailer_id, 0, true)
-            VEHICLE.SET_VEHICLE_NEON_ENABLED(saved_trailer_id, 1, true)
-            VEHICLE.SET_VEHICLE_NEON_ENABLED(saved_trailer_id, 2, true)
-            VEHICLE.SET_VEHICLE_NEON_ENABLED(saved_trailer_id, 3, true)
-            VEHICLE.SET_VEHICLE_XENON_LIGHT_COLOR_INDEX(saved_trailer_id, 8)
-        end
         util.yield(6666)
     end
     VEHICLE.DETONATE_VEHICLE_PHONE_EXPLOSIVE_DEVICE(saved_vehicle_id)
-    if saved_trailer_id  then
-        VEHICLE.DETONATE_VEHICLE_PHONE_EXPLOSIVE_DEVICE(saved_trailer_id)
-    end
 end)
 
 menu.divider(Vehicle, "Lights")
