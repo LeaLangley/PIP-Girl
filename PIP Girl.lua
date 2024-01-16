@@ -3551,13 +3551,13 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                             targetPid = isFriendStuck()
                         end
                         local check_timeout = os.time() + 13
-                        while player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not isFriendStuck() and discoveredSince(targetPid) >= 113 do
+                        while player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and discoveredSince(targetPid) >= 113 do
                             if os.time() > check_timeout then
                                 break
                             end
                             util.yield(666)
                         end
-                        if player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not isFriendStuck() and discoveredSince(targetPid) >= 113 then
+                        if player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and discoveredSince(targetPid) >= 113 then
                             local name = players.get_name(targetPid)
                             menu.trigger_commands("givesh " .. name)
                             notify_cmd(name .. " is Loading too Long.")
@@ -3567,7 +3567,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                             end
                             local loading_timeout = os.time() + 30
                             local fail = false
-                            while player_Exist(targetPid) and isStuck(targetPid) and not isFriendStuck() do
+                            while player_Exist(targetPid) and isStuck(targetPid) do
                                 util.yield(666)
                                 if os.time() > loading_timeout then
                                     notify_cmd(name .. " took too long to load. Timeout reached.")
@@ -3587,7 +3587,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                 if player_Exist(targetPid) then
                                     notify_cmd(name .. " Finished Loading.")
                                     local finisher_timeout = os.time() + 16
-                                    while player_Exist(targetPid) and finisher_timeout > os.time() do
+                                    while not isFriendStuck() and player_Exist(targetPid) and finisher_timeout > os.time() do
                                         util.yield(113)
                                     end
                                     menu.trigger_commands("scripthost")
