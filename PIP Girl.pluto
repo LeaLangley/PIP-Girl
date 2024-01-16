@@ -35,7 +35,7 @@ if not async_http.have_access() then return end
 if auto_updater == true then error("Invalid auto-updater lib. Please delete your Stand/Lua Scripts/lib/auto-updater.lua and try again") end
 
 local auto_update_config = {
-    source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/PIP%20Girl.lua",
+    source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/PIP%20Girl.pluto",
     script_relpath=SCRIPT_RELPATH,
     verify_file_begins_with="--",
     check_interval=666,
