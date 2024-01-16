@@ -191,7 +191,7 @@ local function warnify_ses(msg)
 end
 
 local function player_Exist(pid)
-    if pid ~= nil then
+    if pid then
         if players.exists(pid) then
             local name = players.get_name(pid)
             if name ~= "undiscoveredplayer" then
@@ -332,7 +332,7 @@ end
 
 local handle_ptr = memory.alloc(13*8)
 local function pid_to_handle(pid)
-    if pid ~= nil then
+    if pid then
         NETWORK.NETWORK_HANDLE_FROM_PLAYER(pid, handle_ptr, 13)
         return handle_ptr
     end
@@ -422,7 +422,7 @@ end
 
 local function isFriend(pid)
     local hdl = pid_to_handle(pid)
-    if hd1 ~= nil then
+    if hd1 then
         if NETWORK.NETWORK_IS_FRIEND(hdl) then
             return true
         end
@@ -497,7 +497,7 @@ local function requestControl(entity, timeout)
 end
 
 local function does_entity_exist(entity)
-    if entity ~= nil then
+    if entity then
         if ENTITY.DOES_ENTITY_EXIST(entity) then
             return true
         end
@@ -1932,7 +1932,7 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
                 end
                 if VEHICLE.IS_VEHICLE_ATTACHED_TO_TRAILER(vehicle) then
                     local vehicle_mm = nil
-                    if saved_trailer_id ~= nil then
+                    if saved_trailer_id then
                         vehicle_mm = VEHICLE._GET_VEHICLE_TRAILER_PARENT_VEHICLE(saved_trailer_id)
                     end
                     local trailer = nil
@@ -1988,7 +1988,7 @@ menu.action(Vehicle, "Detonate Lea Tech Vehicle.", {"boomlea"}, "", function()
         VEHICLE.SET_VEHICLE_NEON_ENABLED(target_vehicle, 2, true)
         VEHICLE.SET_VEHICLE_NEON_ENABLED(target_vehicle, 3, true)
         VEHICLE.SET_VEHICLE_XENON_LIGHT_COLOR_INDEX(target_vehicle, 8)
-        if saved_trailer_id ~= nil then
+        if saved_trailer_id then
             VEHICLE.APPLY_EMP_EFFECT(saved_trailer_id)
             VEHICLE.SET_VEHICLE_ALARM(saved_trailer_id, true)
             VEHICLE.START_VEHICLE_ALARM(saved_trailer_id)
@@ -2006,7 +2006,7 @@ menu.action(Vehicle, "Detonate Lea Tech Vehicle.", {"boomlea"}, "", function()
         util.yield(6666)
     end
     VEHICLE.DETONATE_VEHICLE_PHONE_EXPLOSIVE_DEVICE(saved_vehicle_id)
-    if saved_trailer_id ~= nil then
+    if saved_trailer_id  then
         VEHICLE.DETONATE_VEHICLE_PHONE_EXPLOSIVE_DEVICE(saved_trailer_id)
     end
 end)
@@ -3109,7 +3109,7 @@ menu.divider(Session, "<3 Admin Stuff <3")
 --end
 --menu.toggle_loop(Session, "Group-Based Copy Session Info", {"groupcopy"}, "", function()
 --    util.yield(666)
---    if copy_from ~= nil then
+--    if copy_from then
 --        if copy_from:getState() ~= "Public" then
 --            warnify($"{copy_from.name_for_config} is no longer in a public session, disabling copy session info.")
 --            clearCopy()
@@ -3129,7 +3129,7 @@ menu.divider(Session, "<3 Admin Stuff <3")
 --end)
 --menu.text_input(Session, "Group Name", {"groupname"}, "", function(value)
 --    group_name = value
---    if copy_from ~= nil then
+--    if copy_from then
 --        clearCopy()
 --    end
 --end, group_name)
@@ -3484,15 +3484,17 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic o
     end
     if IsInSession() then
         if not pop_multiplier_id then
-            pop_multiplier_id = MISC.ADD_POP_MULTIPLIER_SPHERE(1.1, 1.1, 1.1, 15000.0, 0.0, 0.0, false, true)
-            MISC.CLEAR_AREA(1.1, 1.1, 1.1, 19999.9, true, false, false, true)
+            pop_multiplier_id = MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 16666, 0.0, 0.0, false, true)
+            MISC.CLEAR_AREA(0.0, 0.0, 0.0, 19999.9, true, false, false, true)
             VEHICLE.SET_DISTANT_CARS_ENABLED(false)
         else
             util.yield(6666)
         end
     else
         if pop_multiplier_id then
-            MISC.REMOVE_POP_MULTIPLIER_SPHERE(pop_multiplier_id, false)
+            if MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(pop_multiplier_id) then
+                MISC.REMOVE_POP_MULTIPLIER_SPHERE(pop_multiplier_id, false)
+            end
             pop_multiplier_id = nil
         else
             util.yield(6666)
@@ -3508,9 +3510,12 @@ end, function()
     if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "On" then
         menu.set_state(menu.ref_by_path("World>Inhabitants>Pedestrians>Disable"), "Off")
     end
-    if pop_multiplier_id ~= nil then
-        MISC.REMOVE_POP_MULTIPLIER_SPHERE(pop_multiplier_id, false)
+    if pop_multiplier_id then
+        if MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(pop_multiplier_id) then
+            MISC.REMOVE_POP_MULTIPLIER_SPHERE(pop_multiplier_id, false)
+        end
     end
+    VEHICLE.SET_DISTANT_CARS_ENABLED(true)
     pop_multiplier_id = nil
 end)
 
