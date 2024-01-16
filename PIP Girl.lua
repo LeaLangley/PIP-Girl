@@ -3421,7 +3421,7 @@ menu.toggle_loop(SessionMisc, "Kick Aggressive Host Token on Attack", {""}, "", 
     end
 end)
 
-menu.toggle_loop(SessionMisc, "Kick Aggressive Host Token as Host", {""}, "", function()
+menu.toggle_loop(SessionMisc, "Block Aggressive Host Token as Host", {""}, "", function()
     if players.user() == players.get_host() then
         if menu.is_ref_valid(menu.ref_by_path("Online>Protections>Detections>Spoofed Host Token (Aggressive)>Kick>Strangers")) then
             menu.trigger_command(menu.ref_by_path("Online>Protections>Detections>Spoofed Host Token (Aggressive)>Kick>Strangers"))
