@@ -665,7 +665,6 @@ local PIP_Girl_APPS = menu.list(PIP_Girl, 'PIP Girl Apps', {}, 'Personal Informa
 --local PIP_Girl_Heist = menu.list(PIP_Girl, 'PIP Girl Heists', {}, 'Personal Information Processor Girl Heist Presets.', function(); end)
 local Stimpak = menu.list(menu.my_root(), 'Stimpak', {}, 'Take a breath.', function(); end)
 local Vehicle = menu.list(menu.my_root(), 'Vehicle', {}, 'Drive pretty and nice.', function(); end)
-local Vehicle_Light = menu.list(Vehicle, 'Vehicle Light Rhythm', {}, 'Flash the lights pretty and nice.', function(); end)
 local Outfit = menu.list(menu.my_root(), 'Outfit', {}, 'Look pretty and nice.', function(); end)
 local Game = menu.list(menu.my_root(), 'Game', {}, 'Very gaming today.', function(); end)
 local Session = menu.list(menu.my_root(), 'Session', {}, '.noisseS', function(); end)
@@ -1514,174 +1513,11 @@ end)
 
 menu.divider(Stimpak, "Vehicle Related Health")
 
-local function getTrailer(vehicle)
-    local trailer = nil
-    local vehiclePosition = ENTITY.GET_ENTITY_COORDS(vehicle)
-    for entities.get_all_vehicles_as_handles() as veh_ent do
-        local trailerPosition = ENTITY.GET_ENTITY_COORDS(veh_ent)
-        local distance = SYSTEM.VDIST(vehiclePosition.x, vehiclePosition.y, vehiclePosition.z, trailerPosition.x, trailerPosition.y, trailerPosition.z)
-        if distance <= 20.0 then
-            local tailer_p = VEHICLE._GET_VEHICLE_TRAILER_PARENT_VEHICLE(veh_ent)
-            if tailer_p == vehicle then
-                trailer = veh_ent
-                break
-            end
-        end
-    end
-    return trailer
-end
-local function repair_lea_tech(vehicle)
-    local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
-    local petrolTankHealth = VEHICLE.GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
-    local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle)
-    local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
-    local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
-    repairing = false
-
-    requestControl(vehicle, 0)
-
-    -- Perform repairs
-    if engineHealth < 1000 then
-        local randomValue = math.random(1, 2)
-        VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + randomValue)
-        repairing = true
-    end
-    if petrolTankHealth < 1000 then
-        local randomValue = math.random(1, 2)
-        VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + randomValue)
-        repairing = true
-    end
-    if bodyHealth < 1000 then
-        local randomValue = math.random(1, 2)
-        VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + randomValue)
-        repairing = true
-    end
-    if heliTailHealth < 1000 then
-        local randomValue = math.random(1, 2)
-        VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + randomValue)
-        repairing = true
-    end
-    if heliRotorHealth < 1000 then
-        local randomValue = math.random(1, 2)
-        VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + randomValue)
-        repairing = true
-    end
-
-    -- Check if all vehicle parts are fully repaired
-    if petrolTankHealth >= 1000 and engineHealth >= 1000 and bodyHealth >= 1000 then
-        if not repairing then
-            VEHICLE.SET_VEHICLE_DEFORMATION_FIXED(vehicle)
-            VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, 1000)
-            VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, 1000)
-            VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, 1000)
-            VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, 1000)
-            VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, 1000)
-            VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, false)
-            VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, false)
-            repairing = false
-        end
+menu.toggle(Stimpak, "Lea Tech", {""}, "Same as in Vehicle, but its stays here for the ppl who used my old layout.", function(on)
+    if on then
+        menu.trigger_commands("leatech on")
     else
-        VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, true)
-        VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, true)
-    end
-end
-local function buff_lea_tech(vehicle)
-    VEHICLE.SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
-    VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
-    --VEHICLE.SET_DONT_PROCESS_VEHICLE_GLASS(vehicles, true)
-    VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, false)
-    VEHICLE.SET_HELI_TAIL_BOOM_CAN_BREAK_OFF(vehicle, false)
-    --VEHICLE.CAN_SHUFFLE_SEAT(vehicle, true)
-    VEHICLE.SET_VEHICLE_CAN_ENGINE_MISSFIRE(vehicle, false)
-    VEHICLE.SET_VEHICLE_CAN_LEAK_PETROL(vehicle, false)
-    VEHICLE.SET_VEHICLE_CAN_LEAK_OIL(vehicle, false)
-    VEHICLE.SET_DISABLE_VEHICLE_PETROL_TANK_FIRES(vehicle, true)
-    VEHICLE.SET_DISABLE_VEHICLE_PETROL_TANK_DAMAGE(vehicle, true)
-    VEHICLE.SET_DISABLE_VEHICLE_ENGINE_FIRES(vehicle, true)
-    VEHICLE.SET_VEHICLE_ENGINE_CAN_DEGRADE(vehicle, false)
-    VEHICLE.SET_VEHICLE_STRONG(vehicle, true)
-    VEHICLE.SET_TRAILER_LEGS_RAISED(vehicle)
-    VEHICLE.SET_INCREASE_WHEEL_CRUSH_DAMAGE(vehicle, true)
-    VEHICLE.ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(vehicle)
-end
-local saved_vehicle_id = nil
-local saved_trailer_id = nil
-local isInVehicle = false
-local closedDoors = false
-local repairing = false
-menu.toggle_loop(Stimpak, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle, and gives it some modern enhancements.", function()
-    local cmd_path = "Vehicle>Light Signals>Use Brake Lights When Stopped"
-    if IsInSession() then
-        if menu.get_state(menu.ref_by_path(cmd_path)) ~= "On" then
-            menu.trigger_commands("brakelights on")
-        end
-
-        local vehicle = entities.get_user_vehicle_as_handle()
-        if vehicle then
-            local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
-            local driver = NETWORK.NETWORK_GET_PLAYER_INDEX_FROM_PED(driverPed)
-
-            -- Check if the driver seat is empty or if the local player is the driver
-            if driver == -1 or driver == players.user() then
-                if driver == players.user() then
-                    isInVehicle = true
-                    closedDoors = false
-                end
-                
-                if driver == -1 then
-                    isInVehicle = false
-                end
-                local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
-                local petrolTankHealth = VEHICLE.GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
-                local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle)
-                local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
-                local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
-                repairing = false
-
-                requestControl(vehicle, 0)
-
-                -- Perform repairs
-                repair_lea_tech(vehicle)
-
-                -- Apply additional settings to the vehicle
-                if saved_vehicle_id == nil or saved_vehicle_id ~= vehicle then
-                    saved_vehicle_id = vehicle
-                    buff_lea_tech(vehicle)
-                end
-                if not isInVehicle and not closedDoors then
-                    util.yield(1666)
-                    VEHICLE.SET_VEHICLE_DOORS_SHUT(vehicle, false)
-                    closedDoors = true
-                    saved_vehicle_id = nil
-                end
-                if VEHICLE.IS_VEHICLE_ATTACHED_TO_TRAILER(vehicle) then
-                    local vehicle_mm = nil
-                    if saved_trailer_id ~= nil then
-                        vehicle_mm = VEHICLE._GET_VEHICLE_TRAILER_PARENT_VEHICLE(saved_trailer_id)
-                    end
-                    local trailer = nil
-                    if vehicle_mm == vehicle then
-                        trailer = saved_trailer_id
-                    else
-                        trailer = getTrailer(vehicle)
-                    end
-                    repair_lea_tech(trailer)
-                    if saved_trailer_id == nil or saved_trailer_id ~= trailer then
-                        saved_trailer_id = trailer
-                        buff_lea_tech(trailer)
-                    end
-                else
-                    saved_trailer_id = nil
-                end
-            else
-                util.yield(1666)
-            end
-            util.yield(1000)
-        else
-            util.yield(1666)
-        end
-    else
-        util.yield(13666)
+        menu.trigger_commands("leatech off")
     end
 end)
 
@@ -1968,6 +1804,179 @@ menu.slider(Outfit, 'Smart Outfit Lock Helmet', {'SmartLockHelmet'}, 'If u Enter
     OutfitLockHelmet = new_value
 end)
 
+menu.divider(Vehicle, "Lea Tech")
+
+local function getTrailer(vehicle)
+    local trailer = nil
+    local vehiclePosition = ENTITY.GET_ENTITY_COORDS(vehicle)
+    for entities.get_all_vehicles_as_handles() as veh_ent do
+        local trailerPosition = ENTITY.GET_ENTITY_COORDS(veh_ent)
+        local distance = SYSTEM.VDIST(vehiclePosition.x, vehiclePosition.y, vehiclePosition.z, trailerPosition.x, trailerPosition.y, trailerPosition.z)
+        if distance <= 20.0 then
+            local tailer_p = VEHICLE._GET_VEHICLE_TRAILER_PARENT_VEHICLE(veh_ent)
+            if tailer_p == vehicle then
+                trailer = veh_ent
+                break
+            end
+        end
+    end
+    return trailer
+end
+local function repair_lea_tech(vehicle)
+    local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
+    local petrolTankHealth = VEHICLE.GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
+    local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle)
+    local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
+    local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
+    repairing = false
+
+    requestControl(vehicle, 0)
+
+    -- Perform repairs
+    if engineHealth < 1000 then
+        local randomValue = math.random(1, 2)
+        VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + randomValue)
+        repairing = true
+    end
+    if petrolTankHealth < 1000 then
+        local randomValue = math.random(1, 2)
+        VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + randomValue)
+        repairing = true
+    end
+    if bodyHealth < 1000 then
+        local randomValue = math.random(1, 2)
+        VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + randomValue)
+        repairing = true
+    end
+    if heliTailHealth < 1000 then
+        local randomValue = math.random(1, 2)
+        VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + randomValue)
+        repairing = true
+    end
+    if heliRotorHealth < 1000 then
+        local randomValue = math.random(1, 2)
+        VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + randomValue)
+        repairing = true
+    end
+
+    -- Check if all vehicle parts are fully repaired
+    if petrolTankHealth >= 1000 and engineHealth >= 1000 and bodyHealth >= 1000 then
+        if not repairing then
+            VEHICLE.SET_VEHICLE_DEFORMATION_FIXED(vehicle)
+            VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, 1000)
+            VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, 1000)
+            VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, 1000)
+            VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, 1000)
+            VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, 1000)
+            VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, false)
+            VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, false)
+            repairing = false
+        end
+    else
+        VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, true)
+        VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, true)
+    end
+end
+local function buff_lea_tech(vehicle)
+    VEHICLE.SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
+    VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+    --VEHICLE.SET_DONT_PROCESS_VEHICLE_GLASS(vehicles, true)
+    VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, false)
+    VEHICLE.SET_HELI_TAIL_BOOM_CAN_BREAK_OFF(vehicle, false)
+    --VEHICLE.CAN_SHUFFLE_SEAT(vehicle, true)
+    VEHICLE.SET_VEHICLE_CAN_ENGINE_MISSFIRE(vehicle, false)
+    VEHICLE.SET_VEHICLE_CAN_LEAK_PETROL(vehicle, false)
+    VEHICLE.SET_VEHICLE_CAN_LEAK_OIL(vehicle, false)
+    VEHICLE.SET_DISABLE_VEHICLE_PETROL_TANK_FIRES(vehicle, true)
+    VEHICLE.SET_DISABLE_VEHICLE_PETROL_TANK_DAMAGE(vehicle, true)
+    VEHICLE.SET_DISABLE_VEHICLE_ENGINE_FIRES(vehicle, true)
+    VEHICLE.SET_VEHICLE_ENGINE_CAN_DEGRADE(vehicle, false)
+    VEHICLE.SET_VEHICLE_STRONG(vehicle, true)
+    VEHICLE.SET_TRAILER_LEGS_RAISED(vehicle)
+    VEHICLE.SET_INCREASE_WHEEL_CRUSH_DAMAGE(vehicle, true)
+    VEHICLE.ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(vehicle)
+end
+local saved_vehicle_id = nil
+local saved_trailer_id = nil
+local isInVehicle = false
+local closedDoors = false
+local repairing = false
+menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle, and gives it some modern enhancements.", function()
+    local cmd_path = "Vehicle>Light Signals>Use Brake Lights When Stopped"
+    if IsInSession() then
+        if menu.get_state(menu.ref_by_path(cmd_path)) ~= "On" then
+            menu.trigger_commands("brakelights on")
+        end
+
+        local vehicle = entities.get_user_vehicle_as_handle()
+        if vehicle then
+            local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
+            local driver = NETWORK.NETWORK_GET_PLAYER_INDEX_FROM_PED(driverPed)
+
+            -- Check if the driver seat is empty or if the local player is the driver
+            if driver == -1 or driver == players.user() then
+                if driver == players.user() then
+                    isInVehicle = true
+                    closedDoors = false
+                end
+                
+                if driver == -1 then
+                    isInVehicle = false
+                end
+                local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
+                local petrolTankHealth = VEHICLE.GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
+                local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle)
+                local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
+                local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
+                repairing = false
+
+                requestControl(vehicle, 0)
+
+                -- Perform repairs
+                repair_lea_tech(vehicle)
+
+                -- Apply additional settings to the vehicle
+                if saved_vehicle_id == nil or saved_vehicle_id ~= vehicle then
+                    saved_vehicle_id = vehicle
+                    buff_lea_tech(vehicle)
+                end
+                if not isInVehicle and not closedDoors then
+                    util.yield(1666)
+                    VEHICLE.SET_VEHICLE_DOORS_SHUT(vehicle, false)
+                    closedDoors = true
+                    saved_vehicle_id = nil
+                end
+                if VEHICLE.IS_VEHICLE_ATTACHED_TO_TRAILER(vehicle) then
+                    local vehicle_mm = nil
+                    if saved_trailer_id ~= nil then
+                        vehicle_mm = VEHICLE._GET_VEHICLE_TRAILER_PARENT_VEHICLE(saved_trailer_id)
+                    end
+                    local trailer = nil
+                    if vehicle_mm == vehicle then
+                        trailer = saved_trailer_id
+                    else
+                        trailer = getTrailer(vehicle)
+                    end
+                    repair_lea_tech(trailer)
+                    if saved_trailer_id == nil or saved_trailer_id ~= trailer then
+                        saved_trailer_id = trailer
+                        buff_lea_tech(trailer)
+                    end
+                else
+                    saved_trailer_id = nil
+                end
+            else
+                util.yield(1666)
+            end
+            util.yield(1000)
+        else
+            util.yield(1666)
+        end
+    else
+        util.yield(13666)
+    end
+end)
+
 menu.action(Vehicle, "Detonate Lea Tech Vehicle.", {"boomlea"}, "", function()
     local target_vehicle = entities.get_user_vehicle_as_handle()
     if saved_vehicle_id then
@@ -1994,6 +2003,10 @@ menu.action(Vehicle, "Detonate Lea Tech Vehicle.", {"boomlea"}, "", function()
     end
     VEHICLE.DETONATE_VEHICLE_PHONE_EXPLOSIVE_DEVICE(saved_vehicle_id)
 end)
+
+menu.divider(Vehicle, "Lights")
+
+local Vehicle_Light = menu.list(Vehicle, 'Vehicle Light Rhythm', {}, 'Flash the lights pretty and nice.', function(); end)
 
 menu.toggle_loop(Vehicle_Light, "S.O.S. Morse",{"sosmorse"},"",function()
     local vehicle = entities.get_user_vehicle_as_handle()
@@ -2092,6 +2105,8 @@ menu.toggle_loop(Vehicle, "Set vehicle light color automatically",{"autocarlight
         util.yield(6666)
     end
 end)
+
+menu.divider(Vehicle, "Else")
 
 local sparrowHandeling = nil
 menu.toggle_loop(Vehicle, "Heli Sparrow Handling",{""},"All helicopters you enter fly like a sparrow.",function()
@@ -3407,14 +3422,15 @@ menu.toggle_loop(SessionMisc, "Kick Aggressive Host Token on Attack", {""}, "", 
 end)
 
 menu.toggle_loop(SessionMisc, "Kick Aggressive Host Token as Host", {""}, "", function()
-    if IsInSession() and players.user() == players.get_host() then
-        for players.list() as pid do
-            if aggressive(pid) and not isFriend(pid) then
-                StrategicKick(pid)
-            end
+    if players.user() == players.get_host() then
+        if menu.is_ref_valid(menu.ref_by_path("Online>Protections>Detections>Spoofed Host Token (Aggressive)>Kick>Strangers")) then
+            menu.trigger_command(menu.ref_by_path("Online>Protections>Detections>Spoofed Host Token (Aggressive)>Kick>Strangers"))
         end
         util.yield(3666)
     else
+        if menu.is_ref_valid(menu.ref_by_path("Online>Protections>Detections>Spoofed Host Token (Aggressive)>Kick>Disabled")) then
+            menu.trigger_command(menu.ref_by_path("Online>Protections>Detections>Spoofed Host Token (Aggressive)>Kick>Disabled"))
+        end
         util.yield(13666)
     end
 end)
@@ -3423,9 +3439,9 @@ menu.action(SessionMisc, "Copy Discord Session invite link.", {"invitelink"}, ""
     local code = get_session_code()
     if code ~= "N/A" and code ~= "Please wait..." then
         util.copy_to_clipboard("# ***🌐 [Join GTA:O "..session_type().." Session.](https://stand.gg/join#"..code..")***", false)
-        notify("Invite link for "..code.." "..session_type().." copied.")
+        notify("Invite link for "..session_type().." "..code.." copied.")
     else
-        notify("This session dosnt have a invite code right now.\n"..code.." | "..session_type())
+        notify("This session dosnt have a invite code right now.\n"..session_type().." | "..code)
     end
 end)
 
