@@ -624,12 +624,12 @@ end
 
 local function StrategicKick(pid)
     if player_Exist(pid) and pid ~= players.user() then
+        local name = players.get_name(pid)
         if not IsInSession() then
             menu.trigger_commands("kick " .. name)
             NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
             Wait_for_IsInSession()
         else
-            local name = players.get_name(pid)
             if menu.get_edition() > 1 then
                 if players.user() == players.get_host() then
                     if not isLoading(pid) and not isLoading(players.user()) then
