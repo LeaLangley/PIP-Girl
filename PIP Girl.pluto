@@ -3470,6 +3470,9 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic o
             MISC.CLEAR_AREA(0.0, 0.0, 0.0, 19999.9, true, false, false, true)
             VEHICLE.SET_DISTANT_CARS_ENABLED(false)
         else
+            if not MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(pop_multiplier_id) then
+                pop_multiplier_id = MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 16666, 0.0, 0.0, false, true)
+            end
             util.yield(6666)
         end
     else
