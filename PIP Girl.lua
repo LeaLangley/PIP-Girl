@@ -3513,31 +3513,10 @@ menu.toggle_loop(Session, "Soft Clear Traffic", {"softantitrafic"}, "Clears the 
         else
             waiting_for_clear = 213
         end
-        for pairs(entities.get_all_peds_as_pointers()) as ent do
-            if not PED.IS_PED_A_PLAYER(ent) then
-                if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
-                    if does_entity_exist(ent) then
-                        entities.delete(ent)
-                    end
-                end
-            end
-            util.yield(13)
-        end
-        for pairs(entities.get_all_vehicles_as_handles()) as ent do
-            local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
-            if not PED.IS_PED_A_PLAYER(driver) then
-                if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
-                    if does_entity_exist(ent) then
-                        entities.delete(ent)
-                    end
-                end
-            end
-            util.yield(13)
-        end
-        --util.yield(waiting_for_clear)
-        --MISC.CLEAR_AREA_OF_PEDS(pos.x, pos.y, pos.z, 1666, 0)
-        --util.yield(waiting_for_clear)
-        --MISC.CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, 1666, false, false, false, false, false, false, 0)
+        util.yield(waiting_for_clear)
+        MISC.CLEAR_AREA_OF_PEDS(pos.x, pos.y, pos.z, 1666, 0)
+        util.yield(waiting_for_clear)
+        MISC.CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, 1666, false, false, false, false, false, false, 0)
     end
 end)
 
