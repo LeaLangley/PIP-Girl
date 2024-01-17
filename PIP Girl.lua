@@ -2988,7 +2988,8 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     --  <3
                     local host_name = players.get_name(players.get_host())
                     if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 and not isModder(players.get_host()) then
-                        menu.trigger_commands("givecollectibles " .. host_name)
+                        menu.trigger_commands("givecollectibles "..host_name)
+                        menu.trigger_commands("ceopay "..host_name.." on")
                         util.yield(6666)
                         if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 and not isModder(players.get_host())then
                             StrategicKick(players.get_host())
