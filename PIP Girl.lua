@@ -2226,6 +2226,30 @@ menu.toggle_loop(Vehicle, "Heli Sparrow Handling",{""},"All helicopters you ente
     util.yield(3666)
 end)
 
+local oppressorHandeling = nil
+menu.toggle_loop(Vehicle, "Easier Oppressor MK2 UD Handling",{""},"Makes Upside down little easier, good for lea(-rning).",function()
+    if IsInSession() then
+        local vehicle = get_user_vehicle()
+        if vehicle then
+            if entities.get_model_hash(vehicle) == 2069146067 then
+                if is_vehicle_free_for_use(vehicle) then
+                    if oppressorHandeling == nil or oppressorHandeling ~= vehicle then
+                        oppressorHandeling = vehicle
+                        menu.trigger_commands("vhselflevelingpitchtorquescale 0.0000")
+                        menu.trigger_commands("vhselflevelingrolltorquescale 0.0000")
+                        menu.trigger_commands("vhstabilityassist 0.0000")
+                        menu.trigger_commands("deploychaff")
+                        util.yield(3666)
+                    end
+                end
+            end
+        end
+    else
+        util.yield(13666)
+    end
+    util.yield(3666)
+end)
+
 menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     local nearbyVehicles = entities.get_all_vehicles_as_handles()
     local playerPosition = players.get_position(players.user())
