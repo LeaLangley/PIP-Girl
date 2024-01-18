@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.115"
+local SCRIPT_VERSION = "1.116"
 
 local startupmsg = "If settings are missing PLS restart lua.\n\nGhost \"Attacking While Invulnerable\" IS NOW -> Ghost God Mode\n\nImproved and Lea-rned alot.\nI love u."
 
@@ -560,27 +560,10 @@ local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, ti
     end
 end
 
-local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision, share_ent)
+local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
     if order == nil then order = 2 end
     local startTime = os.time()
     if not does_entity_exist(entity) then
-        --if share_ent then
-        --    for entities.get_all_objects_as_pointers() as ent do
-        --        local entPos = ENTITY.GET_ENTITY_COORDS(ent)
-        --        local distance = SYSTEM.VDIST2(locationV3.x, locationV3.y, locationV3.z, entPos.x, entPos.y, entPos.z)
-        --        if 0.13 >= distance then
-        --            local entHash = entities.get_model_hash(ent)
-        --            if entHash == hash then
-        --                entity = ent
-        --                if entities.get_owner(entity) == players.user() then
-        --                    objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
-        --                end
-        --                return entity
-        --            end
-        --        end
-        --        util.yield(13 + timeout)
-        --    end
-        --end
         requestModel(hash, timeout)
         entity = entities.create_object(hash, locationV3)
         util.yield(13 + timeout)
@@ -592,6 +575,7 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
             util.yield(13 + timeout)
         end
         requestControl(entity, timeout)
+        entities.set_can_migrate(entity, false)
         ENTITY.FREEZE_ENTITY_POSITION(entity, true)
         objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
         return entity
@@ -3215,10 +3199,10 @@ local in_orb_room = {}
 local sussy_god = {}
 
 menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockorb"}, "Blocks the Entrance for the Orb Room", function()
-    orbRoomGlass = SpawnCheck(orbRoomGlass, -1829309699, v3.new(335.882996, 4833.833008, -59.023998), 0, 0, 125, nil, 13, true, false)
-    orbRoomTable = SpawnCheck(orbRoomTable, 81317377, v3.new(328.2, 4829, -58.9), 0, 0, 0, nil, 13, true, false)
-    orbRoomTable2 = SpawnCheck(orbRoomTable2, 81317377, v3.new(328.2, 4829, -59.4), 0, 0, 0, nil, 13, true, false)
-    orbRoomDoorDMG = SpawnCheck(orbRoomDoorDMG, -1184972439, v3.new(337.611, 4832.954, -58.595), 10, 0, 125, nil, 13, false, true)
+    orbRoomGlass = SpawnCheck(orbRoomGlass, -1829309699, v3.new(335.882996, 4833.833008, -59.023998), 0, 0, 125, nil, 13, true)
+    orbRoomTable = SpawnCheck(orbRoomTable, 81317377, v3.new(328.2, 4829, -58.9), 0, 0, 0, nil, 13, true)
+    orbRoomTable2 = SpawnCheck(orbRoomTable2, 81317377, v3.new(328.2, 4829, -59.4), 0, 0, 0, nil, 13, true)
+    orbRoomDoorDMG = SpawnCheck(orbRoomDoorDMG, -1184972439, v3.new(337.611, 4832.954, -58.595), 10, 0, 125, nil, 13, false)
     for players.list() as pid do
         if pid ~= players.user() then
             if not contains(sussy_god, pid) then
@@ -3271,8 +3255,8 @@ end)
 local kosatkaMissile1 = nil
 local kosatkaMissile2 = nil
 menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {"blockkosatka"}, "Blocks the Entrance for the Orb Room", function()
-    kosatkaMissile1 = SpawnCheck(kosatkaMissile1, 1228076166, v3.new(1558.9, 387.111, -50.666), 0, 0, 0, nil, 13, true, false)
-    kosatkaMissile2 = SpawnCheck(kosatkaMissile2, 1228076166, v3.new(1558.9, 388.777, -50.666), 0, 0, 0, nil, 13, true, false)
+    kosatkaMissile1 = SpawnCheck(kosatkaMissile1, 1228076166, v3.new(1558.9, 387.111, -50.666), 0, 0, 0, nil, 13, true)
+    kosatkaMissile2 = SpawnCheck(kosatkaMissile2, 1228076166, v3.new(1558.9, 388.777, -50.666), 0, 0, 0, nil, 13, true)
     util.yield(1666)
 end, function()
     if does_entity_exist(kosatkaMissile1) then
@@ -3285,7 +3269,7 @@ end)
 
 local antiTerrorGlass = nil
 menu.toggle_loop(SessionWorld, "Anti Terrorbyte", {"blockterror"}, "Blocks the MK2 acces", function()
-    antiTerrorGlass = SpawnCheck(antiTerrorGlass, -1829309699, v3.new(-1420.666, -3014.579, -79.0), 0, 0, -20, nil, 13, true, false)
+    antiTerrorGlass = SpawnCheck(antiTerrorGlass, -1829309699, v3.new(-1420.666, -3014.579, -79.0), 0, 0, -20, nil, 13, true)
     util.yield(3666)
 end, function()
     if does_entity_exist(antiTerrorGlass) then
@@ -3294,27 +3278,27 @@ end, function()
 end)
 
 local shrineElements = {
-    {var = "vamp_candle_1", conditions = {199039671, v3.new(-1811.891, -128.114, 77.788), 0, 0, 0, nil, 13, false, true}},
-    {var = "vamp_candle_2", conditions = {199039671, v3.new(-1812.547, -126.255, 77.788), 0, 0, 0, nil, 13, false, true}},
-    {var = "gravestone", conditions = {1667673456, v3.new(-1812.212, -127.127, 80.265), 0, 180, -70, nil, 13, false, true}},
-    {var = "skull", conditions = {1925085104, v3.new(-1812.212, -127.127, 79.0), 0, 0, 110, nil, 13, false, true}},
-    {var = "flowers_1", conditions = {-1751947657, v3.new(-1813.49, -131.37, 77.86), 0, 0, 0, nil, 13, false, true}},
-    {var = "small_candle_1", conditions = {540021153, v3.new(-1811.97, -127.64, 77.81), 0, 0, 13, nil, 13, false, true}},
-    {var = "small_candle_2", conditions = {540021153, v3.new(-1812.29, -126.63, 77.81), 0, 0, 420, nil, 13, false, true}},
-    {var = "small_candle_3", conditions = {540021153, v3.new(-1811.35, -125.05, 77.81), 0, 0, 666, nil, 13, false, true}},
-    {var = "small_candle_4", conditions = {540021153, v3.new(-1808.91, -122.75, 77.81), 0, 0, 13, nil, 13, false, true}},
-    {var = "small_candle_5", conditions = {540021153, v3.new(-1805.61, -122.23, 77.81), 0, 0, 420, nil, 13, false, true}},
-    {var = "small_candle_6", conditions = {540021153, v3.new(-1802.71, -123.86, 77.81), 0, 0, 666, nil, 13, false, true}},
-    {var = "small_candle_7", conditions = {540021153, v3.new(-1802.16, -128.65, 78.01), 0, 0, 13, nil, 13, false, true}},
-    {var = "small_candle_8", conditions = {540021153, v3.new(-1801.09, -126.17, 78.01), 0, 0, 420, nil, 13, false, true}},
-    {var = "small_candle_9", conditions = {540021153, v3.new(-1791.51, -139.59, 74.20), 0, 0, 666, nil, 13, false, true}},
-    {var = "small_candle_10", conditions = {540021153, v3.new(-1794.39, -139.90, 74.20), 0, 0, 13, nil, 13, false, true}},
-    {var = "roses_1", conditions = {4241635085, v3.new(-1812.52, -125.81, 77.79), 0, 0, 420, nil, 13, false, true}},
-    {var = "roses_2", conditions = {4241635085, v3.new(-1811.66, -128.39, 77.79), 0, 0, 666, nil, 13, false, true}},
-    {var = "firepit", conditions = {1125395611, v3.new(-1806.11, -130.02, 77.79), 0, 0, 0, nil, 13, false, true}},
-    {var = "fire1", conditions = {3229200997, v3.new(-1806.1933, -130.1367, 77.90), 0, 0, 13, nil, 13, false, true}},
-    {var = "pc1", conditions = {2809166081, v3.new(-1801.90, -128.70, 77.99), 0, 0, 0, nil, 13, false, true}},
-    {var = "pc2", conditions = {4151318791, v3.new(-1801.91, -128.70, 78.00), 0, 0, -13, nil, 13, false, true}},
+    {var = "vamp_candle_1", conditions = {199039671, v3.new(-1811.891, -128.114, 77.788), 0, 0, 0, nil, 13, false}},
+    {var = "vamp_candle_2", conditions = {199039671, v3.new(-1812.547, -126.255, 77.788), 0, 0, 0, nil, 13, false}},
+    {var = "gravestone", conditions = {1667673456, v3.new(-1812.212, -127.127, 80.265), 0, 180, -70, nil, 13, false}},
+    {var = "skull", conditions = {1925085104, v3.new(-1812.212, -127.127, 79.0), 0, 0, 110, nil, 13, false}},
+    {var = "flowers_1", conditions = {-1751947657, v3.new(-1813.49, -131.37, 77.86), 0, 0, 0, nil, 13, false}},
+    {var = "small_candle_1", conditions = {540021153, v3.new(-1811.97, -127.64, 77.81), 0, 0, 13, nil, 13, false}},
+    {var = "small_candle_2", conditions = {540021153, v3.new(-1812.29, -126.63, 77.81), 0, 0, 420, nil, 13, false}},
+    {var = "small_candle_3", conditions = {540021153, v3.new(-1811.35, -125.05, 77.81), 0, 0, 666, nil, 13, false}},
+    {var = "small_candle_4", conditions = {540021153, v3.new(-1808.91, -122.75, 77.81), 0, 0, 13, nil, 13, false}},
+    {var = "small_candle_5", conditions = {540021153, v3.new(-1805.61, -122.23, 77.81), 0, 0, 420, nil, 13, false}},
+    {var = "small_candle_6", conditions = {540021153, v3.new(-1802.71, -123.86, 77.81), 0, 0, 666, nil, 13, false}},
+    {var = "small_candle_7", conditions = {540021153, v3.new(-1802.16, -128.65, 78.01), 0, 0, 13, nil, 13, false}},
+    {var = "small_candle_8", conditions = {540021153, v3.new(-1801.09, -126.17, 78.01), 0, 0, 420, nil, 13, false}},
+    {var = "small_candle_9", conditions = {540021153, v3.new(-1791.51, -139.59, 74.20), 0, 0, 666, nil, 13, false}},
+    {var = "small_candle_10", conditions = {540021153, v3.new(-1794.39, -139.90, 74.20), 0, 0, 13, nil, 13, false}},
+    {var = "roses_1", conditions = {4241635085, v3.new(-1812.52, -125.81, 77.79), 0, 0, 420, nil, 13, false}},
+    {var = "roses_2", conditions = {4241635085, v3.new(-1811.66, -128.39, 77.79), 0, 0, 666, nil, 13, false}},
+    {var = "firepit", conditions = {1125395611, v3.new(-1806.11, -130.02, 77.79), 0, 0, 0, nil, 13, false}},
+    {var = "fire1", conditions = {3229200997, v3.new(-1806.1933, -130.1367, 77.90), 0, 0, 13, nil, 13, false}},
+    {var = "pc1", conditions = {2809166081, v3.new(-1801.90, -128.70, 77.99), 0, 0, 0, nil, 13, false}},
+    {var = "pc2", conditions = {4151318791, v3.new(-1801.91, -128.70, 78.00), 0, 0, -13, nil, 13, false}},
 }
 local Leas_shrine_blip = nil
 menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Blocks the MK2 access", function()
@@ -3447,14 +3431,14 @@ end)
 
 menu.toggle_loop(SessionMisc, "Block Aggressive Host Token as Host", {""}, "", function()
     if players.user() == players.get_host() then
-        if menu.is_ref_valid(menu.ref_by_path("Online>Protections>Detections>Spoofed Host Token (Aggressive)>Kick>Strangers")) then
-            menu.trigger_command(menu.ref_by_path("Online>Protections>Detections>Spoofed Host Token (Aggressive)>Kick>Strangers"))
-        end
+        --if menu.is_ref_valid(menu.ref_by_path("Online>Protections>Detections>Spoofed Host Token (Aggressive)>Kick>Strangers")) then
+        --    menu.trigger_command(menu.ref_by_path("Online>Protections>Detections>Spoofed Host Token (Aggressive)>Kick>Strangers"))
+        --end
         util.yield(3666)
     else
-        if menu.is_ref_valid(menu.ref_by_path("Online>Protections>Detections>Spoofed Host Token (Aggressive)>Kick>Disabled")) then
-            menu.trigger_command(menu.ref_by_path("Online>Protections>Detections>Spoofed Host Token (Aggressive)>Kick>Disabled"))
-        end
+        --if menu.is_ref_valid(menu.ref_by_path("Online>Protections>Detections>Spoofed Host Token (Aggressive)>Kick>Disabled")) then
+        --    menu.trigger_command(menu.ref_by_path("Online>Protections>Detections>Spoofed Host Token (Aggressive)>Kick>Disabled"))
+        --end
         util.yield(13666)
     end
 end)
@@ -3548,10 +3532,31 @@ menu.toggle_loop(Session, "Soft Clear Traffic", {"softantitrafic"}, "Clears the 
         else
             waiting_for_clear = 213
         end
+        for pairs(entities.get_all_peds_as_pointers()) as ent do
+            if not PED.IS_PED_A_PLAYER(ent) then
+                if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
+                    if does_entity_exist(ent) then
+                        entities.delete(ent)
+                    end
+                end
+            end
+            util.yield(13)
+        end
+        for pairs(entities.get_all_vehicles_as_pointers()) as ent do
+            local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
+            if not PED.IS_PED_A_PLAYER(driver) then
+                if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) and not entities.get_vehicle_has_been_owned_by_player(ent) then
+                    if does_entity_exist(ent) then
+                        entities.delete(ent)
+                    end
+                end
+            end
+            util.yield(13)
+        end
         util.yield(waiting_for_clear)
-        MISC.CLEAR_AREA_OF_PEDS(pos.x, pos.y, pos.z, 1666, 0)
-        util.yield(waiting_for_clear)
-        MISC.CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, 1666, false, false, false, false, false, false, 0)
+        --MISC.CLEAR_AREA_OF_PEDS(pos.x, pos.y, pos.z, 1666, 0)
+        --util.yield(waiting_for_clear)
+        --MISC.CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, 1666, false, false, false, false, false, false, 0)
     end
 end)
 
