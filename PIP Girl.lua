@@ -156,10 +156,6 @@ local function IsInSession()
     return util.is_session_started() and not util.is_session_transition_active()
 end
 
-local function is_user_driving_vehicle()
-    return (PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true))
-end
-
 local function notify(msg)
     util.toast("<[Pip Girl]>: " .. msg, TOAST_CONSOLE)
     util.toast("<[Pip Girl]>\n" .. msg)
@@ -501,6 +497,23 @@ local function does_entity_exist(entity)
         if ENTITY.DOES_ENTITY_EXIST(entity) then
             return true
         end
+    end
+    return false
+end
+
+local function get_user_vehicle()
+    return entities.get_user_vehicle_as_handle(true)
+end
+
+local function is_user_driving_vehicle()
+    return (PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true))
+end
+
+local function is_vehicle_free_for_use(vehicle)
+    local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
+    local driver = PED.IS_PED_A_PLAYER(driverPed)
+    if not driver or driverPed == players.user_ped() then
+        return true
     end
     return false
 end
@@ -1430,7 +1443,8 @@ menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehicle", {"pghealth"}, "Wil
         util.yield(13666)
     end
 end, function()
-    menu.trigger_commands("healthrate 0.00")
+    PLAYER.SET_PLAYER_HEALTH_RECHARGE_MAX_PERCENT(players.user(), 1.0)
+    PLAYER.SET_PLAYER_HEALTH_RECHARGE_MULTIPLIER(players.user(), 0.1)
 end)
 
 menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle", {"pgarmor"}, "Will Recharge Armor when in Cover or Vehicle quickly.\nBUT also slowly otherwise to 100%.", function()
@@ -1491,19 +1505,18 @@ end)
 
 menu.toggle_loop(Stimpak, "Oxygen", {"pgbreath"}, "Just breath.\nAlso gives u Movement and light from Scuba gear without having one equiped.", function()
     if IsInSession() then
-        if ENTITY.IS_ENTITY_IN_WATER(players.user_ped()) or ENTITY.IS_ENTITY_IN_WATER(entities.get_user_vehicle_as_handle()) then
+        if ENTITY.IS_ENTITY_IN_WATER(players.user_ped()) then
             PED.SET_ENABLE_SCUBA(players.user_ped(), true)
             PED.ENABLE_MP_LIGHT(players.user_ped(), true)
-            --local air = PLAYER.GET_PLAYER_UNDERWATER_TIME_REMAINING(players.user())
-            --if 13 >= air then
-            --    PLAYER.SET_PLAYER_UNDERWATER_BREATH_PERCENT_REMAINING(players.user(), 100)
-            --    util.yield(666)
-            --end
             PED.SET_PED_MAX_TIME_UNDERWATER(players.user_ped(), 666)
             util.yield(1666)
         else
             PED.SET_ENABLE_SCUBA(players.user_ped(), false)
             PED.ENABLE_MP_LIGHT(players.user_ped(), false)
+            util.yield(3666)
+        end
+        if ENTITY.IS_ENTITY_IN_WATER(get_user_vehicle()) then
+            PED.SET_PED_MAX_TIME_UNDERWATER(players.user_ped(), 666)
             util.yield(3666)
         end
     else
@@ -1659,11 +1672,9 @@ menu.toggle_loop(Stimpak, "Lea's Repair Stop", {"lears"}, "", function()
             end
             if closestDistance <= radius then
                 if not wasInZone then
-                    local vehicle = entities.get_user_vehicle_as_handle()
-                    local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
-                    local driver = NETWORK.NETWORK_GET_PLAYER_INDEX_FROM_PED(driverPed)
+                    local vehicle = get_user_vehicle()
                     wasInZone = true
-                    if driver == players.user() then
+                    if is_vehicle_free_for_use(vehicle) then
                         requestControl(vehicle, 13)
                         menu.trigger_commands("performance")
                         menu.trigger_commands("fixvehicle")
@@ -1677,6 +1688,7 @@ menu.toggle_loop(Stimpak, "Lea's Repair Stop", {"lears"}, "", function()
                     menu.trigger_commands("mentalstate 0")
                     menu.trigger_commands("removebounty")
                     menu.trigger_commands("helibackup")
+                    buff_lea_tech(vehicle)
                     notify("Come back in 6min for the next Supply.")
                     util.create_thread(SetInZoneTimer)
                 end
@@ -1703,7 +1715,7 @@ menu.divider(Stimpak, "Testing Stuff")
 
 menu.toggle_loop(Stimpak, "(DEBUG) Lea Tech", {""}, "", function()
     if IsInSession() then
-        local vehicle = entities.get_user_vehicle_as_handle()
+        local vehicle = get_user_vehicle()
         if vehicle then
             local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
             local petrolTankHealth = VEHICLE.GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
@@ -1773,7 +1785,7 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
     if OutfitLockHelmet ~= -1 then
         if PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) then
             if menu.get_state(menu.ref_by_path("Self>Appearance>Outfit>Hat")) == "-1" and focused ~= "Profiles" then
-                local vehicle = entities.get_user_vehicle_as_handle()
+                local vehicle = get_user_vehicle()
                 if vehicle then
                     local getclass = VEHICLE.GET_VEHICLE_CLASS(vehicle)
                     if getclass == 8 or getclass == 13 then
@@ -1864,6 +1876,9 @@ local function repair_lea_tech(vehicle)
     end
 end
 local function buff_lea_tech(vehicle)
+    if VEHICLE.DOES_VEHICLE_HAVE_SEARCHLIGHT(vehicle) then
+        VEHICLE.SET_VEHICLE_SEARCHLIGHT(vehicle, true, true)
+    end
     VEHICLE.SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
     VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
     --VEHICLE.SET_DONT_PROCESS_VEHICLE_GLASS(vehicles, true)
@@ -1881,11 +1896,11 @@ local function buff_lea_tech(vehicle)
     VEHICLE.SET_TRAILER_LEGS_RAISED(vehicle)
     VEHICLE.SET_INCREASE_WHEEL_CRUSH_DAMAGE(vehicle, true)
     VEHICLE.ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(vehicle)
+    VEHICLE.SET_VEHICLE_ACT_AS_IF_HAS_SIREN_ON(vehicle, true)
 end
 local saved_vehicle_id = nil
 local saved_trailer_id = nil
 local isInVehicle = false
-local closedDoors = false
 menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle, and gives it some modern enhancements.", function()
     local cmd_path = "Vehicle>Light Signals>Use Brake Lights When Stopped"
     if IsInSession() then
@@ -1893,20 +1908,17 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
             menu.trigger_commands("brakelights on")
         end
 
-        local vehicle = entities.get_user_vehicle_as_handle()
+        local vehicle = get_user_vehicle()
         if vehicle then
-            local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
-            local driver = NETWORK.NETWORK_GET_PLAYER_INDEX_FROM_PED(driverPed)
-
             -- Check if the driver seat is empty or if the local player is the driver
-            if driver == -1 or driver == players.user() then
-                if driver == players.user() then
+            if is_vehicle_free_for_use(vehicle) then
+                local isDriving = is_user_driving_vehicle()
+                if isDriving and not isInVehicle then
                     isInVehicle = true
-                    closedDoors = false
-                end
-                
-                if driver == -1 then
+                    VEHICLE.SET_VEHICLE_DOORS_SHUT(vehicle, false)
+                elseif not isDriving and isInVehicle then
                     isInVehicle = false
+                    VEHICLE.SET_VEHICLE_DOORS_SHUT(vehicle, false)
                 end
                 local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
                 local petrolTankHealth = VEHICLE.GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
@@ -1923,12 +1935,6 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
                 if saved_vehicle_id == nil or saved_vehicle_id ~= vehicle then
                     saved_vehicle_id = vehicle
                     buff_lea_tech(vehicle)
-                end
-                if not isInVehicle and not closedDoors then
-                    util.yield(1666)
-                    VEHICLE.SET_VEHICLE_DOORS_SHUT(vehicle, false)
-                    closedDoors = true
-                    saved_vehicle_id = nil
                 end
                 if VEHICLE.IS_VEHICLE_ATTACHED_TO_TRAILER(vehicle) then
                     local vehicle_mm = nil
@@ -1954,6 +1960,7 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
             end
             util.yield(1000)
         else
+            isInVehicle = false
             util.yield(1666)
         end
     else
@@ -1962,12 +1969,13 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
 end)
 
 local Lea_Tech = menu.list(Vehicle, 'Lea Tech Settings', {}, 'Settings for Lea Tech.', function(); end)
+
 menu.slider(Lea_Tech, "Lea Tech Repair Amount", {"leatechrepairamount"}, "The amount that should be repaired per second, default 1.", 0, 13, lea_tech_repair_amount, 1, function (new_value)
     lea_tech_repair_amount = new_value
 end)
 
 menu.action(Vehicle, "Detonate Lea Tech Vehicle.", {"boomlea"}, "", function()
-    local target_vehicle = entities.get_user_vehicle_as_handle()
+    local target_vehicle = get_user_vehicle()
     if saved_vehicle_id then
         target_vehicle = saved_vehicle_id
     end
@@ -1998,7 +2006,7 @@ menu.divider(Vehicle, "Lights")
 local Vehicle_Light = menu.list(Vehicle, 'Vehicle Light Rhythm', {}, 'Flash the lights pretty and nice.', function(); end)
 
 menu.toggle_loop(Vehicle_Light, "S.O.S. Morse",{"sosmorse"},"",function()
-    local vehicle = entities.get_user_vehicle_as_handle()
+    local vehicle = get_user_vehicle()
     if vehicle then
         VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
         util.yield(100)
@@ -2059,7 +2067,7 @@ menu.toggle_loop(Vehicle_Light, "S.O.S. Morse",{"sosmorse"},"",function()
     end
 end, function()
     saved_vehicle_id = nil
-    closedDoors = false
+    isOutVehicle = false
 end)
 
 local vehicleFavColor = 0
@@ -2072,12 +2080,11 @@ menu.toggle_loop(Vehicle, "Set vehicle light color automatically",{"autocarlight
     util.yield(420)
     if vehicleFavColor ~= 0 then
         if IsInSession() then
-            local vehicle = entities.get_user_vehicle_as_handle()
+            local vehicle = get_user_vehicle()
             if vehicle then
                 if entities.get_owner(vehicle) == players.user() then
                     local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
-                    local driver = NETWORK.NETWORK_GET_PLAYER_INDEX_FROM_PED(driverPed)
-                    if driver == players.user() then
+                    if driverPed == players.user_ped() then
                         if VEHICLE.GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 then
                             vehicleLightsSet = vehicle
                             menu.trigger_commands("headlights "..vehicleFavColor)
@@ -2100,116 +2107,116 @@ menu.divider(Vehicle, "Else")
 local sparrowHandeling = nil
 menu.toggle_loop(Vehicle, "Heli Sparrow Handling",{""},"All helicopters you enter fly like a sparrow.",function()
     if IsInSession() then
-        local vehicle = entities.get_user_vehicle_as_handle()
+        local vehicle = get_user_vehicle()
         if vehicle then
-            local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
-            local driver = NETWORK.NETWORK_GET_PLAYER_INDEX_FROM_PED(driverPed)
-            if driver == players.user() and VEHICLE.GET_VEHICLE_CLASS(vehicle) == 15 then
-                if sparrowHandeling == nil or sparrowHandeling ~= vehicle then
-                    sparrowHandeling = vehicle
-                    menu.trigger_commands("vhacceleration 1.00000")
-                    --menu.trigger_commands("vhsuspensionforce 3.00000")
-                    --menu.trigger_commands("vhsuspensionraise 0.35000")
-                    --menu.trigger_commands("vhsuspensioncompdamp 0.14000")
-                    menu.trigger_commands("vhtractionlossmult 1.00000")
-                    menu.trigger_commands("vhupshift 1.29999")
-                    menu.trigger_commands("vhdownshift 1.29999")
-                    menu.trigger_commands("vhdeformationmult 3.00000")
-                    menu.trigger_commands("vhtractioncurvemin 1.20000")
-                    menu.trigger_commands("vhtractioncurvemax 1.29999")
-                    menu.trigger_commands("vhdownforcemodifier 0.00000")
-                    menu.trigger_commands("vhinitialdragcoeff 0.00099")
-                    menu.trigger_commands("vhpopuplightrotation 0.00000")
-                    menu.trigger_commands("vhbuoyancy 75.00000")
-                    menu.trigger_commands("vhdrivebiasrear 1.33333")
-                    menu.trigger_commands("vhdrivebiasfront 0.00000")
-                    menu.trigger_commands("vhdriveinertia 1.00000")
-                    menu.trigger_commands("vhinitialdriveforce 0.30000")
-                    menu.trigger_commands("vhdrivemaxflatvelocity 53.33334")
-                    menu.trigger_commands("vhinitialdrivemaxflatvel 44.44444")
-                    menu.trigger_commands("vhbrakeforce 0.40000")
-                    menu.trigger_commands("vhbrakebiasfront 1.20000")
-                    menu.trigger_commands("vhbrakebiasrear 0.79999")
-                    menu.trigger_commands("vhhandbrakeforce 0.70000")
-                    menu.trigger_commands("vhsteeringlock 0.61086")
-                    menu.trigger_commands("vhsteeringlockratio 1.63702")
-                    menu.trigger_commands("vhtractioncurvelateral 0.76923")
-                    menu.trigger_commands("vhcurvelateral 0.20943")
-                    menu.trigger_commands("vhcurvelateralratio 4.77464")
-                    menu.trigger_commands("vhtractionspringdeltamax 0.10000")
-                    menu.trigger_commands("vhtractionspringdeltamaxratio 10.00000")
-                    menu.trigger_commands("vhlowspeedtractionlossmult 0.00000")
-                    menu.trigger_commands("vhcamberstiffness 0.00000")
-                    menu.trigger_commands("vhtractionbiasfront 1.00000")
-                    menu.trigger_commands("vhtractionbiasrear 1.00000")
-                    --menu.trigger_commands("vhsuspensionrebounddamp 0.30000")
-                    --menu.trigger_commands("vhsuspensionupperlimit 0.08000")
-                    --menu.trigger_commands("vhsuspensionlowerlimit -0.05000")
-                    --menu.trigger_commands("vhsuspensionbiasfront 1.00000")
-                    --menu.trigger_commands("vhsuspensionbiasrear 1.00000")
-                    menu.trigger_commands("vhantirollbarforce 0.00000")
-                    menu.trigger_commands("vhantirollbarbiasfront 0.00000")
-                    menu.trigger_commands("vhantirollbarbiasrear 2.00000")
-                    menu.trigger_commands("vhrollcentreheightfront 0.00000")
-                    menu.trigger_commands("vhrollcentreheightrear 0.00000")
-                    menu.trigger_commands("vhcollisiondamagemult 1.50000")
-                    menu.trigger_commands("vhweapondamamgemult 0.50000")
-                    menu.trigger_commands("vhenginedamagemult 1.50000")
-                    menu.trigger_commands("vhpetroltankvolume 100.00000")
-                    menu.trigger_commands("vhoilvolume 8.00000")
-                    menu.trigger_commands("vhthrust 0.63599")
-                    menu.trigger_commands("vhthrustfalloff 0.02890")
-                    menu.trigger_commands("vhthrustvectoring 0.40000")
-                    menu.trigger_commands("vhinitialthrust 0.52999")
-                    menu.trigger_commands("vhinitialthrustfalloff 0.03400")
-                    menu.trigger_commands("vhyawmult -1.76700")
-                    menu.trigger_commands("vhyawstabilise 0.00200")
-                    menu.trigger_commands("vhsideslipmult 0.00400")
-                    menu.trigger_commands("vhinitialyawmult -1.52000")
-                    menu.trigger_commands("vhrollmult 2.23781")
-                    menu.trigger_commands("vhrollstabilise 0.01100")
-                    menu.trigger_commands("vhinitialrollmult 1.92500")
-                    menu.trigger_commands("vhpitchmult 1.97625")
-                    menu.trigger_commands("vhpitchstabilise 0.00100")
-                    menu.trigger_commands("vhinitialpitchmult 1.70000")
-                    menu.trigger_commands("vhformliftmult 1.00000")
-                    menu.trigger_commands("vhattackliftmult 3.00000")
-                    menu.trigger_commands("vhattackdivemult 3.00000")
-                    menu.trigger_commands("vhgeardowndragv 0.10000")
-                    menu.trigger_commands("vhgeardownliftmult 1.00000")
-                    menu.trigger_commands("vhwindmult 0.00075")
-                    menu.trigger_commands("vhmoveres 0.03500")
-                    menu.trigger_commands("vhgeardoorfrontopen 1.57079")
-                    menu.trigger_commands("vhgeardoorrearopen 1.57079")
-                    menu.trigger_commands("vhgeardoorrearopen2 1.57079")
-                    menu.trigger_commands("vhgeardoorrearmopen 1.57079")
-                    menu.trigger_commands("vhturublencemagnitudemax 0.00000")
-                    menu.trigger_commands("vhturublenceforcemulti 0.00000")
-                    menu.trigger_commands("vhturublencerolltorquemulti 0.00000")
-                    menu.trigger_commands("vhturublencepitchtorquemulti 0.00000")
-                    menu.trigger_commands("vhbodydamagecontroleffectmult 0.50000")
-                    menu.trigger_commands("vhinputsensitivityfordifficulty 0.48000")
-                    menu.trigger_commands("vhongroundyawboostspeedpeak 1.00000")
-                    menu.trigger_commands("vhongroundyawboostspeedcap 1.00000")
-                    menu.trigger_commands("vhengineoffglidemulti 1.00000")
-                    menu.trigger_commands("vhafterburnereffectradius 0.50000")
-                    menu.trigger_commands("vhafterburnereffectdistance 4.00000")
-                    menu.trigger_commands("vhafterburnereffectforcemulti 0.20000")
-                    menu.trigger_commands("vhsubmergeleveltopullheliunderwater 0.30000")
-                    menu.trigger_commands("vhextraliftwithroll 0.00000")
-                    menu.trigger_commands("vhleftpontooncomponentid 0")
-                    menu.trigger_commands("vhrightpontooncomponentid 1")
-                    menu.trigger_commands("vhpontoonbuoyconst 12.50000")
-                    menu.trigger_commands("vhpontoonsamplesizefront 0.40000")
-                    menu.trigger_commands("vhpontoonsamplesizemiddle 0.40000")
-                    menu.trigger_commands("vhpontoonsamplesizerear 0.40000")
-                    menu.trigger_commands("vhpontoonlengthfractionforsamples 0.85000")
-                    menu.trigger_commands("vhpontoondragcoefficient 1.50000")
-                    menu.trigger_commands("vhpontoonverticaldampingcoefficientup 400.00000")
-                    menu.trigger_commands("vhpontoonverticaldampingcoefficientdown 600.00000")
-                    menu.trigger_commands("vhkeelspheresize 0.30000")
-                    menu.trigger_commands("deploychaff")
-                    util.yield(3666)
+            if VEHICLE.GET_VEHICLE_CLASS(vehicle) == 15 then
+                if is_vehicle_free_for_use(vehicle) then
+                    if sparrowHandeling == nil or sparrowHandeling ~= vehicle then
+                        sparrowHandeling = vehicle
+                        menu.trigger_commands("vhacceleration 1.00000")
+                        --menu.trigger_commands("vhsuspensionforce 3.00000")
+                        --menu.trigger_commands("vhsuspensionraise 0.35000")
+                        --menu.trigger_commands("vhsuspensioncompdamp 0.14000")
+                        menu.trigger_commands("vhtractionlossmult 1.00000")
+                        menu.trigger_commands("vhupshift 1.29999")
+                        menu.trigger_commands("vhdownshift 1.29999")
+                        menu.trigger_commands("vhdeformationmult 3.00000")
+                        menu.trigger_commands("vhtractioncurvemin 1.20000")
+                        menu.trigger_commands("vhtractioncurvemax 1.29999")
+                        menu.trigger_commands("vhdownforcemodifier 0.00000")
+                        menu.trigger_commands("vhinitialdragcoeff 0.00099")
+                        menu.trigger_commands("vhpopuplightrotation 0.00000")
+                        menu.trigger_commands("vhbuoyancy 75.00000")
+                        menu.trigger_commands("vhdrivebiasrear 1.33333")
+                        menu.trigger_commands("vhdrivebiasfront 0.00000")
+                        menu.trigger_commands("vhdriveinertia 1.00000")
+                        menu.trigger_commands("vhinitialdriveforce 0.30000")
+                        menu.trigger_commands("vhdrivemaxflatvelocity 53.33334")
+                        menu.trigger_commands("vhinitialdrivemaxflatvel 44.44444")
+                        menu.trigger_commands("vhbrakeforce 0.40000")
+                        menu.trigger_commands("vhbrakebiasfront 1.20000")
+                        menu.trigger_commands("vhbrakebiasrear 0.79999")
+                        menu.trigger_commands("vhhandbrakeforce 0.70000")
+                        menu.trigger_commands("vhsteeringlock 0.61086")
+                        menu.trigger_commands("vhsteeringlockratio 1.63702")
+                        menu.trigger_commands("vhtractioncurvelateral 0.76923")
+                        menu.trigger_commands("vhcurvelateral 0.20943")
+                        menu.trigger_commands("vhcurvelateralratio 4.77464")
+                        menu.trigger_commands("vhtractionspringdeltamax 0.10000")
+                        menu.trigger_commands("vhtractionspringdeltamaxratio 10.00000")
+                        menu.trigger_commands("vhlowspeedtractionlossmult 0.00000")
+                        menu.trigger_commands("vhcamberstiffness 0.00000")
+                        menu.trigger_commands("vhtractionbiasfront 1.00000")
+                        menu.trigger_commands("vhtractionbiasrear 1.00000")
+                        --menu.trigger_commands("vhsuspensionrebounddamp 0.30000")
+                        --menu.trigger_commands("vhsuspensionupperlimit 0.08000")
+                        --menu.trigger_commands("vhsuspensionlowerlimit -0.05000")
+                        --menu.trigger_commands("vhsuspensionbiasfront 1.00000")
+                        --menu.trigger_commands("vhsuspensionbiasrear 1.00000")
+                        menu.trigger_commands("vhantirollbarforce 0.00000")
+                        menu.trigger_commands("vhantirollbarbiasfront 0.00000")
+                        menu.trigger_commands("vhantirollbarbiasrear 2.00000")
+                        menu.trigger_commands("vhrollcentreheightfront 0.00000")
+                        menu.trigger_commands("vhrollcentreheightrear 0.00000")
+                        menu.trigger_commands("vhcollisiondamagemult 1.50000")
+                        menu.trigger_commands("vhweapondamamgemult 0.50000")
+                        menu.trigger_commands("vhenginedamagemult 1.50000")
+                        menu.trigger_commands("vhpetroltankvolume 100.00000")
+                        menu.trigger_commands("vhoilvolume 8.00000")
+                        menu.trigger_commands("vhthrust 0.63599")
+                        menu.trigger_commands("vhthrustfalloff 0.02890")
+                        menu.trigger_commands("vhthrustvectoring 0.40000")
+                        menu.trigger_commands("vhinitialthrust 0.52999")
+                        menu.trigger_commands("vhinitialthrustfalloff 0.03400")
+                        menu.trigger_commands("vhyawmult -1.76700")
+                        menu.trigger_commands("vhyawstabilise 0.00200")
+                        menu.trigger_commands("vhsideslipmult 0.00400")
+                        menu.trigger_commands("vhinitialyawmult -1.52000")
+                        menu.trigger_commands("vhrollmult 2.23781")
+                        menu.trigger_commands("vhrollstabilise 0.01100")
+                        menu.trigger_commands("vhinitialrollmult 1.92500")
+                        menu.trigger_commands("vhpitchmult 1.97625")
+                        menu.trigger_commands("vhpitchstabilise 0.00100")
+                        menu.trigger_commands("vhinitialpitchmult 1.70000")
+                        menu.trigger_commands("vhformliftmult 1.00000")
+                        menu.trigger_commands("vhattackliftmult 3.00000")
+                        menu.trigger_commands("vhattackdivemult 3.00000")
+                        menu.trigger_commands("vhgeardowndragv 0.10000")
+                        menu.trigger_commands("vhgeardownliftmult 1.00000")
+                        menu.trigger_commands("vhwindmult 0.00075")
+                        menu.trigger_commands("vhmoveres 0.03500")
+                        menu.trigger_commands("vhgeardoorfrontopen 1.57079")
+                        menu.trigger_commands("vhgeardoorrearopen 1.57079")
+                        menu.trigger_commands("vhgeardoorrearopen2 1.57079")
+                        menu.trigger_commands("vhgeardoorrearmopen 1.57079")
+                        menu.trigger_commands("vhturublencemagnitudemax 0.00000")
+                        menu.trigger_commands("vhturublenceforcemulti 0.00000")
+                        menu.trigger_commands("vhturublencerolltorquemulti 0.00000")
+                        menu.trigger_commands("vhturublencepitchtorquemulti 0.00000")
+                        menu.trigger_commands("vhbodydamagecontroleffectmult 0.50000")
+                        menu.trigger_commands("vhinputsensitivityfordifficulty 0.48000")
+                        menu.trigger_commands("vhongroundyawboostspeedpeak 1.00000")
+                        menu.trigger_commands("vhongroundyawboostspeedcap 1.00000")
+                        menu.trigger_commands("vhengineoffglidemulti 1.00000")
+                        menu.trigger_commands("vhafterburnereffectradius 0.50000")
+                        menu.trigger_commands("vhafterburnereffectdistance 4.00000")
+                        menu.trigger_commands("vhafterburnereffectforcemulti 0.20000")
+                        menu.trigger_commands("vhsubmergeleveltopullheliunderwater 0.30000")
+                        menu.trigger_commands("vhextraliftwithroll 0.00000")
+                        menu.trigger_commands("vhleftpontooncomponentid 0")
+                        menu.trigger_commands("vhrightpontooncomponentid 1")
+                        menu.trigger_commands("vhpontoonbuoyconst 12.50000")
+                        menu.trigger_commands("vhpontoonsamplesizefront 0.40000")
+                        menu.trigger_commands("vhpontoonsamplesizemiddle 0.40000")
+                        menu.trigger_commands("vhpontoonsamplesizerear 0.40000")
+                        menu.trigger_commands("vhpontoonlengthfractionforsamples 0.85000")
+                        menu.trigger_commands("vhpontoondragcoefficient 1.50000")
+                        menu.trigger_commands("vhpontoonverticaldampingcoefficientup 400.00000")
+                        menu.trigger_commands("vhpontoonverticaldampingcoefficientdown 600.00000")
+                        menu.trigger_commands("vhkeelspheresize 0.30000")
+                        menu.trigger_commands("deploychaff")
+                        util.yield(3666)
+                    end
                 end
             end
         end
@@ -3341,7 +3348,6 @@ end)
 
 menu.toggle_loop(SessionWorld, "Nerf Oppressor MK2s", {""}, "Nerf Oppressor mk2 weapons, except Modder and Friend's", function()
     for players.list_except(true) as pid do
-        local playerName = players.get_name(pid)
         if players.get_vehicle_model(pid) == 2069146067 and not isFriend(pid) and not players.is_marked_as_modder(pid) then
             local vehicle = PED.GET_VEHICLE_PED_IS_IN(PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid))
             if VEHICLE.GET_VEHICLE_MOD(vehicle, 10) ~= -1 then
@@ -3356,7 +3362,6 @@ end)
 local mk2noob = {}
 menu.toggle_loop(SessionWorld, "Spinning Oppressor MK2s", {""}, "Spin all MK2's, except Modder and Friend's", function()
     for players.list_except(true) as pid do
-        local playerName = players.get_name(pid)
         if players.get_vehicle_model(pid) == 2069146067 and not isFriend(pid) then
             if not players.is_marked_as_modder(pid) then 
                 local found = false
@@ -3369,6 +3374,7 @@ menu.toggle_loop(SessionWorld, "Spinning Oppressor MK2s", {""}, "Spin all MK2's,
                 if not found then
                     table.insert(mk2noob, pid)
                 end
+                local playerName = players.get_name(pid)
                 menu.trigger_commands("spin"..playerName.." on")
                 menu.trigger_commands("slippery"..playerName.." on")
                 menu.trigger_commands("lock"..playerName.." on")
