@@ -3543,12 +3543,9 @@ menu.toggle_loop(Session, "Soft Clear Traffic", {"softantitrafic"}, "Clears the 
             util.yield(13)
         end
         for pairs(entities.get_all_vehicles_as_pointers()) as ent do
-            local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
-            if not PED.IS_PED_A_PLAYER(driver) then
-                if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) and not entities.get_vehicle_has_been_owned_by_player(ent) then
-                    if does_entity_exist(ent) then
-                        entities.delete(ent)
-                    end
+            if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) and not entities.get_vehicle_has_been_owned_by_player(ent) then
+                if does_entity_exist(ent) then
+                    entities.delete(ent)
                 end
             end
             util.yield(13)
