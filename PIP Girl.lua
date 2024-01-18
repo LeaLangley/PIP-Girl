@@ -1169,7 +1169,7 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yo
                 "HRBOARD_REG",
                 "HRBOARD_REGB",
             }
-            for _, label in pairs(CEOLabels) do
+            for _, label in ipairs(CEOLabels) do
                 if IS_HELP_MSG_DISPLAYED(label) then
                     if players.get_boss(players.user()) == -1 then menu.trigger_commands("ceostart") end
                     if players.get_org_type(players.user()) == 1 then menu.trigger_commands("ceotomc") end
@@ -1191,7 +1191,7 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yo
                 "ARC_HT_1",
                 "ARC_HT_1B",
             }
-            for _, label in pairs(MCLabels) do
+            for _, label in ipairs(MCLabels) do
                 if IS_HELP_MSG_DISPLAYED(label) then
                     if players.get_boss(players.user()) == -1 then menu.trigger_commands("mcstart") end
                     if players.get_org_type(players.user()) == 0 then menu.trigger_commands("ceotomc") end
@@ -1639,7 +1639,7 @@ menu.toggle_loop(Stimpak, "Lea's Repair Stop", {"lears"}, "", function()
         end
         closestMarker = nil
         closestDistance = math.huge
-        for _, position in ipairs(repairStops) do
+        for _, position in pairs(repairStops) do
             local distance = math.sqrt((playerPosition.x - position.x) ^ 2 + (playerPosition.y - position.y) ^ 2 + (playerPosition.z - position.z) ^ 2)
 
             if distance < closestDistance then
@@ -2349,7 +2349,7 @@ local function SuperClean(fix, ignoreMission)
     util.yield(13)
     menu.trigger_commands("deleterope")
     util.yield(13)
-    for pairs(entities.get_all_peds_as_handles()) as ent do
+    for ipairs(entities.get_all_peds_as_handles()) as ent do
         if not PED.IS_PED_A_PLAYER(ent) then
             if does_entity_exist(ent) then
                 if not ignoreMission then
@@ -2366,7 +2366,7 @@ local function SuperClean(fix, ignoreMission)
         end
     end
     util.yield(13)
-    for pairs(entities.get_all_vehicles_as_handles()) as ent do
+    for ipairs(entities.get_all_vehicles_as_handles()) as ent do
         local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
         if not PED.IS_PED_A_PLAYER(driver) then
             if does_entity_exist(ent) then
@@ -2384,7 +2384,7 @@ local function SuperClean(fix, ignoreMission)
         end
     end
     util.yield(13)
-    for pairs(entities.get_all_objects_as_handles()) as ent do
+    for ipairs(entities.get_all_objects_as_handles()) as ent do
         if does_entity_exist(ent) then
             if not ignoreMission then
                 entities.delete(ent)
@@ -2399,7 +2399,7 @@ local function SuperClean(fix, ignoreMission)
         util.yield(13)
     end
     util.yield(13)
-    for pairs(entities.get_all_pickups_as_handles()) as ent do
+    for ipairs(entities.get_all_pickups_as_handles()) as ent do
         if does_entity_exist(ent) then
             if not ignoreMission then
                 entities.delete(ent)
@@ -2470,7 +2470,7 @@ menu.toggle_loop(Game, "Auto Skip Cutscene", {"pgascut"}, "Automatically skip al
         local playerPosition = players.get_position(players.user())
         local skipCutscene = true
 
-        for i, position in ipairs(avoidCutsceneSkipHere) do
+        for i, position in pairs(avoidCutsceneSkipHere) do
             local distance = SYSTEM.VDIST(playerPosition.x, playerPosition.y, playerPosition.z, position.x, position.y, position.z)
             local radius = 25
             distance = math.floor(distance + 0.5)
@@ -2552,7 +2552,7 @@ menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warn
         if not HUD.IS_PAUSE_MENU_ACTIVE() then
             local skipWarning = true
             local playerPosition = players.get_position(players.user())
-            for i, position in ipairs(avoidWarningSkipHere) do
+            for i, position in pairs(avoidWarningSkipHere) do
                 local distance = SYSTEM.VDIST(playerPosition.x, playerPosition.y, playerPosition.z, position.x, position.y, position.z)
                 local radius = 25
                 distance = math.floor(distance + 0.5)
@@ -3309,7 +3309,9 @@ menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Blocks the MK2 a
     end
     util.yield(6666)
 end, function()
-    util.remove_blip(Leas_shrine_blip)
+    if Leas_shrine_blip then
+        util.remove_blip(Leas_shrine_blip)
+    end
     Leas_shrine_blip = nil
     for _, element in ipairs(shrineElements) do
         local entityVar, conditions = element.var, element.conditions
@@ -3384,7 +3386,7 @@ menu.toggle_loop(SessionWorld, "Spinning Oppressor MK2s", {""}, "Spin all MK2's,
     end
     util.yield(1666)
 end, function()
-    for pairs(mk2noob) as pid do
+    for ipairs(mk2noob) as pid do
         local index = find_in_table(mk2noob, pid)
         if player_Exist(pid) then
             local playerName = players.get_name(pid)
@@ -3649,7 +3651,7 @@ menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"}, "Ghost everyone who i
         util.yield(13666)
     end
 end, function()
-    for pairs(sussy_god) as pid do
+    for ipairs(sussy_god) as pid do
         if player_Exist(pid) then
             NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
         end
@@ -3844,7 +3846,7 @@ end
 
 local startupCheckCD = true
 local function is_player_in_blacklist(rid)
-    for pairs(data_g) as blacklistedId do
+    for ipairs(data_g) as blacklistedId do
         if tonumber(blacklistedId) == tonumber(rid) then
             startupCheckCD = false
             return true
@@ -3853,7 +3855,7 @@ local function is_player_in_blacklist(rid)
             util.yield()
         end
     end
-    for pairs(data_e) as blacklistedId do
+    for ipairs(data_e) as blacklistedId do
         if tonumber(blacklistedId) == tonumber(rid) then
             startupCheckCD = false
             return true
