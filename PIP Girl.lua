@@ -638,17 +638,27 @@ end
 local function StrategicKick(pid)
     if player_Exist(pid) and pid ~= players.user() then
         local name = players.get_name(pid)
-        if not IsInSession() then
-            menu.trigger_commands("kick " .. name)
-            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
-            Wait_for_IsInSession()
-        else
-            if menu.get_edition() > 1 then
-                if players.user() == players.get_host() then
-                    if not isLoading(pid) and not isLoading(players.user()) then
-                        menu.trigger_commands("ban " .. name)
+        if name ~= players.get_name(players.user()) then
+            if not IsInSession() then
+                menu.trigger_commands("kick " .. name)
+                NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+                Wait_for_IsInSession()
+            else
+                if menu.get_edition() > 1 then
+                    if players.user() == players.get_host() then
+                        if not isLoading(pid) and not isLoading(players.user()) then
+                            menu.trigger_commands("ban " .. name)
+                        else
+                            menu.trigger_commands("loveletterkick " .. name)
+                        end
                     else
-                        menu.trigger_commands("loveletterkick " .. name)
+                        menu.trigger_commands("kick " .. name)
+                        if IsInSession() then
+                            menu.trigger_commands("ignore " .. name .. " on")
+                            menu.trigger_commands("desync " .. name .. " on")
+                            menu.trigger_commands("blocksync " .. name .. " on")
+                            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+                        end
                     end
                 else
                     menu.trigger_commands("kick " .. name)
@@ -658,14 +668,6 @@ local function StrategicKick(pid)
                         menu.trigger_commands("blocksync " .. name .. " on")
                         NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
                     end
-                end
-            else
-                menu.trigger_commands("kick " .. name)
-                if IsInSession() then
-                    menu.trigger_commands("ignore " .. name .. " on")
-                    menu.trigger_commands("desync " .. name .. " on")
-                    menu.trigger_commands("blocksync " .. name .. " on")
-                    NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
                 end
             end
         end
@@ -3836,15 +3838,17 @@ local function startupConfig()
         end
         for menu.ref_by_path("Online>Player History>Noted Players>Blacklist"):getChildren() as rat do
             util.yield(13)
-            local rat_target = rat.target
-            rat_target:refByRelPath("Player Join Reactions>Notification").value = true
-            rat_target:refByRelPath("Player Join Reactions>Write To Console").value = true
-            rat_target:refByRelPath("Player Join Reactions>Block Join").value = noexceptions
-            rat_target:refByRelPath("Player Join Reactions>Crash").value = noexceptions
-            rat_target:refByRelPath("Player Join Reactions>Timeout").value = noexceptions
-            rat_target:refByRelPath("Player Join Reactions>Block Their Network Events").value = noexceptions
-            rat_target:refByRelPath("Player Join Reactions>Block Incoming Syncs").value = noexceptions
-            rat_target:refByRelPath("Player Join Reactions>Block Outgoing Syncs").value = noexceptions
+            if rat:isValid() then
+                local rat_target = rat.target
+                rat_target:refByRelPath("Player Join Reactions>Notification").value = true
+                rat_target:refByRelPath("Player Join Reactions>Write To Console").value = true
+                rat_target:refByRelPath("Player Join Reactions>Block Join").value = noexceptions
+                rat_target:refByRelPath("Player Join Reactions>Crash").value = noexceptions
+                rat_target:refByRelPath("Player Join Reactions>Timeout").value = noexceptions
+                rat_target:refByRelPath("Player Join Reactions>Block Their Network Events").value = noexceptions
+                rat_target:refByRelPath("Player Join Reactions>Block Incoming Syncs").value = noexceptions
+                rat_target:refByRelPath("Player Join Reactions>Block Outgoing Syncs").value = noexceptions
+            end
         end
     end
 end
@@ -3853,10 +3857,12 @@ local function crashlistConfig()
     if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Crash :3")) then
         for menu.ref_by_path("Online>Player History>Noted Players>Crash :3"):getChildren() as rat do
             util.yield(13)
-            local rat_target = rat.target
-            rat_target:refByRelPath("Player Join Reactions>Notification").value = true
-            rat_target:refByRelPath("Player Join Reactions>Write To Console").value = true
-            rat_target:refByRelPath("Player Join Reactions>Crash").value = true
+            if rat:isValid() then
+                local rat_target = rat.target
+                rat_target:refByRelPath("Player Join Reactions>Notification").value = true
+                rat_target:refByRelPath("Player Join Reactions>Write To Console").value = true
+                rat_target:refByRelPath("Player Join Reactions>Crash").value = true
+            end
         end
     end
 end
@@ -3868,6 +3874,7 @@ local function add_in_stand(pid)
             if name ~= players.get_name(players.user()) then
                 players.add_detection(pid, "Blacklist", TOAST_DEFAULT, 100)
                 menu.trigger_commands("historynote ".. name .." Blacklist")
+                util.yield(420)
                 util.create_thread(startupConfig)
             end
         end
