@@ -3446,6 +3446,11 @@ menu.toggle_loop(SessionMisc, "Block Aggressive Host Token as Host", {""}, "", f
         --    menu.trigger_command(menu.ref_by_path("Online>Protections>Detections>Spoofed Host Token (Aggressive)>Kick>Strangers"))
         --end
         util.yield(3666)
+        for players.list() as pid do
+            if aggressive(pid) and not isFriend(pid) and players.is_marked_as_attacker(pid) then
+                StrategicKick(pid)
+            end
+        end
     else
         --if menu.is_ref_valid(menu.ref_by_path("Online>Protections>Detections>Spoofed Host Token (Aggressive)>Kick>Disabled")) then
         --    menu.trigger_command(menu.ref_by_path("Online>Protections>Detections>Spoofed Host Token (Aggressive)>Kick>Disabled"))
