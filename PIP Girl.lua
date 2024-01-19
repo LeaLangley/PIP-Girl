@@ -2468,7 +2468,7 @@ local function SuperClean(fix, ignoreMission)
     util.yield(13)
     GRAPHICS.REMOVE_PARTICLE_FX_IN_RANGE(pos.x, pos.y, pos.z, 13666)
     util.yield(13)
-    MISC.CLEAR_AREA_OF_PROJECTILES(pos.x, pos.y, pos.z, 13666, 0)
+    MISC.CLEAR_AREA(pos.x, pos.y, pos.z, 19999.9, true, false, false, true)
     notify("Done " .. ct .. "+ entities removed!")
     if fix then
         util.yield(666)
