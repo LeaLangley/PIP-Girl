@@ -6,9 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.117"
+local SCRIPT_VERSION = "1.118"
 
-local startupmsg = "If settings are missing PLS restart lua.\n\nGhost \"Attacking While Invulnerable\" IS NOW -> Ghost God Mode\n\nImproved and Lea-rned alot.\nI love u."
+local startupmsg = "If settings are missing PLS restart lua.\n\nLea Tech on top!\n\nImproved and Lea-rned alot.\nI love u."
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1896,6 +1896,32 @@ local function repair_lea_tech(vehicle)
     end
 end
 local function buff_lea_tech(vehicle)
+    local engine = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 11) - 1
+    local breaks = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 12) - 1
+    local gearbox = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 13) - 1
+    local armor = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 16) - 1
+    --local nitro = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 17) need more researtch about that xD
+    if engine > 0 then
+        if VEHICLE.GET_VEHICLE_MOD(vehicle, 11) ~= engine then
+            VEHICLE.SET_VEHICLE_MOD(vehicle, 11, engine)
+        end
+    end
+    if breaks > -1 then
+        if VEHICLE.GET_VEHICLE_MOD(vehicle, 12) ~= breaks then
+            VEHICLE.SET_VEHICLE_MOD(vehicle, 12, breaks)
+        end
+    end
+    if gearbox > -1 then
+        if VEHICLE.GET_VEHICLE_MOD(vehicle, 13) ~= gearbox then
+            VEHICLE.SET_VEHICLE_MOD(vehicle, 13, gearbox)
+        end
+    end
+    if armor > -1 then
+        if VEHICLE.GET_VEHICLE_MOD(vehicle, 16) ~= armor then
+            VEHICLE.SET_VEHICLE_MOD(vehicle, 16, armor)
+        end
+    end
+    VEHICLE.TOGGLE_VEHICLE_MOD(vehicle, 18, true)
     if VEHICLE.DOES_VEHICLE_HAVE_SEARCHLIGHT(vehicle) then
         VEHICLE.SET_VEHICLE_SEARCHLIGHT(vehicle, true, true)
     end

@@ -1896,6 +1896,37 @@ local function repair_lea_tech(vehicle)
     end
 end
 local function buff_lea_tech(vehicle)
+    local engine = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 11) - 1
+    local breaks = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 12) - 1
+    local gearbox = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 13) - 1
+    local armor = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 16) - 1
+    --local nitro = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 17) need more researtch about that xD
+    if engine > 0 then
+        if VEHICLE.GET_VEHICLE_MOD(vehicle, 11) ~= engine then
+            VEHICLE.SET_VEHICLE_MOD(vehicle, 11, engine)
+        end
+    end
+    if breaks > -1 then
+        if VEHICLE.GET_VEHICLE_MOD(vehicle, 12) ~= breaks then
+            VEHICLE.SET_VEHICLE_MOD(vehicle, 12, breaks)
+        end
+    end
+    if gearbox > -1 then
+        if VEHICLE.GET_VEHICLE_MOD(vehicle, 13) ~= gearbox then
+            VEHICLE.SET_VEHICLE_MOD(vehicle, 13, gearbox)
+        end
+    end
+    if armor > -1 then
+        if VEHICLE.GET_VEHICLE_MOD(vehicle, 16) ~= armor then
+            VEHICLE.SET_VEHICLE_MOD(vehicle, 16, armor)
+        end
+    end
+    if armor > -1 then
+        if VEHICLE.GET_VEHICLE_MOD(vehicle, 17) ~= armor then
+            VEHICLE.SET_VEHICLE_MOD(vehicle, 17, armor)
+        end
+    end
+    VEHICLE.TOGGLE_VEHICLE_MOD(vehicle, 18, true)
     if VEHICLE.DOES_VEHICLE_HAVE_SEARCHLIGHT(vehicle) then
         VEHICLE.SET_VEHICLE_SEARCHLIGHT(vehicle, true, true)
     end
@@ -4181,7 +4212,18 @@ menu.action(menu.my_root(), "Activate Everyday Goodies", {"pggoodies"}, "Activat
 end)
 
 menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
-    notify(startupmsg)
+    --notify(startupmsg)
+    local veh = get_user_vehicle()
+    local engine = VEHICLE.GET_NUM_VEHICLE_MODS(veh, 11)
+    local breaks = VEHICLE.GET_NUM_VEHICLE_MODS(veh, 12)
+    local armor = VEHICLE.GET_NUM_VEHICLE_MODS(veh, 16)
+    local nitro = VEHICLE.GET_NUM_VEHICLE_MODS(veh, 17)
+    local turbo = VEHICLE.GET_NUM_VEHICLE_MODS(veh, 18)
+    notify("engine "..engine)
+    notify("breaks "..breaks)
+    notify("armor "..armor)
+    notify("nitro "..nitro)
+    notify("turbo "..turbo)
 end)
 
 menu.trigger_commands("antiadmin")
