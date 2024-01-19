@@ -1895,6 +1895,7 @@ local function buff_lea_tech(vehicle)
     VEHICLE.SET_INCREASE_WHEEL_CRUSH_DAMAGE(vehicle, true)
     VEHICLE.ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(vehicle)
     VEHICLE.SET_VEHICLE_ACT_AS_IF_HAS_SIREN_ON(vehicle, true)
+    entities.set_can_migrate(vehicle, false)
 end
 local saved_vehicle_id = nil
 local saved_trailer_id = nil
