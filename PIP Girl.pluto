@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.116"
+local SCRIPT_VERSION = "1.117"
 
 local startupmsg = "If settings are missing PLS restart lua.\n\nGhost \"Attacking While Invulnerable\" IS NOW -> Ghost God Mode\n\nImproved and Lea-rned alot.\nI love u."
 
@@ -619,6 +619,38 @@ local function thunderForMin(min)
         end
         menu.trigger_commands("thunderoff")
     end
+end
+
+local function get_Street_Names(x, y, z)
+    local playerPosition
+    if x and y and z then
+        playerPosition = {x = x, y = y, z = z}
+    else
+        playerPosition = players.get_position(players.user())
+    end
+
+    local streetNamePtr = memory.alloc_int()
+    local crossingRoadPtr = memory.alloc_int()
+
+    PATHFIND.GET_STREET_NAME_AT_COORD(playerPosition.x, playerPosition.y, playerPosition.z, streetNamePtr, crossingRoadPtr)
+
+    local streetNameInt = memory.read_int(streetNamePtr)
+    local crossingRoadInt = memory.read_int(crossingRoadPtr)
+    local streetName = ""
+    local crossingName = ""
+
+    if streetNameInt ~= 0 then
+        streetName = util.get_label_text(streetNameInt)
+    end
+
+    if crossingRoadInt ~= 0 then
+        crossingName = util.get_label_text(crossingRoadInt)
+    end
+
+    return {
+        streetName = streetName,
+        crossingName = crossingName
+    }
 end
 
 local function Wait_for_IsInSession()
@@ -1808,6 +1840,16 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
     else
         util.yield(666)
     end
+end, function()
+    menu.trigger_commands("lockoutfit off")
+    if ChangedHelmet then
+        menu.trigger_commands("hat -1")
+        ChangedHelmet = false
+    end
+    if temp_holding_outfit then
+        menu.trigger_commands("outfit 1PIPGirlTemp")
+        temp_holding_outfit = false
+    end
 end)
 
 menu.slider(Outfit, 'Smart Outfit Lock Helmet', {'SmartLockHelmet'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet.', -1, 201, OutfitLockHelmet, 1, function (new_value)
@@ -1817,19 +1859,9 @@ end)
 menu.divider(Vehicle, "Lea Tech")
 
 local function getTrailer(vehicle)
-    local trailer = nil
-    local vehiclePosition = ENTITY.GET_ENTITY_COORDS(vehicle)
-    for entities.get_all_vehicles_as_handles() as veh_ent do
-        local trailerPosition = ENTITY.GET_ENTITY_COORDS(veh_ent)
-        local distance = SYSTEM.VDIST(vehiclePosition.x, vehiclePosition.y, vehiclePosition.z, trailerPosition.x, trailerPosition.y, trailerPosition.z)
-        if distance <= 20.0 then
-            local tailer_p = VEHICLE._GET_VEHICLE_TRAILER_PARENT_VEHICLE(veh_ent)
-            if tailer_p == vehicle then
-                trailer = veh_ent
-                break
-            end
-        end
-    end
+    local trailerPtr = memory.alloc_int()
+    VEHICLE.GET_VEHICLE_TRAILER_VEHICLE(vehicle, trailerPtr)
+    local trailer = memory.read_int(trailerPtr)
     return trailer
 end
 local lea_tech_repair_amount = 1
@@ -2494,6 +2526,7 @@ local avoidCutsceneSkipHere = {
     { x = 4982.63, y = -5710.30, z = 19.73 }, -- Cayo gate enter
     { x = 4975.27, y = -5708.02, z = 19.89 },
     { x = 5054.02, y = -5773.01, z = -3.76 }, -- Cayo Drainage
+    { x = 819.66, y = -2206.27, z = 30.95 }, -- Cassino Hatch
 }
 menu.toggle_loop(Game, "Auto Skip Cutscene", {"pgascut"}, "Automatically skip all cutscenes.", function()
     if IsInSession() and CUTSCENE.IS_CUTSCENE_PLAYING() then
@@ -4122,7 +4155,10 @@ menu.divider(Settings, "<3")
 
 menu.action(Settings, "Copy Position to Clipboard", {}, "", function()
     local playerPosition = players.get_position(players.user())
-    local positionString = string.format("{ x = %.2f, y = %.2f, z = %.2f },", playerPosition.x, playerPosition.y, playerPosition.z)
+    local streetInfo = get_Street_Names(playerPosition.x, playerPosition.y, playerPosition.z)
+    local positionString = string.format("{ x = %.2f, y = %.2f, z = %.2f, streetName = \"%s\", crossingName = \"%s\" },",
+    playerPosition.x, playerPosition.y, playerPosition.z,
+    streetInfo.streetName, streetInfo.crossingName)
     util.copy_to_clipboard(positionString, false)
     notify("Position copied to clipboard!")
 end)
