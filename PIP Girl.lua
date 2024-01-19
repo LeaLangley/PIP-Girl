@@ -300,34 +300,69 @@ local function isModder(pid)
     end
 end
 
-function START_SCRIPT(ceo_mc, name)
+local urceoname = ""
+local function organization_control(org)
+    if players.get_boss(players.user()) ~= -1 then
+        if players.get_org_type(players.user()) == 0 then
+            if org == "MC" then
+                menu.trigger_commands("ceotomc")
+                util.yield(666)
+                if players.get_org_type(players.user()) == 1 then
+                    if urceoname ~= "" then
+                        menu.trigger_commands("ceoname " .. urceoname)
+                    end
+                    notify("Turned you into MC President!")
+                else
+                    notify("Failed to turn you into MC President.")
+                end
+            end
+        else
+            if org == "CEO" then
+                menu.trigger_commands("ceotomc")
+                util.yield(666)
+                if players.get_org_type(players.user()) == 0 then
+                    if urceoname ~= "" then
+                        menu.trigger_commands("ceoname " .. urceoname)
+                    end
+                    notify("Turned you into CEO!")
+                else
+                    notify("Failed to turn you into CEO.")
+                end
+            end
+        end
+    else
+        if org == "CEO" then
+            menu.trigger_commands("ceostart")
+            util.yield(666)
+            if players.get_org_type(players.user()) == 0 then
+                if urceoname ~= "" then
+                    menu.trigger_commands("ceoname " .. urceoname)
+                end
+                notify("Turned you into CEO!")
+            else
+                notify("Failed to turn you into CEO.")
+            end
+        elseif org == "MC" then
+            menu.trigger_commands("mcstart")
+            util.yield(666)
+            if players.get_org_type(players.user()) == 1 then
+                if urceoname ~= "" then
+                    menu.trigger_commands("ceoname " .. urceoname)
+                end
+                notify("Turned you into MC President!")
+            else
+                notify("Failed to turn you into MC President.")
+            end
+        end
+    end
+end
+
+local function start_script(name)
     if IsInSession() then
         if HUD.IS_PAUSE_MENU_ACTIVE() then
             notify("Close any open Game Menu first!")
             return
         end
-        if players.get_boss(players.user()) ~= -1 then
-            if players.get_org_type(players.user()) == 0 then -- NOTE: https://www.unknowncheats.me/forum/3683018-post106.html
-                if ceo_mc == "MC" then
-                    menu.trigger_commands("ceotomc")
-                    notify("Turned you into MC President!")
-                end
-            else
-                if ceo_mc == "CEO" then
-                    menu.trigger_commands("ceotomc")
-                    notify("Turned you into CEO!")
-                end
-            end
-        else
-            if ceo_mc == "CEO" then
-                menu.trigger_commands("ceostart")
-                notify("Turned you into CEO!")
-            elseif ceo_mc == "MC" then
-                menu.trigger_commands("mcstart")
-                notify("Turned you into MC President!")
-            end
-        end
-
         SCRIPT.REQUEST_SCRIPT(name)
         repeat util.yield_once() until SCRIPT.HAS_SCRIPT_LOADED(name)
         SYSTEM.START_NEW_SCRIPT(name, 5000)
@@ -723,63 +758,47 @@ local Settings = menu.list(menu.my_root(), 'Settings/Misc', {}, 'Basement.', fun
 local Credits = menu.list(Settings, 'Credits', {}, '<3', function(); end)
 
 menu.action(PIP_Girl_APPS, "Master Control Terminal App", {}, "Your master control terminal.", function()
-    START_SCRIPT("CEO", "apparcadebusinesshub")
+    organization_control("CEO")
+    start_script("apparcadebusinesshub")
 end)
 
-menu.textslider(PIP_Girl_APPS, "Nightclub App", {}, "Your nightclub screen.", {
-    "Open",
-    "Close",
-}, function()
-    START_SCRIPT("CEO", "appbusinesshub")
+menu.action(PIP_Girl_APPS, "Nightclub App", {}, "Your nightclub screen.", function()
+    organization_control("CEO")
+    start_script("appbusinesshub")
 end)
 
-menu.textslider(PIP_Girl_APPS, "Bunker App", {}, "Your bunker screen.", {
-    "Open",
-    "Close",
-}, function()
-    START_SCRIPT("CEO", "appbunkerbusiness")
+menu.action(PIP_Girl_APPS, "Bunker App", {}, "Your bunker screen.", function()
+    organization_control("CEO")
+    start_script("appbunkerbusiness")
 end)
 
-menu.textslider(PIP_Girl_APPS, "Touchscreen Terminal App", {}, "Your Terrorbyte screen.", {
-    "Open",
-    "Close",
-}, function()
-    START_SCRIPT("CEO", "apphackertruck")
+menu.action(PIP_Girl_APPS, "Touchscreen Terminal App", {}, "Your Terrorbyte screen.",  function()
+    organization_control("CEO")
+    start_script("apphackertruck")
 end)
 
-menu.textslider(PIP_Girl_APPS, "Air Cargo App", {}, "Your air cargo screen.", {
-    "Open",
-    "Close",
-}, function()
-    START_SCRIPT("CEO", "appsmuggler")
+menu.action(PIP_Girl_APPS, "Air Cargo App", {}, "Your air cargo screen.", function()
+    organization_control("CEO")
+    start_script("appsmuggler")
 end)
 
-menu.textslider(PIP_Girl_APPS, "The Open Road App", {}, "Your MC management screen.", {
-    "Open",
-    "Close",
-}, function()
-    START_SCRIPT("MC", "appbikerbusiness")
+menu.action(PIP_Girl_APPS, "The Open Road App", {}, "Your MC management screen.", function()
+    organization_control("MC")
+    start_script("appbikerbusiness")
 end)
 
-menu.textslider(PIP_Girl_APPS, "The Agency App", {}, "Your agency screen.", {
-    "Open",
-    "Close",
-}, function()
-    START_SCRIPT("CEO", "appfixersecurity")
+menu.action(PIP_Girl_APPS, "The Agency App", {}, "Your agency screen.", function()
+    organization_control("CEO")
+    start_script("appfixersecurity")
 end)
 
-menu.textslider(PIP_Girl_APPS, "The Avenger App", {}, "Your avenger screen.", {
-    "Open",
-    "Close",
-}, function()
-    START_SCRIPT("CEO", "appavengeroperations")
+menu.action(PIP_Girl_APPS, "The Avenger App", {}, "Your avenger screen.", function()
+    organization_control("CEO")
+    start_script("appavengeroperations")
 end)
 
-menu.textslider(PIP_Girl_APPS, "The Internet App", {}, "Your internet screen.", {
-    "Open",
-    "Close",
-}, function()
-    START_SCRIPT("CEO", "appinternet")
+menu.action(PIP_Girl_APPS, "The Internet App", {}, "Your internet screen.", function()
+    start_script("appinternet")
 end)
 
 menu.action(PIP_Girl_APPS, "(Unstuck) Unstuck after starting a sale.", {}, "If you use one of the screens above and start a sale, you could get stuck.\nPerform an Suicide to unstuck.", function()
@@ -1135,7 +1154,6 @@ menu.divider(PIP_Girl, "CEO/MC Options")
 --    end
 --end
 
-local urceoname = ""
 local function on_change(input_str, click_type)
     urceoname = input_str
 end
@@ -1173,21 +1191,8 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yo
                 end
             end
             if players.get_boss(players.user()) == -1 then
-                menu.trigger_commands("ceostart")
+                organization_control("CEO")
                 util.yield(1666)
-                if players.get_org_type(players.user()) == 0 then
-                    notify("Turned you into CEO!")
-                    if urceoname ~= "" then
-                        menu.trigger_commands("ceoname " .. urceoname)
-                    end
-                    --if ceo_color ~= -1 then
-                    --    check_CEO_Color(ceo_color)
-                    --end
-                    util.yield(213666)
-                else
-                    notify("We could not turn you into CEO :c\nWe will wait 3 minutes and try again.")
-                    util.yield(213666)
-                end
             end
             local CEOLabels = {
                 "HIP_HELP_BBOSS",
@@ -1221,19 +1226,8 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yo
             }
             for _, label in ipairs(CEOLabels) do
                 if IS_HELP_MSG_DISPLAYED(label) then
-                    if players.get_boss(players.user()) == -1 then menu.trigger_commands("ceostart") end
-                    if players.get_org_type(players.user()) == 1 then menu.trigger_commands("ceotomc") end
+                    organization_control("CEO")
                     util.yield(1666)
-                    if players.get_boss(players.user()) ~= -1 then
-                        if urceoname ~= "" then
-                            menu.trigger_commands("ceoname " .. urceoname)
-                        end
-                        --if ceo_color ~= -1 then
-                        --    check_CEO_Color(ceo_color)
-                        --end
-                        notify("Turned you into CEO!")
-                        util.yield(666)
-                    end
                 end
             end
             local MCLabels = {
@@ -1243,19 +1237,8 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yo
             }
             for _, label in ipairs(MCLabels) do
                 if IS_HELP_MSG_DISPLAYED(label) then
-                    if players.get_boss(players.user()) == -1 then menu.trigger_commands("mcstart") end
-                    if players.get_org_type(players.user()) == 0 then menu.trigger_commands("ceotomc") end
+                    organization_control("MC")
                     util.yield(1666)
-                    if players.get_boss(players.user()) ~= -1 then
-                        if urceoname ~= "" then
-                            menu.trigger_commands("ceoname " .. urceoname)
-                        end
-                        --if ceo_color ~= -1 then
-                        --    check_CEO_Color(ceo_color)
-                        --end
-                        notify("Turned you into MC President!")
-                        util.yield(666)
-                    end
                 end
             end
             if players.get_boss(players.user()) ~= -1 then
