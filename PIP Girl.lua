@@ -204,6 +204,18 @@ local function player_Exist(pid)
     return false
 end
 
+local function allow_Join_back(name)
+    util.yield(666)
+    for menu.ref_by_path("Online>Session>Block Joins>Removed Players"):getChildren() as rat do
+        if rat:isValid() then
+            if rat.menu_name == name then
+                rat:trigger()
+                break
+            end
+        end
+    end
+end
+
 local function StandUser(pid) -- credit to sapphire for this and jinx script
     util.yield(666)
     if player_Exist(pid) and pid ~= players.user() then
@@ -3028,9 +3040,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     --  Is session under controll?
                     --  <3
                     if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 and (players.get_host() == players.user() or isHostFriendly) then
-                        if menu.is_ref_valid(menu.ref_by_path("Online>Session>Block Joins>Removed Players>"..host_name)) then
-                            menu.trigger_command(menu.ref_by_path("Online>Session>Block Joins>Removed Players>"..host_name))
-                        end
+                        allow_Join_back(host_name)
                         warnify("Found u a new Home <3")
                         menu.trigger_commands("claimsession off")
                         if players.user() ~= players.get_script_host() then
