@@ -3114,6 +3114,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                         end
                         util.yield(6666)
                         menu.trigger_commands("claimsession off")
+                        allow_Join_back(host_name)
                     else
                         if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
                             menu.trigger_commands("unstuck")
