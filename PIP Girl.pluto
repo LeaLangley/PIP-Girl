@@ -3935,7 +3935,6 @@ local startupCheckCD = true
 local function is_player_in_blacklist(rid)
     for ipairs(data_g) as blacklistedId do
         if tonumber(blacklistedId) == tonumber(rid) then
-            startupCheckCD = false
             return true
         end
         if not startupCheckCD then
@@ -3944,7 +3943,6 @@ local function is_player_in_blacklist(rid)
     end
     for ipairs(data_e) as blacklistedId do
         if tonumber(blacklistedId) == tonumber(rid) then
-            startupCheckCD = false
             return true
         end
         if not startupCheckCD then
@@ -4005,23 +4003,25 @@ local function SessionCheck(pid)
     if pid ~= players.user() then
         local rid = players.get_rockstar_id(pid)
         if is_player_in_blacklist(rid) or fillup_size == rid then
-            if not isFriend(pid) then
-                local name = players.get_name(pid)
-                if name == players.get_name(players.user()) then
-                    name = "N/A"
-                end
-                if session_type() == "Public" then
-                    notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
-                end
-                add_in_stand(pid)
-                if StandUser(pid) then
-                    notify("This Blacklist is a Stand User, we don't kick them until they attack: \n" .. name .. " - " .. rid)
-                    menu.trigger_commands("hellaa " .. name .. " on")
-                else
+            if player_Exist(pid) then
+                if not isFriend(pid) then
+                    local name = players.get_name(pid)
+                    if name == players.get_name(players.user()) then
+                        name = "N/A"
+                    end
                     if session_type() == "Public" then
-                        StrategicKick(pid)
-                    else
+                        notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
+                    end
+                    add_in_stand(pid)
+                    if StandUser(pid) then
+                        notify("This Blacklist is a Stand User, we don't kick them until they attack: \n" .. name .. " - " .. rid)
                         menu.trigger_commands("hellaa " .. name .. " on")
+                    else
+                        if session_type() == "Public" then
+                            StrategicKick(pid)
+                        else
+                            menu.trigger_commands("hellaa " .. name .. " on")
+                        end
                     end
                 end
             end
