@@ -3549,7 +3549,7 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic o
     if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "Off" then
         menu.set_state(menu.ref_by_path("World>Inhabitants>Pedestrians>Disable"), "On")
     end
-    if IsInSession() then
+    if not util.is_session_transition_active() then
         if not pop_multiplier_id then
             pop_multiplier_id = MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 16666, 0.0, 0.0, false, true)
             MISC.CLEAR_AREA(0.0, 0.0, 0.0, 19999.9, true, false, false, true)
@@ -3571,9 +3571,6 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic o
         end
     end
 end, function()
-    if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "Off" then
-        menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "On")
-    end
     if menu.get_state(menu.ref_by_path("World>Inhabitants>Traffic>Disable")) ~= "Disabled" then
         menu.trigger_command(menu.ref_by_path("World>Inhabitants>Traffic>Disable>Disabled"))
     end
@@ -3585,12 +3582,12 @@ end, function()
             MISC.REMOVE_POP_MULTIPLIER_SPHERE(pop_multiplier_id, false)
         end
     end
-    VEHICLE.SET_DISTANT_CARS_ENABLED(true)
     pop_multiplier_id = nil
+    VEHICLE.SET_DISTANT_CARS_ENABLED(true)
 end)
 
 menu.toggle_loop(Session, "Soft Clear Traffic", {"softantitrafic"}, "Clears the traffic around you localy in close range.\nDosnt work with many players in close range.", function()
-    if IsInSession() then
+    if not util.is_session_transition_active() then
         local waiting_for_clear = nil
         local pos = players.get_position(players.user())
         if players.user() == players.get_host() then
