@@ -1949,7 +1949,7 @@ local function buff_lea_tech(vehicle)
     VEHICLE.ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(vehicle)
     VEHICLE.SET_VEHICLE_ACT_AS_IF_HAS_SIREN_ON(vehicle, true)
     VEHICLE.SET_VEHICLE_TYRES_CAN_BURST(vehicle, false)
-    entities.set_can_migrate(vehicle, false)
+    --entities.set_can_migrate(vehicle, false)
 end
 local saved_vehicle_id = nil
 local saved_trailer_id = nil
@@ -2033,6 +2033,7 @@ menu.action(Vehicle, "Detonate Lea Tech Vehicle.", {"boomlea"}, "", function()
         target_vehicle = saved_vehicle_id
     end
     requestControl(target_vehicle, 1)
+    entities.set_can_migrate(target_vehicle, false)
     VEHICLE.ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(target_vehicle)
     local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(target_vehicle, -1)
     if driverPed ~= players.user_ped() then
