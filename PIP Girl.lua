@@ -2511,10 +2511,9 @@ local function SuperClean(fix, ignoreMission)
     MISC.CLEAR_AREA(pos.x, pos.y, pos.z, 19999.9, true, false, false, true)
     notify("Done " .. ct .. "+ entities removed!")
     if fix then
-        util.yield(666)
-        menu.set_state(menu.ref_by_path("World>GeoGuessr>GeoGuessr"), "On")
+        menu.set_state(menu.ref_by_path("Game>Rendering>Potato Mode"), "On")
         util.yield(113)
-        menu.set_state(menu.ref_by_path("World>GeoGuessr>GeoGuessr"), "Off")
+        menu.set_state(menu.ref_by_path("Game>Rendering>Potato Mode"), "Off")
     end
 end
 menu.divider(Game, "Exclude Mission.")
