@@ -4164,6 +4164,7 @@ end)
 menu.divider(Credits, "<3")
 util.create_thread(startupCheck)
 util.create_thread(startupConfig)
+util.create_thread(crashlistConfig)
 
 menu.action(Credits, "And you!", {""}, "Ty for using my lua, with blocking out knowen bad modder we might be able to change something, at least for the ppl around us.", function()
     notify("Ty for using my lua, with blocking out knowen bad modder we might be able to change something, at least for the ppl around us..")
