@@ -1105,7 +1105,7 @@ end)
 menu.toggle_loop(PIP_Girl, "Nightclub Party Never Stops!", {'ncpop'}, "The hottest NC in whole LS.\nKeeps you pop at 90-100%", function ()
     if IsInSession() then
         local ncpop = math.floor(STAT_GET_INT('CLUB_POPULARITY') / 10)
-        if ncpop < 66 then
+        if ncpop < 88 then
             menu.trigger_commands('clubpopularity 100')
             util.yield(66666)
         end
