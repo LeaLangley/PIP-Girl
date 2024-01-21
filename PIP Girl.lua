@@ -1965,12 +1965,19 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
         if vehicle then
             -- Check if the driver seat is empty or if the local player is the driver
             if is_vehicle_free_for_use(vehicle) then
-                local isDriving = is_user_driving_vehicle()
+                local isDriving = nil
+                if isInVehicle then
+                    isDriving = PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true)
+                else
+                    isDriving = PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), false)
+                end
                 if isDriving and not isInVehicle then
                     isInVehicle = true
+                    util.yield(666)
                     VEHICLE.SET_VEHICLE_DOORS_SHUT(vehicle, false)
                 elseif not isDriving and isInVehicle then
                     isInVehicle = false
+                    util.yield(666)
                     VEHICLE.SET_VEHICLE_DOORS_SHUT(vehicle, false)
                 end
                 local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
