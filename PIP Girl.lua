@@ -556,7 +556,12 @@ local function does_entity_exist(entity)
 end
 
 local function get_user_vehicle()
-    return entities.get_user_vehicle_as_handle(true)
+    local userVehicleHandle = entities.get_user_vehicle_as_handle(true)
+    if userVehicleHandle == -1 then
+        return entities.get_user_personal_vehicle_as_handle()
+    else
+        return userVehicleHandle
+    end
 end
 
 local function is_user_driving_vehicle()
