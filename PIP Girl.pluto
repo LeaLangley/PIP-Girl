@@ -1650,6 +1650,57 @@ local radius = 2
 local closestMarker = nil
 local closestDistance = math.huge
 local wasInZone = false
+local function buff_lea_tech(vehicle)
+    local engine = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 11) - 1
+    local breaks = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 12) - 1
+    local gearbox = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 13) - 1
+    local armor = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 16) - 1
+    --local nitro = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 17) need more researtch about that xD
+    if engine > 0 then
+        if VEHICLE.GET_VEHICLE_MOD(vehicle, 11) ~= engine then
+            VEHICLE.SET_VEHICLE_MOD(vehicle, 11, engine)
+        end
+    end
+    if breaks > -1 then
+        if VEHICLE.GET_VEHICLE_MOD(vehicle, 12) ~= breaks then
+            VEHICLE.SET_VEHICLE_MOD(vehicle, 12, breaks)
+        end
+    end
+    if gearbox > -1 then
+        if VEHICLE.GET_VEHICLE_MOD(vehicle, 13) ~= gearbox then
+            VEHICLE.SET_VEHICLE_MOD(vehicle, 13, gearbox)
+        end
+    end
+    if armor > -1 then
+        if VEHICLE.GET_VEHICLE_MOD(vehicle, 16) ~= armor then
+            VEHICLE.SET_VEHICLE_MOD(vehicle, 16, armor)
+        end
+    end
+    VEHICLE.TOGGLE_VEHICLE_MOD(vehicle, 18, true)
+    if VEHICLE.DOES_VEHICLE_HAVE_SEARCHLIGHT(vehicle) then
+        VEHICLE.SET_VEHICLE_SEARCHLIGHT(vehicle, true, true)
+    end
+    VEHICLE.SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
+    VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+    --VEHICLE.SET_DONT_PROCESS_VEHICLE_GLASS(vehicles, true)
+    VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, false)
+    VEHICLE.SET_HELI_TAIL_BOOM_CAN_BREAK_OFF(vehicle, false)
+    --VEHICLE.CAN_SHUFFLE_SEAT(vehicle, true)
+    VEHICLE.SET_VEHICLE_CAN_ENGINE_MISSFIRE(vehicle, false)
+    VEHICLE.SET_VEHICLE_CAN_LEAK_PETROL(vehicle, false)
+    VEHICLE.SET_VEHICLE_CAN_LEAK_OIL(vehicle, false)
+    VEHICLE.SET_DISABLE_VEHICLE_PETROL_TANK_FIRES(vehicle, true)
+    VEHICLE.SET_DISABLE_VEHICLE_PETROL_TANK_DAMAGE(vehicle, true)
+    VEHICLE.SET_DISABLE_VEHICLE_ENGINE_FIRES(vehicle, true)
+    VEHICLE.SET_VEHICLE_ENGINE_CAN_DEGRADE(vehicle, false)
+    VEHICLE.SET_VEHICLE_STRONG(vehicle, true)
+    VEHICLE.SET_TRAILER_LEGS_RAISED(vehicle)
+    VEHICLE.SET_INCREASE_WHEEL_CRUSH_DAMAGE(vehicle, true)
+    VEHICLE.ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(vehicle)
+    VEHICLE.SET_VEHICLE_ACT_AS_IF_HAS_SIREN_ON(vehicle, true)
+    VEHICLE.SET_VEHICLE_TYRES_CAN_BURST(vehicle, false)
+    --entities.set_can_migrate(vehicle, false)
+end
 local function SetInZoneTimer()
     wasInZone = true
     for blips as blip do
@@ -1899,57 +1950,6 @@ local function repair_lea_tech(vehicle)
         VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, true)
         VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, true)
     end
-end
-local function buff_lea_tech(vehicle)
-    local engine = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 11) - 1
-    local breaks = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 12) - 1
-    local gearbox = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 13) - 1
-    local armor = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 16) - 1
-    --local nitro = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 17) need more researtch about that xD
-    if engine > 0 then
-        if VEHICLE.GET_VEHICLE_MOD(vehicle, 11) ~= engine then
-            VEHICLE.SET_VEHICLE_MOD(vehicle, 11, engine)
-        end
-    end
-    if breaks > -1 then
-        if VEHICLE.GET_VEHICLE_MOD(vehicle, 12) ~= breaks then
-            VEHICLE.SET_VEHICLE_MOD(vehicle, 12, breaks)
-        end
-    end
-    if gearbox > -1 then
-        if VEHICLE.GET_VEHICLE_MOD(vehicle, 13) ~= gearbox then
-            VEHICLE.SET_VEHICLE_MOD(vehicle, 13, gearbox)
-        end
-    end
-    if armor > -1 then
-        if VEHICLE.GET_VEHICLE_MOD(vehicle, 16) ~= armor then
-            VEHICLE.SET_VEHICLE_MOD(vehicle, 16, armor)
-        end
-    end
-    VEHICLE.TOGGLE_VEHICLE_MOD(vehicle, 18, true)
-    if VEHICLE.DOES_VEHICLE_HAVE_SEARCHLIGHT(vehicle) then
-        VEHICLE.SET_VEHICLE_SEARCHLIGHT(vehicle, true, true)
-    end
-    VEHICLE.SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
-    VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
-    --VEHICLE.SET_DONT_PROCESS_VEHICLE_GLASS(vehicles, true)
-    VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, false)
-    VEHICLE.SET_HELI_TAIL_BOOM_CAN_BREAK_OFF(vehicle, false)
-    --VEHICLE.CAN_SHUFFLE_SEAT(vehicle, true)
-    VEHICLE.SET_VEHICLE_CAN_ENGINE_MISSFIRE(vehicle, false)
-    VEHICLE.SET_VEHICLE_CAN_LEAK_PETROL(vehicle, false)
-    VEHICLE.SET_VEHICLE_CAN_LEAK_OIL(vehicle, false)
-    VEHICLE.SET_DISABLE_VEHICLE_PETROL_TANK_FIRES(vehicle, true)
-    VEHICLE.SET_DISABLE_VEHICLE_PETROL_TANK_DAMAGE(vehicle, true)
-    VEHICLE.SET_DISABLE_VEHICLE_ENGINE_FIRES(vehicle, true)
-    VEHICLE.SET_VEHICLE_ENGINE_CAN_DEGRADE(vehicle, false)
-    VEHICLE.SET_VEHICLE_STRONG(vehicle, true)
-    VEHICLE.SET_TRAILER_LEGS_RAISED(vehicle)
-    VEHICLE.SET_INCREASE_WHEEL_CRUSH_DAMAGE(vehicle, true)
-    VEHICLE.ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(vehicle)
-    VEHICLE.SET_VEHICLE_ACT_AS_IF_HAS_SIREN_ON(vehicle, true)
-    VEHICLE.SET_VEHICLE_TYRES_CAN_BURST(vehicle, false)
-    --entities.set_can_migrate(vehicle, false)
 end
 local saved_vehicle_id = nil
 local saved_trailer_id = nil
