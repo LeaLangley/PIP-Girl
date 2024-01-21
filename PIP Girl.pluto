@@ -1197,7 +1197,7 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yo
             end
             if players.get_boss(players.user()) == -1 then
                 organization_control("CEO")
-                util.yield(1666)
+                util.yield(13666)
             end
             local CEOLabels = {
                 "HIP_HELP_BBOSS",
@@ -3568,6 +3568,8 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic o
             pop_multiplier_id = MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 16666, 0.0, 0.0, false, true)
             MISC.CLEAR_AREA(0.0, 0.0, 0.0, 19999.9, true, false, false, true)
             VEHICLE.SET_DISTANT_CARS_ENABLED(false)
+            STREAMING.SET_PED_POPULATION_BUDGET(0)
+            STREAMING.SET_VEHICLE_POPULATION_BUDGET(0)
         else
             if not MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(pop_multiplier_id) then
                 pop_multiplier_id = MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 16666, 0.0, 0.0, false, true)
@@ -3598,6 +3600,8 @@ end, function()
     end
     pop_multiplier_id = nil
     VEHICLE.SET_DISTANT_CARS_ENABLED(true)
+    STREAMING.SET_PED_POPULATION_BUDGET(3)
+    STREAMING.SET_VEHICLE_POPULATION_BUDGET(3)
 end)
 
 menu.toggle_loop(Session, "Soft Clear Traffic", {"softantitrafic"}, "Clears the traffic around you localy in close range.\nDosnt work with many players in close range.", function()
