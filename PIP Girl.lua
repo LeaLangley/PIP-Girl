@@ -2596,6 +2596,7 @@ local warningMessages = {
     [379245697] = "Quitting Job.",
     [2053786350] = "Unable to Connect.",
     [1616251414] = "Unable to Join, A modder is blocking u join with 99% probability.",
+    [1597894155] = "Unable to join the game, you must first accept the GTA Online user policy.",
     [1232128772] = "Player joining, please wait.",
     [1736490464] = "No Connection to R* Service.",
     [1270064450] = "Player has been invited in the Crew.",
