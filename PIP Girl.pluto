@@ -3928,6 +3928,7 @@ local function crashlistConfig()
                 rat_target:refByRelPath("Player Join Reactions>Notification").value = true
                 rat_target:refByRelPath("Player Join Reactions>Write To Console").value = true
                 rat_target:refByRelPath("Player Join Reactions>Crash").value = true
+                rat_target:refByRelPath("Player Join Reactions>Timeout").value = true
             end
         end
     end
