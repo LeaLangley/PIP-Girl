@@ -2576,6 +2576,7 @@ menu.toggle_loop(Game, "Auto Skip Cutscene", {"pgascut"}, "Automatically skip al
 
         if skipCutscene then
             CUTSCENE.STOP_CUTSCENE_IMMEDIATELY()
+            notify("If this cutscene skip broke a mission!\nUse \"pgcopypos\" and send it to the PIP Girl Developer.")
             util.yield(6666)
         end
     end
@@ -2641,7 +2642,7 @@ local lastWarnifyTime = {}
 menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warnings in the game.", function()
     local mess_hash = math.abs(HUD.GET_WARNING_SCREEN_MESSAGE_HASH())
 
-    if mess_hash ~= 0 then
+    if mess_hash ~= 0 and mess_hash ~= 976109292 then
         if not HUD.IS_PAUSE_MENU_ACTIVE() then
             local skipWarning = true
             local playerPosition = players.get_position(players.user())
@@ -2675,7 +2676,7 @@ menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warn
                     local lastTimeWarnified = lastWarnifyTime[mess_hash] or 0
 
                     if currentTime - lastTimeWarnified >= warnifyCooldown then
-                        notify(mess_hash)
+                        notify(mess_hash.."\nIf this warning should be Auto Skiped, Send a screenshot of the warning and the Number notify to the PIP Girl Developer.")
                         lastWarnifyTime[mess_hash] = currentTime
                     end
                     util.yield(666)
@@ -4187,7 +4188,7 @@ end)
 
 menu.divider(Settings, "<3")
 
-menu.action(Settings, "Copy Position to Clipboard", {}, "", function()
+menu.action(Settings, "Copy Position to Clipboard", {"pgcopypos"}, "", function()
     local playerPosition = players.get_position(players.user())
     local streetInfo = get_Street_Names(playerPosition.x, playerPosition.y, playerPosition.z)
     local positionString = string.format("{ x = %.2f, y = %.2f, z = %.2f, streetName = \"%s\", crossingName = \"%s\" },",
