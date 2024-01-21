@@ -2518,24 +2518,24 @@ local function SuperClean(fix, ignoreMission)
 end
 menu.divider(Game, "Exclude Mission.")
 
-menu.action(Game, 'Super Cleanse No yacht fix', {"supercleannysave"}, 'BCS R* is a mess.', function()
+menu.action(Game, 'Super Cleanse No yacht fix', {"scleannysave"}, 'BCS R* is a mess.', function()
     local fix = false
     SuperClean(fix, true)
 end)
 
-menu.action(Game, 'Super Cleanse', {"supercleansave"}, 'BCS R* is a mess.', function(click_type)
+menu.action(Game, 'Super Cleanse', {"scleansave"}, 'BCS R* is a mess.', function(click_type)
     local fix = true
     SuperClean(fix, true)
 end)
 
 menu.divider(Game, "Regular")
 
-menu.action(Game, 'Super Cleanse No yacht fix', {"supercleanny"}, 'BCS R* is a mess.', function()
+menu.action(Game, 'Super Cleanse No yacht fix', {"scleanny"}, 'BCS R* is a mess.', function()
     local fix = false
     SuperClean(fix, false)
 end)
 
-menu.action(Game, 'Super Cleanse', {"superclean"}, 'BCS R* is a mess.', function(click_type)
+menu.action(Game, 'Super Cleanse', {"sclean"}, 'BCS R* is a mess.', function(click_type)
     local fix = true
     SuperClean(fix, false)
 end)
