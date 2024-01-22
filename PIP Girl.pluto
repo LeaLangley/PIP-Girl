@@ -1706,7 +1706,6 @@ local function buff_lea_tech(vehicle)
     VEHICLE.ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(vehicle)
     VEHICLE.SET_VEHICLE_ACT_AS_IF_HAS_SIREN_ON(vehicle, true)
     VEHICLE.SET_VEHICLE_TYRES_CAN_BURST(vehicle, false)
-    VEHICLE.SET_VEHICLE_ENGINE_ON(vehicle, true, true, false)
     --entities.set_can_migrate(vehicle, false)
 end
 local function SetInZoneTimer()
@@ -1980,6 +1979,7 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
                     isDriving = PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), false)
                 end
                 if isDriving and not isInVehicle then
+                    VEHICLE.SET_VEHICLE_ENGINE_ON(vehicle, true, true, false)
                     isInVehicle = true
                     util.yield(666)
                     VEHICLE.SET_VEHICLE_DOORS_SHUT(vehicle, false)
