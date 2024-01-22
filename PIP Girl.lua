@@ -181,6 +181,7 @@ local function transitionState(state)
     if util.is_session_transition_active() then
         return state and 3 or "Orbit"
     end
+    return state and 404 or "404"
 end
 
 local function notify(msg)
