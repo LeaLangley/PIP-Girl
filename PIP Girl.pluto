@@ -1342,11 +1342,13 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all pickups on yo
         local counter = 0
         local playerPed = PLAYER.PLAYER_PED_ID()
         for entities.get_all_pickups_as_handles() as pickup do
-            if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
-                util.yield(111)
-                ENTITY.ATTACH_ENTITY_TO_ENTITY(pickup, playerPed, PED.GET_PED_BONE_INDEX(playerPed, 24818), 0.0, -0.3, 0.0, 0.0, 90, 0.0, true, true, false, true, 1, true, 1)
+            if not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) and not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
+                requestControl(pickup, 0)
+                --ENTITY.ATTACH_ENTITY_TO_ENTITY(pickup, playerPed, PED.GET_PED_BONE_INDEX(playerPed, 24818), 0.0, -0.3, 0.0, 0.0, 90, 0.0, false, true, true, false, 0, true, 1)
+                ENTITY.ATTACH_ENTITY_TO_ENTITY(pickup, playerPed, PED.GET_PED_BONE_INDEX(playerPed, 24818), 0, -0.3, 0, 0, 90, 0, false, true, true, false, 0, true, 1)
                 table.insert(carryingPickups, pickup)
                 counter = counter + 1
+                util.yield(111)
             end
         end
         notify("Carrying "..counter.." pickups.")
@@ -1355,8 +1357,8 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all pickups on yo
         local playerPed = PLAYER.PLAYER_PED_ID()
         local pos = players.get_position(players.user())
         for ipairs(carryingPickups) as pickup do
-            if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
-                util.yield(13)
+            if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) and ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
+                requestControl(pickup, 0)
                 ENTITY.DETACH_ENTITY(pickup, true, true)
                 util.yield(13)
                 ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z-0.8, false, false, false, false)
@@ -1375,7 +1377,7 @@ menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a shower in all existing p
         local pos = players.get_position(players.user())
         local in_vehicle = is_user_driving_vehicle()
         for entities.get_all_pickups_as_handles() as pickup do
-            if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
+            if not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) and not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
                 if in_vehicle then
                     ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z , false, false, false, false)
                     util.yield(13)
@@ -1398,7 +1400,7 @@ menu.action(PIP_Girl, "Teleport Pickups To Me", {"tppickups"}, "Teleports all pi
         local counter = 0
         local pos = players.get_position(players.user())
         for entities.get_all_pickups_as_handles() as pickup do
-            if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
+            if not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) and not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
                 util.yield(13)
                 ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z-0.8, false, false, false, false)
                 util.yield(13)
