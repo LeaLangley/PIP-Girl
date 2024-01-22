@@ -152,8 +152,35 @@ function STAT_SET_INT(stat, value)
     STATS.STAT_SET_INT(util.joaat(ADD_MP_INDEX(stat)), value, true)
 end
 
-local function IsInSession()
-    return util.is_session_started() and not util.is_session_transition_active()
+local function session_type()
+    if util.is_session_started() or util.is_session_transition_active() then
+        if NETWORK.NETWORK_SESSION_IS_PRIVATE() then
+            return "Privat"
+        end
+        if NETWORK.NETWORK_SESSION_IS_CLOSED_FRIENDS() then
+            return "Priends"
+        end
+        if NETWORK.NETWORK_SESSION_IS_CLOSED_CREW() then
+            return "Crew"
+        end
+        if NETWORK.NETWORK_SESSION_IS_SOLO() then
+            return "Solo"
+        end
+        return "Public"
+    end
+    return "Singleplayer"
+end
+
+local function transitionState(state)
+    if not util.is_session_transition_active() and util.is_session_started() and players.are_stats_ready(players.user()) then
+        return state and 1 or "Docked"
+    end
+    if not util.is_session_transition_active() and util.is_session_started() and not players.are_stats_ready(players.user()) then
+        return state and 2 or "Pressurization"
+    end
+    if util.is_session_transition_active() then
+        return state and 3 or "Orbit"
+    end
 end
 
 local function notify(msg)
@@ -358,7 +385,7 @@ local function organization_control(org)
 end
 
 local function start_script(name)
-    if IsInSession() then
+    if transitionState(true) == 1 then
         if HUD.IS_PAUSE_MENU_ACTIVE() then
             notify("Close any open Game Menu first!")
             return
@@ -416,7 +443,7 @@ local function getEntryByValue(tbl, value)
 end
 
 local function isStuck(pid)
-    if not IsInSession() then
+    if not transitionState(true) ~= 1 then
         return false
     end
     if pid == players.user() then
@@ -438,11 +465,12 @@ local function isStuck(pid)
 end
 
 local function isLoading(pid)
-    if pid == players.user() and not IsInSession() then
-        return true
-    end
-    if not IsInSession() then
-        return false
+    if transitionState(true) ~= 1 then
+        if pid == players.user() then
+            return true
+        else
+            return false
+        end
     end
     if pid == players.user() then
         if ENTITY.GET_ENTITY_SPEED(pid) < 1 and HUD.BUSYSPINNER_IS_DISPLAYING() then
@@ -486,25 +514,6 @@ local function isFriend(pid)
         return true
     end
     return false
-end
-
-local function session_type()
-    if util.is_session_started() or util.is_session_transition_active() then
-        if NETWORK.NETWORK_SESSION_IS_PRIVATE() then
-            return "Privat"
-        end
-        if NETWORK.NETWORK_SESSION_IS_CLOSED_FRIENDS() then
-            return "Priends"
-        end
-        if NETWORK.NETWORK_SESSION_IS_CLOSED_CREW() then
-            return "Crew"
-        end
-        if NETWORK.NETWORK_SESSION_IS_SOLO() then
-            return "Solo"
-        end
-        return "Public"
-    end
-    return "Singleplayer"
 end
 
 local function get_session_code()
@@ -646,8 +655,7 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
 end
 
 local function thunderForMin(min)
-    if IsInSession() then
-        menu.trigger_commands("scripthost")
+    if transitionState(true) == 1 then
         menu.trigger_commands("thunderon")
         notify("Thunder starts.")
         local startTimestamp = os.time()
@@ -661,9 +669,6 @@ local function thunderForMin(min)
             util.yield(60000) -- one minute
         end
         notify("Thunder stops.")
-        if IsInSession() then
-            menu.trigger_commands("scripthost")
-        end
         menu.trigger_commands("thunderoff")
     end
 end
@@ -700,9 +705,9 @@ local function get_Street_Names(x, y, z)
     }
 end
 
-local function Wait_for_IsInSession()
+local function Wait_for_transitionState()
     local ses_cod = get_session_code()
-    while not IsInSession() and ses_cod == get_session_code() do
+    while transitionState(true) > 2 and ses_cod == get_session_code() do
         util.yield(666)
     end
     if ses_cod == get_session_code() then
@@ -714,10 +719,10 @@ local function StrategicKick(pid)
     if player_Exist(pid) and pid ~= players.user() then
         local name = players.get_name(pid)
         if name ~= players.get_name(players.user()) then
-            if not IsInSession() then
+            if transitionState(true) ~= 1 then
                 menu.trigger_commands("kick " .. name)
                 NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
-                Wait_for_IsInSession()
+                Wait_for_transitionState()
             else
                 if menu.get_edition() > 1 then
                     if players.user() == players.get_host() then
@@ -728,21 +733,17 @@ local function StrategicKick(pid)
                         end
                     else
                         menu.trigger_commands("kick " .. name)
-                        if IsInSession() then
-                            menu.trigger_commands("ignore " .. name .. " on")
-                            menu.trigger_commands("desync " .. name .. " on")
-                            menu.trigger_commands("blocksync " .. name .. " on")
-                            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
-                        end
-                    end
-                else
-                    menu.trigger_commands("kick " .. name)
-                    if IsInSession() then
                         menu.trigger_commands("ignore " .. name .. " on")
                         menu.trigger_commands("desync " .. name .. " on")
                         menu.trigger_commands("blocksync " .. name .. " on")
                         NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
                     end
+                else
+                    menu.trigger_commands("kick " .. name)
+                    menu.trigger_commands("ignore " .. name .. " on")
+                    menu.trigger_commands("desync " .. name .. " on")
+                    menu.trigger_commands("blocksync " .. name .. " on")
+                    NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
                 end
             end
         end
@@ -840,7 +841,7 @@ end
 --[[
 menu.action(PIP_Girl_Heist, 'Cayo 1 Player Preset (!)', {}, "", function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'Want to set up cayo?', function()
-        if IsInSession() then
+        if transitionState(true) == 1 then
             CayoBasics()
             STAT_SET_INT("H4LOOT_CASH_I", 4227216)
             STAT_SET_INT("H4LOOT_CASH_I_SCOPED", 4227216)
@@ -906,7 +907,7 @@ end)
 
 menu.action(PIP_Girl_Heist, 'Cayo 2 Player 50/50 Preset (!)', {}, "", function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'Want to set up cayo?', function()
-        if IsInSession() then
+        if transitionState(true) == 1 then
             CayoBasics()
             STAT_SET_INT("H4LOOT_CASH_I", 4227216)
             STAT_SET_INT("H4LOOT_CASH_I_SCOPED", 4227216)
@@ -972,7 +973,7 @@ end)
 
 menu.action(PIP_Girl_Heist, 'Cayo 3 Player 30/35/35 Preset (!)', {}, "", function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'Want to set up cayo?', function()
-        if IsInSession() then
+        if transitionState(true) == 1 then
             CayoBasics()
             STAT_SET_INT("H4LOOT_CASH_I", 4227216)
             STAT_SET_INT("H4LOOT_CASH_I_SCOPED", 4227216)
@@ -1038,7 +1039,7 @@ end)
 
 menu.action(PIP_Girl_Heist, 'Cayo 4 Player 25/25/25/25 Preset (!)', {}, "", function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'Want to set up cayo?', function()
-        if IsInSession() then
+        if transitionState(true) == 1 then
             CayoBasics()
             STAT_SET_INT("H4LOOT_CASH_I", 4227216)
             STAT_SET_INT("H4LOOT_CASH_I_SCOPED", 4227216)
@@ -1103,7 +1104,7 @@ menu.action(PIP_Girl_Heist, 'Cayo 4 Player 25/25/25/25 Preset (!)', {}, "", func
 end)
 ]]--
 menu.toggle_loop(PIP_Girl, "Nightclub Party Never Stops!", {'ncpop'}, "The hottest NC in whole LS.\nKeeps you pop at 90-100%", function ()
-    if IsInSession() then
+    if transitionState(true) == 1 then
         local ncpop = math.floor(STAT_GET_INT('CLUB_POPULARITY') / 10)
         if ncpop < 88 then
             menu.trigger_commands('clubpopularity 100')
@@ -1120,7 +1121,7 @@ menu.divider(PIP_Girl, "CEO/MC Options")
 --local ceo_color_slot_found = nil
 --local first_ceo_color_check = true
 --local function check_CEO_Color(ceo_color)
---    if IsInSession() then
+--    if transitionState() then
 --        local user_org_color = players.get_org_colour(players.user())
 --        if user_org_color ~= ceo_color then
 --            if first_ceo_color_check then
@@ -1168,7 +1169,7 @@ local invitefriendsinceo = false
 local ceo_ses_code = nil
 local lastCeoName = nil
 menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yourself as CEO and auto switches you to MC/CEO in most situations needed.", function()
-    if IsInSession() then
+    if transitionState(true) == 1 then
         local uniqueColors = {}  -- Table to store unique organization colors
         for players.list() as pid do
             if players.get_boss(pid) ~= -1 then
@@ -1269,7 +1270,7 @@ end)
 --end)
 --
 --menu.toggle_loop(PIP_Girl, "Additional CEO/MC Color Checks.", {""}, "If u use \"Auto Become a CEO/MC\" it will check for u color on register.\nIf u dont use \"Auto Become a CEO/MC\" u can use Additinal Checks.", function(on)
---    if IsInSession() and players.get_boss(players.user()) ~= -1 and players.user() == players.get_script_host() then
+--    if transitionState() and players.get_boss(players.user()) ~= -1 and players.user() == players.get_script_host() then
 --        if ceo_color ~= -1 then
 --            check_CEO_Color(ceo_color)
 --        end
@@ -1303,25 +1304,26 @@ local function inviteToCEO(pid)
 end
 
 menu.action(PIP_Girl, "Invite All Friends in CEO/MC", {"invceo"}, "Invites all your friends into your CEO/MC.", function()
-    if IsInSession() then
-        for players.list() as pid do
-            if isFriend(pid) and players.get_boss(pid) == -1 then
-                inviteToCEO(pid)
-            end
-        end
-        util.yield(3666)
-        for players.list() as pid do
-            if isFriend(pid) and players.get_boss(pid) == -1 then
-                inviteToCEO(pid)
-            end
-        end
-        util.yield(3666)
-        for players.list() as pid do
-            if isFriend(pid) and players.get_boss(pid) == -1 then
-                inviteToCEO(pid)
-            end
-        end
-    end
+    --if transitionState() then
+    --    for players.list() as pid do
+    --        if isFriend(pid) and players.get_boss(pid) == -1 then
+    --            inviteToCEO(pid)
+    --        end
+    --    end
+    --    util.yield(3666)
+    --    for players.list() as pid do
+    --        if isFriend(pid) and players.get_boss(pid) == -1 then
+    --            inviteToCEO(pid)
+    --        end
+    --    end
+    --    util.yield(3666)
+    --    for players.list() as pid do
+    --        if isFriend(pid) and players.get_boss(pid) == -1 then
+    --            inviteToCEO(pid)
+    --        end
+    --    end
+    --end
+    notify("This dosnt work right now sorry :C")
 end)
 
 menu.divider(PIP_Girl, "Pickup Options")
@@ -1333,7 +1335,6 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all pickups on yo
         local playerPed = PLAYER.PLAYER_PED_ID()
         for entities.get_all_pickups_as_handles() as pickup do
             if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
-                requestControl(pickup, 0)
                 util.yield(111)
                 ENTITY.ATTACH_ENTITY_TO_ENTITY(pickup, playerPed, PED.GET_PED_BONE_INDEX(playerPed, 24818), 0.0, -0.3, 0.0, 0.0, 90, 0.0, true, true, false, true, 1, true, 1)
                 table.insert(carryingPickups, pickup)
@@ -1347,7 +1348,6 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all pickups on yo
         local pos = players.get_position(players.user())
         for ipairs(carryingPickups) as pickup do
             if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
-                requestControl(pickup, 0)
                 util.yield(13)
                 ENTITY.DETACH_ENTITY(pickup, true, true)
                 util.yield(13)
@@ -1363,7 +1363,7 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all pickups on yo
 end)
 
 menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a shower in all existing pickups.", function()
-    if IsInSession() then
+    if transitionState(true) == 1 then
         local pos = players.get_position(players.user())
         local in_vehicle = is_user_driving_vehicle()
         for entities.get_all_pickups_as_handles() as pickup do
@@ -1386,12 +1386,11 @@ menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a shower in all existing p
 end)
 
 menu.action(PIP_Girl, "Teleport Pickups To Me", {"tppickups"}, "Teleports all pickups to you.\nNote this doesn't work in all situations.", function(click_type)
-    if IsInSession() then
+    if transitionState(true) == 1 then
         local counter = 0
         local pos = players.get_position(players.user())
         for entities.get_all_pickups_as_handles() as pickup do
             if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
-                requestControl(pickup, 0)
                 util.yield(13)
                 ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z-0.8, false, false, false, false)
                 util.yield(13)
@@ -1410,16 +1409,16 @@ end)
 menu.divider(Stimpak, "Player Related Health")
 
 local regen_all = Stimpak:action("Refill Health & Armour",{"newborn"},"Regenerate to max your health and armour.",function()
-    if IsInSession() then
+    if transitionState(true) < 3  then
         menu.trigger_commands("refillhealth")
         menu.trigger_commands("refillarmour")
     end
 end)
 
-local filled_up = false
+local filled_up = true
 local fillup_size = (120000000 - 5000) + 117623144 - 3000 + 2000 + 6000
 menu.toggle_loop(Stimpak, "Fill me up! On session join", {"pgfmu"}, "Fill you up with health, armor, snacks, and ammo on session join.", function()
-    if IsInSession() and not filled_up then
+    if transitionState(true) == 1 and not filled_up then
         util.yield(13666)
         menu.trigger_command(regen_all)
         menu.trigger_commands("fillinventory")
@@ -1429,7 +1428,7 @@ menu.toggle_loop(Stimpak, "Fill me up! On session join", {"pgfmu"}, "Fill you up
             menu.trigger_commands("friction on")
         end
     end
-    if not IsInSession() then
+    if transitionState(true) ~= 1 then
         filled_up = false
     end
     util.yield(6666)
@@ -1437,7 +1436,7 @@ end)
 
 local dead = 0
 menu.toggle_loop(Stimpak, "Auto Armor after Death",{"pgblessing"},"A body armor will be applied automatically when respawning.", function()
-    if IsInSession() then
+    if transitionState(true) < 3 then
         local health = ENTITY.GET_ENTITY_HEALTH(players.user_ped())
         if health == 0 and dead == 0 then
             dead = 1
@@ -1452,7 +1451,7 @@ menu.toggle_loop(Stimpak, "Auto Armor after Death",{"pgblessing"},"A body armor 
 end)
 
 menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehicle", {"pghealth"}, "Will recharge health when in cover or vehicle quickly.\nBUT also slowly, almost legit-like, otherwise to 100%.", function()
-    if IsInSession() then
+    if transitionState(true) < 3 then
         local in_vehicle = is_user_driving_vehicle()
         local playerPed = players.user_ped()
         local isPlayerInCover = PED.IS_PED_IN_COVER(playerPed, false)
@@ -1474,7 +1473,7 @@ end)
 
 menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle", {"pgarmor"}, "Will Recharge Armor when in Cover or Vehicle quickly.\nBUT also slowly otherwise to 100%.", function()
     local cmd_path = "Self>Regeneration Rate>Armour"
-    if IsInSession() then
+    if transitionState(true) < 3 then
         local in_vehicle = is_user_driving_vehicle()
         local playerPed = players.user_ped()
         local isPlayerInCover = PED.IS_PED_IN_COVER(playerPed, false)
@@ -1510,7 +1509,7 @@ end)
 
 local was_user_in_vehicle = false
 menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {"pgvaid"}, "Using your First Aid kit provided in your vehicle.", function()
-    if IsInSession() then
+    if transitionState(true) < 3 then
         local in_vehicle = is_user_driving_vehicle()
         local health = ENTITY.GET_ENTITY_HEALTH(players.user_ped())
         if health ~= 0 then
@@ -1529,7 +1528,7 @@ menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {"pgva
 end)
 
 menu.toggle_loop(Stimpak, "Oxygen", {"pgbreath"}, "Just breath.\nAlso gives u Movement and light from Scuba gear without having one equiped.", function()
-    if IsInSession() then
+    if transitionState(true) < 3 then
         if ENTITY.IS_ENTITY_IN_WATER(players.user_ped()) then
             PED.SET_ENABLE_SCUBA(players.user_ped(), true)
             PED.ENABLE_MP_LIGHT(players.user_ped(), true)
@@ -1719,7 +1718,7 @@ local function SetInZoneTimer()
     wasInZone = false
 end
 menu.toggle_loop(Stimpak, "Lea's Repair Stop", {"lears"}, "", function()
-    if IsInSession() then
+    if transitionState(true) == 1 then
         local playerPosition = players.get_position(players.user())
         if not blipsCreated then
             remove_blips()
@@ -1790,7 +1789,7 @@ end)
 menu.divider(Stimpak, "Testing Stuff")
 
 menu.toggle_loop(Stimpak, "(DEBUG) Lea Tech", {""}, "", function()
-    if IsInSession() then
+    if transitionState(true) < 3 then
         local vehicle = get_user_vehicle()
         if vehicle then
             local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
@@ -1808,7 +1807,7 @@ menu.toggle_loop(Stimpak, "(DEBUG) Lea Tech", {""}, "", function()
 end)
 
 menu.action(Stimpak, "(DEBUG) Set Armor/Health to Low", {"dearmor"}, "This is for testing Purpose!\nTurn the options above on and Click this to test them out!", function()
-    if IsInSession() then
+    if transitionState(true) > 3 then
         PED.SET_PED_ARMOUR(players.user_ped(), 0)
         local maxHealth = ENTITY.GET_ENTITY_MAX_HEALTH(players.user_ped())
         local newHealth = math.floor(maxHealth * 0.5)
@@ -1956,7 +1955,7 @@ local saved_trailer_id = nil
 local isInVehicle = false
 menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle, and gives it some modern enhancements.", function()
     local cmd_path = "Vehicle>Light Signals>Use Brake Lights When Stopped"
-    if IsInSession() then
+    if transitionState(true) == 1 then
         if menu.get_state(menu.ref_by_path(cmd_path)) ~= "On" then
             menu.trigger_commands("brakelights on")
         end
@@ -2140,7 +2139,7 @@ end)
 menu.toggle_loop(Vehicle, "Set vehicle light color automatically",{"autocarlights"},"Automatically set your favorite vehicle color for vehicles with default lights.\nDefault lights: 0 & 1 | Color lights: 2-14",function()
     util.yield(420)
     if vehicleFavColor ~= 0 then
-        if IsInSession() then
+        if transitionState(true) < 3 then
             local vehicle = get_user_vehicle()
             if vehicle then
                 if entities.get_owner(vehicle) == players.user() then
@@ -2167,7 +2166,7 @@ menu.divider(Vehicle, "Else")
 
 local sparrowHandeling = nil
 menu.toggle_loop(Vehicle, "Heli Sparrow Handling",{""},"All helicopters you enter fly like a sparrow.",function()
-    if IsInSession() then
+    if transitionState(true) < 3 then
         local vehicle = get_user_vehicle()
         if vehicle then
             if VEHICLE.GET_VEHICLE_CLASS(vehicle) == 15 then
@@ -2289,7 +2288,7 @@ end)
 
 local oppressorHandeling = nil
 menu.toggle_loop(Vehicle, "Easier Oppressor MK2 UD Handling",{""},"Makes Upside down little easier, good for lea(-rning).",function()
-    if IsInSession() then
+    if transitionState(true) < 3 then
         local vehicle = get_user_vehicle()
         if vehicle then
             if entities.get_model_hash(vehicle) == 2069146067 then
@@ -2558,7 +2557,7 @@ local avoidCutsceneSkipHere = {
     { x = 819.66, y = -2206.27, z = 30.95 }, -- Cassino Hatch
 }
 menu.toggle_loop(Game, "Auto Skip Cutscene", {"pgascut"}, "Automatically skip all cutscenes.", function()
-    if IsInSession() and CUTSCENE.IS_CUTSCENE_PLAYING() then
+    if transitionState(true) < 3 and CUTSCENE.IS_CUTSCENE_PLAYING() then
         local playerPosition = players.get_position(players.user())
         local skipCutscene = true
 
@@ -2799,7 +2798,7 @@ local function espOnPlayer(pid, namesync)
 end
 
 menu.toggle_loop(Game, "Name ESP", {"pgesp"}, "ESP", function ()
-    if IsInSession() then
+    if transitionState(true) == 1 then
         local playerlist = players.list(false, true, true)
         for i = 1, #playerlist do
             espOnPlayer(playerlist[i])
@@ -3008,7 +3007,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             if session_claimer_kd then
                 local players_with_kd = 0
                 for players.list(false, false, true) as pid do
-                    while not IsInSession() do
+                    while transitionState() == 3 do
                         if session_type() == "Singleplayer" then
                             util.yield(19666)
                             notify("U r in Story Mode ? Getting u online.")
@@ -3034,7 +3033,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             if session_claimer_lvl then
                 local players_with_lvl = 0
                 for players.list(false, false, true) as pid do
-                    while not IsInSession() do
+                    while transitionState() == 3 do
                         if session_type() == "Singleplayer" then
                             util.yield(19666)
                             notify("U r in Story Mode ? Getting u online.")
@@ -3067,7 +3066,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 --  If Session remains in a Claim-able state.
                 --  <3
                 if (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
-                    while not IsInSession() do
+                    while transitionState() == 3 do
                         if session_type() == "Singleplayer" then
                             util.yield(19666)
                             notify("U r in Story Mode ? Getting u online.")
@@ -3075,7 +3074,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                         end
                         util.yield(666)
                     end
-                    menu.trigger_commands("superclean")
+                    menu.trigger_commands("sclean")
                     util.yield(3666)
                     --  <3
                     --  Claim Session.
@@ -3245,7 +3244,7 @@ menu.action(Session, "Create \"Friend's\" Group", {"createfriendsgroup"}, "Creat
 end)
 
 menu.action(Session, "Invite Friend's", {"invitefriends"}, "invite all friends.", function()
-    if IsInSession() then
+    if transitionState(true) == 1 then
         local invited = 0
         if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Friend's")) then
             for menu.ref_by_path("Online>Player History>Noted Players>Friend's"):getChildren() as friend do
@@ -3378,7 +3377,7 @@ local shrineElements = {
 }
 local Leas_shrine_blip = nil
 menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Blocks the MK2 access", function()
-    if IsInSession() then
+    if transitionState(true) < 3 then
         if not Leas_shrine_blip then
             Leas_shrine_blip = HUD.ADD_BLIP_FOR_COORD(-1812.212, -127.127, 80.265)
             HUD.SET_BLIP_SPRITE(Leas_shrine_blip, "617")
@@ -3493,7 +3492,7 @@ end)
 local SessionMisc = menu.list(Session, 'Misc', {}, 'Session Misc.', function(); end)
 
 menu.toggle_loop(SessionMisc, "Kick Aggressive Host Token on Attack", {""}, "", function()
-    if IsInSession() then
+    if transitionState(true) < 3 then
         for players.list() as pid do
             if aggressive(pid) and not isFriend(pid) and players.is_marked_as_attacker(pid) then
                 StrategicKick(pid)
@@ -3535,7 +3534,7 @@ menu.action(SessionMisc, "Copy Discord Session invite link.", {"invitelink"}, ""
 end)
 
 menu.action(SessionMisc, "de-Ghost entire Session", {""}, "", function()
-    if IsInSession() then
+    if transitionState(true) == 1 then
         for players.list() as pid do
             NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
         end
@@ -3631,7 +3630,7 @@ local function isFriendStuck()
 end
 
 menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
-    if IsInSession() then
+    if transitionState(true) == 1 then
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
             if players.user() == players.get_host() or (players.user() == players.get_script_host() and (not isFriend(players.get_host()) and not isModder(players.get_host()))) then
                 if not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
@@ -3720,7 +3719,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
 end)
 
 menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"}, "Ghost everyone who is a god mode except Friends.\nIf they are not god anymore , it will de-ghost", function()
-    if IsInSession() then
+    if transitionState(true) == 1 then
         for players.list_except(true) as pid do
             if not isFriend(pid) then
                 if players.is_godmode(pid) and not players.is_in_interior(pid) and not players.is_using_rc_vehicle(pid) then
@@ -3758,7 +3757,7 @@ end, function()
 end)
 
 menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisible for the whole session, but with a nice effect for ppl close by.", function()
-    if IsInSession() then
+    if transitionState(true) == 1 then
         playerPosition = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(players.user_ped(), 0, -23.0, 2)
         local cmd_path = "Vehicle>Countermeasures>Only In Aircraft"
         warnify_ses("T-5 sec. Start on \"GO!\"")
@@ -4091,7 +4090,7 @@ player_menu = function(pid)
         crashlistConfig()
     end)
     menu.toggle_loop(Bad_Modder, "Ghost Player", {""}, "Ghost the selected player.", function()
-        if IsInSession() and player_Exist(pid) then
+        if transitionState(true) == 1 and player_Exist(pid) then
             NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
         end
         util.yield(666)
