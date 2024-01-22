@@ -1164,6 +1164,14 @@ local function on_change(input_str, click_type)
     urceoname = input_str
 end
 menu.text_input(PIP_Girl, "CEO Name", {"pgceoname"}, "(Also works for MC) You can press Ctrl+U and select colors, but no special GTA icons, sadly.", on_change)
+local organization_type = "CEO"
+menu.list_select(PIP_Girl, "Org Type", {}, "", {
+    {1, "CEO"},
+    {2, "MC"},
+}, 1, function(value, menu_name, prev_value, click_type)
+    organization_type = menu_name
+    notify("Next \"Auto Become a CEO/MC\" Register as a :"..menu_name)
+end)
 local joinfriendsceo = false
 local invitefriendsinceo = false
 local ceo_ses_code = nil
@@ -1197,7 +1205,7 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yo
                 end
             end
             if players.get_boss(players.user()) == -1 then
-                organization_control("CEO")
+                organization_control(organization_type)
                 util.yield(13666)
             end
             local CEOLabels = {
