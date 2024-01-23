@@ -1420,7 +1420,7 @@ end)
 menu.divider(Stimpak, "Player Related Health")
 
 local regen_all = Stimpak:action("Refill Health & Armour",{"newborn"},"Regenerate to max your health and armour.",function()
-    if transitionState(true) < 3  then
+    if transitionState(true) <3  then
         menu.trigger_commands("refillhealth")
         menu.trigger_commands("refillarmour")
     end
@@ -1447,7 +1447,7 @@ end)
 
 local dead = 0
 menu.toggle_loop(Stimpak, "Auto Armor after Death",{"pgblessing"},"A body armor will be applied automatically when respawning.", function()
-    if transitionState(true) < 3 then
+    if transitionState(true) <3 then
         local health = ENTITY.GET_ENTITY_HEALTH(players.user_ped())
         if health == 0 and dead == 0 then
             dead = 1
@@ -1462,7 +1462,7 @@ menu.toggle_loop(Stimpak, "Auto Armor after Death",{"pgblessing"},"A body armor 
 end)
 
 menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehicle", {"pghealth"}, "Will recharge health when in cover or vehicle quickly.\nBUT also slowly, almost legit-like, otherwise to 100%.", function()
-    if transitionState(true) < 3 then
+    if transitionState(true) <3 then
         local in_vehicle = is_user_driving_vehicle()
         local playerPed = players.user_ped()
         local isPlayerInCover = PED.IS_PED_IN_COVER(playerPed, false)
@@ -1484,7 +1484,7 @@ end)
 
 menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle", {"pgarmor"}, "Will Recharge Armor when in Cover or Vehicle quickly.\nBUT also slowly otherwise to 100%.", function()
     local cmd_path = "Self>Regeneration Rate>Armour"
-    if transitionState(true) < 3 then
+    if transitionState(true) <3 then
         local in_vehicle = is_user_driving_vehicle()
         local playerPed = players.user_ped()
         local isPlayerInCover = PED.IS_PED_IN_COVER(playerPed, false)
@@ -1520,7 +1520,7 @@ end)
 
 local was_user_in_vehicle = false
 menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {"pgvaid"}, "Using your First Aid kit provided in your vehicle.", function()
-    if transitionState(true) < 3 then
+    if transitionState(true) <3 then
         local in_vehicle = is_user_driving_vehicle()
         local health = ENTITY.GET_ENTITY_HEALTH(players.user_ped())
         if health ~= 0 then
@@ -1539,7 +1539,7 @@ menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {"pgva
 end)
 
 menu.toggle_loop(Stimpak, "Oxygen", {"pgbreath"}, "Just breath.\nAlso gives u Movement and light from Scuba gear without having one equiped.", function()
-    if transitionState(true) < 3 then
+    if transitionState(true) <3 then
         if ENTITY.IS_ENTITY_IN_WATER(players.user_ped()) then
             PED.SET_ENABLE_SCUBA(players.user_ped(), true)
             PED.ENABLE_MP_LIGHT(players.user_ped(), true)
@@ -1800,7 +1800,7 @@ end)
 menu.divider(Stimpak, "Testing Stuff")
 
 menu.toggle_loop(Stimpak, "(DEBUG) Lea Tech", {""}, "", function()
-    if transitionState(true) < 3 then
+    if transitionState(true) <3 then
         local vehicle = get_user_vehicle()
         if vehicle then
             local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
@@ -1818,7 +1818,7 @@ menu.toggle_loop(Stimpak, "(DEBUG) Lea Tech", {""}, "", function()
 end)
 
 menu.action(Stimpak, "(DEBUG) Set Armor/Health to Low", {"dearmor"}, "This is for testing Purpose!\nTurn the options above on and Click this to test them out!", function()
-    if transitionState(true) > 3 then
+    if transitionState(true) <3 then
         PED.SET_PED_ARMOUR(players.user_ped(), 0)
         local maxHealth = ENTITY.GET_ENTITY_MAX_HEALTH(players.user_ped())
         local newHealth = math.floor(maxHealth * 0.5)
@@ -2151,7 +2151,7 @@ end)
 menu.toggle_loop(Vehicle, "Set vehicle light color automatically",{"autocarlights"},"Automatically set your favorite vehicle color for vehicles with default lights.\nDefault lights: 0 & 1 | Color lights: 2-14",function()
     util.yield(420)
     if vehicleFavColor ~= 0 then
-        if transitionState(true) < 3 then
+        if transitionState(true) <3 then
             local vehicle = get_user_vehicle()
             if vehicle then
                 if entities.get_owner(vehicle) == players.user() then
@@ -2178,7 +2178,7 @@ menu.divider(Vehicle, "Else")
 
 local sparrowHandeling = nil
 menu.toggle_loop(Vehicle, "Heli Sparrow Handling",{""},"All helicopters you enter fly like a sparrow.",function()
-    if transitionState(true) < 3 then
+    if transitionState(true) <3 then
         local vehicle = get_user_vehicle()
         if vehicle then
             if VEHICLE.GET_VEHICLE_CLASS(vehicle) == 15 then
@@ -2300,7 +2300,7 @@ end)
 
 local oppressorHandeling = nil
 menu.toggle_loop(Vehicle, "Easier Oppressor MK2 UD Handling",{""},"Makes Upside down little easier, good for lea(-rning).",function()
-    if transitionState(true) < 3 then
+    if transitionState(true) <3 then
         local vehicle = get_user_vehicle()
         if vehicle then
             if entities.get_model_hash(vehicle) == 2069146067 then
@@ -2569,7 +2569,7 @@ local avoidCutsceneSkipHere = {
     { x = 819.66, y = -2206.27, z = 30.95 }, -- Cassino Hatch
 }
 menu.toggle_loop(Game, "Auto Skip Cutscene", {"pgascut"}, "Automatically skip all cutscenes.", function()
-    if transitionState(true) < 3 and CUTSCENE.IS_CUTSCENE_PLAYING() then
+    if transitionState(true) <3 and CUTSCENE.IS_CUTSCENE_PLAYING() then
         local playerPosition = players.get_position(players.user())
         local skipCutscene = true
 
@@ -2974,7 +2974,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         --  Waiting to Join a Session
         --  <3
         local join_timeout = os.time()
-        while not util.is_session_started() do
+        while transitionState(true) < 2 do
             if os.time() - join_timeout > 13 then
                 break
             end
@@ -2992,7 +2992,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     menu.trigger_commands("go public")
                 end
             end
-            if util.is_session_transition_active() then
+            if transitionState(true) < 2 then
                 util.yield(3666)
                 if PLAYER.GET_NUMBER_OF_PLAYERS() >= 1 then
                     break
@@ -3017,22 +3017,24 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             --  Additional Filter.
             --  <3
             if session_claimer_kd then
+                while transitionState(true) <3 do
+                    if session_type() == "Singleplayer" then
+                        util.yield(19666)
+                        notify("U r in Story Mode ? Getting u online.")
+                        menu.trigger_commands("go public")
+                    end
+                    util.yield(666)
+                end
                 local players_with_kd = 0
                 for players.list(false, false, true) as pid do
-                    while transitionState() == 3 do
-                        if session_type() == "Singleplayer" then
-                            util.yield(19666)
-                            notify("U r in Story Mode ? Getting u online.")
-                            menu.trigger_commands("go public")
-                        end
-                        util.yield(666)
-                    end
-                    if (players_with_kd < session_claimer_kd_target_players) then
-                        if not isModder(pid) then
-                            local kd = players.get_kd(pid) -- Get the K/D value
-                            local kd_integer = math.floor(kd) -- Extract the integer part
-                            if kd_integer >= session_claimer_kd_target then
-                                players_with_kd = players_with_kd + 1
+                    if players.are_stats_ready(pid) then
+                        if (players_with_kd < session_claimer_kd_target_players) then
+                            if not isModder(pid) then
+                                local kd = players.get_kd(pid) -- Get the K/D value
+                                local kd_integer = math.floor(kd) -- Extract the integer part
+                                if kd_integer >= session_claimer_kd_target then
+                                    players_with_kd = players_with_kd + 1
+                                end
                             end
                         end
                     end
@@ -3043,21 +3045,23 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             end
 
             if session_claimer_lvl then
+                while transitionState(true) < 2 do
+                    if session_type() == "Singleplayer" then
+                        util.yield(19666)
+                        notify("U r in Story Mode ? Getting u online.")
+                        menu.trigger_commands("go public")
+                    end
+                    util.yield(666)
+                end
                 local players_with_lvl = 0
                 for players.list(false, false, true) as pid do
-                    while transitionState() == 3 do
-                        if session_type() == "Singleplayer" then
-                            util.yield(19666)
-                            notify("U r in Story Mode ? Getting u online.")
-                            menu.trigger_commands("go public")
-                        end
-                        util.yield(666)
-                    end
-                    if (players_with_lvl < session_claimer_lvl_target_players) then
-                        if not isModder(pid) then
-                            local lvl = players.get_rank(pid)
-                            if lvl >= session_claimer_lvl_target then
-                                players_with_lvl = players_with_lvl + 1
+                    if players.are_stats_ready(pid) then
+                        if (players_with_lvl < session_claimer_lvl_target_players) then
+                            if not isModder(pid) then
+                                local lvl = players.get_rank(pid)
+                                if lvl >= session_claimer_lvl_target then
+                                    players_with_lvl = players_with_lvl + 1
+                                end
                             end
                         end
                     end
@@ -3078,7 +3082,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 --  If Session remains in a Claim-able state.
                 --  <3
                 if (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
-                    while transitionState() == 3 do
+                    while transitionState(true) < 2 do
                         if session_type() == "Singleplayer" then
                             util.yield(19666)
                             notify("U r in Story Mode ? Getting u online.")
@@ -3237,6 +3241,8 @@ menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join 
     util.yield()
 end)
 
+local SessionJoin = menu.list(Session, 'Join Settings.', {}, 'Session Join Settings.', function(); end)
+
 local SessionWorld = menu.list(Session, 'World', {}, 'Session World Manipulation.', function(); end)
 
 local orbRoomGlass = nil
@@ -3350,7 +3356,7 @@ local shrineElements = {
 }
 local Leas_shrine_blip = nil
 menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Blocks the MK2 access", function()
-    if transitionState(true) < 3 then
+    if transitionState(true) <3 then
         if not Leas_shrine_blip then
             Leas_shrine_blip = HUD.ADD_BLIP_FOR_COORD(-1812.212, -127.127, 80.265)
             HUD.SET_BLIP_SPRITE(Leas_shrine_blip, "617")
@@ -3496,7 +3502,7 @@ menu.action(SessionMisc, "Invite Friend's", {"invitefriends"}, "invite all frien
 end)
 
 menu.toggle_loop(SessionMisc, "Kick Aggressive Host Token on Attack", {""}, "", function()
-    if transitionState(true) < 3 then
+    if transitionState(true) <3 then
         for players.list() as pid do
             if aggressive(pid) and not isFriend(pid) and players.is_marked_as_attacker(pid) then
                 StrategicKick(pid)
