@@ -2973,7 +2973,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         --  Waiting to Join a Session
         --  <3
         local join_timeout = os.time()
-        while transitionState(true) < 2 do
+        while transitionState(true) > 2 do
             if os.time() - join_timeout > 13 then
                 break
             end
@@ -3016,7 +3016,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             --  Additional Filter.
             --  <3
             if session_claimer_kd then
-                while transitionState(true) <3 do
+                while transitionState(true) > 2 do
                     if session_type() == "Singleplayer" then
                         util.yield(19666)
                         notify("U r in Story Mode ? Getting u online.")
@@ -3044,7 +3044,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             end
 
             if session_claimer_lvl then
-                while transitionState(true) < 2 do
+                while transitionState(true) > 2 do
                     if session_type() == "Singleplayer" then
                         util.yield(19666)
                         notify("U r in Story Mode ? Getting u online.")
@@ -3081,7 +3081,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 --  If Session remains in a Claim-able state.
                 --  <3
                 if (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
-                    while transitionState(true) < 2 do
+                    while transitionState(true) > 1 do
                         if session_type() == "Singleplayer" then
                             util.yield(19666)
                             notify("U r in Story Mode ? Getting u online.")
