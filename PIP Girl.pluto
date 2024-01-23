@@ -3225,6 +3225,25 @@ menu.divider(Session, "<3")
 --    end
 --end, group_name)
 
+local SessionJoin = menu.list(Session, 'Join Settings', {}, 'Session Join Settings.', function(); end)
+
+local SessionJoinPos = menu.list(SessionJoin, 'Custom Join Position', {}, 'Position Join Settings.', function(); end)
+
+menu.toggle(Session, "Quick Session Join", {"quickjoin"}, " Please Set you're Spawn to \"Last Location\" or \"Random\".\nQuick Session Joining.", function(on)
+    if on then
+        menu.trigger_commands("skipbroadcast on")
+        menu.trigger_commands("speedupfmmc on")
+        menu.trigger_commands("speedupspawn on")
+        menu.trigger_commands("skipswoopdown on")
+        warnify("Set you're Spawn to \"Last Location\" or \"Random\".")
+    else
+        menu.ref_by_path("Online>Transitions>Speed Up>Don't Wait For Data Broadcast"):applyDefaultState()
+        menu.ref_by_path("Online>Transitions>Speed Up>Don't Wait For Mission Launcher"):applyDefaultState()
+        menu.ref_by_path("Online>Transitions>Speed Up>Don't Ask For Permission To Spawn"):applyDefaultState()
+        menu.ref_by_path("Online>Transitions>Skip Swoop Down"):applyDefaultState()
+    end
+end)
+
 menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join Invite only\nIf R* Admin Detected", function()
     if util.is_session_started() then
         for players.list_except(true) as pid do
@@ -3240,8 +3259,6 @@ menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join 
     end
     util.yield()
 end)
-
-local SessionJoin = menu.list(Session, 'Join Settings.', {}, 'Session Join Settings.', function(); end)
 
 local SessionWorld = menu.list(Session, 'World', {}, 'Session World Manipulation.', function(); end)
 
@@ -4244,8 +4261,7 @@ menu.action(menu.my_root(), "Activate Everyday Goodies", {"pggoodies"}, "Activat
 end)
 
 menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
-    --notify(startupmsg)
-    notify(transitionState(false), transitionState(true))
+    notify(startupmsg)
 end)
 
 menu.trigger_commands("antiadmin")
