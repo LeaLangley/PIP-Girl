@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.119"
+local SCRIPT_VERSION = "1.120"
 
 local startupmsg = "If settings are missing PLS restart lua.\n\nLea Tech on top!\n\nImproved and Lea-rned alot.\nI love u."
 
@@ -1161,10 +1161,9 @@ menu.divider(PIP_Girl, "CEO/MC Options")
 --    end
 --end
 
-local function on_change(input_str, click_type)
+menu.text_input(PIP_Girl, "CEO Name", {"pgceoname"}, "(Also works for MC) You can press Ctrl+U and select colors, but no special GTA icons, sadly.", function(input_str, click_type)
     urceoname = input_str
-end
-menu.text_input(PIP_Girl, "CEO Name", {"pgceoname"}, "(Also works for MC) You can press Ctrl+U and select colors, but no special GTA icons, sadly.", on_change)
+end)
 local organization_type = "CEO"
 menu.list_select(PIP_Girl, "Org Type", {}, "", {
     {1, "CEO"},
@@ -3227,7 +3226,41 @@ menu.divider(Session, "<3")
 
 local SessionJoin = menu.list(Session, 'Join Settings', {}, 'Session Join Settings.', function(); end)
 
-local SessionJoinPos = menu.list(SessionJoin, 'Custom Join Position', {}, 'Position Join Settings.', function(); end)
+local customspawned = true
+local customspawn = v3.new(-1806.73, -126.08, 78.79)
+
+--menu.text_input(SessionJoin, "Custom Spawn", {"customspawnpos"}, "", function(customspawn, click_type)
+--    -- Split the input string into x, y, and z components
+--    local components = {}
+--    for component in customspawn:gmatch("-?%d+%.?%d*") do
+--        table.insert(components, tonumber(component))
+--    end
+--
+--    -- Check if there are three components
+--    if #components == 3 then
+--        customspawn = v3.new(components[1], components[2], components[3])
+--    else
+--        -- Handle invalid input (optional)
+--        print("Invalid input. Please enter three numerical values.")
+--    end
+--end)
+--
+--menu.action(SessionJoin, "Set Custom Spawn", {""}, "", function()
+--    customspawn = players.get_position(players.user())
+--end)
+
+menu.toggle_loop(SessionJoin, "Use Custom Spawn", {""}, "", function()
+    if not customspawned and transitionState(true) <3 then
+        players.teleport_3d(players.user(), customspawn.x, customspawn.y, customspawn.z)
+        if get_user_vehicle() then
+            entities.delete(get_user_vehicle())
+        end
+        customspawned = true
+    end
+    if customspawned and transitionState(true) > 2 then
+        customspawned = false
+    end
+end)
 
 menu.toggle(Session, "Quick Session Join", {"quickjoin"}, " Please Set you're Spawn to \"Last Location\" or \"Random\".\nQuick Session Joining.", function(on)
     if on then
