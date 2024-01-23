@@ -444,7 +444,7 @@ local function getEntryByValue(tbl, value)
 end
 
 local function isStuck(pid)
-    if not transitionState(true) ~= 1 then
+    if transitionState(true) ~= 1 then
         return false
     end
     if pid == players.user() then
@@ -3221,12 +3221,6 @@ menu.divider(Session, "<3 Admin Stuff <3")
 --    end
 --end, group_name)
 
-menu.action(Session, "Create \"Admin\" Group", {""}, "Create a group called \"Admin\"", function()
-    menu.trigger_commands("adminsupdate")
-    util.yield(666)
-    menu.trigger_commands("adminsnote Admin")
-end)
-
 menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join Invite only\nIf R* Admin Detected", function()
     if util.is_session_started() then
         for players.list_except(true) as pid do
@@ -3244,37 +3238,6 @@ menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join 
 end)
 
 menu.divider(Session, "<3")
-
-menu.action(Session, "Create \"Friend's\" Group", {"createfriendsgroup"}, "Create a group called \"Friend's\" , turns on Whitelist and Tracking.", function()
-    menu.trigger_commands("friendsupdate")
-    util.yield(13)
-    menu.trigger_commands("friendsnote Friend's")
-    util.yield(13)
-    menu.trigger_commands("friendstrack")
-    util.yield(13)
-    menu.trigger_commands("friendswhitelist")
-end)
-
-menu.action(Session, "Invite Friend's", {"invitefriends"}, "invite all friends.", function()
-    if transitionState(true) == 1 then
-        local invited = 0
-        if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Friend's")) then
-            for menu.ref_by_path("Online>Player History>Noted Players>Friend's"):getChildren() as friend do
-                local friend_target = friend.target
-                if friend_target:getState() ~= "Offline" then
-                    menu.trigger_command(friend_target:refByRelPath("Invite To Session"))
-                    invited = invited + 1
-                    util.yield(420)
-                end
-            end
-        else
-            notify("Please create a \"Friend's\" group first.\nYou can do that with \"createfriendsgroup\" Command.")
-        end
-        notify("Invited "..invited.." Friends.")
-    else     
-        notify("Wait until you are loaded in.")
-    end
-end)
 
 local SessionWorld = menu.list(Session, 'World', {}, 'Session World Manipulation.', function(); end)
 
@@ -3503,6 +3466,37 @@ end)
 
 local SessionMisc = menu.list(Session, 'Misc', {}, 'Session Misc.', function(); end)
 
+menu.action(SessionMisc, "Create \"Friend's\" Group", {"createfriendsgroup"}, "Create a group called \"Friend's\" , turns on Whitelist and Tracking.", function()
+    menu.trigger_commands("friendsupdate")
+    util.yield(13)
+    menu.trigger_commands("friendsnote Friend's")
+    util.yield(13)
+    menu.trigger_commands("friendstrack")
+    util.yield(13)
+    menu.trigger_commands("friendswhitelist")
+end)
+
+menu.action(SessionMisc, "Invite Friend's", {"invitefriends"}, "invite all friends.", function()
+    if transitionState(true) == 1 then
+        local invited = 0
+        if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Friend's")) then
+            for menu.ref_by_path("Online>Player History>Noted Players>Friend's"):getChildren() as friend do
+                local friend_target = friend.target
+                if friend_target:getState() ~= "Offline" then
+                    menu.trigger_command(friend_target:refByRelPath("Invite To Session"))
+                    invited = invited + 1
+                    util.yield(420)
+                end
+            end
+        else
+            notify("Please create a \"Friend's\" group first.\nYou can do that with \"createfriendsgroup\" Command.")
+        end
+        notify("Invited "..invited.." Friends.")
+    else     
+        notify("Wait until you are loaded in.")
+    end
+end)
+
 menu.toggle_loop(SessionMisc, "Kick Aggressive Host Token on Attack", {""}, "", function()
     if transitionState(true) < 3 then
         for players.list() as pid do
@@ -3552,6 +3546,12 @@ menu.action(SessionMisc, "de-Ghost entire Session", {""}, "", function()
         end
         sussy_god = {}
     end
+end)
+
+menu.action(SessionMisc, "Create \"Admin\" Group", {""}, "Create a group called \"Admin\"", function()
+    menu.trigger_commands("adminsupdate")
+    util.yield(666)
+    menu.trigger_commands("adminsnote Admin")
 end)
 
 menu.action(SessionMisc, "Notify Highest K/D", {"notifykd"}, "Notify's u with the Hightest K/D Players.", function()
@@ -4236,7 +4236,8 @@ menu.action(menu.my_root(), "Activate Everyday Goodies", {"pggoodies"}, "Activat
 end)
 
 menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
-    notify(startupmsg)
+    --notify(startupmsg)
+    notify(transitionState(false), transitionState(true))
 end)
 
 menu.trigger_commands("antiadmin")
