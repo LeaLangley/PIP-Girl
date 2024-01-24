@@ -3227,30 +3227,34 @@ menu.divider(Session, "<3")
 local SessionJoin = menu.list(Session, 'Join Settings', {}, 'Session Join Settings.', function(); end)
 
 local customspawned = true
-local customspawn = v3.new(-1806.73, -126.08, 78.79)
+local customspawn = nil
+local default_spawn = string.format("x:%.2f y:%.2f z:%.2f", -1806.73, -126.08, 78.79)
 
---menu.text_input(SessionJoin, "Custom Spawn", {"customspawnpos"}, "", function(customspawn, click_type)
---    -- Split the input string into x, y, and z components
---    local components = {}
---    for component in customspawn:gmatch("-?%d+%.?%d*") do
---        table.insert(components, tonumber(component))
---    end
---
---    -- Check if there are three components
---    if #components == 3 then
---        customspawn = v3.new(components[1], components[2], components[3])
---    else
---        -- Handle invalid input (optional)
---        print("Invalid input. Please enter three numerical values.")
---    end
---end)
---
---menu.action(SessionJoin, "Set Custom Spawn", {""}, "", function()
---    customspawn = players.get_position(players.user())
---end)
+menu.text_input(SessionJoin, "Spawn", {"customspawnpos"}, "", function(input, default_spawn)
+    local components = {}
+    for component in input:gmatch("-?%d+%.?%d*") do
+        table.insert(components, tonumber(component))
+    end
+    if #components == 3 then
+        customspawn = v3.new(components[1], components[2], components[3])
+    else
+        notify_cmd("Invalid input. Please enter three numerical values.")
+    end
+end, default_spawn)
+
+menu.action(SessionJoin, "Set Custom Spawn", {""}, "", function()
+    currentpos = players.get_position(players.user())
+    customspawn = string.format("x:%.2f y:%.2f z:%.2f", currentpos.x, currentpos.y, currentpos.z)
+    menu.trigger_commands("customspawnpos " .. customspawn)
+end)
 
 menu.toggle_loop(SessionJoin, "Use Custom Spawn", {""}, "", function()
-    if not customspawned and transitionState(true) <3 then
+    if not customspawned and transitionState(true) < 3 then
+        if not customspawn then
+            spwncrd = default_spawn
+        else
+            spwncrd = customspawn
+        end
         players.teleport_3d(players.user(), customspawn.x, customspawn.y, customspawn.z)
         if get_user_vehicle() then
             entities.delete(get_user_vehicle())
@@ -3259,6 +3263,8 @@ menu.toggle_loop(SessionJoin, "Use Custom Spawn", {""}, "", function()
     end
     if customspawned and transitionState(true) > 2 then
         customspawned = false
+    else
+        util.yield(666)
     end
 end)
 
@@ -3268,7 +3274,7 @@ menu.toggle(Session, "Quick Session Join", {"quickjoin"}, " Please Set you're Sp
         menu.trigger_commands("speedupfmmc on")
         menu.trigger_commands("speedupspawn on")
         menu.trigger_commands("skipswoopdown on")
-        warnify("Set you're Spawn to \"Last Location\" or \"Random\".")
+        --warnify("Set you're Spawn to \"Last Location\" or \"Random\".")
     else
         menu.ref_by_path("Online>Transitions>Speed Up>Don't Wait For Data Broadcast"):applyDefaultState()
         menu.ref_by_path("Online>Transitions>Speed Up>Don't Wait For Mission Launcher"):applyDefaultState()
