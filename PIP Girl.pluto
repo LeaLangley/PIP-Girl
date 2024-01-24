@@ -3231,7 +3231,7 @@ local customspawn = nil
 local default_spawn = string.format("x:%.2f y:%.2f z:%.2f", -1806.73, -126.08, 78.79)
 
 local function extractCoordinatesFromString(str)
-    local x, y, z = str:match("x:(%-?%d+%.%d+) y:(%-?%d+%.%d+) z:(%-?%d+%.%d+)")
+    local x, y, z = str:match("x:(%-?%d+%.?%d*) y:(%-?%d+%.?%d*) z:(%-?%d+%.?%d*)")
     return tonumber(x), tonumber(y), tonumber(z)
 end
 
@@ -3250,15 +3250,17 @@ menu.action(SessionJoin, "Set Custom Spawn", {""}, "", function()
 end)
 
 menu.toggle_loop(SessionJoin, "Use Custom Spawn", {""}, "", function()
+    local spwncrd
     if not customspawn then
-        spwncrd = default_spawn
+        spwncrd = v3.new(extractCoordinatesFromString(default_spawn))
     else
         local x, y, z = extractCoordinatesFromString(customspawn)
         if x and y and z then
-            spwncrd = { x = x, y = y, z = z }
+            spwncrd = v3.new(x, y, z)
         else
             notify("Invalid custom spawn format.\nApplyed Deafult state.")
             menu.trigger_commands("customspawnpos "..default_spawn)
+            util.yield(1666)
             return
         end
     end
@@ -3269,13 +3271,15 @@ menu.toggle_loop(SessionJoin, "Use Custom Spawn", {""}, "", function()
             entities.delete(get_user_vehicle())
         end
         customspawned = true
+    else
+        util.yield(1666)
     end
     if customspawned and transitionState(true) > 2 then
         customspawned = false
         menu.trigger_commands("spoofedposition "..spwncrd.x..", "..spwncrd.y..", "..spwncrd.z)
         menu.trigger_commands("spoofpos on")
     else
-        util.yield(666)
+        util.yield(1666)
     end
 end)
 
