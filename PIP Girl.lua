@@ -6,9 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.120"
+local SCRIPT_VERSION = "1.121"
 
-local startupmsg = "If settings are missing PLS restart lua.\n\nLea Tech on top!\n\nImproved and Lea-rned alot.\nI love u."
+local startupmsg = "If settings are missing PLS restart lua.\n\nAdded Custom spawns in Session>Join Settings.\nIf you use quick join, set spawn to \"Random\" or \"Last Location\" and u can profit from custom spawn.\n\nLea Tech on top!"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -3230,16 +3230,17 @@ local customspawned = true
 local customspawn = nil
 local default_spawn = string.format("x:%.2f y:%.2f z:%.2f", -1806.73, -126.08, 78.79)
 
+local function extractCoordinatesFromString(str)
+    local x, y, z = str:match("x:(%-?%d+%.%d+) y:(%-?%d+%.%d+) z:(%-?%d+%.%d+)")
+    return tonumber(x), tonumber(y), tonumber(z)
+end
+
 menu.text_input(SessionJoin, "Spawn", {"customspawnpos"}, "", function(input, default_spawn)
     local components = {}
-    for component in input:gmatch("-?%d+%.?%d*") do
-        table.insert(components, tonumber(component))
-    end
-    if #components == 3 then
-        customspawn = v3.new(components[1], components[2], components[3])
-    else
-        notify_cmd("Invalid input. Please enter three numerical values.")
-    end
+    customspawn = input
+    --else
+    --    notify_cmd("Invalid input. Please enter three numerical values.")
+    --end
 end, default_spawn)
 
 menu.action(SessionJoin, "Set Custom Spawn", {""}, "", function()
@@ -3249,13 +3250,21 @@ menu.action(SessionJoin, "Set Custom Spawn", {""}, "", function()
 end)
 
 menu.toggle_loop(SessionJoin, "Use Custom Spawn", {""}, "", function()
-    if not customspawned and transitionState(true) < 3 then
-        if not customspawn then
-            spwncrd = default_spawn
+    if not customspawn then
+        spwncrd = default_spawn
+    else
+        local x, y, z = extractCoordinatesFromString(customspawn)
+        if x and y and z then
+            spwncrd = { x = x, y = y, z = z }
         else
-            spwncrd = customspawn
+            notify("Invalid custom spawn format.\nApplyed Deafult state.")
+            menu.trigger_commands("customspawnpos "..default_spawn)
+            return
         end
-        players.teleport_3d(players.user(), customspawn.x, customspawn.y, customspawn.z)
+    end
+    if not customspawned and transitionState(true) < 3 then
+        players.teleport_3d(players.user(), spwncrd.x, spwncrd.y, spwncrd.z)
+        menu.trigger_commands("spoofpos off")
         if get_user_vehicle() then
             entities.delete(get_user_vehicle())
         end
@@ -3263,6 +3272,8 @@ menu.toggle_loop(SessionJoin, "Use Custom Spawn", {""}, "", function()
     end
     if customspawned and transitionState(true) > 2 then
         customspawned = false
+        menu.trigger_commands("spoofedposition "..spwncrd.x..", "..spwncrd.y..", "..spwncrd.z)
+        menu.trigger_commands("spoofpos on")
     else
         util.yield(666)
     end
