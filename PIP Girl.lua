@@ -686,11 +686,14 @@ local function get_Street_Names(x, y, z)
     local crossingRoadPtr = memory.alloc_int()
 
     PATHFIND.GET_STREET_NAME_AT_COORD(playerPosition.x, playerPosition.y, playerPosition.z, streetNamePtr, crossingRoadPtr)
+    local zoneNameRaw = ZONE.GET_NAME_OF_ZONE(playerPosition.x, playerPosition.y, playerPosition.z)
 
     local streetNameInt = memory.read_int(streetNamePtr)
     local crossingRoadInt = memory.read_int(crossingRoadPtr)
     local streetName = ""
     local crossingName = ""
+
+    zoneName = util.get_label_text(zoneNameRaw)
 
     if streetNameInt ~= 0 then
         streetName = util.get_label_text(streetNameInt)
@@ -701,6 +704,7 @@ local function get_Street_Names(x, y, z)
     end
 
     return {
+        zoneName = zoneName,
         streetName = streetName,
         crossingName = crossingName
     }
@@ -4283,7 +4287,7 @@ menu.action(Settings, "Copy Position to Clipboard", {"pgcopypos"}, "", function(
     local streetInfo = get_Street_Names(playerPosition.x, playerPosition.y, playerPosition.z)
     local positionString = string.format("{ x = %.2f, y = %.2f, z = %.2f, streetName = \"%s\", crossingName = \"%s\" },",
     playerPosition.x, playerPosition.y, playerPosition.z,
-    streetInfo.streetName, streetInfo.crossingName)
+    streetInfo.zoneName, streetInfo.streetName, streetInfo.crossingName)
     util.copy_to_clipboard(positionString, false)
     notify("Position copied to clipboard!")
 end)
