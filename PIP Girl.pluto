@@ -2622,6 +2622,7 @@ local warningMessages = {
     [99184332] = "Leaveing session.",
     [1246147334] = "Leaveing online.",
     [1444377678] = "Closing the Game.",
+    [1490010708] = "Closing the Game.",
     [427588031] = "Save failed. Quiting anyways.",
     [583244483] = "Session Full of CEO, Joining anyways.",
     [505844183] = "Canceling Cayo.",
