@@ -3275,6 +3275,7 @@ menu.toggle_loop(SessionJoin, "Use Custom Spawn", {""}, "", function()
         if get_user_vehicle() then
             entities.delete(get_user_vehicle())
         end
+        menu.trigger_commands("resetheadshots")
         customspawned = true
     else
         util.yield(1666)
