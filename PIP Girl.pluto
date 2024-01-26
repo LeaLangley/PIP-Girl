@@ -1989,6 +1989,9 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
                     isInVehicle = true
                     util.yield(666)
                     VEHICLE.SET_VEHICLE_DOORS_SHUT(vehicle, false)
+                    if VEHICLE.DOES_VEHICLE_HAVE_SEARCHLIGHT(vehicle) then
+                        VEHICLE.SET_VEHICLE_SEARCHLIGHT(vehicle, true, true)
+                    end
                 elseif not isDriving and isInVehicle then
                     isInVehicle = false
                     util.yield(666)
