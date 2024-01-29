@@ -321,7 +321,7 @@ local function StandDetectionsRead(pid)
 end
 
 local function isModder(pid)
-    if players.is_marked_as_modder(pid) then --or (StandDetectionsRead(pid) and #(StandDetectionsRead(pid)) > 0) then
+    if players.is_marked_as_modder(pid) or players.is_marked_as_modder_or_admin(pid) then --or (StandDetectionsRead(pid) and #(StandDetectionsRead(pid)) > 0) then
         return true
     else
         return false
@@ -3371,12 +3371,15 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockorb"}, "Blocks the Entra
                         table.insert(in_orb_room, pid)
                         NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true) -- Entered the Orb Room
                         if not isFriend(pid) then
-                            players.add_detection(pid, "Glitched Orb Room Access", TOAST_DEFAULT, 50)
+                            players.add_detection(pid, "Glitched Orb Room Access", TOAST_DEFAULT, 25)
                         end
                     end
                     if not menu.is_ref_valid(menu.ref_by_path("Stand>Lua Scripts>JinxScript>Detections>Normal Detections>Orbital Cannon")) or menu.get_state(menu.ref_by_path("Stand>Lua Scripts>JinxScript>Detections>Normal Detections>Orbital Cannon")) == "Off" then
                         if not isFriend(pid) then
                             notify(players.get_name(pid).." is in Orb Room.")
+                            if not isModder(pid) then
+                                menu.trigger_commands("interiorkick "..players.get_name(pid))
+                            end
                         end
                     end
                 else
@@ -3516,7 +3519,7 @@ end)
 
 menu.toggle_loop(SessionWorld, "Nerf Oppressor MK2s", {""}, "Nerf Oppressor mk2 weapons, except Modder and Friend's", function()
     for players.list_except(true) as pid do
-        if players.get_vehicle_model(pid) == 2069146067 and not isFriend(pid) and not players.is_marked_as_modder(pid) then
+        if players.get_vehicle_model(pid) == 2069146067 and not isFriend(pid) and not isModder(pid) then
             local vehicle = PED.GET_VEHICLE_PED_IS_IN(PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid))
             if VEHICLE.GET_VEHICLE_MOD(vehicle, 10) ~= -1 then
                 requestControl(vehicle, 13)
@@ -3531,7 +3534,7 @@ local mk2noob = {}
 menu.toggle_loop(SessionWorld, "Spinning Oppressor MK2s", {""}, "Spin all MK2's, except Modder and Friend's", function()
     for players.list_except(true) as pid do
         if players.get_vehicle_model(pid) == 2069146067 and not isFriend(pid) then
-            if not players.is_marked_as_modder(pid) then 
+            if not isModder(pid) then 
                 local found = false
                 for _, plid in ipairs(mk2noob) do
                     if plid == pid then
