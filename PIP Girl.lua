@@ -1340,6 +1340,29 @@ end)
 
 menu.divider(PIP_Girl, "Pickup Options")
 
+local money_hashish = {
+    -295781225
+}
+menu.toggle_loop(PIP_Girl, "Collect all NPC money", {}, "Collect all NPC money.", function()
+    if transitionState(true) == 1 then
+        local pos = players.get_position(players.user())
+        for entities.get_all_pickups_as_handles() as pickup do
+            if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
+                local pickupHash = entities.get_model_hash(pickup)
+                if contains(money_hashish, pickupHash) then
+                    if not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
+                        ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
+                    end
+                end
+            end
+            util.yield(13)
+        end
+        util.yield(666)
+    else
+        util.yield(6666)
+    end
+end)
+
 local carryingPickups = {}
 menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all pickups on you.\nNote this doesn't work in all situations.", function(on)
     if on then
@@ -1712,6 +1735,7 @@ local function buff_lea_tech(vehicle)
     VEHICLE.ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(vehicle)
     VEHICLE.SET_VEHICLE_ACT_AS_IF_HAS_SIREN_ON(vehicle, true)
     VEHICLE.SET_VEHICLE_TYRES_CAN_BURST(vehicle, false)
+    VEHICLE.SET_VEHICLE_DROPS_MONEY_WHEN_BLOWN_UP(vehicle, true)
     --entities.set_can_migrate(vehicle, false)
 end
 local function SetInZoneTimer()
