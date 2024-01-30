@@ -3142,8 +3142,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                                 for menu.ref_by_path("Online>Spoofing>Host Token Spoofing>Kick Host When Joining As Next In Queue"):getChildren() as kicker do
                                     util.yield(13)
                                     if kicker:isValid() then
-                                        local kicker_target = kicker.target
-                                        kicker_target.value = true
+                                        kicker.value = true
                                     end
                                 end
                             end
@@ -3165,6 +3164,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     --  <3
                     if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 and (players.get_host() == players.user() or isFriend(players.get_host())) then
                         allow_Join_back(host_name)
+                        menu.set_state(menu.ref_by_path("Online>Spoofing>Host Token Spoofing>Kick Host When Joining As Next In Queue>Kick Host When Joining As Next In Queue"), "Off")
                         warnify("Found u a new Home <3")
                         menu.trigger_commands("claimsession off")
                         if players.user() ~= players.get_script_host() then
@@ -4376,14 +4376,7 @@ menu.action(menu.my_root(), "Activate Everyday Goodies", {"pggoodies"}, "Activat
 end)
 
 menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
-    --notify(startupmsg)
-    for menu.ref_by_path("Online>Spoofing>Host Token Spoofing>Kick Host When Joining As Next In Queue"):getChildren() as kicker do
-        util.yield(13)
-        if kicker:isValid() then
-            local kicker_target = kicker.target
-            kicker_target.value = true
-        end
-    end
+    notify(startupmsg)
 end)
 
 menu.trigger_commands("antiadmin")
