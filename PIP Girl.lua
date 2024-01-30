@@ -3701,11 +3701,11 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic o
     end
     if not util.is_session_transition_active() then
         if not sphereCreated then
-            for sphere = 0, 14 do
-                if MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(sphere) then
-                    MISC.REMOVE_POP_MULTIPLIER_SPHERE(sphere, false)
-                end
-            end
+            --for sphere = 0, 14 do
+            --    if MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(sphere) then
+            --        MISC.REMOVE_POP_MULTIPLIER_SPHERE(sphere, false)
+            --    end
+            --end
             MISC.CLEAR_AREA(0.0, 0.0, 0.0, 19999.9, true, false, false, true)
             VEHICLE.SET_DISTANT_CARS_ENABLED(false)
             STREAMING.SET_PED_POPULATION_BUDGET(0)
