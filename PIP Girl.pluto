@@ -2696,7 +2696,7 @@ local lastWarnifyTime = {}
 menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warnings in the game.", function()
     local mess_hash = math.abs(HUD.GET_WARNING_SCREEN_MESSAGE_HASH())
 
-    if mess_hash ~= 0 and mess_hash ~= 976109292 then
+    if mess_hash ~= 0 and (mess_hash ~= 976109292 and mess_hash ~= 1642168465) then
         if not HUD.IS_PAUSE_MENU_ACTIVE() then
             local skipWarning = true
             local playerPosition = players.get_position(players.user())
