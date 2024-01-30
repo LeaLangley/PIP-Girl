@@ -1357,12 +1357,13 @@ menu.toggle_loop(PIP_Girl, "Collect all NPC money", {}, "Collect all NPC money."
     if transitionState(true) == 1 then
         local pos = players.get_position(players.user())
         for entities.get_all_pickups_as_handles() as pickup do
-            if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
+            if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) and not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
                 local pickupHash = entities.get_model_hash(pickup)
                 if contains(money_hashish, pickupHash) then
-                    if not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
-                        ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
+                    if is_user_driving_vehicle() then
+                        OBJECT.SET_PICKUP_OBJECT_COLLECTABLE_IN_VEHICLE(pickup)
                     end
+                    ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
                 end
             end
             util.yield(13)
@@ -1416,6 +1417,8 @@ menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a shower in all existing p
         for entities.get_all_pickups_as_handles() as pickup do
             if not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) and not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
                 if in_vehicle then
+                    OBJECT.SET_PICKUP_OBJECT_COLLECTABLE_IN_VEHICLE(pickup)
+                    util.yield(13)
                     ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z , false, false, false, false)
                     util.yield(13)
                     --ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
@@ -1745,7 +1748,7 @@ local function buff_lea_tech(vehicle)
     VEHICLE.ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(vehicle)
     VEHICLE.SET_VEHICLE_ACT_AS_IF_HAS_SIREN_ON(vehicle, true)
     VEHICLE.SET_VEHICLE_TYRES_CAN_BURST(vehicle, false)
-    VEHICLE.SET_VEHICLE_DROPS_MONEY_WHEN_BLOWN_UP(vehicle, true)
+    --VEHICLE.SET_VEHICLE_DROPS_MONEY_WHEN_BLOWN_UP(vehicle, true)
     --entities.set_can_migrate(vehicle, false)
 end
 local function SetInZoneTimer()
