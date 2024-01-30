@@ -3136,17 +3136,8 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                         menu.trigger_commands("ceopay "..host_name.." on")
                         util.yield(6666)
                         if not isFriend(players.get_host()) and players.get_host_queue_position(players.user()) == 1 and not isModder(players.get_host())then
-                            if menu.get_edition() ~= 3 then
-                                StrategicKick(players.get_host())
-                                menu.trigger_commands("timeout"..host_name.." off")
-                            else
-                                for menu.ref_by_path("Online>Spoofing>Host Token Spoofing>Kick Host When Joining As Next In Queue"):getChildren() as kicker do
-                                    util.yield(13)
-                                    if kicker:isValid() then
-                                        kicker.value = true
-                                    end
-                                end
-                            end
+                            StrategicKick(players.get_host())
+                            menu.trigger_commands("timeout"..host_name.." off")
                         else
                             if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
                                 menu.trigger_commands("unstuck")
@@ -3165,7 +3156,6 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     --  <3
                     if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 and (players.get_host() == players.user() or isFriend(players.get_host())) then
                         allow_Join_back(host_name)
-                        menu.set_state(menu.ref_by_path("Online>Spoofing>Host Token Spoofing>Kick Host When Joining As Next In Queue>Kick Host When Joining As Next In Queue"), "Off")
                         warnify("Found u a new Home <3")
                         menu.trigger_commands("claimsession off")
                         if players.user() ~= players.get_script_host() then
