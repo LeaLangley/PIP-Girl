@@ -1879,7 +1879,7 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
     if util.is_interaction_menu_open() then
         menu.trigger_commands("lockoutfit off")
     else
-        if session_type() ~= "Public" then
+        if 4 >= PLAYER.GET_NUMBER_OF_PLAYERS() then
             if HUD.IS_MESSAGE_BEING_DISPLAYED() then
                 menu.trigger_commands("lockoutfit off")
                 if not temp_holding_outfit then
