@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.121"
+local SCRIPT_VERSION = "1.122"
 
 local startupmsg = "If settings are missing PLS restart lua.\n\nAdded Custom spawns in Session>Join Settings.\nIf you use quick join, set spawn to \"Random\" or \"Last Location\" and u can profit from custom spawn.\n\nLea Tech on top!"
 
@@ -330,10 +330,49 @@ end
 
 local urceoname = ""
 local function organization_control(org)
-    if players.get_boss(players.user()) ~= -1 then
-        if players.get_org_type(players.user()) == 0 then
-            if org == "MC" then
-                menu.trigger_commands("ceotomc")
+    if not NETWORK.NETWORK_IS_ACTIVITY_SESSION() then
+        if players.get_boss(players.user()) ~= -1 then
+            if players.get_org_type(players.user()) == 0 then
+                if org == "MC" then
+                    menu.trigger_commands("ceotomc")
+                    util.yield(666)
+                    if players.get_org_type(players.user()) == 1 then
+                        if urceoname ~= "" then
+                            menu.trigger_commands("ceoname " .. urceoname)
+                        end
+                        notify("Turned you into MC President!")
+                    else
+                        notify("Failed to turn you into MC President.")
+                    end
+                end
+            else
+                if org == "CEO" then
+                    menu.trigger_commands("ceotomc")
+                    util.yield(666)
+                    if players.get_org_type(players.user()) == 0 then
+                        if urceoname ~= "" then
+                            menu.trigger_commands("ceoname " .. urceoname)
+                        end
+                        notify("Turned you into CEO!")
+                    else
+                        notify("Failed to turn you into CEO.")
+                    end
+                end
+            end
+        else
+            if org == "CEO" then
+                menu.trigger_commands("ceostart")
+                util.yield(666)
+                if players.get_org_type(players.user()) == 0 then
+                    if urceoname ~= "" then
+                        menu.trigger_commands("ceoname " .. urceoname)
+                    end
+                    notify("Turned you into CEO!")
+                else
+                    notify("Failed to turn you into CEO.")
+                end
+            elseif org == "MC" then
+                menu.trigger_commands("mcstart")
                 util.yield(666)
                 if players.get_org_type(players.user()) == 1 then
                     if urceoname ~= "" then
@@ -344,44 +383,9 @@ local function organization_control(org)
                     notify("Failed to turn you into MC President.")
                 end
             end
-        else
-            if org == "CEO" then
-                menu.trigger_commands("ceotomc")
-                util.yield(666)
-                if players.get_org_type(players.user()) == 0 then
-                    if urceoname ~= "" then
-                        menu.trigger_commands("ceoname " .. urceoname)
-                    end
-                    notify("Turned you into CEO!")
-                else
-                    notify("Failed to turn you into CEO.")
-                end
-            end
         end
     else
-        if org == "CEO" then
-            menu.trigger_commands("ceostart")
-            util.yield(666)
-            if players.get_org_type(players.user()) == 0 then
-                if urceoname ~= "" then
-                    menu.trigger_commands("ceoname " .. urceoname)
-                end
-                notify("Turned you into CEO!")
-            else
-                notify("Failed to turn you into CEO.")
-            end
-        elseif org == "MC" then
-            menu.trigger_commands("mcstart")
-            util.yield(666)
-            if players.get_org_type(players.user()) == 1 then
-                if urceoname ~= "" then
-                    menu.trigger_commands("ceoname " .. urceoname)
-                end
-                notify("Turned you into MC President!")
-            else
-                notify("Failed to turn you into MC President.")
-            end
-        end
+        notify("Cant Register as "..org.." while in missions.")
     end
 end
 
@@ -1181,7 +1185,7 @@ local invitefriendsinceo = false
 local ceo_ses_code = nil
 local lastCeoName = nil
 menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yourself as CEO and auto switches you to MC/CEO in most situations needed.", function()
-    if transitionState(true) == 1 then
+    if not NETWORK.NETWORK_IS_ACTIVITY_SESSION() and transitionState(true) == 1 then
         local uniqueColors = {}  -- Table to store unique organization colors
         for players.list() as pid do
             if players.get_boss(pid) ~= -1 then
@@ -1879,7 +1883,7 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
     if util.is_interaction_menu_open() then
         menu.trigger_commands("lockoutfit off")
     else
-        if 4 >= PLAYER.GET_NUMBER_OF_PLAYERS() then
+        if NETWORK.NETWORK_IS_ACTIVITY_SESSION() and 4 >= PLAYER.GET_NUMBER_OF_PLAYERS() then
             if HUD.IS_MESSAGE_BEING_DISPLAYED() then
                 menu.trigger_commands("lockoutfit off")
                 if not temp_holding_outfit then
