@@ -4226,6 +4226,18 @@ player_menu = function(pid)
             NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
         end
     end)
+    menu.toggle_loop(Bad_Modder, "(Alpha) Report Bot", {"hellrp"}, "Weak menu? Spamm report them >:D", function()
+        if player_Exist(pid) then
+            menu.trigger_commands("reportgriefing " .. name)
+            menu.trigger_commands("reportexploits " .. name)
+            menu.trigger_commands("reportbugabuse " .. name)
+            menu.trigger_commands("reportannoying " .. name)
+            menu.trigger_commands("reporthate " .. name)
+            menu.trigger_commands("reportvcannoying " .. name)
+            menu.trigger_commands("reportvchate " .. name)
+            util.yield(666)
+        end
+    end)
     menu.toggle_loop(Bad_Modder, "Blacklist Kick on Atack", {"hellaab"}, "Auto kick if they atack you, and add them to blacklist.", function()
         if players.is_marked_as_attacker(pid) then
             add_in_stand(pid)
