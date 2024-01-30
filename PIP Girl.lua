@@ -3139,7 +3139,14 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                                 StrategicKick(players.get_host())
                                 menu.trigger_commands("timeout"..host_name.." off")
                             else
-
+                                for menu.ref_by_path("Online>Spoofing>Host Token Spoofing>Kick Host When Joining As Next In Queue"):getChildren() as kicker do
+                                    util.yield(13)
+                                    if kicker:isValid() then
+                                        local kicker_target = kicker.target
+                                        kicker_target.value = true
+                                    end
+                                end
+                            end
                         else
                             if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
                                 menu.trigger_commands("unstuck")
@@ -3156,7 +3163,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     --  <3
                     --  Is session under controll?
                     --  <3
-                    if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 and (players.get_host() == players.user() or isFriend(players.get_host()) then
+                    if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 and (players.get_host() == players.user() or isFriend(players.get_host())) then
                         allow_Join_back(host_name)
                         warnify("Found u a new Home <3")
                         menu.trigger_commands("claimsession off")
@@ -4369,7 +4376,14 @@ menu.action(menu.my_root(), "Activate Everyday Goodies", {"pggoodies"}, "Activat
 end)
 
 menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
-    notify(startupmsg)
+    --notify(startupmsg)
+    for menu.ref_by_path("Online>Spoofing>Host Token Spoofing>Kick Host When Joining As Next In Queue"):getChildren() as kicker do
+        util.yield(13)
+        if kicker:isValid() then
+            local kicker_target = kicker.target
+            kicker_target.value = true
+        end
+    end
 end)
 
 menu.trigger_commands("antiadmin")
