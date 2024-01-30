@@ -1347,6 +1347,7 @@ menu.divider(PIP_Girl, "Pickup Options")
 local money_hashish = {
     -295781225, --money
     1745876935, --underwater money xD
+    -1448063107, --save money
     ---779874356, --usb1 USB are not a pickup
     ---1746470518, --usb2
     --463578314, --usb3
