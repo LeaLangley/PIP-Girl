@@ -4226,7 +4226,7 @@ player_menu = function(pid)
             NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
         end
     end)
-    menu.toggle_loop(Bad_Modder, "(Alpha) Report Bot", {"hellrp"}, "Weak menu? Spamm report them >:D", function()
+    menu.toggle_loop(Bad_Modder, "(Alpha) Report Bot", {"reportbot"}, "Weak menu? Spamm report them >:D", function()
         if player_Exist(pid) then
             menu.trigger_commands("reportgriefing " .. name)
             menu.trigger_commands("reportexploits " .. name)
