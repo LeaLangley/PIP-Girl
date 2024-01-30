@@ -1347,11 +1347,11 @@ menu.divider(PIP_Girl, "Pickup Options")
 local money_hashish = {
     -295781225, --money
     1745876935, --underwater money xD
-    -779874356, --usb1
-    -1746470518, --usb2
-    463578314, --usb3
-    1081230812, --usb4
-    1112175411, --usb5
+    ---779874356, --usb1 USB are not a pickup
+    ---1746470518, --usb2
+    --463578314, --usb3
+    --1081230812, --usb4
+    --1112175411, --usb5
 }
 menu.toggle_loop(PIP_Girl, "Collect all NPC money", {}, "Collect all NPC money.", function()
     if transitionState(true) == 1 then
