@@ -2624,7 +2624,6 @@ menu.toggle_loop(Game, "Auto Skip Cutscene", {"pgascut"}, "Automatically skip al
             end
         end
         
-
         if skipCutscene then
             CUTSCENE.STOP_CUTSCENE_IMMEDIATELY()
             notify("If this cutscene skip broke a mission!\nUse \"pgcopypos\" and send it to the PIP Girl Developer.")
