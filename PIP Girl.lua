@@ -3043,19 +3043,11 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             end
             util.yield(666)
         end
-        --  <3
-        --  When Starting to Join a Session, Check if host is a Friend.
-        --  <3
-        util.yield(3666)
-        local isHostFriendly = false
-        if isFriend(pid) or players.get_host() == players.user() then 
-            isHostFriendly = true
-        end
         util.yield(666)
         --  <3
         --  Check the Basics.
         --  <3
-        if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players and (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players and isHostFriendly then
+        if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players and ((not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isFriend(players.get_host())) then
             --  <3
             --  Additional Filter.
             --  <3
@@ -3124,7 +3116,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 --  <3
                 --  If Session remains in a Claim-able state.
                 --  <3
-                if (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isHostFriendly then
+                if (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) == 1) or isFriend(players.get_host()) then
                     while transitionState(true) > 1 do
                         if session_type() == "Singleplayer" then
                             util.yield(19666)
@@ -3134,18 +3126,20 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                         util.yield(666)
                     end
                     menu.trigger_commands("sclean")
-                    util.yield(3666)
                     --  <3
                     --  Claim Session.
                     --  <3
                     local host_name = players.get_name(players.get_host())
-                    if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 and not isModder(players.get_host()) then
+                    if not isFriend(players.get_host()) and players.get_host_queue_position(players.user()) == 1 and not isModder(players.get_host()) then
                         menu.trigger_commands("givecollectibles "..host_name)
                         menu.trigger_commands("ceopay "..host_name.." on")
                         util.yield(6666)
-                        if not isHostFriendly and players.get_host_queue_position(players.user()) == 1 and not isModder(players.get_host())then
-                            StrategicKick(players.get_host())
-                            menu.trigger_commands("timeout"..host_name.." off")
+                        if not isFriend(players.get_host()) and players.get_host_queue_position(players.user()) == 1 and not isModder(players.get_host())then
+                            if menu.get_edition() ~= 3 then
+                                StrategicKick(players.get_host())
+                                menu.trigger_commands("timeout"..host_name.." off")
+                            else
+
                         else
                             if util.is_session_started() and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
                                 menu.trigger_commands("unstuck")
@@ -3162,7 +3156,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     --  <3
                     --  Is session under controll?
                     --  <3
-                    if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 and (players.get_host() == players.user() or isHostFriendly) then
+                    if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 and (players.get_host() == players.user() or isFriend(players.get_host()) then
                         allow_Join_back(host_name)
                         warnify("Found u a new Home <3")
                         menu.trigger_commands("claimsession off")
@@ -3191,6 +3185,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                         menu.trigger_commands("fillinventory")
                         menu.trigger_commands("fillammo")
                         menu.trigger_commands("claimsession off")
+                        buff_lea_tech(get_user_vehicle())
                         if thunderMin ~= 0 then
                             thunderForMin(thunderMin)
                         end
@@ -3202,7 +3197,6 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                             menu.trigger_commands("unstuck")
                         end
                     end
-                    isHostFriendly = false
                 else
                     if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
                         menu.trigger_commands("unstuck")
