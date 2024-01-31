@@ -3680,70 +3680,76 @@ menu.action(SessionMisc, "Notify Highest K/D", {"notifykd"}, "Notify's u with th
     ReportSessionKD(numPlayers)
 end)
 
-local sphereCreated = false
-menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic on the session for everyone.", function()
-    if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "On" then
-        menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "Off")
+local pop_multiplier_id = nil
+local fix_multiplier_id = nil
+menu.toggle_loop(Session, "Clear Traffic", {"antitraffic"}, "Clears the traffic on the session for everyone.", function()
+    if fix_multiplier_id then
+        if MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(fix_multiplier_id) then
+            MISC.REMOVE_POP_MULTIPLIER_SPHERE(fix_multiplier_id, false)
+        end
     end
     if menu.get_state(menu.ref_by_path("World>Inhabitants>Traffic>Disable")) == "Disabled" then
         menu.trigger_command(menu.ref_by_path("World>Inhabitants>Traffic>Disable>Enabled, Including Parked Cars"))
     end
-    if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "Off" then
+    if menu.get_state(menu.ref_by_path("World>Inhabitants>Pedestrians>Disable")) == "Off" then
         menu.set_state(menu.ref_by_path("World>Inhabitants>Pedestrians>Disable"), "On")
     end
     if transitionState(true) == 1 then
-        if not sphereCreated then
-            for sphere = 0, 14 do
-                if MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(sphere) then
-                    MISC.REMOVE_POP_MULTIPLIER_SPHERE(sphere, true)
-                end
-                util.yield(666)
-            end
+        if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "On" then
+            menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "Off")
+        end
+        if not pop_multiplier_id then
+            pop_multiplier_id = MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19666, 0.0, 0.0, false, true)
             MISC.CLEAR_AREA(0.0, 0.0, 0.0, 19999.9, true, false, false, true)
             VEHICLE.SET_DISTANT_CARS_ENABLED(false)
             STREAMING.SET_PED_POPULATION_BUDGET(0)
             STREAMING.SET_VEHICLE_POPULATION_BUDGET(0)
             STREAMING.SET_REDUCE_PED_MODEL_BUDGET(true)
             STREAMING.SET_REDUCE_VEHICLE_MODEL_BUDGET(true)
-            sphereCreated = true
-        end
-        for sphere = 0, 14 do
-            if not MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(sphere) then
-                MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 16666, 0.0, 0.0, false, true)
+        else
+            if not MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(pop_multiplier_id) then
+                pop_multiplier_id = MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19666, 0.0, 0.0, false, true)
             end
-            util.yield(666)
+            util.yield(6666)
         end
     else
-        if sphereCreated then
-            for sphere = 0, 14 do
-                if MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(sphere) then
-                    MISC.REMOVE_POP_MULTIPLIER_SPHERE(sphere, true)
-                end
-                util.yield(666)
+        if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "Off" then
+            menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "On")
+        end
+        if pop_multiplier_id then
+            if MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(pop_multiplier_id) then
+                MISC.REMOVE_POP_MULTIPLIER_SPHERE(pop_multiplier_id, false)
             end
-            sphereCreated = false
+            pop_multiplier_id = nil
+        else
+            util.yield(6666)
         end
     end
-    util.yield(6666)
 end, function()
+    if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "Off" then
+        menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "On")
+    end
     if menu.get_state(menu.ref_by_path("World>Inhabitants>Traffic>Disable")) ~= "Disabled" then
         menu.trigger_command(menu.ref_by_path("World>Inhabitants>Traffic>Disable>Disabled"))
     end
-    if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "On" then
-        menu.set_state(menu.ref_by_path("World>Inhabitants>Pedestrians>Disable"), "Off")
+    if menu.get_state(menu.ref_by_path("World>Inhabitants>Pedestrians>Disable")) == "Off" then
+        menu.set_state(menu.ref_by_path("World>Inhabitants>Pedestrians>Disable"), "On")
     end
-    for sphere = 0, 14 do
-        if MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(sphere) then
-            MISC.REMOVE_POP_MULTIPLIER_SPHERE(sphere, true)
-        end
-        util.yield(666)
-    end
-    sphereCreated = false
     VEHICLE.SET_DISTANT_CARS_ENABLED(true)
     STREAMING.SET_PED_POPULATION_BUDGET(3)
     STREAMING.SET_VEHICLE_POPULATION_BUDGET(3)
     STREAMING.SET_REDUCE_PED_MODEL_BUDGET(false)
     STREAMING.SET_REDUCE_VEHICLE_MODEL_BUDGET(false)
+    if pop_multiplier_id then
+        if MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(pop_multiplier_id) then
+            MISC.REMOVE_POP_MULTIPLIER_SPHERE(pop_multiplier_id, false)
+        end
+    end
+    pop_multiplier_id = nil
+    if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "On" then
+        menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "On")
+    end
+    fix_multiplier_id = MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19666, 1.0, 1.0, false, true)
 end)
 
 menu.toggle_loop(Session, "Soft Clear Traffic", {"softantitrafic"}, "Clears the traffic around you localy in close range.\nDosnt work with many players in close range.", function()
@@ -4378,7 +4384,8 @@ menu.action(menu.my_root(), "Activate Everyday Goodies", {"pggoodies"}, "Activat
 end)
 
 menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
-    notify(startupmsg)
+    --notify(startupmsg)
+    MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 16666, 1.0, 1.0, false, true)
 end)
 
 menu.trigger_commands("antiadmin")
