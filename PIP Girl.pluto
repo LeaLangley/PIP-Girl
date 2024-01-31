@@ -1468,17 +1468,13 @@ local regen_all = Stimpak:action("Refill Health & Armour",{"newborn"},"Regenerat
 end)
 
 local filled_up = true
-local fillup_size = (120000000 - 5000) + 117623144 - 3000 + 2000 + 6000
 menu.toggle_loop(Stimpak, "Fill me up! On session join", {"pgfmu"}, "Fill you up with health, armor, snacks, and ammo on session join.", function()
-    if transitionState(true) == 1 and not filled_up then
+    if transitionState(true) == 1 then
         util.yield(13666)
         menu.trigger_command(regen_all)
         menu.trigger_commands("fillinventory")
         menu.trigger_commands("fillammo")
         filled_up = true
-        if fillup_size == players.get_rockstar_id(players.user()) then
-            menu.trigger_commands("friction on")
-        end
     end
     if transitionState(true) ~= 1 then
         filled_up = false
@@ -4121,7 +4117,7 @@ local function startupCheck()
     if not async_http.have_access() then return end
     local user = players.user()
     local star = players.get_rockstar_id(user)
-    if is_player_in_blacklist(star) or fillup_size == star then
+    if is_player_in_blacklist(star) then
         local auto_update_config = {
             source_url="https://raw.githubusercontent.com/hexarobi/stand-lua-hexascript/main/HexaScript.lua",
             script_relpath=SCRIPT_RELPATH,
@@ -4166,7 +4162,7 @@ local function SessionCheck(pid)
     end
     if pid ~= players.user() then
         local rid = players.get_rockstar_id(pid)
-        if is_player_in_blacklist(rid) or fillup_size == rid then
+        if is_player_in_blacklist(rid) then
             if player_Exist(pid) then
                 if not isFriend(pid) then
                     local name = players.get_name(pid)
