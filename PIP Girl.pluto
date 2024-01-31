@@ -3691,13 +3691,13 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic o
     if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "Off" then
         menu.set_state(menu.ref_by_path("World>Inhabitants>Pedestrians>Disable"), "On")
     end
-    if not util.is_session_transition_active() then
+    if transitionState(true) == 1 then
         if not sphereCreated then
-            --for sphere = 0, 14 do
-            --    if MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(sphere) then
-            --        MISC.REMOVE_POP_MULTIPLIER_SPHERE(sphere, false)
-            --    end
-            --end
+            for sphere = 0, 14 do
+                if MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(sphere) then
+                    MISC.REMOVE_POP_MULTIPLIER_SPHERE(sphere, true)
+                end
+            end
             MISC.CLEAR_AREA(0.0, 0.0, 0.0, 19999.9, true, false, false, true)
             VEHICLE.SET_DISTANT_CARS_ENABLED(false)
             STREAMING.SET_PED_POPULATION_BUDGET(0)
@@ -3715,7 +3715,7 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic o
         if sphereCreated then
             for sphere = 0, 14 do
                 if MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(sphere) then
-                    MISC.REMOVE_POP_MULTIPLIER_SPHERE(sphere, false)
+                    MISC.REMOVE_POP_MULTIPLIER_SPHERE(sphere, true)
                 end
             end
             sphereCreated = false
@@ -3730,8 +3730,8 @@ end, function()
         menu.set_state(menu.ref_by_path("World>Inhabitants>Pedestrians>Disable"), "Off")
     end
     for sphere = 0, 14 do
-        if not MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(sphere) then
-            MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 16666, 0.0, 0.0, false, true)
+        if MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(sphere) then
+            MISC.REMOVE_POP_MULTIPLIER_SPHERE(sphere, true)
         end
     end
     sphereCreated = false
