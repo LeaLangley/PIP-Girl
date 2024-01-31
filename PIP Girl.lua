@@ -4368,7 +4368,7 @@ menu.action(menu.my_root(), "Activate Everyday Goodies", {"pggoodies"}, "Activat
         menu.trigger_commands("pgascut on")
         menu.trigger_commands("pgaaw on")
         menu.trigger_commands("antiadmin on")
-        menu.trigger_commands("antitrafic on")
+        menu.trigger_commands("antitraffic on")
         menu.trigger_commands("softantitrafic on")
         menu.trigger_commands("pgssh on")
         menu.trigger_commands("ghostgod on")
@@ -4380,8 +4380,7 @@ menu.action(menu.my_root(), "Activate Everyday Goodies", {"pggoodies"}, "Activat
 end)
 
 menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
-    --notify(startupmsg)
-    MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 16666, 1.0, 1.0, false, true)
+    notify(startupmsg)
 end)
 
 menu.trigger_commands("antiadmin")
