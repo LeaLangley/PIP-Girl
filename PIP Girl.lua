@@ -3697,6 +3697,7 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic o
                 if MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(sphere) then
                     MISC.REMOVE_POP_MULTIPLIER_SPHERE(sphere, true)
                 end
+                util.yield(666)
             end
             MISC.CLEAR_AREA(0.0, 0.0, 0.0, 19999.9, true, false, false, true)
             VEHICLE.SET_DISTANT_CARS_ENABLED(false)
@@ -3710,6 +3711,7 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic o
             if not MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(sphere) then
                 MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 16666, 0.0, 0.0, false, true)
             end
+            util.yield(666)
         end
     else
         if sphereCreated then
@@ -3717,6 +3719,7 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitrafic"}, "Clears the traffic o
                 if MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(sphere) then
                     MISC.REMOVE_POP_MULTIPLIER_SPHERE(sphere, true)
                 end
+                util.yield(666)
             end
             sphereCreated = false
         end
@@ -3733,6 +3736,7 @@ end, function()
         if MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(sphere) then
             MISC.REMOVE_POP_MULTIPLIER_SPHERE(sphere, true)
         end
+        util.yield(666)
     end
     sphereCreated = false
     VEHICLE.SET_DISTANT_CARS_ENABLED(true)
