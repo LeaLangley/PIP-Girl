@@ -4166,22 +4166,24 @@ local function SessionCheck(pid)
         if is_player_in_blacklist(rid) then
             if player_Exist(pid) then
                 if not isFriend(pid) then
-                    local name = players.get_name(pid)
-                    if name == players.get_name(players.user()) then
-                        name = "N/A"
-                    end
-                    if session_type() == "Public" then
-                        notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
-                    end
-                    add_in_stand(pid)
-                    if StandUser(pid) then
-                        notify("This Blacklist is a Stand User, we don't kick them until they attack: \n" .. name .. " - " .. rid)
-                        menu.trigger_commands("hellaa " .. name .. " on")
-                    else
+                    if rid == players.get_rockstar_id(pid) then
+                        local name = players.get_name(pid)
+                        if name == players.get_name(players.user()) then
+                            name = "N/A"
+                        end
                         if session_type() == "Public" then
-                            StrategicKick(pid)
-                        else
+                            notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
+                        end
+                        add_in_stand(pid)
+                        if StandUser(pid) then
+                            notify("This Blacklist is a Stand User, we don't kick them until they attack: \n" .. name .. " - " .. rid)
                             menu.trigger_commands("hellaa " .. name .. " on")
+                        else
+                            if session_type() == "Public" then
+                                StrategicKick(pid)
+                            else
+                                menu.trigger_commands("hellaa " .. name .. " on")
+                            end
                         end
                     end
                 end
