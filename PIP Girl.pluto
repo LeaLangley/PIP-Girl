@@ -3676,36 +3676,28 @@ menu.action(SessionMisc, "Notify Highest K/D", {"notifykd"}, "Notify's u with th
     ReportSessionKD(numPlayers)
 end)
 
-local pop_multiplier_clear = false
-local pop_multiplier_fix = false
+local pop_multiplier_free = nil
+local pop_multiplier_repair = nil
 
-local function remove_pop_multiplier(id)
-    if id then
-        if MISC.DOES_POP_MULTIPLIER_AREA_EXIST(id) then
-            MISC.REMOVE_POP_MULTIPLIER_AREA(id, true)
-        end
-    else
-        for sphere = 0, 15 do
-            if MISC.DOES_POP_MULTIPLIER_AREA_EXIST(sphere) then
-                MISC.REMOVE_POP_MULTIPLIER_AREA(sphere, true)
-            end
-        end
+local function create_pop_multiplier(sphereID, pedPOP, vehPOP)
+    if not sphereID then
+        sphereID = MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19666, pedPOP, vehPOP, false, true)
     end
+    if not MISC.DOES_POP_MULTIPLIER_AREA_EXIST(sphereID) then
+        sphereID = MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19666, pedPOP, vehPOP, false, true)
+    end
+    return sphereID
 end
 
-local function create_pop_multiplier(pedPOP, vehPOP)
-    for sphere = 0, 15 do
-        if not MISC.DOES_POP_MULTIPLIER_SPHERE_EXIST(sphere) then
-            MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19666, pedPOP, vehPOP, false, true)
-        end
+local function remove_pop_multiplier(sphereID)
+    if sphereID and MISC.DOES_POP_MULTIPLIER_AREA_EXIST(sphereID) then
+        MISC.REMOVE_POP_MULTIPLIER_AREA(sphereID, true)
     end
+    return nil
 end
 
 menu.toggle_loop(Session, "Clear Traffic", {"antitraffic"}, "Clears the traffic on the session for everyone.", function()
-    if pop_multiplier_fix then
-        remove_pop_multiplier()
-        pop_multiplier_fix = false
-    end
+    remove_pop_multiplier(pop_multiplier_repair)
     if menu.get_state(menu.ref_by_path("World>Inhabitants>Traffic>Disable")) == "Disabled" then
         menu.trigger_command(menu.ref_by_path("World>Inhabitants>Traffic>Disable>Enabled, Including Parked Cars"))
     end
@@ -3713,36 +3705,27 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitraffic"}, "Clears the traffic 
         menu.set_state(menu.ref_by_path("World>Inhabitants>Pedestrians>Disable"), "On")
     end
     if transitionState(true) == 1 then
-        if not pop_multiplier_clear then
-            pop_multiplier_clear = true
+        if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "On" then
+            menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "Off")
+        end
+        if not pop_multiplier_free then
+            pop_multiplier_free = create_pop_multiplier(pop_multiplier_free, 0.0, 0.0)
             MISC.CLEAR_AREA(0.0, 0.0, 0.0, 19999.9, true, false, false, true)
             VEHICLE.SET_DISTANT_CARS_ENABLED(false)
             STREAMING.SET_PED_POPULATION_BUDGET(0)
             STREAMING.SET_VEHICLE_POPULATION_BUDGET(0)
             STREAMING.SET_REDUCE_PED_MODEL_BUDGET(true)
             STREAMING.SET_REDUCE_VEHICLE_MODEL_BUDGET(true)
-            remove_pop_multiplier()
-            if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "On" then
-                menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "Off")
-            end
-            create_pop_multiplier(0.0, 0.0)
         else
-            if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "On" then
-                menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "Off")
-            end
-            create_pop_multiplier(0.0, 0.0)
+            pop_multiplier_free = create_pop_multiplier(pop_multiplier_free, 0.0, 0.0)
             util.yield(6666)
         end
     else
         if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "Off" then
             menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "On")
         end
-        if pop_multiplier_clear then
-            remove_pop_multiplier()
-            pop_multiplier_clear = false
-        else
-            util.yield(6666)
-        end
+        pop_multiplier_free = remove_pop_multiplier(pop_multiplier_free)
+        util.yield(6666)
     end
 end, function()
     if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "Off" then
@@ -3759,13 +3742,11 @@ end, function()
     STREAMING.SET_VEHICLE_POPULATION_BUDGET(3)
     STREAMING.SET_REDUCE_PED_MODEL_BUDGET(false)
     STREAMING.SET_REDUCE_VEHICLE_MODEL_BUDGET(false)
-    pop_multiplier_clear = false
+    pop_multiplier_free = remove_pop_multiplier(pop_multiplier_free)
     if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "On" then
         menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "Off")
     end
-    remove_pop_multiplier()
-    create_pop_multiplier(1.0, 0.25)
-    pop_multiplier_fix = true
+    pop_multiplier_repair = create_pop_multiplier(pop_multiplier_repair, 0.6, 0.6)
 end)
 
 menu.toggle_loop(Session, "Soft Clear Traffic", {"softantitrafic"}, "Clears the traffic around you localy in close range.\nDosnt work with many players in close range.", function()
@@ -4400,16 +4381,7 @@ menu.action(menu.my_root(), "Activate Everyday Goodies", {"pggoodies"}, "Activat
 end)
 
 menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
-    --notify(startupmsg)
-    if pop_multiplier_id then
-        notify(pop_multiplier_id)
-    end
-    if MISC.DOES_POP_MULTIPLIER_AREA_EXIST(pop_multiplier_id) then
-        notify("beep")
-    end
-    if MISC.IS_POP_MULTIPLIER_AREA_NETWORKED(pop_multiplier_id) then
-        notify("yes")
-    end
+    notify(startupmsg)
 end)
 
 menu.trigger_commands("antiadmin")
