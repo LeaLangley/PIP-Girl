@@ -3204,11 +3204,12 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             end
         else
             if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
-                if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players then
+                if PLAYER.GET_NUMBER_OF_PLAYERS() <= session_claimer_players then
                     notify("Not Enoght Player")
-                end
-                if isModder(players.get_host()) then
+                elseif isModder(players.get_host()) then
                     notify("Host is a Modder")
+                else
+                    notify("error")
                 end
                 menu.trigger_commands("unstuck")
             end
