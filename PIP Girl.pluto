@@ -2841,27 +2841,39 @@ local function espOnPlayer(pid, namesync)
                 local detectionCOLOR
                 local rank = players.get_rank(pid)
                 local playerName = players.get_name(pid)
+                local classificationESP = ""
                 if isFriend(pid) then
-                    playerName = playerName .. " (Friend)"
+                    classificationESP = "(Friend)"
                     detectionCOLOR = { r = 34.0/255, g = 139.0/255, b = 34.0/255, a = 1.0 }
                 elseif isModder(pid) then
-                    playerName = playerName .. " (MOD)"
+                    classificationESP = "(MOD)"
                     detectionCOLOR = { r = 255.0/255, g = 13.0/255, b = 13.0/255, a = 1.0 }
                 elseif players.is_godmode(pid) then
-                    playerName = playerName .. " (GOD)"
+                    classificationESP = "(GOD)"
                     detectionCOLOR = { r = 255.0/255, g = 13.0/255, b = 13.0/255, a = 1.0 }
                 elseif not players.is_visible(pid) then
-                    playerName = playerName .. " (Ghost)"
+                    classificationESP = "(Ghost)"
                     detectionCOLOR = colText
                 else
                     detectionCOLOR = colText
                 end
-                drawESPText(screenName, -0.10, "("..rank..") "..playerName, txtscale, detectionCOLOR)                
+                drawESPText(screenName, -0.10, "("..rank..") "..playerName, txtscale, colText)                
                 local health = ENTITY.GET_ENTITY_HEALTH(targetped) - 100
                 local maxhealth = ENTITY.GET_ENTITY_MAX_HEALTH(targetped) - 100
-                local armour = PED.GET_PED_ARMOUR(targetped)
-                local maxarmour = PLAYER.GET_PLAYER_MAX_ARMOUR(pid)
-                drawESPText(screenName, -0.10 * 1.2, "(" .. health .. " / " .. maxhealth .. ")HP | (" .. armour .. " / " .. maxarmour .. ")AP", txtscale, colText)
+                local armor = PED.GET_PED_ARMOUR(targetped)
+                local maxarmor = PLAYER.GET_PLAYER_MAX_ARMOUR(pid)
+                local textSegments = {}
+                if health > 0 then
+                    table.insert(textSegments, "(" .. health .. " / " .. maxhealth .. ")HP")
+                end
+                if armor > 0 then
+                    table.insert(textSegments, "(" .. armor .. " / " .. maxarmor .. ")AP")
+                end
+                if classificationESP ~= "" then
+                    table.insert(textSegments, classificationESP)
+                end
+                local infoText = table.concat(textSegments, " | ")
+                drawESPText(screenName, -0.10 * 1.2, infoText, txtscale, detectionCOLOR)                  
             end
         end
     end
@@ -3792,8 +3804,8 @@ menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"}, "Ghost everyone who i
                 if players.is_godmode(pid) and not players.is_in_interior(pid) and not players.is_using_rc_vehicle(pid) then
                     if not contains(sussy_god, pid) then
                         table.insert(sussy_god, pid)
-                        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true) -- Sussy God mode.
                     end
+                    NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true) -- Sussy God mode.
                 else
                     local index = find_in_table(sussy_god, pid)
                     if index then
