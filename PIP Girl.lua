@@ -820,9 +820,17 @@ menu.action(PIP_Girl_APPS, "(Unstuck) Unstuck after starting a sale.", {}, "If y
     menu.trigger_commands('ewo')
 end)
 
-local function CayoBasics()
+local function fillUpEverything()
+    menu.trigger_commands("refillhealth")
+    menu.trigger_commands("refillarmour")
     menu.trigger_commands("fillinventory")
     menu.trigger_commands("fillammo")
+    menu.trigger_commands("clubpopularity 100")
+    menu.trigger_commands("removebounty")
+end
+
+local function CayoBasics()
+    fillUpEverything()
     STAT_SET_INT("H4_MISSIONS", -1)
     STAT_SET_INT("H4CNF_APPROACH", -1)
     STAT_SET_INT("H4CNF_BS_ENTR", 63)
@@ -1460,7 +1468,7 @@ end)
 
 menu.divider(Stimpak, "Player Related Health")
 
-local regen_all = Stimpak:action("Refill Health & Armour",{"newborn"},"Regenerate to max your health and armour.",function()
+menu.action(Stimpak, "Refill Health & Armour",{"newborn"},"Regenerate to max your health and armour.",function()
     if transitionState(true) <3  then
         menu.trigger_commands("refillhealth")
         menu.trigger_commands("refillarmour")
@@ -1470,10 +1478,8 @@ end)
 local filled_up = true
 menu.toggle_loop(Stimpak, "Fill me up! On session join", {"pgfmu"}, "Fill you up with health, armor, snacks, and ammo on session join.", function()
     if transitionState(true) == 1 and not filled_up then
-        util.yield(13666)
-        menu.trigger_command(regen_all)
-        menu.trigger_commands("fillinventory")
-        menu.trigger_commands("fillammo")
+        util.yield(3666)
+        fillUpEverything()
         filled_up = true
     end
     if transitionState(true) ~= 1 then
@@ -1489,7 +1495,7 @@ menu.toggle_loop(Stimpak, "Auto Armor after Death",{"pgblessing"},"A body armor 
         if health == 0 and dead == 0 then
             dead = 1
         elseif health == ENTITY.GET_ENTITY_MAX_HEALTH(players.user_ped()) and dead == 1 then
-            menu.trigger_command(regen_all)
+            menu.trigger_commands("newborn")
             dead = 0
         end
         util.yield(500)
@@ -1563,10 +1569,10 @@ menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {"pgva
         if health ~= 0 then
             if in_vehicle and not was_user_in_vehicle then
                 was_user_in_vehicle = true
-                menu.trigger_command(regen_all)
+                menu.trigger_commands("newborn")
             elseif not in_vehicle and was_user_in_vehicle then
                 was_user_in_vehicle = false
-                menu.trigger_command(regen_all)
+                menu.trigger_commands("newborn")
             end
         end
         util.yield(666)
@@ -1803,14 +1809,9 @@ menu.toggle_loop(Stimpak, "Lea's Repair Stop", {"lears"}, "", function()
                         menu.trigger_commands("performance")
                         menu.trigger_commands("fixvehicle")
                     end
-                    menu.trigger_commands("fillammo")
+                    fillUpEverything()
                     menu.trigger_commands("wanted 0")
-                    menu.trigger_commands("refillhealth")
-                    menu.trigger_commands("refillarmour")
-                    menu.trigger_commands("fillinventory")
-                    menu.trigger_commands("clubpopularity 100")
                     menu.trigger_commands("mentalstate 0")
-                    menu.trigger_commands("removebounty")
                     menu.trigger_commands("helibackup")
                     buff_lea_tech(vehicle)
                     notify("Come back in 6min for the next Supply.")
@@ -2845,6 +2846,9 @@ local function espOnPlayer(pid, namesync)
                 if isFriend(pid) then
                     classificationESP = "(Friend)"
                     detectionCOLOR = { r = 34.0/255, g = 139.0/255, b = 34.0/255, a = 1.0 }
+                elseif players.is_marked_as_attacker(pid) then
+                    classificationESP = "(ATK)"
+                    detectionCOLOR = { r = 255.0/255, g = 13.0/255, b = 13.0/255, a = 1.0 }
                 elseif isModder(pid) then
                     classificationESP = "(MOD)"
                     detectionCOLOR = { r = 255.0/255, g = 13.0/255, b = 13.0/255, a = 1.0 }
@@ -3127,9 +3131,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                         temp_auto_warning = false
                     end
                     menu.trigger_commands("resetheadshots")
-                    menu.trigger_command(regen_all)
-                    menu.trigger_commands("fillinventory")
-                    menu.trigger_commands("fillammo")
+                    fillUpEverything()
                     menu.trigger_commands("claimsession off")
                     buff_lea_tech(get_user_vehicle())
                     if thunderMin ~= 0 then
