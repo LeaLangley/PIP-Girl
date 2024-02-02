@@ -2863,14 +2863,14 @@ local function espOnPlayer(pid, namesync)
                 end
                 drawESPText(screenName, -0.10, "("..rank..") "..playerName, txtscale, colText)                
                 local health = ENTITY.GET_ENTITY_HEALTH(targetped) - 100
-                local maxhealth = ENTITY.GET_ENTITY_MAX_HEALTH(targetped) - 100
                 local armor = PED.GET_PED_ARMOUR(targetped)
-                local maxarmor = PLAYER.GET_PLAYER_MAX_ARMOUR(pid)
                 local textSegments = {}
                 if health > 0 then
+                    local maxhealth = ENTITY.GET_ENTITY_MAX_HEALTH(targetped) - 100
                     table.insert(textSegments, "(" .. health .. " / " .. maxhealth .. ")HP")
                 end
                 if armor > 0 then
+                    local maxarmor = PLAYER.GET_PLAYER_MAX_ARMOUR(pid)
                     table.insert(textSegments, "(" .. armor .. " / " .. maxarmor .. ")AP")
                 end
                 if classificationESP ~= "" then
