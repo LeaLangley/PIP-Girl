@@ -2986,6 +2986,7 @@ local function sessionWorthy()
     return false
 end
 
+local sessionClaimer_firstRun = true
 local function findAnewHome()
     if session_type() ~= "Singleplayer" then
         if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 then
@@ -3008,8 +3009,10 @@ local function findAnewHome()
             end
         end
     else
-        notify("You are in story mode, waiting 13sec")
-        util.yield(13666)
+        if not sessionClaimer_firstRun then
+            notify("You are in story mode, waiting 13sec")
+            util.yield(13666)
+        end
         notify("You are in story mode, Getting you online.")
     end
     menu.trigger_commands("go public")
@@ -3025,7 +3028,6 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
     local temp_admin = false
     local auto_warning_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Game>Auto Accept Warning"
     local temp_auto_warning = false
-    local first_run = true
     local fucking_failure = false
     if menu.get_state(menu.ref_by_path(spoof_path)) == "On" then
         if menu.get_state(menu.ref_by_path(admin_path)) == "Off" then
@@ -3045,9 +3047,6 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         elseif session_claimer_players < 30 and menu.get_state(menu.ref_by_path(magnet_path)) ~= session_claimer_players then
             menu.trigger_commands("playermagnet " .. session_claimer_players)
         end    
-        if transitionState(true) < 3 then
-            menu.trigger_commands("go public")
-        end
         util.yield(666)
         --  <3
         --  Waiting to Join a Session
@@ -3061,6 +3060,10 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 util.yield(1666)
                 findAnewHome()
                 goto sessionclaimerShortcut
+            else
+                if sessionClaimer_firstRun then
+                    sessionClaimer_firstRun = false
+                end
             end
             if transitionState(true) < 3 then
                 util.yield(3666)
@@ -3140,6 +3143,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     util.yield(6666)
                     menu.trigger_commands("claimsession off")
                     allow_Join_back(host_name)
+                    sessionClaimer_firstRun = true
                 else
                     findAnewHome()
                     goto sessionclaimerShortcut
