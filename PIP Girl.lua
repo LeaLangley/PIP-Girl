@@ -2839,25 +2839,22 @@ local function espOnPlayer(pid, namesync)
                 end
                 local txtscale = 0.42
                 local detectionCOLOR
-                local ESPFriend = isFriend(pid)
-                local ESPModder = isModder(pid)
-                if ESPFriend then
-                    detectionCOLOR = { r = 34.0/255, g = 139.0/255, b = 34.0/255, a = 1.0 }
-                elseif ESPModder then
-                    detectionCOLOR = { r = 255.0/255, g = 13.0/255, b = 13.0/255, a = 1.0 }
-                else
-                    detectionCOLOR = colText
-                end
                 local rank = players.get_rank(pid)
                 local playerName = players.get_name(pid)
-                if ESPFriend then
+                if isFriend(pid) then
                     playerName = playerName .. " (Friend)"
-                elseif ESPModder then
+                    detectionCOLOR = { r = 34.0/255, g = 139.0/255, b = 34.0/255, a = 1.0 }
+                elseif isModder(pid) then
                     playerName = playerName .. " (MOD)"
+                    detectionCOLOR = { r = 255.0/255, g = 13.0/255, b = 13.0/255, a = 1.0 }
                 elseif players.is_godmode(pid) then
                     playerName = playerName .. " (GOD)"
+                    detectionCOLOR = { r = 255.0/255, g = 13.0/255, b = 13.0/255, a = 1.0 }
                 elseif not players.is_visible(pid) then
                     playerName = playerName .. " (Ghost)"
+                    detectionCOLOR = colText
+                else
+                    detectionCOLOR = colText
                 end
                 drawESPText(screenName, -0.10, "("..rank..") "..playerName, txtscale, detectionCOLOR)                
                 local health = ENTITY.GET_ENTITY_HEALTH(targetped) - 100
