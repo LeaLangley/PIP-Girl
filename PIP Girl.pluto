@@ -1987,7 +1987,6 @@ local function repair_lea_tech(vehicle)
     end
 
     if petrolTankHealth >= 1000 and engineHealth >= 1000 and bodyHealth >= 1000 then
-        VEHICLE.SET_VEHICLE_DEFORMATION_FIXED(vehicle)
         VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, 1000)
         VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, 1000)
         VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, 1000)
