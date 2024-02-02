@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.122"
+local SCRIPT_VERSION = "1.123"
 
 local startupmsg = "If settings are missing PLS restart lua.\n\nAdded Custom spawns in Session>Join Settings.\nIf you use quick join, set spawn to \"Random\" or \"Last Location\" and u can profit from custom spawn.\n\nLea Tech on top!"
 
@@ -3708,6 +3708,22 @@ local function isFriendStuck()
     return nil
 end
 
+local function healthyInternet(pid)
+    if NETWORK.NETWORK_GET_AVERAGE_PACKET_LOSS(pid) == 0 and NETWORK.NETWORK_GET_AVERAGE_LATENCY(pid) < 79 then
+        return true
+    else
+        return false
+    end
+end
+
+local function worthToUnstuck(pid)
+    if player_Exist(pid) and isStuck(pid) and healthyInternet(pid) then
+        return true
+    else
+        return false
+    end
+end
+
 menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
     if transitionState(true) == 1 then
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
@@ -3720,19 +3736,19 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                             targetPid = isFriendStuck()
                         end
                         local check_timeout = os.time() + 13
-                        while player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and discoveredSince(targetPid) >= 113 do
+                        while worthToUnstuck(targetPid) and players.get_script_host() ~= targetPid and discoveredSince(targetPid) >= 113 do
                             if os.time() > check_timeout then
                                 break
                             end
                             util.yield(666)
                         end
-                        if player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and discoveredSince(targetPid) >= 113 then
+                        if worthToUnstuck(targetPid) and players.get_script_host() ~= targetPid and discoveredSince(targetPid) >= 113 then
                             local name = players.get_name(targetPid)
                             menu.trigger_commands("givesh " .. name)
                             notify_cmd(name .. " is Loading too Long.")
                             local buffer_timeout = os.time() + 13
                             while player_Exist(targetPid) and buffer_timeout > os.time() do
-                                util.yield(666)
+                                util.yield(113)
                             end
                             local loading_timeout = os.time() + 30
                             local fail = false
@@ -3746,17 +3762,17 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                 if players.get_script_host() ~= targetPid then
                                     break
                                 end
-                                --if player_Exist(targetPid) and isStuck(targetPid) and players.get_script_host() ~= targetPid and not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
-                                --    menu.trigger_commands("givesh " .. name)
-                                --    notify_cmd(name .. " is Still Loading too Long.")
-                                --    util.yield(13666)
-                                --end
                             end
                             if not fail then
+                                if players.get_script_host() ~= players.user() then
+                                    if discoveredSince(players.get_script_host()) < 113 or not healthyInternet(players.get_script_host()) then
+                                        menu.trigger_commands("scripthost")
+                                    end
+                                end
                                 if player_Exist(targetPid) then
                                     notify_cmd(name .. " Finished Loading.")
                                     local finisher_timeout = os.time() + 16
-                                    while not isFriendStuck() and player_Exist(targetPid) and finisher_timeout > os.time() do
+                                    while not isFriendStuck() and healthyInternet(targetPid) and player_Exist(targetPid) and finisher_timeout > os.time() do
                                         util.yield(113)
                                     end
                                     menu.trigger_commands("scripthost")
