@@ -2822,24 +2822,40 @@ local function espOnPlayer(pid, namesync)
         end
         if vdist <= show_distance then
             local playerHeadOffset = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(targetped, 0, 0, 1.0)
-            local blipColor = getOrgColor(pid)
-            local colText
-            if blipColor == -1 then
-                colText = { r = 1.0, g = 1.0, b = 1.0, a = 1.0 }
-            else
-                colText = {
-                    r = blipColor.r,
-                    g = blipColor.g,
-                    b = blipColor.b,
-                    a = blipColor.a
-                }
-            end
             local screenName = worldToScreen(playerHeadOffset)
-            local txtscale = 0.42
 
             if screenName.success then
+                local blipColor = getOrgColor(pid)
+                local colText
+                if blipColor == -1 then
+                    colText = { r = 1.0, g = 1.0, b = 1.0, a = 1.0 }
+                else
+                    colText = {
+                        r = blipColor.r,
+                        g = blipColor.g,
+                        b = blipColor.b,
+                        a = blipColor.a
+                    }
+                end
+                local txtscale = 0.42
+                local detectionCOLOR
+                if isFriend(pid) then
+                    detectionCOLOR = { r = 34.0/255, g = 139.0/255, b = 34.0/255, a = 1.0 }
+                elseif isModder(pid) then
+                    detectionCOLOR = { r = 255.0/255, g = 13.0/255, b = 13.0/255, a = 1.0 }
+                else
+                    detectionCOLOR = { r = 1.0, g = 1.0, b = 1.0, a = 1.0 }
+                end
                 local rank = players.get_rank(pid)
-                drawESPText(screenName, -0.10, "("..rank..") "..players.get_name_with_tags(pid), txtscale, colText)
+                local playerName = players.get_name(pid)
+                if isModder(pid) then
+                    playerName = playerName .. " (MOD)"
+                elseif players.is_godmode(pid) then
+                    playerName = playerName .. " (GOD)"
+                elseif not players.is_visible(pid) then
+                    playerName = playerName .. " (GHOST)"
+                end
+                drawESPText(screenName, -0.10, "("..rank..") "..playerName, txtscale, detectionCOLOR)                
                 local health = ENTITY.GET_ENTITY_HEALTH(targetped) - 100
                 local maxhealth = ENTITY.GET_ENTITY_MAX_HEALTH(targetped) - 100
                 local armour = PED.GET_PED_ARMOUR(targetped)
