@@ -2872,7 +2872,7 @@ local function espOnPlayer(pid, namesync)
                     local maxhealth = ENTITY.GET_ENTITY_MAX_HEALTH(targetped) - 100
                     table.insert(textSegments, "(" .. health .. " / " .. maxhealth .. ")HP")
                 else
-                    classificationESP = calssificationESP .. "(DEAD)"
+                    classificationESP = classificationESP .. "(DEAD)"
                 end
                 if armor > 0 then
                     local maxarmor = PLAYER.GET_PLAYER_MAX_ARMOUR(pid)
