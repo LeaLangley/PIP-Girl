@@ -2364,6 +2364,7 @@ menu.toggle_loop(Vehicle, "Easier Oppressor MK2 UD Handling",{""},"Makes Upside 
     util.yield(3666)
 end)
 
+
 menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     local nearbyVehicles = entities.get_all_vehicles_as_handles()
     local playerPosition = players.get_position(players.user())
@@ -3022,23 +3023,26 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
     --  <3
     --  Setting up the Filter
     --  <3
+    local paths = {
+        {path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Session>Admin Bail", desired_state = "On"},
+        {path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Game>Auto Accept Warning", desired_state = "On"},
+        {path = "Online>Transitions>Speed Up>Don't Wait For Data Broadcast", desired_state = "On"},
+        {path = "Online>Transitions>Speed Up>Don't Wait For Mission Launcher", desired_state = "On"},
+        {path = "Online>Transitions>Speed Up>Don't Ask For Permission To Spawn", desired_state = "On"},
+        {path = "Online>Transitions>Transition Helper", desired_state = "On"},
+        {path = "Online>Transitions>Show Transition State", desired_state = "On"},
+        {path = "Online>Transitions>Show Array Sync Progress", desired_state = "On"},
+    }
     local magnet_path = "Online>Transitions>Matchmaking>Player Magnet"
-    local admin_path= "Stand>Lua Scripts>"..SCRIPT_NAME..">Session>Admin Bail"
     local spoof_path = "Online>Spoofing>Host Token Spoofing>Host Token Spoofing"
-    local temp_admin = false
-    local auto_warning_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Game>Auto Accept Warning"
-    local temp_auto_warning = false
-    local fucking_failure = false
     if menu.get_state(menu.ref_by_path(spoof_path)) == "On" then
-        if menu.get_state(menu.ref_by_path(admin_path)) == "Off" then
-            menu.trigger_commands("antiadmin on")
-            temp_admin = true
+        local original_states = {}
+        for _, entry in ipairs(paths) do
+            original_states[entry.path] = menu.get_state(menu.ref_by_path(entry.path))
+            if original_states[entry.path] ~= entry.desired_state then
+                menu.set_state(menu.ref_by_path(entry.path), entry.desired_state)
+            end
         end
-        if menu.get_state(menu.ref_by_path(auto_warning_path)) == "Off" then
-            menu.trigger_commands("pgaaw on")
-            temp_auto_warning = true
-        end
-
         if session_claimer_players >= 30 and menu.get_state(menu.ref_by_path(magnet_path)) ~= "30" then
             menu.trigger_commands("playermagnet 30")
         elseif session_claimer_players == 0 then
@@ -3125,13 +3129,8 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     if players.user() ~= players.get_script_host() then
                         menu.trigger_commands("scripthost")
                     end
-                    if temp_admin then
-                        menu.trigger_commands("antiadmin off")
-                        temp_admin = false
-                    end
-                    if temp_auto_warning then
-                        menu.trigger_commands("pgaaw off")
-                        temp_auto_warning = false
+                    for path, original_state in pairs(original_states) do
+                        menu.set_state(menu.ref_by_path(path), original_state)
                     end
                     menu.trigger_commands("resetheadshots")
                     fillUpEverything()
@@ -3159,6 +3158,10 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         notify("You arent spoofing a host token , you should do that.\nIf you dont know what that means, you shouldnt use the function in its current state.")
         menu.trigger_commands("claimsession off")
         util.yield(6666)
+    end
+end, function()
+    for path, original_state in pairs(original_states) do
+        menu.set_state(menu.ref_by_path(path), original_state)
     end
 end)
 
