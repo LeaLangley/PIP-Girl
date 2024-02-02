@@ -3759,6 +3759,10 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     fail = true
                                     break
                                 end
+                                if healthyInternet(targetPid) then
+                                    notify_cmd(name .. " has trash internet.")
+                                    fail = true
+                                end
                                 if players.get_script_host() ~= targetPid then
                                     break
                                 end
