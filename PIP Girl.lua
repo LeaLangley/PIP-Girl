@@ -4068,25 +4068,25 @@ local function add_in_stand(pid)
     end
 end
 
---local startupCheckCD = true
+local startupCheckCD = true
 local function is_player_in_blacklist(rid)
     for ipairs(data_g) as blacklistedId do
         if blacklistedId == rid then
             return true
         end
-        --if not startupCheckCD then
-        --    util.yield()
-        --end
+        if startupCheckCD then
+            util.yield()
+        end
     end
     for ipairs(data_e) as blacklistedId do
         if blacklistedId == rid then
             return true
         end
-        --if not startupCheckCD then
-        --    util.yield()
-        --end
+        if startupCheckCD then
+            util.yield()
+        end
     end
-    --startupCheckCD = false
+    startupCheckCD = false
     return false
 end
 
