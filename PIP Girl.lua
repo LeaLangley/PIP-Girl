@@ -3023,27 +3023,27 @@ local function findAnewHome()
     menu.trigger_commands("go public")
 end
 
+local SessionClaimerPaths = {
+    {path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Session>Admin Bail", desired_state = "On"},
+    {path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Game>Auto Accept Warning", desired_state = "On"},
+    {path = "Online>Transitions>Speed Up>Don't Wait For Data Broadcast", desired_state = "On"},
+    {path = "Online>Transitions>Speed Up>Don't Wait For Mission Launcher", desired_state = "On"},
+    {path = "Online>Transitions>Speed Up>Don't Ask For Permission To Spawn", desired_state = "On"},
+    {path = "Online>Transitions>Transition Helper", desired_state = "On"},
+    {path = "Online>Transitions>Show Transition State", desired_state = "On"},
+    {path = "Online>Transitions>Show Array Sync Progress", desired_state = "On"},
+}
+local SessionClaimerOriginal_states = {}
 menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session with Selcted Size.\nChecks if the host is not a Modder or Friend.\nClaims the Host if all clear and next as host.\nElse looks for a better place to stay.\n\nAdmin Bailing & Auto Accept Warning included.", function()
     --  <3
     --  Setting up the Filter
     --  <3
-    local paths = {
-        {path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Session>Admin Bail", desired_state = "On"},
-        {path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Game>Auto Accept Warning", desired_state = "On"},
-        {path = "Online>Transitions>Speed Up>Don't Wait For Data Broadcast", desired_state = "On"},
-        {path = "Online>Transitions>Speed Up>Don't Wait For Mission Launcher", desired_state = "On"},
-        {path = "Online>Transitions>Speed Up>Don't Ask For Permission To Spawn", desired_state = "On"},
-        {path = "Online>Transitions>Transition Helper", desired_state = "On"},
-        {path = "Online>Transitions>Show Transition State", desired_state = "On"},
-        {path = "Online>Transitions>Show Array Sync Progress", desired_state = "On"},
-    }
     local magnet_path = "Online>Transitions>Matchmaking>Player Magnet"
     local spoof_path = "Online>Spoofing>Host Token Spoofing>Host Token Spoofing"
     if menu.get_state(menu.ref_by_path(spoof_path)) == "On" then
-        local original_states = {}
-        for _, entry in ipairs(paths) do
-            original_states[entry.path] = menu.get_state(menu.ref_by_path(entry.path))
-            if original_states[entry.path] ~= entry.desired_state then
+        for _, entry in ipairs(SessionClaimerPaths) do
+            SessionClaimerOriginal_states[entry.path] = menu.get_state(menu.ref_by_path(entry.path))
+            if SessionClaimerOriginal_states[entry.path] ~= entry.desired_state then
                 menu.set_state(menu.ref_by_path(entry.path), entry.desired_state)
             end
         end
@@ -3133,7 +3133,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     if players.user() ~= players.get_script_host() then
                         menu.trigger_commands("scripthost")
                     end
-                    for path, original_state in pairs(original_states) do
+                    for path, original_state in pairs(SessionClaimerOriginal_states) do
                         menu.set_state(menu.ref_by_path(path), original_state)
                     end
                     menu.trigger_commands("resetheadshots")
@@ -3164,7 +3164,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         util.yield(6666)
     end
 end, function()
-    for path, original_state in pairs(original_states) do
+    for path, original_state in pairs(SessionClaimerOriginal_states) do
         menu.set_state(menu.ref_by_path(path), original_state)
     end
 end)
