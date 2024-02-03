@@ -3724,7 +3724,7 @@ local function isFriendStuck()
 end
 
 local function healthyInternet(pid)
-    if NETWORK.NETWORK_GET_AVERAGE_PACKET_LOSS(pid) == 0 and NETWORK.NETWORK_GET_AVERAGE_LATENCY(pid) < 79 then
+    if NETWORK.NETWORK_GET_AVERAGE_PACKET_LOSS(pid) == 0 and NETWORK.NETWORK_GET_AVERAGE_LATENCY(pid) < 76 then
         return true
     else
         return false
@@ -3774,7 +3774,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     fail = true
                                     break
                                 end
-                                if healthyInternet(targetPid) then
+                                if ETWORK.NETWORK_GET_AVERAGE_LATENCY(targetPid) < 76 then
                                     notify_cmd(name .. " has trash internet.")
                                     fail = true
                                     break
