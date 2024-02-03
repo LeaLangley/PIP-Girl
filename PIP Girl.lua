@@ -3799,11 +3799,11 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                 else
                                     menu.trigger_commands("scripthost")
                                     notify_cmd(name .. " got Lost in the Void.")
-                                    util.yield(16666)
+                                    util.yield(66666)
                                 end
                             else
                                 menu.trigger_commands("scripthost")
-                                util.yield(16666)
+                                util.yield(66666)
                             end
                         end
                     end
@@ -3813,6 +3813,8 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                     util.yield(13666)
                     if isStuck(players.user()) then
                         menu.trigger_commands("scripthost")
+                    else
+                        util.yield(13666)
                     end
                 end
             end
