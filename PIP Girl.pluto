@@ -251,7 +251,7 @@ local function allow_Join_back(name)
 end
 
 local function StandUser(pid) -- credit to sapphire for this and jinx script
-    util.yield(666)
+    util.yield(13)
     if player_Exist(pid) and pid ~= players.user() then
         for menu.player_root(pid):getChildren() as cmd do
             if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Stand User"):isValid() then
@@ -263,7 +263,7 @@ local function StandUser(pid) -- credit to sapphire for this and jinx script
 end
 
 local function discoveredSince(pid)
-    util.yield(666)
+    util.yield(13)
     if player_Exist(pid) then
         local playerPath = menu.player_root(pid)
         local timeString = playerPath:refByRelPath("Information>Discovered").value
@@ -279,7 +279,7 @@ local function discoveredSince(pid)
 end
 
 local function wannabeGod(pid)
-    util.yield(666)
+    util.yield(13)
     if player_Exist(pid) and pid ~= players.user() then
         for menu.player_root(pid):getChildren() as cmd do
             if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Attacking While Invulnerable"):isValid() then
@@ -294,7 +294,7 @@ local function wannabeGod(pid)
 end
 
 local function aggressive(pid)
-    util.yield(666)
+    util.yield(13)
     if player_Exist(pid) and pid ~= players.user() then
         for menu.player_root(pid):getChildren() as cmd do
             if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Spoofed Host Token (Aggressive)"):isValid() then
@@ -306,7 +306,7 @@ local function aggressive(pid)
 end
 
 local function StandDetectionsRead(pid)
-    util.yield(666)
+    util.yield(13)
     local PlayerRootChildrenArray = menu.player_root(pid):getChildren()
     for PlayerRootChildrenArray as Child do
         if Child:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and lang.get_string(Child.menu_name, "en"):startswith "Classification: " then
@@ -728,6 +728,9 @@ local function StrategicKick(pid)
         local name = players.get_name(pid)
         if name ~= players.get_name(players.user()) then
             if transitionState(true) ~= 1 then
+                if menu.get_edition() > 1 then
+                    menu.trigger_commands("loveletterkick " .. name)
+                end
                 menu.trigger_commands("kick " .. name)
                 NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
                 Wait_for_transitionState()
@@ -740,6 +743,7 @@ local function StrategicKick(pid)
                             menu.trigger_commands("loveletterkick " .. name)
                         end
                     else
+                        menu.trigger_commands("loveletterkick " .. name)
                         menu.trigger_commands("kick " .. name)
                         menu.trigger_commands("ignore " .. name .. " on")
                         menu.trigger_commands("desync " .. name .. " on")
@@ -4067,7 +4071,7 @@ end
 local startupCheckCD = true
 local function is_player_in_blacklist(rid)
     for ipairs(data_g) as blacklistedId do
-        if tonumber(blacklistedId) == tonumber(rid) then
+        if blacklistedId == rid then
             return true
         end
         if not startupCheckCD then
@@ -4075,14 +4079,13 @@ local function is_player_in_blacklist(rid)
         end
     end
     for ipairs(data_e) as blacklistedId do
-        if tonumber(blacklistedId) == tonumber(rid) then
+        if blacklistedId == rid then
             return true
         end
         if not startupCheckCD then
             util.yield()
         end
     end
-    startupCheckCD = false
     return false
 end
 
