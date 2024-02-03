@@ -3774,7 +3774,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     fail = true
                                     break
                                 end
-                                if ETWORK.NETWORK_GET_AVERAGE_LATENCY(targetPid) < 76 then
+                                if NETWORK.NETWORK_GET_AVERAGE_LATENCY(targetPid) < 76 then
                                     notify_cmd(name .. " has trash internet.")
                                     fail = true
                                     break
