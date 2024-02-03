@@ -4321,7 +4321,7 @@ menu.divider(Settings, "<3")
 menu.action(Settings, "Copy Position to Clipboard", {"pgcopypos"}, "", function()
     local playerPosition = players.get_position(players.user())
     local streetInfo = get_Street_Names(playerPosition.x, playerPosition.y, playerPosition.z)
-    local positionString = string.format("{ x = %.2f, y = %.2f, z = %.2f, streetName = \"%s\", crossingName = \"%s\" },",
+    local positionString = string.format("{ x = %.2f, y = %.2f, z = %.2f, zoneName = \"%s\", streetName = \"%s\", crossingName = \"%s\" },",
     playerPosition.x, playerPosition.y, playerPosition.z,
     streetInfo.zoneName, streetInfo.streetName, streetInfo.crossingName)
     util.copy_to_clipboard(positionString, false)
