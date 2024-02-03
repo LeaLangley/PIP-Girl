@@ -116,15 +116,14 @@ end
 
 local max_int = 2147483647
 local min_int = -2147483647
-local Int_PTR = memory.alloc_int()
 
 local function getMPX()
     return 'MP'.. util.get_char_slot() ..'_'
 end
 
 local function STAT_GET_INT(Stat)
-    STATS.STAT_GET_INT(util.joaat(getMPX() .. Stat), Int_PTR, -1)
-    return memory.read_int(Int_PTR)
+    local Int_PTR = menu.get_value(menu.ref_by_path("Online>Quick Progress>Stat Editor>Raw Stats>"..getMPX()..Stat))
+    return Int_PTR
 end
 
 function ADD_MP_INDEX(stat)
