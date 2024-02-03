@@ -2852,6 +2852,9 @@ local function espOnPlayer(pid, namesync)
                 elseif isModder(pid) then
                     classificationESP = "(MOD)"
                     detectionCOLOR = { r = 255.0/255, g = 13.0/255, b = 13.0/255, a = 1.0 }
+                elseif players.is_in_interior(pid) then
+                    classificationESP = "(INN)"
+                    detectionCOLOR = { r = 255.0/255, g = 255.0/255, b = 213.0/255, a = 1.0 }
                 elseif players.is_using_rc_vehicle(pid) then
                     classificationESP = "(RC)"
                     detectionCOLOR = { r = 13.0/255, g = 13.0/255, b = 113.0/255, a = 1.0 }
