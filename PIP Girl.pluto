@@ -4003,9 +4003,25 @@ load_data_e()
 
 load_data_g()
 
+local PIP_Girl_Blacklist = {}
+
+local function load_PIP_Girl_Blacklist()
+    for _, id in ipairs(data_g) do
+        PIP_Girl_Blacklist[id] = true
+    end
+
+    for _, id in ipairs(data_e) do
+        PIP_Girl_Blacklist[id] = true
+    end
+end
+
+load_PIP_Girl_Blacklist()
+
 local function add_player_to_blacklist(rid)
     if pid ~= players.user() then
-        table.insert(data_e, tostring(rid))
+        local id = tostring(rid)
+        table.insert(data_e, id)
+        PIP_Girl_Blacklist[id] = true
         save_data_e()
     end
 end
@@ -4068,26 +4084,9 @@ local function add_in_stand(pid)
     end
 end
 
-local startupCheckCD = true
 local function is_player_in_blacklist(rid)
-    for ipairs(data_g) as blacklistedId do
-        if blacklistedId == rid then
-            return true
-        end
-        if startupCheckCD then
-            util.yield()
-        end
-    end
-    for ipairs(data_e) as blacklistedId do
-        if blacklistedId == rid then
-            return true
-        end
-        if startupCheckCD then
-            util.yield()
-        end
-    end
-    startupCheckCD = false
-    return false
+    local id = tostring(rid)
+    return PIP_Girl_Blacklist[id] ~= nil
 end
 
 local function startupCheck()
