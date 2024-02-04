@@ -1373,10 +1373,13 @@ menu.toggle_loop(PIP_Girl, "Collect all NPC money", {}, "Collect all NPC money."
             if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) and not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
                 local pickupHash = entities.get_model_hash(pickup)
                 if contains(money_hashish, pickupHash) then
-                    if is_user_driving_vehicle() then
+                    if is_user_driving_vehicle() and not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
                         OBJECT.SET_PICKUP_OBJECT_COLLECTABLE_IN_VEHICLE(pickup)
+                        ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
+                        ENTITY.ATTACH_ENTITY_TO_ENTITY(pickup, players.user_ped(), PED.GET_PED_BONE_INDEX(players.user_ped(), 24818), 0, -0.3, 0, 0, 90, 0, false, true, true, false, 0, true, 1)
+                    else
+                        ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
                     end
-                    ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
                 end
             end
             util.yield(13)
@@ -1391,7 +1394,7 @@ local carryingPickups = {}
 menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all pickups on you.\nNote this doesn't work in all situations.", function(on)
     if on then
         local counter = 0
-        local playerPed = PLAYER.PLAYER_PED_ID()
+        local playerPed = players.user_ped()
         for entities.get_all_pickups_as_handles() as pickup do
             if not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) and not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
                 requestControl(pickup, 0)
@@ -1405,7 +1408,7 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all pickups on yo
         notify("Carrying "..counter.." pickups.")
     else
         local counter = 0
-        local playerPed = PLAYER.PLAYER_PED_ID()
+        local playerPed = players.user_ped()
         local pos = players.get_position(players.user())
         for ipairs(carryingPickups) as pickup do
             if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) and ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
