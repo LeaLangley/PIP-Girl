@@ -3684,7 +3684,7 @@ end)
 discord_webhook = readFromFilePIP(store_dir..'do_not_share_webhook.txt')
 
 local posted_session_code = readFromFilePIP(store_dir..'session_code.txt')
-menu.toggle_loop(SessionInvite, "Post Session Code in Webhook", {""}, "Never share you webhook ever!", function()
+menu.toggle_loop(SessionInvite, "Post Session Code via Webhook", {""}, "Never share you webhook ever!", function()
     if discord_webhook then
         if transitionState(true) == 1 then
             local code = get_session_code()
