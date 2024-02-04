@@ -1352,7 +1352,7 @@ local vehicle_money_hashish = {
 menu.toggle_loop(PIP_Girl, "Collect all NPC money", {}, "Collect all NPC money.", function()
     if transitionState(true) == 1 then
         local pos = players.get_position(players.user())
-        if is_user_driving_vehicle()
+        if is_user_driving_vehicle() then
             for entities.get_all_pickups_as_handles() as pickup do
                 if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) and not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
                     local pickupHash = entities.get_model_hash(pickup)
