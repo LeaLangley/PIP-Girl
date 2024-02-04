@@ -3538,6 +3538,33 @@ menu.action(SessionMisc, "Create \"Friend's\" Group", {"createfriendsgroup"}, "C
     menu.trigger_commands("friendswhitelist")
 end)
 
+menu.action(SessionMisc, "Cleanup \"Friend's\" Group", {"cleanupfriends"}, "remove non friends from this group.", function()
+    if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Friend's")) then
+        for menu.ref_by_path("Online>Player History>Noted Players>Friend's"):getChildren() as friend do
+            local friend_target = friend.target
+            if friend_target then
+                if friend_target:isValid() then
+                    if friend_target:refByRelPath("Whitelist Join"):isValid() then
+                        friend_target:refByRelPath("Whitelist Join").value = false
+                    end
+                    if friend_target:refByRelPath("Tracking>Disabled"):isValid() then
+                        menu.trigger_command(friend_target:refByRelPath("Tracking>Disabled"))
+                    end
+                    if friend_target:refByRelPath("Note"):isValid() then
+                        menu.apply_default_state(friend_target:refByRelPath("Note"))
+                    end
+                end
+            end
+            util.yield(13)
+        end
+        util.yield(666)
+        menu.trigger_commands("createfriendsgroup")
+    else
+        notify("You dont have a \"Friend's\" Group. so we created one for you.")
+        menu.trigger_commands("createfriendsgroup")
+    end
+end)
+
 menu.action(SessionMisc, "Invite Friend's", {"invitefriends"}, "invite all friends.", function()
     if transitionState(true) == 1 then
         local invited = 0
