@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.124"
+local SCRIPT_VERSION = "1.125"
 
 local startupmsg = "If settings are missing PLS restart lua.\n\nAdded Custom spawns in Session>Join Settings.\nIf you use quick join, set spawn to \"Random\" or \"Last Location\" and u can profit from custom spawn.\n\nLea Tech on top!"
 
@@ -78,8 +78,10 @@ end
 
 --util.require_natives(1681379138)
 util.require_natives("3095a")
+local json = require('json')
 
 resources_dir = filesystem.resources_dir() .. '/1 PIP Girl/'
+store_dir = filesystem.store_dir() .. '/PIP Girl/'
 logo = directx.create_texture(resources_dir .. 'logo.png')
 if SCRIPT_MANUAL_START or SCRIPT_SILENT_START then
     logo_alpha = 0
@@ -3034,6 +3036,7 @@ end
 local SessionClaimerPaths = {
     {path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Session>Admin Bail", desired_state = "On"},
     {path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Game>Auto Accept Warning", desired_state = "On"},
+    {path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Session>Session invite>Post Session Code in Webhook", desired_state = "Off"},
     {path = "Online>Transitions>Speed Up>Don't Wait For Data Broadcast", desired_state = "On"},
     {path = "Online>Transitions>Speed Up>Don't Wait For Mission Launcher", desired_state = "On"},
     {path = "Online>Transitions>Speed Up>Don't Ask For Permission To Spawn", desired_state = "On"},
@@ -3570,27 +3573,6 @@ menu.action(SessionMisc, "Cleanup \"Friend's\" Group", {"cleanupfriends"}, "remo
     end
 end)
 
-menu.action(SessionMisc, "Invite Friend's", {"invitefriends"}, "invite all friends.", function()
-    if transitionState(true) == 1 then
-        local invited = 0
-        if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Friend's")) then
-            for menu.ref_by_path("Online>Player History>Noted Players>Friend's"):getChildren() as friend do
-                local friend_target = friend.target
-                if friend_target:getState() ~= "Offline" then
-                    menu.trigger_command(friend_target:refByRelPath("Invite To Session"))
-                    invited = invited + 1
-                    util.yield(420)
-                end
-            end
-        else
-            notify("Please create a \"Friend's\" group first.\nYou can do that with \"createfriendsgroup\" Command.")
-        end
-        notify("Invited "..invited.." Friends.")
-    else     
-        notify("Wait until you are loaded in.")
-    end
-end)
-
 menu.toggle_loop(SessionMisc, "Kick Aggressive Host Token on Attack", {""}, "", function()
     if transitionState(true) <3 then
         for players.list() as pid do
@@ -3623,16 +3605,6 @@ menu.toggle_loop(SessionMisc, "Block Aggressive Host Token as Host", {""}, "", f
     end
 end)
 
-menu.action(SessionMisc, "Copy Discord Session invite link.", {"invitelink"}, "", function()
-    local code = get_session_code()
-    if code ~= "N/A" and code ~= "Please wait..." then
-        util.copy_to_clipboard("# ***🌐 [Join GTA:O "..session_type().." Session.🡭](https://stand.gg/join#"..code..")***\nOr Copy Command: ```codejoin "..code.."```", false)
-        notify("Invite link for "..session_type().." "..code.." copied.")
-    else
-        notify("This session dosnt have a invite code right now.\n"..session_type().." | "..code)
-    end
-end)
-
 menu.action(SessionMisc, "de-Ghost entire Session", {""}, "", function()
     if transitionState(true) == 1 then
         for players.list() as pid do
@@ -3656,6 +3628,136 @@ menu.action(SessionMisc, "Notify Highest K/D", {"notifykd"}, "Notify's u with th
         numPlayers = session_claimer_kd_target_players
     end
     ReportSessionKD(numPlayers)
+end)
+
+local SessionInvite = menu.list(Session, 'Session invite', {}, 'Copy session invite, invite all friends or A Discord session invite hook.', function(); end)
+
+if not filesystem.exists(store_dir) then
+    filesystem.mkdir(store_dir)
+end
+
+if not filesystem.exists(store_dir..'/do_not_share_webhook.txt') then
+    local file = io.open(store_dir..'/do_not_share_webhook.txt', "w")
+    file:close()
+end
+
+if not filesystem.exists(store_dir..'/session_code.txt') then
+    local file = io.open(store_dir..'/session_code.txt', "w")
+    file:close()
+end
+
+local function readFromFilePIP(the_path)
+    local file = io.open(the_path, "r")
+    if file then
+        local webhook = file:read("*all")
+        file:close()
+        return webhook
+    else
+        return nil
+    end
+end
+
+local function writeToFilePIP(payload, the_path)
+    local file = io.open(the_path, "w")
+    if file then
+        file:write(payload)
+        file:close()
+    end
+end
+
+local discord_webhook = nil
+
+menu.divider(SessionInvite, "Discord Invite Web-hook.")
+
+menu.action(SessionInvite, "Set Discord Webhook", {"pgdiscordhook"}, "Never share you webhook ever!", function()
+    menu.show_command_box("pgdiscordhook ")
+end, function(input_str)
+    local _, _, webhook_path = string.find(input_str, "https://discord.com(.+)")
+    if webhook_path then
+        writeToFilePIP(webhook_path, store_dir..'do_not_share_webhook.txt')
+        discord_webhook = webhook_path
+    else
+        print("Invalid Discord webhook URL. Please make sure it includes '/api'.")
+    end
+end)
+
+discord_webhook = readFromFilePIP(store_dir..'do_not_share_webhook.txt')
+
+local posted_session_code = readFromFilePIP(store_dir..'session_code.txt')
+menu.toggle_loop(SessionInvite, "Post Session Code in Webhook", {""}, "Never share you webhook ever!", function()
+    if discord_webhook then
+        if transitionState(true) == 1 then
+            local code = get_session_code()
+            if code ~= "N/A" and code ~= "Please wait..." then
+                if code ~= posted_session_code then
+                    posted_session_code = code
+                    writeToFilePIP(code, store_dir..'/session_code.txt')
+                    local description = "# ***🌐 [Join GTA:O " .. session_type() .. " Session.🡭](https://stand.gg/join#" .. code .. ")***\nOr Copy Command: ```codejoin " .. code .. "```\n\nPlayers: "..PLAYER.GET_NUMBER_OF_PLAYERS().."/30(32)\nCurrent Host: "..players.get_name(players.get_host())
+                    local embed = {
+                        description = description,
+                        color = nil,
+                        author = {
+                            name = "Session Code",
+                            icon_url = "https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/logo.png"
+                        }
+                    }
+                    local body = {
+                        embeds = { embed },
+                        username = "PIP Girl",
+                        avatar_url = "https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/logo.png"
+                    }
+                    local body_json = json.encode(body)                
+                    local function on_success(body, header_fields, status_code)
+                        notify_cmd("Webhook sent successfully!")
+                    end
+                    local function on_fail(reason)
+                        notify("Failed to send Webhook:", reason)
+                    end
+                    async_http.init("discord.com", discord_webhook, on_success, on_fail)
+                    --async_http.set_method("POST")
+                    async_http.set_post("application/json", body_json)
+                    async_http.dispatch()
+                    util.yield(13666)
+                end
+            end
+        end
+    else
+        notfy("Please Create a Webhook first.")
+    end
+    util.yield(13666)
+end)
+
+menu.divider(SessionInvite, "Other.")
+
+menu.action(SessionInvite, "Invite Friend's", {"invitefriends"}, "invite all friends.", function()
+    if transitionState(true) == 1 then
+        local invited = 0
+        if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Friend's")) then
+            for menu.ref_by_path("Online>Player History>Noted Players>Friend's"):getChildren() as friend do
+                local friend_target = friend.target
+                if friend_target:getState() ~= "Offline" then
+                    menu.trigger_command(friend_target:refByRelPath("Invite To Session"))
+                    invited = invited + 1
+                    util.yield(420)
+                end
+            end
+        else
+            notify("Please create a \"Friend's\" group first.\nYou can do that with \"createfriendsgroup\" Command.")
+        end
+        notify("Invited "..invited.." Friends.")
+    else     
+        notify("Wait until you are loaded in.")
+    end
+end)
+
+menu.action(SessionInvite, "Copy Discord Session invite link.", {"invitelink"}, "", function()
+    local code = get_session_code()
+    if code ~= "N/A" and code ~= "Please wait..." then
+        util.copy_to_clipboard("# ***🌐 [Join GTA:O "..session_type().." Session.🡭](https://stand.gg/join#"..code..")***\nOr Copy Command: ```codejoin "..code.."```", false)
+        notify("Invite link for "..session_type().." "..code.." copied.")
+    else
+        notify("This session dosnt have a invite code right now.\n"..session_type().." | "..code)
+    end
 end)
 
 local pop_multiplier_free = nil
@@ -3962,11 +4064,14 @@ menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisi
     end
 end)
 
-local json = require('json')
-
 local data_e = {}
 
 local data_g = {}
+
+if not filesystem.exists(resources_dir .. 'Export/Export_Blacklist.json') then
+    local file = io.open(resources_dir .. 'Export/Export_Blacklist.json', "w")
+    file:close()
+end
 
 local function save_data_e()
     local file = io.open(resources_dir .. 'Export/Export_Blacklist.json', 'w+')
