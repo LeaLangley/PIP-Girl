@@ -2652,6 +2652,7 @@ local warningMessages = {
     [2053786350] = "Unable to Connect.",
     [1616251414] = "Unable to Join, A modder is blocking u join with 99% probability.",
     [1597894155] = "Unable to join the game, you must first accept the GTA Online user policy.",
+    [1848738470] = "Unable to maintain connection to Rockstar game servers. Please try again and check www.rockstargames.com/support for information about outages and scheduled maintenance. If the issue presists check out our GTA Online Connection Troubleshooting at http://rsg.ms/connect.",
     [1232128772] = "Player joining, please wait.",
     [1736490464] = "No Connection to R* Service.",
     [1270064450] = "Player has been invited in the Crew.",
