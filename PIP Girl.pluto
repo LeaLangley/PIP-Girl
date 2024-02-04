@@ -3749,30 +3749,30 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
             if players.user() == players.get_host() or (players.user() == players.get_script_host() and (not isFriend(players.get_host()) and not isModder(players.get_host()))) then
                 if not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
-                    local targetPid = nil
+                    local pid = nil
                     for players.list() as pid1 do
-                        targetPid = pid1
+                        pid = pid1
                         if isFriendStuck() then
-                            targetPid = isFriendStuck()
+                            pid = isFriendStuck()
                         end
                         local check_timeout = os.time() + 13
-                        while worthToUnstuck(targetPid) and players.get_script_host() ~= targetPid and discoveredSince(targetPid) >= 113 do
+                        while worthToUnstuck(pid) and players.get_script_host() ~= pid and discoveredSince(pid) >= 113 do
                             if os.time() > check_timeout then
                                 break
                             end
                             util.yield(666)
                         end
-                        if worthToUnstuck(targetPid) and players.get_script_host() ~= targetPid and discoveredSince(targetPid) >= 113 then
-                            local name = players.get_name(targetPid)
+                        if worthToUnstuck(pid) and players.get_script_host() ~= pid and discoveredSince(pid) >= 113 then
+                            local name = players.get_name(pid)
                             menu.trigger_commands("givesh " .. name)
                             notify_cmd(name .. " is Loading too Long.")
                             local buffer_timeout = os.time() + 13
-                            while player_Exist(targetPid) and buffer_timeout > os.time() do
+                            while player_Exist(pid) and buffer_timeout > os.time() do
                                 util.yield(113)
                             end
                             local loading_timeout = os.time() + 30
                             local fail = false
-                            while player_Exist(targetPid) and isStuck(targetPid) do
+                            while player_Exist(pid) and isStuck(pid) do
                                 util.yield(666)
                                 if os.time() > loading_timeout then
                                     notify_cmd(name .. " took too long to load. Timeout reached.")
@@ -3784,7 +3784,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     fail = true
                                     break
                                 end
-                                if players.get_script_host() ~= targetPid then
+                                if players.get_script_host() ~= pid then
                                     break
                                 end
                             end
@@ -3794,10 +3794,10 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                         menu.trigger_commands("scripthost")
                                     end
                                 end
-                                if player_Exist(targetPid) then
+                                if player_Exist(pid) then
                                     notify_cmd(name .. " Finished Loading.")
                                     local finisher_timeout = os.time() + 16
-                                    while not isFriendStuck() and NETWORK.NETWORK_GET_AVERAGE_PACKET_LOSS(pid) == 0 and player_Exist(targetPid) and finisher_timeout > os.time() do
+                                    while not isFriendStuck() and NETWORK.NETWORK_GET_AVERAGE_PACKET_LOSS(pid) == 0 and player_Exist(pid) and finisher_timeout > os.time() do
                                         util.yield(113)
                                     end
                                     menu.trigger_commands("scripthost")
