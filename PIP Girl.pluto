@@ -4046,7 +4046,6 @@ local function startupConfig()
                 rat_target:refByRelPath("Player Join Reactions>Notification").value = true
                 rat_target:refByRelPath("Player Join Reactions>Write To Console").value = true
                 rat_target:refByRelPath("Player Join Reactions>Block Join").value = noexceptions
-                rat_target:refByRelPath("Player Join Reactions>Crash").value = noexceptions
                 rat_target:refByRelPath("Player Join Reactions>Timeout").value = noexceptions
                 rat_target:refByRelPath("Player Join Reactions>Block Their Network Events").value = noexceptions
                 rat_target:refByRelPath("Player Join Reactions>Block Incoming Syncs").value = noexceptions
