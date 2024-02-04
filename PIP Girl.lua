@@ -1376,7 +1376,7 @@ menu.toggle_loop(PIP_Girl, "Collect all NPC money", {}, "Collect all NPC money."
                     if is_user_driving_vehicle() and not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
                         OBJECT.SET_PICKUP_OBJECT_COLLECTABLE_IN_VEHICLE(pickup)
                         ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
-                        ENTITY.ATTACH_ENTITY_TO_ENTITY(pickup, players.user_ped(), PED.GET_PED_BONE_INDEX(players.user_ped(), 24818), 0, 0, 0, 0, 0, 0, false, true, true, false, 0, true, 1)
+                        --ENTITY.ATTACH_ENTITY_TO_ENTITY(pickup, players.user_ped(), PED.GET_PED_BONE_INDEX(players.user_ped(), 24818), 0, 0, 0, 0, 0, 0, false, true, true, false, 0, true, 1)
                     else
                         ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
                     end
