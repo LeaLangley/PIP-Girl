@@ -532,16 +532,7 @@ local function get_session_code()
 end
 
 local function requestModel(hash, timeout)
-    if not STREAMING.HAS_MODEL_LOADED(hash) then
-        STREAMING.REQUEST_MODEL(hash)
-        local startTime = os.time()
-        while not STREAMING.HAS_MODEL_LOADED(hash) do
-            if os.time() - startTime > timeout or timeout == 0 then
-                break
-            end
-            util.yield(13)
-        end
-    end
+    util.request_model(hash, timeout)
 end
 
 local function requestControl(entity, timeout)
@@ -625,7 +616,7 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
     if order == nil then order = 2 end
     local startTime = os.time()
     if not does_entity_exist(entity) then
-        requestModel(hash, timeout)
+        requestModel(hash, 2000)
         entity = entities.create_object(hash, locationV3)
         util.yield(13 + timeout)
         startTime = os.time()
