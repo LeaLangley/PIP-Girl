@@ -545,18 +545,7 @@ local function requestModel(hash, timeout)
 end
 
 local function requestControl(entity, timeout)
-    if not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(entity) then
-        NETWORK.NETWORK_REQUEST_CONTROL_OF_ENTITY(entity)
-        if timeout > 0 then
-            local startTime = os.time()
-            while not NETWORK.NETWORK_HAS_CONTROL_OF_ENTITY(entity) do
-                if os.time() - startTime > timeout or timeout == 0 then
-                    break
-                end
-                util.yield(113)
-            end
-        end
-    end
+    entities.request_control(entity, timeout)
 end
 
 local function does_entity_exist(entity)
@@ -608,7 +597,7 @@ local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, ti
             util.yield(13 + timeout)
         end
         if closestPlayer then
-            requestControl(entity, timeout)
+            requestControl(entity, 2000)
             ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(players.user()), false)
         end
     end
@@ -617,7 +606,7 @@ local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, ti
                             (math.abs(currentCoords.y - locationV3.y) <= 1) and
                             (math.abs(currentCoords.z - locationV3.z) <= 1)
     if not coordinatesCorrect then
-        requestControl(entity, timeout)
+        requestControl(entity, 2000)
         ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3.x, locationV3.y, locationV3.z, true, true, true)
         ENTITY.FREEZE_ENTITY_POSITION(entity, true)
     end
@@ -626,7 +615,7 @@ local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, ti
                     (math.abs(currentRotation.y - roll) <= 1) and
                     (math.abs(currentRotation.z - yaw) <= 1)
     if not anglesCorrect then
-        requestControl(entity, timeout)
+        requestControl(entity, 2000)
         ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
         ENTITY.FREEZE_ENTITY_POSITION(entity, true)
     end
@@ -646,7 +635,7 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
             end
             util.yield(13 + timeout)
         end
-        requestControl(entity, timeout)
+        requestControl(entity, 2000)
         entities.set_can_migrate(entity, false)
         ENTITY.FREEZE_ENTITY_POSITION(entity, true)
         objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
@@ -1373,13 +1362,12 @@ menu.toggle_loop(PIP_Girl, "Collect all NPC money", {}, "Collect all NPC money."
             if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) and not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
                 local pickupHash = entities.get_model_hash(pickup)
                 if contains(money_hashish, pickupHash) then
+                    requestControl(pickup, 0)
                     if is_user_driving_vehicle() and not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
                         OBJECT.SET_PICKUP_OBJECT_COLLECTABLE_IN_VEHICLE(pickup)
-                        ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
                         --ENTITY.ATTACH_ENTITY_TO_ENTITY(pickup, players.user_ped(), PED.GET_PED_BONE_INDEX(players.user_ped(), 24818), 0, 0, 0, 0, 0, 0, false, true, true, false, 0, true, 1)
-                    else
-                        ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
                     end
+                    ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
                 end
             end
             util.yield(13)
@@ -1811,7 +1799,7 @@ menu.toggle_loop(Stimpak, "Lea's Repair Stop", {"lears"}, "", function()
                     local vehicle = get_user_vehicle()
                     wasInZone = true
                     if is_vehicle_free_for_use(vehicle) then
-                        requestControl(vehicle, 13)
+                        requestControl(vehicle, 2000)
                         menu.trigger_commands("performance")
                         menu.trigger_commands("fixvehicle")
                     end
@@ -2097,7 +2085,7 @@ menu.action(Vehicle, "Detonate Lea Tech Vehicle.", {"boomlea"}, "", function()
     if saved_vehicle_id then
         target_vehicle = saved_vehicle_id
     end
-    requestControl(target_vehicle, 1)
+    requestControl(target_vehicle, 1000)
     entities.set_can_migrate(target_vehicle, false)
     VEHICLE.ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(target_vehicle)
     local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(target_vehicle, -1)
@@ -3480,7 +3468,7 @@ menu.toggle_loop(SessionWorld, "Nerf Oppressor MK2s", {""}, "Nerf Oppressor mk2 
         if players.get_vehicle_model(pid) == 2069146067 and not isFriend(pid) and not isModder(pid) then
             local vehicle = PED.GET_VEHICLE_PED_IS_IN(PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid))
             if VEHICLE.GET_VEHICLE_MOD(vehicle, 10) ~= -1 then
-                requestControl(vehicle, 13)
+                requestControl(vehicle, 2000)
                 VEHICLE.SET_VEHICLE_MOD(vehicle, 10, -1)
             end
         end    
