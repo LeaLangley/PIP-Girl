@@ -1361,10 +1361,15 @@ menu.toggle_loop(PIP_Girl, "Collect all NPC money", {}, "Collect all NPC money."
                         OBJECT.SET_PICKUP_OBJECT_COLLECTABLE_IN_VEHICLE(pickup)
                         ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
                     end
+                    util.yield(113)
+                    if contains(money_hashish, pickupHash) then
+                        OBJECT.SET_PICKUP_OBJECT_COLLECTABLE_IN_VEHICLE(pickup)
+                        ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z - 66, false, false, false, false)
+                    end
                 end
-                util.yield(13)
+                util.yield(113)
             end
-            util.yield(666)
+            util.yield(1313)
         else
             for entities.get_all_pickups_as_handles() as pickup do
                 if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) and not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
@@ -1374,9 +1379,9 @@ menu.toggle_loop(PIP_Girl, "Collect all NPC money", {}, "Collect all NPC money."
                         ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
                     end
                 end
-                util.yield(113)
+                util.yield(13)
             end
-            util.yield(1313)
+            util.yield(666)
         end
     else
         util.yield(6666)
