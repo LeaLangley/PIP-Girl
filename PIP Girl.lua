@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.123"
+local SCRIPT_VERSION = "1.124"
 
 local startupmsg = "If settings are missing PLS restart lua.\n\nAdded Custom spawns in Session>Join Settings.\nIf you use quick join, set spawn to \"Random\" or \"Last Location\" and u can profit from custom spawn.\n\nLea Tech on top!"
 
@@ -1346,22 +1346,35 @@ local money_hashish = {
     --1081230812, --usb4
     --1112175411, --usb5
 }
+local vehicle_money_hashish = {
+    1745876935, --underwater money xD
+}
 menu.toggle_loop(PIP_Girl, "Collect all NPC money", {}, "Collect all NPC money.", function()
     if transitionState(true) == 1 then
         local pos = players.get_position(players.user())
-        for entities.get_all_pickups_as_handles() as pickup do
-            if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) and not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
-                local pickupHash = entities.get_model_hash(pickup)
-                if contains(money_hashish, pickupHash) then
-                    requestControl(pickup, 0)
-                    if is_user_driving_vehicle() and not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
+        if is_user_driving_vehicle()
+            for entities.get_all_pickups_as_handles() as pickup do
+                if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) and not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
+                    local pickupHash = entities.get_model_hash(pickup)
+                    if contains(vehicle_money_hashish, pickupHash) then
+                        requestControl(pickup, 0)
                         OBJECT.SET_PICKUP_OBJECT_COLLECTABLE_IN_VEHICLE(pickup)
-                        --ENTITY.ATTACH_ENTITY_TO_ENTITY(pickup, players.user_ped(), PED.GET_PED_BONE_INDEX(players.user_ped(), 24818), 0, 0, 0, 0, 0, 0, false, true, true, false, 0, true, 1)
+                        ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
                     end
-                    ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
                 end
+                util.yield(13)
             end
-            util.yield(13)
+        else
+            for entities.get_all_pickups_as_handles() as pickup do
+                if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) and not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
+                    local pickupHash = entities.get_model_hash(pickup)
+                    if contains(money_hashish, pickupHash) then
+                        requestControl(pickup, 0)
+                        ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
+                    end
+                end
+                util.yield(13)
+            end
         end
         util.yield(666)
     else
