@@ -3421,7 +3421,7 @@ local shrineElements = {
     {var = "pc2", conditions = {4151318791, v3.new(-1801.91, -128.70, 78.00), 0, 0, -13, nil, 13, false}},
 }
 local Leas_shrine_blip = nil
-menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Blocks the MK2 access", function()
+menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Shows Lea's Shrine, Perfect for a hangout spot or Deep thinking.", function()
     if transitionState(true) <3 then
         if not Leas_shrine_blip then
             Leas_shrine_blip = HUD.ADD_BLIP_FOR_COORD(-1812.212, -127.127, 80.265)
