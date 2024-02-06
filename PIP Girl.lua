@@ -4013,21 +4013,20 @@ menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"}, "Ghost everyone who i
             if not isFriend(pid) then
                 if players.is_godmode(pid) and not players.is_in_interior(pid) and not players.is_using_rc_vehicle(pid) then
                     if not contains(sussy_god, pid) then
-                        table.insert(sussy_god, pid)
+                        table.insert(sussy_god, pid) -- Sussy God mode.
                     end
-                    NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true) -- Sussy God mode.
+                    NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
                 else
                     local index = find_in_table(sussy_god, pid)
                     if index then
-                        table.remove(sussy_god, index)
+                        table.remove(sussy_god, index) -- Sussy God mode is legit.
                     end
-                    NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false) -- Sussy God mode is legit.
+                    NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
                 end
             else
                 local index = find_in_table(sussy_god, pid)
                 if index then
-                    table.remove(sussy_god, index)
-                    -- Sussy God mode is friend.
+                    table.remove(sussy_god, index) -- Sussy God mode is friend.
                 end
                 NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
             end
@@ -4499,6 +4498,31 @@ menu.action(Settings, "Copy Position to Clipboard", {"pgcopypos"}, "", function(
     streetInfo.zoneName, streetInfo.streetName, streetInfo.crossingName)
     util.copy_to_clipboard(positionString, false)
     notify("Position copied to clipboard!")
+end)
+
+menu.action(Settings, "Copy Location Name to Clipboard", {""}, "", function()
+    local playerPosition = players.get_position(players.user())
+    local streetInfo = get_Street_Names(playerPosition.x, playerPosition.y, playerPosition.z)
+    local positionString = ""
+    if streetInfo.zoneName ~= "" then
+        positionString = streetInfo.zoneName
+    end
+    if streetInfo.streetName ~= "" then
+        if positionString ~= "" then
+            positionString = positionString .. " - " .. streetInfo.streetName
+        else
+            positionString = streetInfo.streetName
+        end
+    end
+    if streetInfo.crossingName ~= "" then
+        if positionString ~= "" then
+            positionString = positionString .. " - " .. streetInfo.crossingName
+        else
+            positionString = streetInfo.crossingName
+        end
+    end
+    util.copy_to_clipboard(positionString, false)
+    notify("Location Name copied to clipboard!")
 end)
 
 menu.action(menu.my_root(), "Activate Everyday Goodies", {"pggoodies"}, "Activates all the Everyday Goodies.", function()
