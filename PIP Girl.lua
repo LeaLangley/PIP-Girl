@@ -3704,7 +3704,7 @@ menu.toggle_loop(SessionInvite, "Post Session Code via Webhook", {""}, "Never sh
                     local sessionPlayers = ""
                     for ipairs(sortedPlayers) as pid do
                         local sessionPos = players.get_host_queue_position(pid) + 1
-                        local playerInfo = "\n"..sessionPos..". "..players.get_name(pid).." "
+                        local playerInfo = "\n"..sessionPos..". `"..players.get_name(pid).."` "
                         if pid == players.user() then
                             playerInfo = playerInfo.."(User)"
                         end
