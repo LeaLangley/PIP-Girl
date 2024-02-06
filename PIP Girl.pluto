@@ -3036,7 +3036,7 @@ end
 local SessionClaimerPaths = {
     {path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Session>Admin Bail", desired_state = "On"},
     {path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Game>Auto Accept Warning", desired_state = "On"},
-    {path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Session>Session invite>Post Session Code in Webhook", desired_state = "Off"},
+    {path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Session>Session invite>Post Session Code via Webhook", desired_state = "Off"},
     {path = "Online>Transitions>Speed Up>Don't Wait For Data Broadcast", desired_state = "On"},
     {path = "Online>Transitions>Speed Up>Don't Wait For Mission Launcher", desired_state = "On"},
     {path = "Online>Transitions>Speed Up>Don't Ask For Permission To Spawn", desired_state = "On"},
@@ -3692,7 +3692,30 @@ menu.toggle_loop(SessionInvite, "Post Session Code via Webhook", {""}, "Never sh
                 if code ~= posted_session_code then
                     posted_session_code = code
                     writeToFilePIP(code, store_dir..'/session_code.txt')
-                    local description = "# ***🌐 [Join GTA:O " .. session_type() .. " Session.🡭](https://stand.gg/join#" .. code .. ")***\nOr Copy Command: ```codejoin " .. code .. "```\n\nPlayers: "..PLAYER.GET_NUMBER_OF_PLAYERS().."/30(32)\nCurrent Host: "..players.get_name(players.get_host())
+                    local sortedPlayers = {}
+                    for ipairs(players.list()) as pid do
+                        local sessionPos = players.get_host_queue_position(pid) + 1
+                        sortedPlayers[sessionPos] = pid
+                    end
+                    local sessionPlayers = ""
+                    for ipairs(sortedPlayers) as pid do
+                        local sessionPos = players.get_host_queue_position(pid) + 1
+                        local playerInfo = "\n"..sessionPos..". "..players.get_name(pid).." "
+                        if pid == players.user() then
+                            playerInfo = playerInfo.."(User)"
+                        end
+                        if players.get_host() == pid then
+                            playerInfo = playerInfo.."(Host)"
+                        end
+                        if isFriend(pid) then
+                            playerInfo = playerInfo.."(Friendly)"
+                        end
+                        if isModder(pid) then
+                            playerInfo = playerInfo.."(Modder)"
+                        end
+                        sessionPlayers = sessionPlayers .. playerInfo
+                    end
+                    local description = "# ***🌐 [Join GTA:O " .. session_type() .. " Session.🡭](https://stand.gg/join#" .. code .. ")***\nOr Copy Command: ```codejoin " .. code .. "```\n\nPlayers: "..PLAYER.GET_NUMBER_OF_PLAYERS().."/30(32)\nCurrent Host: "..players.get_name(players.get_host()).."\n"..sessionPlayers
                     local embed = {
                         description = description,
                         color = nil,
