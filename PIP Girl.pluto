@@ -3691,7 +3691,7 @@ menu.toggle_loop(SessionInvite, "Post Session Code via Webhook", {""}, "Never sh
             local code = get_session_code()
             if code ~= "N/A" and code ~= "Please wait..." then
                 if code ~= posted_session_code then
-                    if onlyPostasHost and players.get_host() ~= players.user() then
+                    if onlyPostasHost and not isFriend(players.get_host()) then
                         goto webhookSkip
                     end
                     posted_session_code = code
@@ -3756,7 +3756,7 @@ menu.toggle_loop(SessionInvite, "Post Session Code via Webhook", {""}, "Never sh
     util.yield(13666)
 end)
 
-menu.toggle(SessionInvite, "Only Post if Session Host", {""}, "", function(on)
+menu.toggle(SessionInvite, "Only Post if Host or Host is Friendly ", {""}, "", function(on)
     if on then
         onlyPostasHost = true
     else
