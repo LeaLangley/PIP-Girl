@@ -3722,9 +3722,10 @@ menu.toggle_loop(SessionInvite, "Post Session Code via Webhook", {""}, "Never sh
                     local description = "# ***🌐 [Join GTA:O " .. session_type() .. " Session.🡭](https://stand.gg/join#" .. code .. ")***\nOr Copy Command: ```codejoin " .. code .. "```\n\nPlayers: "..PLAYER.GET_NUMBER_OF_PLAYERS().."/30(32)\nCurrent Host: "..players.get_name(players.get_host()).."\n"..sessionPlayers
                     local embed = {
                         description = description,
-                        color = nil,
+                        timestamp = os.date("!%Y-%m-%dT%XZ"),
+                        color = 0x8b0000,
                         author = {
-                            name = "Session Code",
+                            name = "Session Overview",
                             icon_url = "https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/logo.png"
                         }
                     }
