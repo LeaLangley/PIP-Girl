@@ -3684,14 +3684,14 @@ end)
 discord_webhook = readFromFilePIP(store_dir..'do_not_share_webhook.txt')
 
 local posted_session_code = readFromFilePIP(store_dir..'session_code.txt')
-local onlyPostasHost = false
+local onlyPostasFriendlyHost = false
 menu.toggle_loop(SessionInvite, "Post Session Code via Webhook", {""}, "Never share you webhook ever!", function()
     if discord_webhook then
         if transitionState(true) == 1 then
             local code = get_session_code()
             if code ~= "N/A" and code ~= "Please wait..." then
                 if code ~= posted_session_code then
-                    if onlyPostasHost and not isFriend(players.get_host()) then
+                    if onlyPostasFriendlyHost and not isFriend(players.get_host()) then
                         goto webhookSkip
                     end
                     posted_session_code = code
@@ -3756,11 +3756,11 @@ menu.toggle_loop(SessionInvite, "Post Session Code via Webhook", {""}, "Never sh
     util.yield(13666)
 end)
 
-menu.toggle(SessionInvite, "Only Post if Host or Host is Friendly ", {""}, "", function(on)
+menu.toggle(SessionInvite, "Only Post if Host or Host is Friendly", {""}, "", function(on)
     if on then
-        onlyPostasHost = true
+        onlyPostasFriendlyHost = true
     else
-        onlyPostasHost = false
+        onlyPostasFriendlyHost = false
     end
 end)
 
