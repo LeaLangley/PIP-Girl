@@ -1341,6 +1341,7 @@ local money_hashish = {
     -295781225, --money
     1745876935, --underwater money xD
     -1448063107, --save money
+    -1249748547, --Smugler money
     --1308176012, --ceo mission
     ---779874356, --usb1 USB are not a pickup
     ---1746470518, --usb2
@@ -1350,6 +1351,7 @@ local money_hashish = {
 }
 local vehicle_money_hashish = {
     1745876935, --underwater money xD
+    -1249748547, --Smugler money
 }
 menu.toggle_loop(PIP_Girl, "Collect all NPC money", {}, "Collect all NPC money.", function()
     if transitionState(true) == 1 then
