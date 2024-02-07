@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.125"
+local script_version = "1.126"
 
 local lust_upDate = {year=2024, month=2, day=10}
 
@@ -443,7 +443,7 @@ local function contains(tbl, value)
 end
 
 local function getEntryByValue(tbl, value)
-    for _, entry in ipairs(tbl) do
+    for ipairs(tbl) as entry do
         if entry == value then
             return entry
         end
@@ -707,16 +707,54 @@ local function Wait_for_transitionState()
     end
 end
 
+local in_orb_room = {}
+local sussy_god = {}
+local set_passive = {}
+
+local allTables = {
+    in_orb_room,
+    sussy_god,
+    set_passive
+}
+
+local function set_as_illusion(pid, tbl, state)
+    if state then
+        if not contains(tbl, pid) then
+            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+            table.insert(tbl, pid)
+        end
+    else
+        local index = find_in_table(tbl, pid)
+        if index then
+            table.remove(tbl, index)
+            local playerInOtherTables = false
+            for pairs(allTables) as otherTbl do
+                if otherTbl ~= tbl then
+                    if contains(otherTbl, pid) then
+                        playerInOtherTables = true
+                        break
+                    end
+                end
+            end
+            if not playerInOtherTables then
+                NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+            end
+        end
+    end
+end
+
 local function StrategicKick(pid)
     if player_Exist(pid) and pid ~= players.user() then
         local name = players.get_name(pid)
         if name ~= players.get_name(players.user()) then
             if transitionState(true) ~= 1 then
                 if menu.get_edition() > 1 then
-                    menu.trigger_commands("loveletterkick " .. name)
+                    if pid ~= players.get_host() then
+                        menu.trigger_commands("loveletterkick " .. name)
+                    end
                 end
                 menu.trigger_commands("kick " .. name)
-                NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+                set_as_illusion(pid, set_passive, true)
                 Wait_for_transitionState()
             else
                 if menu.get_edition() > 1 then
@@ -727,19 +765,21 @@ local function StrategicKick(pid)
                             menu.trigger_commands("loveletterkick " .. name)
                         end
                     else
-                        menu.trigger_commands("loveletterkick " .. name)
+                        if pid ~= players.get_host() then
+                            menu.trigger_commands("loveletterkick " .. name)
+                        end
                         menu.trigger_commands("kick " .. name)
                         menu.trigger_commands("ignore " .. name .. " on")
                         menu.trigger_commands("desync " .. name .. " on")
                         menu.trigger_commands("blocksync " .. name .. " on")
-                        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+                        set_as_illusion(pid, set_passive, true)
                     end
                 else
                     menu.trigger_commands("kick " .. name)
                     menu.trigger_commands("ignore " .. name .. " on")
                     menu.trigger_commands("desync " .. name .. " on")
                     menu.trigger_commands("blocksync " .. name .. " on")
-                    NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+                    set_as_illusion(pid, set_passive, true)
                 end
             end
         end
@@ -1677,7 +1717,7 @@ local blipsCreated = false
 local blips = {}
 local checkpoints = {}
 local function CreateBlips(repairStops)
-    for _, position in ipairs(repairStops) do
+    for pairs(repairStops) as position do
         local blip = HUD.ADD_BLIP_FOR_COORD(position.x, position.y, position.z)
         HUD.SET_BLIP_SPRITE(blip, "402")
         HUD.SET_BLIP_COLOUR(blip, 48)
@@ -1690,7 +1730,7 @@ local function CreateBlips(repairStops)
     blipsCreated = true
 end
 local function CreateCheckpoints(repairStops)
-    for _, position in ipairs(repairStops) do
+    for pairs(repairStops) as position do
         local checkpoint = GRAPHICS.CREATE_CHECKPOINT(11, position.x, position.y, position.z + 1, position.x, position.y, position.z, 6, 255, 0, 128, 66, 0)
         table.insert(checkpoints, checkpoint)
     end
@@ -1792,7 +1832,7 @@ menu.toggle_loop(Stimpak, "Lea's Repair Stop", {"lears"}, "", function()
         end
         closestMarker = nil
         closestDistance = math.huge
-        for _, position in pairs(repairStops) do
+        for pairs(repairStops) as position do
             local distance = math.sqrt((playerPosition.x - position.x) ^ 2 + (playerPosition.y - position.y) ^ 2 + (playerPosition.z - position.z) ^ 2)
 
             if distance < closestDistance then
@@ -2408,7 +2448,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     end
 
 
-    for _, vehicle in ipairs(nearbyVehicles) do
+    for ipairs(nearbyVehicles) as vehicle do
         if ENTITY.GET_ENTITY_HEALTH(vehicle) == 0 then
             goto continue_loop
         end
@@ -2760,7 +2800,7 @@ menu.toggle_loop(Game, "Enhanced Name Tag's", {""}, "hai", function()
     for players.list_except(true) as pid do
         local playerthing
         local entryIndex = nil
-        for i, entry in ipairs(playerthingy) do
+        for i, entry in pairs(playerthingy) do
             if entry.pid == pid then
                 entryIndex = i
                 playerthing = entry.playerthing
@@ -2784,7 +2824,7 @@ menu.toggle_loop(Game, "Enhanced Name Tag's", {""}, "hai", function()
     end
     util.yield(113)
 end, function()
-    for _, entry in ipairs(playerthingy) do
+    for _, entry in pairs(playerthingy) do
         HUD.REMOVE_MP_GAMER_TAG(entry.playerthing)
     end
     playerthingy = {}
@@ -2966,7 +3006,7 @@ local function ReportSessionKD(numPlayers)
     end
     table.sort(topPlayers, function(a, b) return a.kd > b.kd end) -- Sort the table one last time
     local report = "Top " .. numPlayers .. " players with highest K/D:\n"
-    for i, player in ipairs(topPlayers) do
+    for i, player in pairs(topPlayers) do
         local playerName = PLAYER.GET_PLAYER_NAME(player.pid)
         local formattedKD = string.format("%.2f", player.kd) -- Format K/D to two decimal places
         report = report .. i .. ". (" .. player.rank .. ") " .. playerName .. " - K/D: " .. formattedKD .. "\n"
@@ -3056,7 +3096,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
     local magnet_path = "Online>Transitions>Matchmaking>Player Magnet"
     local spoof_path = "Online>Spoofing>Host Token Spoofing>Host Token Spoofing"
     if menu.get_state(menu.ref_by_path(spoof_path)) == "On" then
-        for _, entry in ipairs(SessionClaimerPaths) do
+        for pairs(SessionClaimerPaths) as entry do
             SessionClaimerOriginal_states[entry.path] = menu.get_state(menu.ref_by_path(entry.path))
             if SessionClaimerOriginal_states[entry.path] ~= entry.desired_state then
                 menu.set_state(menu.ref_by_path(entry.path), entry.desired_state)
@@ -3316,8 +3356,6 @@ local orbRoomGlass = nil
 local orbRoomTable = nil
 local orbRoomTable2 = nil
 local orbRoomDoorDMG = nil
-local in_orb_room = {}
-local sussy_god = {}
 
 menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockorb"}, "Blocks the Entrance for the Orb Room", function()
     orbRoomGlass = SpawnCheck(orbRoomGlass, -1829309699, v3.new(335.882996, 4833.833008, -59.023998), 0, 0, 125, nil, 13, true)
@@ -3331,8 +3369,7 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockorb"}, "Blocks the Entra
                 local distance = SYSTEM.VDIST(players_position.x, players_position.y, players_position.z, 328.47, 4828.87, -58.54)
                 if distance <= 9 then
                     if not contains(in_orb_room, pid) then
-                        table.insert(in_orb_room, pid)
-                        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true) -- Entered the Orb Room
+                        set_as_illusion(pid, in_orb_room, true)
                         if not isFriend(pid) then
                             players.add_detection(pid, "Glitched Orb Room Access", TOAST_DEFAULT, 25)
                         end
@@ -3346,11 +3383,7 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockorb"}, "Blocks the Entra
                         end
                     end
                 else
-                    local index = find_in_table(in_orb_room, pid)
-                    if index then
-                        table.remove(in_orb_room, index)
-                        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false) -- Left the Orb Room
-                    end
+                    set_as_illusion(pid, in_orb_room, false)
                 end
             end
         end
@@ -3359,7 +3392,7 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockorb"}, "Blocks the Entra
     util.yield(666)
 end, function()
     for ipairs(in_orb_room) as pid do
-        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+        set_as_illusion(pid, in_orb_room, false)
     end
     in_orb_room = {}
     if does_entity_exist(orbRoomGlass) then
@@ -3443,7 +3476,7 @@ menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Shows Lea's Shri
     else
         Leas_shrine_blip = nil
     end
-    for _, element in ipairs(shrineElements) do
+    for pairs(shrineElements) as element do
         local entityVar, conditions = element.var, element.conditions
         _G[entityVar] = SpawnCheck(_G[entityVar], table.unpack(conditions))
         util.yield(113)
@@ -3454,7 +3487,7 @@ end, function()
         util.remove_blip(Leas_shrine_blip)
     end
     Leas_shrine_blip = nil
-    for _, element in ipairs(shrineElements) do
+    for pairs(shrineElements) as element do
         local entityVar, conditions = element.var, element.conditions
         if does_entity_exist(_G[entityVar]) then
             entities.delete(_G[entityVar])
@@ -3499,7 +3532,7 @@ menu.toggle_loop(SessionWorld, "Spinning Oppressor MK2s", {""}, "Spin all MK2's,
         if players.get_vehicle_model(pid) == 2069146067 and not isFriend(pid) then
             if not isModder(pid) then 
                 local found = false
-                for _, plid in ipairs(mk2noob) do
+                for ipairs(mk2noob) as plid do
                     if plid == pid then
                         found = true
                         break
@@ -3609,14 +3642,14 @@ menu.toggle_loop(SessionMisc, "Block Aggressive Host Token as Host", {""}, "", f
     end
 end)
 
-menu.action(SessionMisc, "de-Ghost entire Session", {""}, "", function()
-    if transitionState(true) == 1 then
-        for players.list() as pid do
-            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
-        end
-        sussy_god = {}
-    end
-end)
+--menu.action(SessionMisc, "de-Ghost entire Session", {""}, "", function()
+--    if transitionState(true) == 1 then
+--        for players.list() as pid do
+--            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+--        end
+--        sussy_god = {}
+--    end
+--end)
 
 menu.action(SessionMisc, "Create \"Admin\" Group", {""}, "Create a group called \"Admin\"", function()
     menu.trigger_commands("adminsupdate")
@@ -4015,24 +4048,20 @@ menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"}, "Ghost everyone who i
     if transitionState(true) == 1 then
         for players.list_except(true) as pid do
             if not isFriend(pid) then
-                if players.is_godmode(pid) and not players.is_in_interior(pid) and not players.is_using_rc_vehicle(pid) then
-                    if not contains(sussy_god, pid) then
-                        table.insert(sussy_god, pid) -- Sussy God mode.
+                if not contains(in_orb_room, pid) then
+                    if players.is_godmode(pid) and not players.is_in_interior(pid) and not players.is_using_rc_vehicle(pid) then
+                        set_as_illusion(pid, sussy_god, true)
+                    else
+                        local pidPed = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)
+                        if PED.IS_PED_IN_ANY_VEHICLE(pidPed, true) and not ENTITY.GET_ENTITY_CAN_BE_DAMAGED(PED.GET_VEHICLE_PED_IS_IN(pidPed, true)) then
+                            set_as_illusion(pid, sussy_god, true)
+                        else
+                            set_as_illusion(pid, sussy_god, false)
+                        end
                     end
-                    NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
-                else
-                    local index = find_in_table(sussy_god, pid)
-                    if index then
-                        table.remove(sussy_god, index) -- Sussy God mode is legit.
-                    end
-                    NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
                 end
             else
-                local index = find_in_table(sussy_god, pid)
-                if index then
-                    table.remove(sussy_god, index) -- Sussy God mode is friend.
-                end
-                NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+                set_as_illusion(pid, sussy_god, false)
             end
         end
         util.yield(1666)
@@ -4042,7 +4071,7 @@ menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"}, "Ghost everyone who i
 end, function()
     for ipairs(sussy_god) as pid do
         if player_Exist(pid) then
-            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+            set_as_illusion(pid, sussy_god, false)
         end
     end
     sussy_god = {}
@@ -4180,11 +4209,11 @@ load_data_g()
 local PIP_Girl_Blacklist = {}
 
 local function load_PIP_Girl_Blacklist()
-    for _, id in ipairs(data_g) do
+    for pairs(data_g) as id do
         PIP_Girl_Blacklist[id] = true
     end
 
-    for _, id in ipairs(data_e) do
+    for ipairs(data_e) as id do
         PIP_Girl_Blacklist[id] = true
     end
 end
@@ -4342,6 +4371,27 @@ end
 
 players.on_join(SessionCheck)
 
+local function removeFromTable(pid)
+    local index = find_in_table(in_orb_room, pid)
+    if index then
+        table.remove(in_orb_room, index)
+    end
+    local index = find_in_table(sussy_god, pid)
+    if index then
+        table.remove(sussy_god, index)
+    end
+    local index = find_in_table(sussy_god, pid)
+    if index then
+        table.remove(set_passive, index)
+    end
+    local index = find_in_table(mk2noob, pid)
+    if index then
+        table.remove(mk2noob, index)
+    end
+end
+
+players.on_leave(removeFromTable)
+
 player_menu = function(pid)
     if not players.exists(players.user()) or pid == players.user() or isFriend(pid) then
         if isFriend(pid) then
@@ -4386,12 +4436,12 @@ player_menu = function(pid)
     end)
     menu.toggle_loop(Bad_Modder, "Ghost Player", {""}, "Ghost the selected player.", function()
         if transitionState(true) == 1 and player_Exist(pid) then
-            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+            set_as_illusion(pid, set_passive, true)
         end
         util.yield(666)
     end, function()
         if player_Exist(pid) then
-            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+            set_as_illusion(pid, set_passive, false)
         end
     end)
     menu.toggle_loop(Bad_Modder, "(Alpha) Report Bot", {"reportbot"}, "Weak menu? Spamm report them >:D", function()
