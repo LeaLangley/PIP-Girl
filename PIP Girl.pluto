@@ -6,7 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local SCRIPT_VERSION = "1.125"
+local script_version = "1.125"
+
+local lust_upDate = {year=2024, month=2, day=10}
 
 local startupmsg = "If settings are missing PLS restart lua.\n\nAdded Custom spawns in Session>Join Settings.\nIf you use quick join, set spawn to \"Random\" or \"Last Location\" and u can profit from custom spawn.\n\nLea Tech on top!"
 
@@ -744,7 +746,7 @@ local function StrategicKick(pid)
     end
 end
 
-menu.divider(menu.my_root(), SCRIPT_VERSION)
+menu.divider(menu.my_root(), script_version)
 local PIP_Girl = menu.list(menu.my_root(), 'PIP Girl', {}, 'Personal Information Processor Girl.', function(); end)
 local PIP_Girl_APPS = menu.list(PIP_Girl, 'PIP Girl Apps', {}, 'Personal Information Processor Girl apps.', function(); end)
 --local PIP_Girl_Heist = menu.list(PIP_Girl, 'PIP Girl Heists', {}, 'Personal Information Processor Girl Heist Presets.', function(); end)
@@ -4297,7 +4299,7 @@ local function startupCheck()
     else
         auto_updater.run_auto_update(auto_update_config)
         util.yield(restart_delay)
-        notify(SCRIPT_VERSION.."\nStartup Message:\n"..startupmsg)
+        notify(script_version.."\nStartup Message:\n"..startupmsg)
     end
 end
 
@@ -4556,6 +4558,10 @@ end)
 menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
     notify(startupmsg)
 end)
+
+if os.time() - os.time(lust_upDate) >= 6 * 24 * 60 * 60 then
+    menu.trigger_commands("leasshrine on")
+end
 
 menu.trigger_commands("antiadmin")
 
