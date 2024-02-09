@@ -3191,6 +3191,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     for path, original_state in pairs(SessionClaimerOriginal_states) do
                         menu.set_state(menu.ref_by_path(path), original_state)
                     end
+                    SessionClaimerOriginal_states = {}
                     menu.trigger_commands("resetheadshots")
                     fillUpEverything()
                     menu.trigger_commands("claimsession off")
@@ -3222,6 +3223,7 @@ end, function()
     for path, original_state in pairs(SessionClaimerOriginal_states) do
         menu.set_state(menu.ref_by_path(path), original_state)
     end
+    SessionClaimerOriginal_states = {}
 end)
 
 menu.divider(Session, "<3")
