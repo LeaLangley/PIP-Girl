@@ -3337,16 +3337,14 @@ menu.toggle(Session, "Quick Session Join", {"quickjoin"}, " Please Set you're Sp
 end)
 
 menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join Invite only\nIf R* Admin Detected", function()
-    if util.is_session_started() then
-        for players.list_except(true) as pid do
-            if players.is_marked_as_admin(pid) or players.is_marked_as_modder_or_admin(pid) then
-                menu.trigger_commands("quickbail")
-                warnify("Admin Detected, We get you out of Here!")
-                util.yield(666)
-                menu.trigger_commands("unstuck")
-                util.yield(666)
-                menu.trigger_commands("go inviteonly")
-            end    
+    for players.list_except(true) as pid do
+        if players.is_marked_as_admin(pid) or players.is_marked_as_modder_or_admin(pid) then
+            menu.trigger_commands("quickbail")
+            warnify("Admin Detected, We get you out of Here!")
+            util.yield(666)
+            menu.trigger_commands("unstuck")
+            util.yield(666)
+            menu.trigger_commands("go inviteonly")
         end
     end
     util.yield()
