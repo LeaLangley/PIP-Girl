@@ -42,7 +42,7 @@ local auto_update_config = {
     verify_file_begins_with="--",
     check_interval=666,
     silent_updates=true,
-    restart_delay=1666,
+    restart_delay=2666,
     dependencies={
         {
             name="logo",
@@ -2155,7 +2155,7 @@ menu.action(Vehicle, "Detonate Lea Tech Vehicle.", {"boomlea"}, "", function()
         VEHICLE.SET_VEHICLE_NEON_ENABLED(target_vehicle, 2, true)
         VEHICLE.SET_VEHICLE_NEON_ENABLED(target_vehicle, 3, true)
         VEHICLE.SET_VEHICLE_XENON_LIGHT_COLOR_INDEX(target_vehicle, 8)
-        util.yield(6666)
+        util.yield(3666)
     end
     VEHICLE.DETONATE_VEHICLE_PHONE_EXPLOSIVE_DEVICE(saved_vehicle_id)
 end)
