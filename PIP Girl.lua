@@ -1802,6 +1802,7 @@ local function buff_lea_tech(vehicle)
     VEHICLE.ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(vehicle)
     VEHICLE.SET_VEHICLE_ACT_AS_IF_HAS_SIREN_ON(vehicle, true)
     VEHICLE.SET_VEHICLE_TYRES_CAN_BURST(vehicle, false)
+    AUDIO.ENABLE_VEHICLE_EXHAUST_POPS(vehicle, true)
     --VEHICLE.SET_VEHICLE_DROPS_MONEY_WHEN_BLOWN_UP(vehicle, true)
     --entities.set_can_migrate(vehicle, false)
 end
