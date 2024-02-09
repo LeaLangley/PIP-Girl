@@ -535,13 +535,8 @@ local function get_session_code()
     return "N/A"
 end
 
-local function requestModel(hash, timeout)
-    util.request_model(hash, timeout)
-end
-
-local function requestControl(entity, timeout)
-    entities.request_control(entity, timeout)
-end
+local requestModel = util.request_model
+local requestControl = entities.request_control
 
 local function does_entity_exist(entity)
     if entity then
