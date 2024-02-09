@@ -6,9 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.126"
+local script_version = "1.127"
 
-local lust_upDate = {year=2024, month=2, day=10}
+local lust_upDate = {year=2024, month=2, day=13}
 
 local startupmsg = "If settings are missing PLS restart lua.\n\nAdded Custom spawns in Session>Join Settings.\nIf you use quick join, set spawn to \"Random\" or \"Last Location\" and u can profit from custom spawn.\n\nLea Tech on top!"
 
@@ -587,7 +587,7 @@ local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, ti
             util.yield(13 + timeout)
         end
         if closestPlayer then
-            requestControl(entity, 2000)
+            requestControl(entity)
             ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(players.user()), false)
         end
     end
@@ -596,7 +596,7 @@ local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, ti
                             (math.abs(currentCoords.y - locationV3.y) <= 1) and
                             (math.abs(currentCoords.z - locationV3.z) <= 1)
     if not coordinatesCorrect then
-        requestControl(entity, 2000)
+        requestControl(entity)
         ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3.x, locationV3.y, locationV3.z, true, true, true)
         ENTITY.FREEZE_ENTITY_POSITION(entity, true)
     end
@@ -605,7 +605,7 @@ local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, ti
                     (math.abs(currentRotation.y - roll) <= 1) and
                     (math.abs(currentRotation.z - yaw) <= 1)
     if not anglesCorrect then
-        requestControl(entity, 2000)
+        requestControl(entity)
         ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
         ENTITY.FREEZE_ENTITY_POSITION(entity, true)
     end
@@ -615,7 +615,7 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
     if order == nil then order = 2 end
     local startTime = os.time()
     if not does_entity_exist(entity) then
-        requestModel(hash, 2000)
+        requestModel(hash)
         entity = entities.create_object(hash, locationV3)
         util.yield(13 + timeout)
         startTime = os.time()
@@ -625,7 +625,7 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
             end
             util.yield(13 + timeout)
         end
-        requestControl(entity, 2000)
+        requestControl(entity)
         entities.set_can_migrate(entity, false)
         ENTITY.FREEZE_ENTITY_POSITION(entity, true)
         objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
@@ -1398,7 +1398,7 @@ menu.toggle_loop(PIP_Girl, "Collect all NPC money", {}, "Collect all NPC money."
                 if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) and not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
                     local pickupHash = entities.get_model_hash(pickup)
                     if contains(vehicle_money_hashish, pickupHash) then
-                        requestControl(pickup, 0)
+                        requestControl(pickup)
                         OBJECT.SET_PICKUP_OBJECT_COLLECTABLE_IN_VEHICLE(pickup)
                         ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
                     end
@@ -1416,7 +1416,7 @@ menu.toggle_loop(PIP_Girl, "Collect all NPC money", {}, "Collect all NPC money."
                 if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) and not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
                     local pickupHash = entities.get_model_hash(pickup)
                     if contains(money_hashish, pickupHash) then
-                        requestControl(pickup, 0)
+                        requestControl(pickup)
                         ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
                     end
                 end
@@ -1436,7 +1436,7 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all pickups on yo
         local playerPed = players.user_ped()
         for entities.get_all_pickups_as_handles() as pickup do
             if not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) and not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
-                requestControl(pickup, 0)
+                requestControl(pickup)
                 --ENTITY.ATTACH_ENTITY_TO_ENTITY(pickup, playerPed, PED.GET_PED_BONE_INDEX(playerPed, 24818), 0.0, -0.3, 0.0, 0.0, 90, 0.0, false, true, true, false, 0, true, 1)
                 ENTITY.ATTACH_ENTITY_TO_ENTITY(pickup, playerPed, PED.GET_PED_BONE_INDEX(playerPed, 24818), 0, -0.3, 0, 0, 90, 0, false, true, true, false, 0, true, 1)
                 table.insert(carryingPickups, pickup)
@@ -1451,7 +1451,7 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all pickups on yo
         local pos = players.get_position(players.user())
         for ipairs(carryingPickups) as pickup do
             if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) and ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
-                requestControl(pickup, 0)
+                requestControl(pickup)
                 ENTITY.DETACH_ENTITY(pickup, true, true)
                 util.yield(13)
                 ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z-0.8, false, false, false, false)
@@ -1851,7 +1851,7 @@ menu.toggle_loop(Stimpak, "Lea's Repair Stop", {"lears"}, "", function()
                     local vehicle = get_user_vehicle()
                     wasInZone = true
                     if is_vehicle_free_for_use(vehicle) then
-                        requestControl(vehicle, 2000)
+                        requestControl(vehicle)
                         menu.trigger_commands("performance")
                         menu.trigger_commands("fixvehicle")
                     end
@@ -2014,7 +2014,7 @@ local function repair_lea_tech(vehicle)
     local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
     repairing = false
 
-    requestControl(vehicle, 0)
+    requestControl(vehicle)
 
     if engineHealth < 1000 then
         VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + lea_tech_repair_amount)
@@ -2084,7 +2084,7 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
                 local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
                 local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
 
-                requestControl(vehicle, 0)
+                requestControl(vehicle)
                 if lea_tech_repair_amount > 0 then
                     repair_lea_tech(vehicle)
                 end
@@ -2137,7 +2137,7 @@ menu.action(Vehicle, "Detonate Lea Tech Vehicle.", {"boomlea"}, "", function()
     if saved_vehicle_id then
         target_vehicle = saved_vehicle_id
     end
-    requestControl(target_vehicle, 1000)
+    requestControl(target_vehicle)
     entities.set_can_migrate(target_vehicle, false)
     VEHICLE.ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(target_vehicle)
     local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(target_vehicle, -1)
@@ -2463,7 +2463,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
 
         if distance <= 100.0 then
             indistance = indistance + 1
-            requestControl(vehicle, 0)
+            requestControl(vehicle)
             util.yield(213)
             if driver == 0 or driver == players.user() then
                 PED.SET_PED_INTO_VEHICLE(my_ped, vehicle, -1)
@@ -3514,7 +3514,7 @@ menu.toggle_loop(SessionWorld, "Nerf Oppressor MK2s", {""}, "Nerf Oppressor mk2 
         if players.get_vehicle_model(pid) == 2069146067 and not isFriend(pid) and not isModder(pid) then
             local vehicle = PED.GET_VEHICLE_PED_IS_IN(PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid))
             if VEHICLE.GET_VEHICLE_MOD(vehicle, 10) ~= -1 then
-                requestControl(vehicle, 2000)
+                requestControl(vehicle)
                 VEHICLE.SET_VEHICLE_MOD(vehicle, 10, -1)
             end
         end    
