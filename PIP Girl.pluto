@@ -3092,9 +3092,10 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
     local magnet_path = "Online>Transitions>Matchmaking>Player Magnet"
     local spoof_path = "Online>Spoofing>Host Token Spoofing>Host Token Spoofing"
     if menu.get_state(menu.ref_by_path(spoof_path)) == "On" then
-        for pairs(SessionClaimerPaths) as entry do
-            SessionClaimerOriginal_states[entry.path] = menu.get_state(menu.ref_by_path(entry.path))
-            if SessionClaimerOriginal_states[entry.path] ~= entry.desired_state then
+        for ipairs(SessionClaimerPaths) as entry do
+            local current_state = menu.get_state(menu.ref_by_path(entry.path))
+            if current_state ~= entry.desired_state then
+                SessionClaimerOriginal_states[entry.path] = current_state
                 menu.set_state(menu.ref_by_path(entry.path), entry.desired_state)
             end
         end
