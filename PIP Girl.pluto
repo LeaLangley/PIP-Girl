@@ -6,9 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.127"
+local script_version = "1.128"
 
-local lust_upDate = {year=2024, month=2, day=13}
+local lust_upDate = {year=2024, month=2, day=15}
 
 local startupmsg = "If settings are missing PLS restart lua.\n\nAdded Custom spawns in Session>Join Settings.\nIf you use quick join, set spawn to \"Random\" or \"Last Location\" and u can profit from custom spawn.\n\nLea Tech on top!"
 
@@ -2130,6 +2130,26 @@ local Lea_Tech = menu.list(Vehicle, 'Lea Tech Settings', {}, 'Settings for Lea T
 
 menu.slider(Lea_Tech, "Lea Tech Repair Amount", {"leatechrepairamount"}, "The amount that should be repaired per second, default 1.", 0, 13, lea_tech_repair_amount, 1, function (new_value)
     lea_tech_repair_amount = new_value
+end)
+
+menu.action(Vehicle, "Enter Lea Tech Vehicle", {"enterlea"}, "Enter the current Lea Tech Vehicle", function()
+    local target_vehicle = get_user_vehicle()
+    if saved_vehicle_id then
+        target_vehicle = saved_vehicle_id
+    end
+    if target_vehicle then
+        requestControl(target_vehicle)
+        local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(target_vehicle, -1)
+        if driver == 0 or driver == players.user() then
+            PED.SET_PED_INTO_VEHICLE(my_ped, target_vehicle, -1)
+        else
+            PED.SET_PED_INTO_VEHICLE(my_ped, target_vehicle, -2)
+        end
+        util.yield(666)
+        buff_lea_tech(target_vehicle)
+    else
+        notify("Could not find a Lea Tech Vehicle. :C")
+    end
 end)
 
 menu.action(Vehicle, "Detonate Lea Tech Vehicle.", {"boomlea"}, "", function()
