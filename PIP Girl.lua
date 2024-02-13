@@ -4612,4 +4612,6 @@ end
 
 menu.trigger_commands("antiadmin")
 
+menu.hyperlink(menu.my_root(), "PIP Girl Discord", "https://discord.gg/fWYy7NkqUC", "The PIP Girl Discord.")
+
 util.keep_running()
