@@ -2140,6 +2140,7 @@ menu.action(Vehicle, "Enter Lea Tech Vehicle", {"enterlea"}, "Enter the current 
     if target_vehicle then
         requestControl(target_vehicle)
         local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(target_vehicle, -1)
+        local my_ped = players.user_ped()
         if driver == 0 or driver == players.user() then
             PED.SET_PED_INTO_VEHICLE(my_ped, target_vehicle, -1)
         else
