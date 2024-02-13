@@ -4486,6 +4486,24 @@ menu.action(Credits, "Statement about skidding.", {""}, "99% of the skidded code
     notify("99% of the skidded code has been modifyed or changed, i specially did that since i was new to lua, and i am a noob. It helpt me getting started and understanding the code i was messing around with.")
 end)
 
+menu.divider(Credits, "My Friends. <3")
+
+menu.action(Credits, "Kev <3", {""}, "For using/testing my lua and gifting me Ultimate <3", function()
+    notify("Kev is very sexy.")
+end)
+
+menu.action(Credits, "Marcel <3", {""}, "For activly using/testing my lua.", function()
+    notify("Marcel is very sexy.")
+end)
+
+menu.action(Credits, "Nick <3", {""}, "For activly using/testing my lua.", function()
+    notify("Nick is very sexy.")
+end)
+
+menu.action(Credits, "White <3", {""}, "For cooperation and activly merging Black/Block-lists.", function()
+    notify("White is very sexy.")
+end)
+
 menu.divider(Credits, "Other Script Dev's. <3")
 
 menu.hyperlink(Credits, "mehScript by akat0zi", "https://discord.gg/uUNRn6xgw5", "For (Specially First) inspiration , little skid.\nSince i was (and still am) new/noob to lua.")
@@ -4503,16 +4521,6 @@ menu.hyperlink(Credits, "Undefined by Undefined Pony", "https://gitlab.com/undef
 menu.hyperlink(Credits, "CAT ESP by movemint. cat", "https://github.com/Keramis", "For inspiration , little skid.\nSince i hate math.")
 
 menu.hyperlink(Credits, "Stand Lua Auto-Updater by hexarobi", "https://github.com/hexarobi", "For the wonderfull Auto-Updater. :D")
-
-menu.divider(Credits, "My Friends. <3")
-
-menu.action(Credits, "Kev <3", {""}, "For activly using/testing my lua and gifting me Ultimate <3", function()
-    notify("Kev is very sexy.")
-end)
-
-menu.action(Credits, "Marcel <3", {""}, "For activly using/testing my lua.", function()
-    notify("Marcel is very sexy.")
-end)
 
 menu.divider(Credits, "<3")
 util.create_thread(startupCheck)
