@@ -2137,7 +2137,7 @@ menu.action(Vehicle, "Enter Lea Tech Vehicle", {"enterlea"}, "Enter the current 
     if saved_vehicle_id then
         target_vehicle = saved_vehicle_id
     end
-    if target_vehicle then
+    if does_entity_exist(target_vehicle) then
         requestControl(target_vehicle)
         local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(target_vehicle, -1)
         local my_ped = players.user_ped()
