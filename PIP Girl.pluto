@@ -4246,7 +4246,7 @@ load_data_g()
 local PIP_Girl_Blacklist = {}
 
 local function load_PIP_Girl_Blacklist()
-    for pairs(data_g) as id do
+    for ipairs(data_g) as id do
         PIP_Girl_Blacklist[id] = true
     end
 
