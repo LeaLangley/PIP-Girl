@@ -6,9 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.128"
+local script_version = "1.129"
 
-local lust_upDate = {year=2024, month=2, day=15}
+local lust_upDate = {year=2024, month=2, day=20}
 
 local startupmsg = "If settings are missing PLS restart lua.\n\nAdded Custom spawns in Session>Join Settings.\nIf you use quick join, set spawn to \"Random\" or \"Last Location\" and u can profit from custom spawn.\n\nLea Tech on top!"
 
@@ -42,7 +42,7 @@ local auto_update_config = {
     verify_file_begins_with="--",
     check_interval=666,
     silent_updates=true,
-    restart_delay=2666,
+    restart_delay=3666,
     dependencies={
         {
             name="logo",
@@ -535,7 +535,23 @@ local function get_session_code()
     return "N/A"
 end
 
-local requestModel = util.request_model
+local function requestModel(hash, timeout)
+    if not STREAMING.HAS_MODEL_LOADED(hash) then
+        STREAMING.REQUEST_MODEL(hash)
+        local startTime = os.time()
+        while not STREAMING.HAS_MODEL_LOADED(hash) do
+            if os.time() - startTime > timeout or timeout == 0 then
+                break
+            end
+            util.yield(13)
+        end
+        if STREAMING.HAS_MODEL_LOADED(hash) then
+            return
+        end
+    end
+    util.request_model(hash, timeout)
+end
+
 local requestControl = entities.request_control
 
 local function does_entity_exist(entity)
@@ -615,7 +631,7 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
     if order == nil then order = 2 end
     local startTime = os.time()
     if not does_entity_exist(entity) then
-        requestModel(hash)
+        requestModel(hash, timeout)
         entity = entities.create_object(hash, locationV3)
         util.yield(13 + timeout)
         startTime = os.time()
