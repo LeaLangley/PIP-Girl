@@ -1769,7 +1769,6 @@ local function buff_lea_tech(vehicle)
     local breaks = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 12) - 1
     local gearbox = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 13) - 1
     local armor = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 16) - 1
-    --local nitro = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 17) need more researtch about that xD
     if engine > 0 then
         if VEHICLE.GET_VEHICLE_MOD(vehicle, 11) ~= engine then
             VEHICLE.SET_VEHICLE_MOD(vehicle, 11, engine)
@@ -1796,10 +1795,8 @@ local function buff_lea_tech(vehicle)
     end
     VEHICLE.SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
     VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
-    --VEHICLE.SET_DONT_PROCESS_VEHICLE_GLASS(vehicles, true)
     VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, false)
     VEHICLE.SET_HELI_TAIL_BOOM_CAN_BREAK_OFF(vehicle, false)
-    --VEHICLE.CAN_SHUFFLE_SEAT(vehicle, true)
     VEHICLE.SET_VEHICLE_CAN_ENGINE_MISSFIRE(vehicle, false)
     VEHICLE.SET_VEHICLE_CAN_LEAK_PETROL(vehicle, false)
     VEHICLE.SET_VEHICLE_CAN_LEAK_OIL(vehicle, false)
@@ -1814,8 +1811,6 @@ local function buff_lea_tech(vehicle)
     VEHICLE.SET_VEHICLE_ACT_AS_IF_HAS_SIREN_ON(vehicle, true)
     VEHICLE.SET_VEHICLE_TYRES_CAN_BURST(vehicle, false)
     AUDIO.ENABLE_VEHICLE_EXHAUST_POPS(vehicle, true)
-    --VEHICLE.SET_VEHICLE_DROPS_MONEY_WHEN_BLOWN_UP(vehicle, true)
-    --entities.set_can_migrate(vehicle, false)
 end
 local function SetInZoneTimer()
     wasInZone = true
