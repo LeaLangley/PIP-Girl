@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.129"
+local script_version = "1.130"
 
 local lust_upDate = {year=2024, month=2, day=20}
 
@@ -1764,7 +1764,14 @@ local radius = 2
 local closestMarker = nil
 local closestDistance = math.huge
 local wasInZone = false
+local protectMissionVehicles = false
 local function buff_lea_tech(vehicle)
+    if protectMissionVehicles then
+        if ENTITY.IS_ENTITY_A_MISSION_ENTITY(vehicle) then
+            VEHICLE.SET_VEHICLE_ALLOW_HOMING_MISSLE_LOCKON(vehicle, false, false)
+            VEHICLE.SET_VEHICLE_ALLOW_HOMING_MISSLE_LOCKON_SYNCED(vehicle, false, false)
+        end
+    end
     local engine = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 11) - 1
     local breaks = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 12) - 1
     local gearbox = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 13) - 1
@@ -2141,6 +2148,14 @@ local Lea_Tech = menu.list(Vehicle, 'Lea Tech Settings', {}, 'Settings for Lea T
 
 menu.slider(Lea_Tech, "Lea Tech Repair Amount", {"leatechrepairamount"}, "The amount that should be repaired per second, default 1.", 0, 13, lea_tech_repair_amount, 1, function (new_value)
     lea_tech_repair_amount = new_value
+end)
+
+menu.toggle(Lea_Tech, "Lockon Jammer for Mission Vehicles", {""}, "", function(on)
+    if on then
+        protectMissionVehicles = true
+    else
+        protectMissionVehicles = false
+    end
 end)
 
 menu.action(Vehicle, "Enter Lea Tech Vehicle", {"enterlea"}, "Enter the current Lea Tech Vehicle", function()
