@@ -2150,7 +2150,7 @@ menu.slider(Lea_Tech, "Lea Tech Repair Amount", {"leatechrepairamount"}, "The am
     lea_tech_repair_amount = new_value
 end)
 
-menu.toggle(Lea_Tech, "Lockon Jammer for Mission Vehicles", {""}, "", function(on)
+menu.toggle(Lea_Tech, "Lockon Jammer for Mission Vehicles", {""}, "if you lea tech vehicle is a mission entity , it will gain a lock on jammer.", function(on)
     if on then
         protectMissionVehicles = true
     else
