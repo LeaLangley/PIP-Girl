@@ -4699,7 +4699,7 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
         local sesPlayers = PLAYER.GET_NUMBER_OF_PLAYERS()
         local myMommy = players.get_money(players.user())
         local transitionState = transitionState(false)
-        local interior_hashish = INTERIOR.GET_INTERIOR_FROM_COLLISION(playerPosition.x, playerPosition.y, playerPosition.z)
+        local interior_hashish = INTERIOR.GET_INTERIOR_FROM_ENTITY(players.user_ped())
         local interior_Name = findInteriorNameByID(interior_hashish)
         if interior_Name == "" and not interior_hashish == 0 then
             notify(interior_hashish)
