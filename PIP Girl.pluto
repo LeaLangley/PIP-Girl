@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.130"
+local script_version = "1.131"
 
 local lust_upDate = {year=2024, month=2, day=20}
 
@@ -1950,18 +1950,14 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
         menu.trigger_commands("lockoutfit off")
     else
         if NETWORK.NETWORK_IS_ACTIVITY_SESSION() and 4 >= PLAYER.GET_NUMBER_OF_PLAYERS() then
-            if HUD.IS_MESSAGE_BEING_DISPLAYED() then
-                menu.trigger_commands("lockoutfit off")
-                if not temp_holding_outfit then
-                    menu.trigger_commands("saveoutfit 1 PIP Girl Temp")
-                    temp_holding_outfit = true
-                end 
-            else
-                menu.trigger_commands("lockoutfit on")
-                if temp_holding_outfit then
-                    menu.trigger_commands("outfit 1PIPGirlTemp")
-                    temp_holding_outfit = false
-                end 
+            menu.trigger_commands("lockoutfit off")
+            if ChangedHelmet then
+                menu.trigger_commands("hat -1")
+                ChangedHelmet = false
+            end
+            if not temp_holding_outfit then
+                menu.trigger_commands("saveoutfit 1 PIP Girl Temp")
+                temp_holding_outfit = true
             end
         else
             menu.trigger_commands("lockoutfit on")
@@ -1969,31 +1965,35 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
                 menu.trigger_commands("outfit 1PIPGirlTemp")
                 temp_holding_outfit = false
             end
-        end
-    end
-    if OutfitLockHelmet ~= -1 then
-        if PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) then
-            if menu.get_state(menu.ref_by_path("Self>Appearance>Outfit>Hat")) == "-1" and focused ~= "Profiles" then
-                local vehicle = get_user_vehicle()
-                if vehicle then
-                    local getclass = VEHICLE.GET_VEHICLE_CLASS(vehicle)
-                    if getclass == 8 or getclass == 13 then
-                        menu.trigger_commands("hat "..OutfitLockHelmet)
-                        ChangedHelmet = true
+            if OutfitLockHelmet ~= -1 then
+                if PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) then
+                    if menu.get_state(menu.ref_by_path("Self>Appearance>Outfit>Hat")) == "-1" and focused ~= "Profiles" then
+                        local vehicle = get_user_vehicle()
+                        if vehicle then
+                            local getclass = VEHICLE.GET_VEHICLE_CLASS(vehicle)
+                            if getclass == 8 or getclass == 13 then
+                                menu.trigger_commands("hat "..OutfitLockHelmet)
+                                ChangedHelmet = true
+                            end
+                        end
+                    end
+                else
+                    if ChangedHelmet then
+                        menu.trigger_commands("hat -1")
+                        ChangedHelmet = false
                     end
                 end
-            end
-        else
-            if ChangedHelmet then
-                menu.trigger_commands("hat -1")
-                ChangedHelmet = false
+                if ChangedHelmet and focused == "Profiles" then
+                    menu.trigger_commands("hat -1")
+                    ChangedHelmet = false
+                end 
             end
         end
-        if ChangedHelmet and focused == "Profiles" then
-            menu.trigger_commands("hat -1")
-            ChangedHelmet = false
-        end 
     end
+    if ChangedHelmet and focused == "Profiles" then
+        menu.trigger_commands("hat -1")
+        ChangedHelmet = false
+    end 
     if focused == "Stand" or focused == "Profiles" then
         util.yield(13)
     else
@@ -3349,7 +3349,9 @@ menu.toggle_loop(SessionJoin, "Use Custom Spawn", {""}, "", function()
         end
     end
     if not customspawned and transitionState(true) < 3 then
-        players.teleport_3d(players.user(), spwncrd.x, spwncrd.y, spwncrd.z)
+        if not NETWORK.NETWORK_IS_ACTIVITY_SESSION() then
+            players.teleport_3d(players.user(), spwncrd.x, spwncrd.y, spwncrd.z)
+        end
         menu.trigger_commands("spoofpos off")
         if get_user_vehicle() then
             entities.delete(get_user_vehicle())
