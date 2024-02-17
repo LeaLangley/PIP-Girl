@@ -4640,6 +4640,56 @@ menu.action(Settings, "Copy Location Name to Clipboard", {""}, "", function()
 end)
 
 if filesystem.exists(store_dir..'/gta_rpc.json') then
+    interior_Names = {
+        ["Penthouse Garage"] = {275457},
+        ["Casino"] = {275201},
+        ["Casino Garage"] = {274945},
+        ["Beeker"] = {179457},
+        ["LSCM"] = {285697, 286209},
+        ["Benny's"] = {196609},
+        ["Barber"] = {165377, 198657, 171009, 199937, 140545, 180225, 155905},
+        ["Vehicle Warehouse"] = {290817},
+        ["Ammu Nation"] = {248065, 153857, 168193, 200961, 164609, 137729, 140289, 180481, 178689, 176385, 175617},
+        ["LSC"] = {234753, 164353, 201729, 153601},
+        ["2 Car Garage"] = {149249},
+        ["6 Car Garage"] = {148737},
+        ["10 Car Garage"] = {146433},
+        ["50 Car Garage"] = {290561},
+        ["Eclipse Towers"] = {230657},
+        ["Lombank"] = {255745, 255489, 256001, 241921, 256257},
+        ["Arcadius"] = {253441, 237313, 253697, 253953, 254209},
+        ["Maze Bank Tower"] = {239617, 254465, 254721, 254977, 255233},
+        ["Maze Bank Building"] = {244225, 256513, 256769, 257025, 257281},
+        ["Apatment"] = {206081, 206337, 206593, 149761, 148225},
+        ["Del Perro"] = {145409, 145921, 145665},
+        ["Four Way"] = {147201, 141313, 147969},
+        ["Doc Forgery"] = {246785},
+        ["Meth Lab"] = {247041},
+        ["Weed Farm"] = {247297},
+        ["Counterfeit Cash"] = {247809},
+        ["Cocaine Lockup"] = {247553},
+        ["Yacht"] = {213249, 212737, 212225},
+        ["Hangar"] = {260353},
+        ["Strip Club"] = {197121},
+        ["Tattoo Studio"] = {199425, 140033, 180737, 180737, 251137, 176897},
+        ["Alta"] = {141825, 141569},	            
+        ["Richards"] = {142849, 143361, 146177},
+        ["Weazel"] = {143617, 143105, 142593},
+        ["Clothing Store"] = {165633, 235265, 166145, 140801, 176129, 169217, 201473, 171265, 137217, 198145, 183553, 175361, 179713, 202497},
+        ["Salvage Yard"] = {293377}
+    }
+
+    function findInteriorNameByID(interior_Hashish)
+        for name, ids in pairs(interior_Names) do
+            for ipairs(ids) as interiorID do
+                if interiorID == interior_Hashish then
+                    return name
+                end
+            end
+        end
+        return ""
+    end
+
     menu.toggle_loop(Settings, "GTA RPC", {""}, "", function()
         local playerPosition = players.get_position(players.user())
         local streetInfo = get_Street_Names(playerPosition.x, playerPosition.y, playerPosition.z)
@@ -4649,7 +4699,11 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
         local sesPlayers = PLAYER.GET_NUMBER_OF_PLAYERS()
         local myMommy = players.get_money(players.user())
         local transitionState = transitionState(false)
-        
+        local interior_hashish = INTERIOR.GET_INTERIOR_FROM_COLLISION(playerPosition.x, playerPosition.y, playerPosition.z)
+        local interior_Name = findInteriorNameByID(interior_hashish)
+        if interior_Name == "" and not interior_hashish == 0 then
+            notify(interior_hashish)
+        end
         local data = {
             streetInfo = streetInfo,
             vehicleInfo = vehicleInfo,
@@ -4658,6 +4712,7 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
             sesPlayers = sesPlayers,
             myMoney = myMommy,
             transitionState = transitionState,
+            interior_Name = interior_Name,
         }
         
         local json_data = json.encode(data)
