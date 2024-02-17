@@ -236,16 +236,19 @@ local function player_Exist(pid)
 end
 
 local function allow_Join_back(name)
+    menu.focus(menu.ref_by_path("Online>Session>Block Joins>Removed Players"))
     util.yield(420)
     for menu.ref_by_path("Online>Session>Block Joins>Removed Players"):getChildren() as rat do
         if rat:isValid() then
             util.yield(13)
+            menu.focus(rat)
         end
         util.yield(13)
     end
     util.yield(666)
     for menu.ref_by_path("Online>Session>Block Joins>Removed Players"):getChildren() as rat do
         if rat:isValid() then
+            menu.focus(rat)
             if rat.menu_name == name then
                 rat:trigger()
                 break
