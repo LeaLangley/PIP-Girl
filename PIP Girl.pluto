@@ -4643,6 +4643,7 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
         local sesType = session_type()
         local sesPlayers = PLAYER.GET_NUMBER_OF_PLAYERS()
         local myMommy = players.get_money(players.user())
+        local transitionState = transitionState(false)
         
         local data = {
             streetInfo = streetInfo,
@@ -4651,6 +4652,7 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
             sesType = sesType,
             sesPlayers = sesPlayers,
             myMoney = myMommy,
+            transitionState = transitionState,
         }
         
         local json_data = json.encode(data)
