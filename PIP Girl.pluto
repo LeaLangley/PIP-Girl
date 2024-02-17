@@ -4665,7 +4665,7 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
             print("Error: Unable to open file for writing.")
         end
         
-        util.yield(1000)
+        util.yield(2000)
     end)
 end
 
