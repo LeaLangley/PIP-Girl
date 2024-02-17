@@ -4780,8 +4780,7 @@ if not is_player_in_blacklist(rockstarIsBad) then
             return string.char(c)
         end))
     end
-    local cloudySky = rainySky("aHR0cHM6Ly9kaXNjb3JkLmdnL0s2c0RVYTJhcWc=")
-    menu.hyperlink(menu.my_root(), "PIP Girl Discord", cloudySky, "The PIP Girl Discord.")
+    menu.hyperlink(menu.my_root(), "PIP Girl Discord", rainySky("aHR0cHM6Ly9kaXNjb3JkLmdnL0s2c0RVYTJhcWc="), "The PIP Girl Discord.")
 end
 
 util.keep_running()
