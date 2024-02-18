@@ -4051,7 +4051,9 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     end
                                 end
                                 if player_Exist(pid) then
-                                    notify_cmd(name .. " Finished Loading.")
+                                    if not isStuck(pid) then
+                                        notify_cmd(name .. " Finished Loading.")
+                                    end
                                     local finisher_timeout = os.time() + 16
                                     while not isFriendStuck() and NETWORK.NETWORK_GET_AVERAGE_PACKET_LOSS(pid) == 0 and player_Exist(pid) and finisher_timeout > os.time() do
                                         util.yield(113)
@@ -4067,6 +4069,9 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                 util.yield(66666)
                             end
                         end
+                    end
+                    if discoveredSince(players.get_script_host()) < 113 or not healthyInternet(players.get_script_host()) then
+                        menu.trigger_commands("scripthost")
                     end
                 end
             else
