@@ -4684,9 +4684,11 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
         ["Salvage Yard"] = {293377},
         ["Nightclub"] = {271617}
     }
-
-    function findInteriorNameByID(interior_Hashish)
-        for name, ids in pairs(interior_Names) do
+    interior_Room_Names = {
+        ["Office"] = {-374937855}
+    }
+    function findInteriorNameByID(interior_Hashish, nameList)
+        for name, ids in pairs(nameList) do
             for ipairs(ids) as interiorID do
                 if interiorID == interior_Hashish then
                     return name
@@ -4706,9 +4708,16 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
         local myMommy = players.get_money(players.user())
         local transitionState = transitionState(false)
         local interior_hashish = INTERIOR.GET_INTERIOR_FROM_ENTITY(players.user_ped())
-        local interior_Name = findInteriorNameByID(interior_hashish)
+        local interior_Room_hashish = INTERIOR.GET_ROOM_KEY_FROM_ENTITY(players.user_ped())
+        local interior_Name = findInteriorNameByID(interior_hashish, interior_Names)
+        local interior_Room_Name = findInteriorNameByID(interior_Room_hashish, interior_Room_Names)
         if interior_Name == "" and interior_hashish ~= 0 then
-            notify(interior_hashish)
+            notify("Interior Hash: "..interior_hashish)
+            util.copy_to_clipboard(interior_hashish)
+        end
+        if interior_Room_Name == "" and interior_Room_hashish ~= 0 then
+            notify("Interior Room Hash: "..interior_Room_hashish)
+            util.copy_to_clipboard(interior_Room_hashish)
         end
         local data = {
             streetInfo = streetInfo,
@@ -4719,6 +4728,7 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
             myMoney = myMommy,
             transitionState = transitionState,
             interior_Name = interior_Name,
+            interior_Room_Name = interior_Room_Name,
         }
         
         local json_data = json.encode(data)
