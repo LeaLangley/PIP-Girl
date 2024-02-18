@@ -1771,6 +1771,7 @@ local protectMissionVehicles = false
 local function buff_lea_tech(vehicle)
     if protectMissionVehicles then
         if ENTITY.IS_ENTITY_A_MISSION_ENTITY(vehicle) and vehicle ~= entities.get_user_personal_vehicle_as_handle() then
+            notify("Installed Lockon Jammer on: "..util.reverse_joaat(entities.get_model_hash(vehicle)))
             VEHICLE.SET_VEHICLE_ALLOW_HOMING_MISSLE_LOCKON(vehicle, false, false)
             VEHICLE.SET_VEHICLE_ALLOW_HOMING_MISSLE_LOCKON_SYNCED(vehicle, false, false)
         end
