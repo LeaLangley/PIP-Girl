@@ -4681,7 +4681,8 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
         ["Richards"] = {142849, 143361, 146177},
         ["Weazel"] = {143617, 143105, 142593},
         ["Clothing Store"] = {165633, 235265, 166145, 140801, 176129, 169217, 201473, 171265, 137217, 198145, 183553, 175361, 179713, 202497},
-        ["Salvage Yard"] = {293377}
+        ["Salvage Yard"] = {293377},
+        ["Nightclub"] = {271617}
     }
 
     function findInteriorNameByID(interior_Hashish)
