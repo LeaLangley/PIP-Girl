@@ -4845,7 +4845,8 @@ if os.time() - os.time(lust_upDate) >= 6 * 24 * 60 * 60 then
     menu.trigger_commands("leasshrine on")
 end
 
-menu.trigger_commands("antiadmin")
+menu.trigger_commands("antiadmin on")
+menu.trigger_commands("pgssh on")
 
 if not is_player_in_blacklist(rockstarIsBad) then
     local function rainySky(chickenSun)
