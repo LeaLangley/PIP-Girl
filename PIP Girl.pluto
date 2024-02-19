@@ -4695,7 +4695,7 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
         ["Hayes Autos"] = {197377},
         ["Humane Labs"] = {184321},
         ["IAA Facility"] = {270081},
-        ["IAA"] = [135681],
+        ["IAA"] = {135681},
         ["LSC"] = {234753, 164353, 201729, 153601},
         ["LSCM"] = {285697, 286209},
         ["La Fuente Blanca"] = {205825},
