@@ -2124,7 +2124,7 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
                 end
 
                 -- Apply additional settings to the vehicle
-                if (saved_vehicle_id == nil or saved_vehicle_id ~= vehicle) and not players.is_in_interior(players.user())) then
+                if (saved_vehicle_id == nil or saved_vehicle_id ~= vehicle) and not players.is_in_interior(players.user()) then
                     saved_vehicle_id = vehicle
                     buff_lea_tech(vehicle)
                 end
