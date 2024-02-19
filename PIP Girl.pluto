@@ -4692,10 +4692,12 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
         ["Office"] = {-374937855}
     }
     function findInteriorNameByID(interior_Hashish, nameList)
-        for name, ids in pairs(nameList) do
-            for ipairs(ids) as interiorID do
-                if interiorID == interior_Hashish then
-                    return name
+        if interior_Hashish ~= 0 then
+            for name, ids in pairs(nameList) do
+                for ipairs(ids) as interiorID do
+                    if interiorID == interior_Hashish then
+                        return name
+                    end
                 end
             end
         end
