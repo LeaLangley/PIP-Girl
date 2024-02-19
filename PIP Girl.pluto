@@ -1773,7 +1773,7 @@ local closestDistance = math.huge
 local wasInZone = false
 local protectMissionVehicles = false
 local function buff_lea_tech(vehicle)
-    if protectMissionVehicles then
+    if protectMissionVehicles and not players.is_in_interior(players.user()) then
         if ENTITY.IS_ENTITY_A_MISSION_ENTITY(vehicle) and vehicle ~= entities.get_user_personal_vehicle_as_handle() then
             notify("Installed Lockon Jammer on: "..util.reverse_joaat(entities.get_model_hash(vehicle)))
             VEHICLE.SET_VEHICLE_ALLOW_HOMING_MISSLE_LOCKON(vehicle, false, false)
@@ -2124,7 +2124,7 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
                 end
 
                 -- Apply additional settings to the vehicle
-                if saved_vehicle_id == nil or saved_vehicle_id ~= vehicle then
+                if (saved_vehicle_id == nil or saved_vehicle_id ~= vehicle) and not players.is_in_interior(players.user())) then
                     saved_vehicle_id = vehicle
                     buff_lea_tech(vehicle)
                 end
