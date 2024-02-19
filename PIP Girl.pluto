@@ -4756,9 +4756,9 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
         local myMommy = players.get_money(players.user())
         local transitionState = transitionState(false)
         local interior_hashish = INTERIOR.GET_INTERIOR_FROM_ENTITY(players.user_ped())
-        local interior_Room_hashish = INTERIOR.GET_ROOM_KEY_FROM_ENTITY(players.user_ped())
+        --local interior_Room_hashish = INTERIOR.GET_ROOM_KEY_FROM_ENTITY(players.user_ped())
         local interior_Name = findInteriorNameByID(interior_hashish, interior_Names)
-        local interior_Room_Name = findInteriorNameByID(interior_Room_hashish, interior_Room_Names)
+        local interior_Room_Name = ""--findInteriorNameByID(interior_Room_hashish, interior_Room_Names)
         if interiorDev then
             if interior_Name == "" and interior_hashish ~= 0 then
                 notify_only("Interior Hash: "..interior_hashish)
