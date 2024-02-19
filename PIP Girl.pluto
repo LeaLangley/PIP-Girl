@@ -1982,8 +1982,9 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
                             local getclass = VEHICLE.GET_VEHICLE_CLASS(vehicle)
                             if getclass == 8 or getclass == 13 then
                                 menu.trigger_commands("hat "..OutfitLockHelmet)
+                                util.yield(13)
                                 if OutfitLockHelmetColor ~= -1 then
-                                    menu.trigger_commands("hatvar "..OutfitLockHelmet)
+                                    menu.trigger_commands("hatvar "..OutfitLockHelmetColor)
                                 end
                                 ChangedHelmet = true
                             end
