@@ -1950,6 +1950,7 @@ end)
 menu.divider(Outfit, "<3")
 
 local OutfitLockHelmet = -1
+local OutfitLockHelmetColor = -1
 local ChangedHelmet = false
 local temp_holding_outfit = nil
 menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you outfit only if u dont have interaction menu open or in some critical mission.", function()
@@ -1981,6 +1982,9 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
                             local getclass = VEHICLE.GET_VEHICLE_CLASS(vehicle)
                             if getclass == 8 or getclass == 13 then
                                 menu.trigger_commands("hat "..OutfitLockHelmet)
+                                if OutfitLockHelmetColor ~= -1 then
+                                    menu.trigger_commands("hatvar "..OutfitLockHelmet)
+                                end
                                 ChangedHelmet = true
                             end
                         end
@@ -2021,6 +2025,10 @@ end)
 
 menu.slider(Outfit, 'Smart Outfit Lock Helmet', {'SmartLockHelmet'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet.', -1, 201, OutfitLockHelmet, 1, function (new_value)
     OutfitLockHelmet = new_value
+end)
+
+menu.slider(Outfit, 'Smart Outfit Lock Helmet Color', {'SmartLockHelmetColor'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet Color.', -1, 50, OutfitLockHelmetColor, 1, function (new_value)
+    OutfitLockHelmetColor = new_value
 end)
 
 menu.divider(Vehicle, "Lea Tech")
