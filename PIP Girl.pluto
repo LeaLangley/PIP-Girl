@@ -4049,7 +4049,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     fail = true
                                     break
                                 end
-                                if NETWORK.NETWORK_GET_AVERAGE_PACKET_LOSS(pid) > 0 then
+                                if not not isFriend(players.get_script_host()) and NETWORK.NETWORK_GET_AVERAGE_PACKET_LOSS(pid) > 0 then
                                     notify_cmd(name .. " has trash internet.")
                                     fail = true
                                     break
@@ -4084,7 +4084,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                             end
                         end
                     end
-                    if discoveredSince(players.get_script_host()) < 113 or not healthyInternet(players.get_script_host()) then
+                    if not isFriend(players.get_script_host()) and discoveredSince(players.get_script_host()) < 113 or not healthyInternet(players.get_script_host()) then
                         menu.trigger_commands("scripthost")
                     end
                 end
