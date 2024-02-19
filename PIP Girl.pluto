@@ -4665,7 +4665,7 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
         ["10 Car Garage"] = {146433},
         ["50 Car Garage"] = {290561},
         ["Eclipse Towers"] = {230657},
-        ["Lombank"] = {255745, 255489, 256001, 241921, 256257, 240897},
+        ["Lombank"] = {255745, 255489, 256001, 241921, 256257, 240897, 241153, 241409, 241665, 242177, 242433, 242689, 242945},
         ["Arcadius"] = {253441, 237313, 253697, 253953, 254209},
         ["Maze Bank Tower"] = {239617, 254465, 254721, 254977, 255233},
         ["Maze Bank Building"] = {244225, 256513, 256769, 257025, 257281},
@@ -4704,6 +4704,7 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
         return ""
     end
     local interiorDev = false
+    local roomDev = false
     menu.toggle_loop(Settings, "GTA RPC", {""}, "", function()
         local playerPosition = players.get_position(players.user())
         local streetInfo = get_Street_Names(playerPosition.x, playerPosition.y, playerPosition.z)
@@ -4762,9 +4763,9 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
     end)
     menu.toggle(Settings, "Room Dev", {""}, "", function(on)
         if on then
-            interiorDev = true
+            roomDev = true
         else
-            interiorDev = false
+            roomDev = false
         end
     end)
 end
