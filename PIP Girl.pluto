@@ -196,6 +196,10 @@ local function notify_cmd(msg)
     util.toast("<[Pip Girl]>: " .. msg, TOAST_CONSOLE)
 end
 
+local function notify_only(msg)
+    util.toast("<[Pip Girl]>: " .. msg, TOAST_ABOVE_MAP)
+end
+
 local function warnify(msg)
     local formattedMsg = string.gsub(msg, "\n", " | ")
     chat.send_message("<[Pip Girl]>: " .. formattedMsg, true, true, false)
@@ -4697,7 +4701,7 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
         end
         return ""
     end
-
+    local rpcdevmode = false
     menu.toggle_loop(Settings, "GTA RPC", {""}, "", function()
         local playerPosition = players.get_position(players.user())
         local streetInfo = get_Street_Names(playerPosition.x, playerPosition.y, playerPosition.z)
@@ -4711,13 +4715,15 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
         local interior_Room_hashish = INTERIOR.GET_ROOM_KEY_FROM_ENTITY(players.user_ped())
         local interior_Name = findInteriorNameByID(interior_hashish, interior_Names)
         local interior_Room_Name = findInteriorNameByID(interior_Room_hashish, interior_Room_Names)
-        if interior_Name == "" and interior_hashish ~= 0 then
-            notify("Interior Hash: "..interior_hashish)
-            util.copy_to_clipboard(interior_hashish)
-        end
-        if interior_Room_Name == "" and interior_Room_hashish ~= 0 then
-            notify("Interior Room Hash: "..interior_Room_hashish)
-            util.copy_to_clipboard(interior_Room_hashish)
+        if rpcdevmode then
+            if interior_Name == "" and interior_hashish ~= 0 then
+                notify_only("Interior Hash: "..interior_hashish)
+                util.copy_to_clipboard(interior_hashish, false)
+            end
+            if interior_Room_Name == "" and interior_Room_hashish ~= 0 then
+                notify_only("Interior Room Hash: "..interior_Room_hashish)
+                util.copy_to_clipboard(interior_Room_hashish, false)
+            end
         end
         local data = {
             streetInfo = streetInfo,
@@ -4742,6 +4748,13 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
         end
         
         util.yield(2000)
+    end)
+    menu.toggle(Settings, "RPC Devmode", {""}, "", function(on)
+        if on then
+            rpcdevmode = true
+        else
+            rpcdevmode = false
+        end
     end)
 end
 
