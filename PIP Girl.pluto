@@ -4165,7 +4165,7 @@ menu.action(Session, "Ghost God Debug", {""}, "", function()
     for category, tbl in pairs(allTables) do
         reportString = reportString .. "Table: " .. category .. "\n"
         for _, pid in ipairs(tbl) do
-            local playerName = players.get_name(pid)
+            local playerName = players.get_name_with_tags(pid)
             reportString = reportString .. " Name: " .. playerName .. "\n"
         end
     end
