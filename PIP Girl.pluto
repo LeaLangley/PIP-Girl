@@ -778,7 +778,6 @@ local function StrategicKick(pid)
         local name = players.get_name(pid)
         if name ~= players.get_name(players.user()) then
             if transitionState(true) ~= 1 then
-                set_as_illusion(pid, set_passive, true)
                 if transitionState(true) == 1 and menu.get_edition() > 1 then
                     if pid ~= players.get_host() then
                         menu.trigger_commands("loveletterkick " .. name)
@@ -795,7 +794,6 @@ local function StrategicKick(pid)
                             menu.trigger_commands("loveletterkick " .. name)
                         end
                     else
-                        set_as_illusion(pid, set_passive, true)
                         if pid ~= players.get_host() then
                             menu.trigger_commands("loveletterkick " .. name)
                         end
@@ -805,7 +803,6 @@ local function StrategicKick(pid)
                         menu.trigger_commands("blocksync " .. name .. " on")
                     end
                 else
-                    set_as_illusion(pid, set_passive, true)
                     menu.trigger_commands("kick " .. name)
                     menu.trigger_commands("ignore " .. name .. " on")
                     menu.trigger_commands("desync " .. name .. " on")
