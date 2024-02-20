@@ -3098,7 +3098,7 @@ end)
 
 local function sessionWorthy()
     if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players then
-        if not isModder(players.get_host()) and players.get_host_queue_position(players.user()) <= 1 then
+        if (not isModder(players.get_host()) or isFriend(players.get_host())) and players.get_host_queue_position(players.user()) <= 1 then
             return true
         end
         if isFriend(players.get_host()) then
