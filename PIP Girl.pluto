@@ -3137,7 +3137,12 @@ local function findAnewHome()
         end
         notify("You are in story mode, Getting you online.")
     end
+    if transitionState(true) < 3 then
+        menu.trigger_commands("unstuck")
+    end
+    util.yield(1666)
     menu.trigger_commands("go public")
+    util.yield(1666)
 end
 
 local SessionClaimerPaths = {
