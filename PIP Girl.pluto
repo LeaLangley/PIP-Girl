@@ -778,13 +778,13 @@ local function StrategicKick(pid)
         local name = players.get_name(pid)
         if name ~= players.get_name(players.user()) then
             if transitionState(true) ~= 1 then
-                if menu.get_edition() > 1 then
+                set_as_illusion(pid, set_passive, true)
+                if transitionState(true) == 1 and menu.get_edition() > 1 then
                     if pid ~= players.get_host() then
                         menu.trigger_commands("loveletterkick " .. name)
                     end
                 end
                 menu.trigger_commands("kick " .. name)
-                set_as_illusion(pid, set_passive, true)
                 Wait_for_transitionState()
             else
                 if menu.get_edition() > 1 then
@@ -795,6 +795,7 @@ local function StrategicKick(pid)
                             menu.trigger_commands("loveletterkick " .. name)
                         end
                     else
+                        set_as_illusion(pid, set_passive, true)
                         if pid ~= players.get_host() then
                             menu.trigger_commands("loveletterkick " .. name)
                         end
@@ -802,14 +803,13 @@ local function StrategicKick(pid)
                         menu.trigger_commands("ignore " .. name .. " on")
                         menu.trigger_commands("desync " .. name .. " on")
                         menu.trigger_commands("blocksync " .. name .. " on")
-                        set_as_illusion(pid, set_passive, true)
                     end
                 else
+                    set_as_illusion(pid, set_passive, true)
                     menu.trigger_commands("kick " .. name)
                     menu.trigger_commands("ignore " .. name .. " on")
                     menu.trigger_commands("desync " .. name .. " on")
                     menu.trigger_commands("blocksync " .. name .. " on")
-                    set_as_illusion(pid, set_passive, true)
                 end
             end
         end
@@ -1785,6 +1785,7 @@ local closestDistance = math.huge
 local wasInZone = false
 local protectMissionVehicles = false
 local function buff_lea_tech(vehicle)
+    menu.trigger_commands("smoothflight on")
     if protectMissionVehicles and not players.is_in_interior(players.user()) then
         if ENTITY.IS_ENTITY_A_MISSION_ENTITY(vehicle) and vehicle ~= entities.get_user_personal_vehicle_as_handle() then
             notify("Installed Lockon Jammer on: "..util.reverse_joaat(entities.get_model_hash(vehicle)))
@@ -1837,6 +1838,9 @@ local function buff_lea_tech(vehicle)
     VEHICLE.ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(vehicle)
     VEHICLE.SET_VEHICLE_ACT_AS_IF_HAS_SIREN_ON(vehicle, true)
     VEHICLE.SET_VEHICLE_TYRES_CAN_BURST(vehicle, false)
+    VEHICLE.SET_VEHICLE_NEEDS_TO_BE_HOTWIRED(vehicle, false)
+    VEHICLE.SET_VEHICLE_HAS_BEEN_OWNED_BY_PLAYER(vehicle, true)
+    VEHICLE.SET_VEHICLE_FORCE_AFTERBURNER(vehicle, true)
     AUDIO.ENABLE_VEHICLE_EXHAUST_POPS(vehicle, true)
 end
 local function SetInZoneTimer()
@@ -2222,8 +2226,9 @@ menu.action(Vehicle, "Detonate Lea Tech Vehicle.", {"boomlea"}, "", function()
         VEHICLE.SET_VEHICLE_ALARM(target_vehicle, true)
         VEHICLE.START_VEHICLE_ALARM(target_vehicle)
         VEHICLE.SET_VEHICLE_IS_STOLEN(target_vehicle, true)
-        VEHICLE.IS_VEHICLE_STOLEN(target_vehicle)
         VEHICLE.SET_VEHICLE_DOORS_LOCKED(target_vehicle, 5)
+        VEHICLE.SET_VEHICLE_UNDRIVEABLE(target_vehicle, true)
+        VEHICLE.SET_VEHICLE_IS_WANTED(target_vehicle, true)
         VEHICLE.SET_VEHICLE_OUT_OF_CONTROL(target_vehicle, false, true)
         VEHICLE.SET_VEHICLE_NEON_COLOUR(target_vehicle, 255, 13, 13)
         VEHICLE.SET_VEHICLE_NEON_ENABLED(target_vehicle, 0, true)
