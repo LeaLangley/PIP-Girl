@@ -4177,6 +4177,31 @@ menu.action(Session, "Ghost God Debug", {""}, "", function()
     notify(reportString)  
 end)
 
+menu.action(Session, "De-Ghost all Debug", {""}, "", function()
+    for players.list_except(true) as pid do
+        local index = find_in_table(in_orb_room, pid)
+        if index then
+            table.remove(in_orb_room, index)
+        end
+        local index = find_in_table(sussy_god, pid)
+        if index then
+            table.remove(sussy_god, index)
+        end
+        local index = find_in_table(sussy_god, pid)
+        if index then
+            table.remove(set_passive, index)
+        end
+        local index = find_in_table(mk2noob, pid)
+        if index then
+            table.remove(mk2noob, index)
+        end
+        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+    end
+    in_orb_room = {}
+    sussy_god = {}
+    set_passive = {}
+end)
+
 menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisible for the whole session, but with a nice effect for ppl close by.", function()
     if transitionState(true) == 1 then
         playerPosition = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(players.user_ped(), 0, -23.0, 2)
