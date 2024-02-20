@@ -255,7 +255,9 @@ local function allow_Join_back(name)
             menu.focus(rat)
             if rat.menu_name == name then
                 rat:trigger()
-                break
+            end
+            if rat.menu_name == players.get_name(players.user()) then
+                rat:trigger()
             end
         end
     end
