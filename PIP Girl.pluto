@@ -517,7 +517,7 @@ end
 
 local function isFriend(pid)
     local hdl = pid_to_handle(pid)
-    if hd1 then
+    if hdl then
         if NETWORK.NETWORK_IS_FRIEND(hdl) then
             return true
         end
@@ -739,7 +739,7 @@ local allTables = {
 
 local function set_as_illusion(pid, tbl, state)
     if isFriend(pid) and tbl ~= in_orb_room then
-        for pairs(allTables) as otherTbl do
+        for ipairs(allTables) as otherTbl do
             local index = find_in_table(otherTbl, pid)
             if index then
                 table.remove(otherTbl, index)
@@ -758,7 +758,7 @@ local function set_as_illusion(pid, tbl, state)
                 table.remove(tbl, index)
             end
             local playerInOtherTables = false
-            for pairs(allTables) as otherTbl do
+            for ipairs(allTables) as otherTbl do
                 if otherTbl ~= tbl then
                     if contains(otherTbl, pid) then
                         playerInOtherTables = true
@@ -4158,6 +4158,18 @@ end, function()
         end
     end
     sussy_god = {}
+end)
+
+menu.action(Session, "Ghost God Debug", {""}, "", function()
+    local reportString = "Players in all tables:\n"
+    for category, tbl in pairs(allTables) do
+        reportString = reportString .. "Table: " .. category .. "\n"
+        for _, pid in ipairs(tbl) do
+            local playerName = players.get_name(pid)
+            reportString = reportString .. " Name: " .. playerName .. "\n"
+        end
+    end
+    notify(reportString)  
 end)
 
 menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisible for the whole session, but with a nice effect for ppl close by.", function()
