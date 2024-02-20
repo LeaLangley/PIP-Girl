@@ -3462,7 +3462,6 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockorb"}, "Blocks the Entra
                         notify(players.get_name(pid).." is in Orb Room.")
                         if not isModder(pid) then
                             menu.trigger_commands("interiorkick "..players.get_name(pid))
-                            menu.trigger_commands("raid "..players.get_name(pid))
                         end
                     end
                 end
