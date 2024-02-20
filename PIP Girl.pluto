@@ -2346,7 +2346,7 @@ menu.divider(Vehicle, "Else")
 
 local sparrowHandeling = nil
 menu.toggle_loop(Vehicle, "Heli Sparrow Handling",{""},"All helicopters you enter fly like a sparrow.",function()
-    if transitionState(true) <3 then
+    if not players.is_in_interior(players.user()) and transitionState(true) <3 then
         local vehicle = get_user_vehicle()
         if vehicle then
             if VEHICLE.GET_VEHICLE_CLASS(vehicle) == 15 then
@@ -2455,6 +2455,7 @@ menu.toggle_loop(Vehicle, "Heli Sparrow Handling",{""},"All helicopters you ente
                         menu.trigger_commands("vhpontoonverticaldampingcoefficientdown 600.00000")
                         menu.trigger_commands("vhkeelspheresize 0.30000")
                         menu.trigger_commands("deploychaff")
+                        notify("Sparrow Handling Applyed on: "..util.reverse_joaat(entities.get_model_hash(vehicle)))
                         util.yield(3666)
                     end
                 end
