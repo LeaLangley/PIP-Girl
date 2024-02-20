@@ -3120,10 +3120,10 @@ local function findAnewHome()
         else
             notify("error.")
         end
-        if transitionState(true) < 3 then
+        if transitionState(true) <3 then
             menu.trigger_commands("unstuck")
             local findAnewHomeTimeOut = os.time()
-            while transitionState(true) < 3 do
+            while transitionState(true) <3 do
                 if os.time() - findAnewHomeTimeOut > 13 then
                     break
                 end
@@ -3137,7 +3137,7 @@ local function findAnewHome()
         end
         notify("You are in story mode, Getting you online.")
     end
-    if transitionState(true) < 3 then
+    if transitionState(true) <3 then
         menu.trigger_commands("unstuck")
     end
     util.yield(1666)
