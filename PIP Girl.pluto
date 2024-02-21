@@ -4518,6 +4518,9 @@ end
 players.on_join(SessionCheck)
 
 local function removeFromTable(pid)
+    if players.get_script_host() == pid then
+        menu.trigger_commands("scripthost")
+    end
     local index = find_in_table(in_orb_room, pid)
     if index then
         table.remove(in_orb_room, index)
