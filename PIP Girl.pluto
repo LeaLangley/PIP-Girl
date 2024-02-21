@@ -2880,34 +2880,41 @@ menu.divider(Game, "<3")
 
 local playerthingy = {}
 menu.toggle_loop(Game, "Enhanced Name Tag's", {""}, "hai", function()
-    for players.list_except(true) as pid do
-        local playerthing
-        local entryIndex = nil
-        for i, entry in pairs(playerthingy) do
-            if entry.pid == pid then
-                entryIndex = i
-                playerthing = entry.playerthing
-                break
+    if not menu.is_in_screenshot_mode() then
+        for players.list_except(true) as pid do
+            local playerthing
+            local entryIndex = nil
+            for i, entry in pairs(playerthingy) do
+                if entry.pid == pid then
+                    entryIndex = i
+                    playerthing = entry.playerthing
+                    break
+                end
             end
-        end
-        local targetped = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)
-        if not entryIndex then
-            playerthing = HUD.CREATE_FAKE_MP_GAMER_TAG(targetped, players.get_name(pid), false, false, 0, 0)
-            table.insert(playerthingy, {pid = pid, playerthing = playerthing})
-        else
-            if players.get_boss(pid) ~= -1 then
-                HUD.SET_MP_GAMER_TAG_COLOUR(playerthing, 0, players.get_org_colour(pid) + 192)
+            local targetped = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)
+            if not entryIndex then
+                playerthing = HUD.CREATE_FAKE_MP_GAMER_TAG(targetped, players.get_name(pid), false, false, 0, 0)
+                table.insert(playerthingy, {pid = pid, playerthing = playerthing})
             else
-                HUD.SET_MP_GAMER_TAG_COLOUR(playerthing, 0, 0)
+                if players.get_boss(pid) ~= -1 then
+                    HUD.SET_MP_GAMER_TAG_COLOUR(playerthing, 0, players.get_org_colour(pid) + 192)
+                else
+                    HUD.SET_MP_GAMER_TAG_COLOUR(playerthing, 0, 0)
+                end
+            end
+            if not HUD.IS_MP_GAMER_TAG_ACTIVE(playerthing) then
+                table.remove(playerthingy, entryIndex)
             end
         end
-        if not HUD.IS_MP_GAMER_TAG_ACTIVE(playerthing) then
-            table.remove(playerthingy, entryIndex)
+    else
+        for pairs(playerthingy) as entry do
+            HUD.REMOVE_MP_GAMER_TAG(entry.playerthing)
         end
+        playerthingy = {}
     end
     util.yield(113)
 end, function()
-    for _, entry in pairs(playerthingy) do
+    for pairs(playerthingy) as entry do
         HUD.REMOVE_MP_GAMER_TAG(entry.playerthing)
     end
     playerthingy = {}
@@ -3029,7 +3036,7 @@ local function espOnPlayer(pid, namesync)
 end
 
 menu.toggle_loop(Game, "Name ESP", {"pgesp"}, "ESP", function ()
-    if transitionState(true) == 1 then
+    if transitionState(true) == 1 and not menu.is_in_screenshot_mode() then
         local playerlist = players.list(false, true, true)
         for i = 1, #playerlist do
             espOnPlayer(playerlist[i])
@@ -3042,7 +3049,7 @@ end)
 if menu.get_edition() > 1 then
     menu.toggle_loop(Game,"Bone ESP While Armed", {"aimboneesp"}, "Also counts for armed vehicles.", function()
         local weapon = math.abs(WEAPON.GET_SELECTED_PED_WEAPON(players.user_ped()))
-        if weapon ~= 1122011548 and weapon ~= 1569615261 then
+        if not menu.is_in_screenshot_mode() and weapon ~= 1122011548 and weapon ~= 1569615261 then
             menu.trigger_command(menu.ref_by_path("World>Inhabitants>Player ESP>Bone ESP>Low Latency Rendering"))
         else
             menu.trigger_command(menu.ref_by_path("World>Inhabitants>Player ESP>Bone ESP>Disabled"))
