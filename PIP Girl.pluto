@@ -2211,7 +2211,7 @@ menu.slider(Lea_Tech, "Lea Tech Repair Amount", {"leatechrepairamount"}, "The am
     lea_tech_repair_amount = new_value
 end)
 
-menu.slider(Lea_Tech, "Lea Tech Mission Repair Amount", {"leatechrepairamount"}, "The amount that should be repaired per second if the vehicle is a mission entity, default 3.", 0, 13, lea_tech_mission_repair_amount, 1, function (new_value)
+menu.slider(Lea_Tech, "Lea Tech Mission Repair Amount", {"leatechmissionrepairamount"}, "The amount that should be repaired per second if the vehicle is a mission entity, default 3.", 0, 13, lea_tech_mission_repair_amount, 1, function (new_value)
     lea_tech_mission_repair_amount = new_value
 end)
 
