@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.133"
+local script_version = "1.134"
 
 local lust_upDate = {year=2024, month=2, day=20}
 
@@ -588,10 +588,21 @@ end
 local function is_vehicle_free_for_use(vehicle)
     local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
     local driver = PED.IS_PED_A_PLAYER(driverPed)
-    if not driver or driverPed == players.user_ped() then
+    if not driver or driver == 0 or driverPed == players.user_ped() then
         return true
     end
     return false
+end
+
+local function is_vehicle_empty(vehicle)
+    local setsINT = VEHICLE.GET_VEHICLE_MODEL_NUMBER_OF_SEATS(entities.get_model_hash(vehicle))
+    for seat = -1, setsINT do
+        local seater = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, seat, true)
+        if seater and seater ~= 0 then
+            return false
+        end
+    end
+    return true
 end
 
 local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
@@ -2062,7 +2073,14 @@ local function getTrailer(vehicle)
     return trailer
 end
 local lea_tech_repair_amount = 1
+local lea_tech_mission_repair_amount = 3
 local function repair_lea_tech(vehicle)
+    local repair_amount = 0
+    if ENTITY.IS_ENTITY_A_MISSION_ENTITY(vehicle) then
+        repair_amount = lea_tech_mission_repair_amount
+    else
+        repair_amount = lea_tech_repair_amount
+    end
     local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
     local petrolTankHealth = VEHICLE.GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
     local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle)
@@ -2073,19 +2091,19 @@ local function repair_lea_tech(vehicle)
     requestControl(vehicle)
 
     if engineHealth < 1000 then
-        VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + lea_tech_repair_amount)
+        VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + repair_amount)
     end
     if petrolTankHealth < 1000 then
-        VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + lea_tech_repair_amount)
+        VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + repair_amount)
     end
     if bodyHealth < 1000 then
-        VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + lea_tech_repair_amount)
+        VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + repair_amount)
     end
     if heliTailHealth < 1000 then
-        VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + lea_tech_repair_amount)
+        VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + repair_amount)
     end
     if heliRotorHealth < 1000 then
-        VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + lea_tech_repair_amount)
+        VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + repair_amount)
     end
 
     if petrolTankHealth >= 1000 and engineHealth >= 1000 and bodyHealth >= 1000 then
@@ -2104,6 +2122,7 @@ end
 local saved_vehicle_id = nil
 local saved_trailer_id = nil
 local isInVehicle = false
+local vehicleProtected = false
 menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle, and gives it some modern enhancements.", function()
     local cmd_path = "Vehicle>Light Signals>Use Brake Lights When Stopped"
     if transitionState(true) == 1 then
@@ -2115,6 +2134,7 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
         if vehicle then
             -- Check if the driver seat is empty or if the local player is the driver
             if is_vehicle_free_for_use(vehicle) then
+                requestControl(vehicle)
                 local isDriving = nil
                 if isInVehicle then
                     isDriving = PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true)
@@ -2134,13 +2154,16 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
                     util.yield(666)
                     VEHICLE.SET_VEHICLE_DOORS_SHUT(vehicle, false)
                 end
-                local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
-                local petrolTankHealth = VEHICLE.GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
-                local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle)
-                local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
-                local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
 
-                requestControl(vehicle)
+                --if not vehicleProtected and is_vehicle_empty(vehicle) then
+                --    ENTITY.FREEZE_ENTITY_POSITION(vehicle, true)
+                --    vehicleProtected = true
+                --end
+                --if vehicleProtected and not is_vehicle_empty(vehicle) then
+                --    ENTITY.FREEZE_ENTITY_POSITION(vehicle, false)
+                --    vehicleProtected = false
+                --end
+
                 if lea_tech_repair_amount > 0 then
                     repair_lea_tech(vehicle)
                 end
@@ -2186,6 +2209,10 @@ local Lea_Tech = menu.list(Vehicle, 'Lea Tech Settings', {}, 'Settings for Lea T
 
 menu.slider(Lea_Tech, "Lea Tech Repair Amount", {"leatechrepairamount"}, "The amount that should be repaired per second, default 1.", 0, 13, lea_tech_repair_amount, 1, function (new_value)
     lea_tech_repair_amount = new_value
+end)
+
+menu.slider(Lea_Tech, "Lea Tech Mission Repair Amount", {"leatechrepairamount"}, "The amount that should be repaired per second if the vehicle is a mission entity, default 3.", 0, 13, lea_tech_mission_repair_amount, 1, function (new_value)
+    lea_tech_mission_repair_amount = new_value
 end)
 
 menu.toggle(Lea_Tech, "Lockon Jammer for Mission Vehicles", {""}, "if you lea tech vehicle is a mission entity , it will gain a lock on jammer.", function(on)
