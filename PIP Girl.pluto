@@ -318,6 +318,18 @@ local function aggressive(pid)
     return false
 end
 
+local function orbroomdetection(pid)
+    util.yield(13)
+    if player_Exist(pid) and pid ~= players.user() then
+        for menu.player_root(pid):getChildren() as cmd do
+            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Glitched Orb Room Access"):isValid() then
+                return true
+            end
+        end
+    end
+    return false
+end
+
 local function StandDetectionsRead(pid)
     util.yield(13)
     local PlayerRootChildrenArray = menu.player_root(pid):getChildren()
@@ -3499,9 +3511,6 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockorb"}, "Blocks the Entra
             local distance = SYSTEM.VDIST(players_position.x, players_position.y, players_position.z, 328.47, 4828.87, -58.54)
             if distance <= 9 then
                 set_as_illusion(pid, in_orb_room, true)
-                if not isFriend(pid) then
-                    players.add_detection(pid, "Glitched Orb Room Access", TOAST_DEFAULT, 25)
-                end
                 if not menu.is_ref_valid(menu.ref_by_path("Stand>Lua Scripts>JinxScript>Detections>Normal Detections>Orbital Cannon")) or menu.get_state(menu.ref_by_path("Stand>Lua Scripts>JinxScript>Detections>Normal Detections>Orbital Cannon")) == "Off" then
                     if not isFriend(pid) then
                         notify(players.get_name(pid).." is in Orb Room.")
@@ -3509,6 +3518,9 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockorb"}, "Blocks the Entra
                             menu.trigger_commands("interiorkick "..players.get_name(pid))
                         end
                     end
+                end
+                if not isFriend(pid) and not orbroomdetection(pid) then
+                    players.add_detection(pid, "Glitched Orb Room Access", TOAST_DEFAULT, 13)
                 end
             else
                 set_as_illusion(pid, in_orb_room, false)
