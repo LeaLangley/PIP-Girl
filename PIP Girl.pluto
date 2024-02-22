@@ -3434,7 +3434,7 @@ menu.toggle_loop(SessionJoin, "Use Custom Spawn", {""}, "", function()
         end
         menu.trigger_commands("spoofpos off")
         if tempOTR then
-            menu.set_state(menu.ref_by_path("Online>Off The Radar"), "Off")
+            menu.trigger_commands("otr off")
             tempOTR = false
         end
         if get_user_vehicle() then
