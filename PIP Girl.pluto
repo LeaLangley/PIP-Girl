@@ -4099,7 +4099,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                         end
                         local check_timeout = os.time() + 16
                         if isFriend(pid) then
-                            check_timeout = os.time() + 13
+                            check_timeout = os.time() + 10
                         end
                         while worthToUnstuck(pid) and players.get_script_host() ~= pid and discoveredSince(pid) >= 113 do
                             if os.time() > check_timeout then
@@ -4165,7 +4165,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                 end
             else
                 if isStuck(players.user()) then
-                    util.yield(13666)
+                    util.yield(9666)
                     if isStuck(players.user()) then
                         menu.trigger_commands("scripthost")
                     else
