@@ -3855,6 +3855,7 @@ discord_webhook = readFromFilePIP(store_dir..'do_not_share_webhook.txt')
 
 local posted_session_code = readFromFilePIP(store_dir..'session_code.txt')
 local onlyPostasFriendlyHost = false
+local inviteAllFriendsOnWebhook = false
 menu.toggle_loop(SessionInvite, "Post Session Code via Webhook", {""}, "Never share you webhook ever!", function()
     if discord_webhook then
         if transitionState(true) == 1 then
@@ -3907,6 +3908,9 @@ menu.toggle_loop(SessionInvite, "Post Session Code via Webhook", {""}, "Never sh
                     local body_json = json.encode(body)                
                     local function on_success(body, header_fields, status_code)
                         notify_cmd("Webhook sent successfully!")
+                        if inviteAllFriendsOnWebhook then
+                            menu.trigger_commands("invitefriends")
+                        end
                     end
                     local function on_fail(reason)
                         notify("Failed to send Webhook:", reason)
@@ -3931,6 +3935,14 @@ menu.toggle(SessionInvite, "Only Post if Host or Host is Friendly", {""}, "", fu
         onlyPostasFriendlyHost = true
     else
         onlyPostasFriendlyHost = false
+    end
+end)
+
+menu.toggle(SessionInvite, "Invite all Friends on webhook send", {""}, "", function(on)
+    if on then
+        inviteAllFriendsOnWebhook = true
+    else
+        inviteAllFriendsOnWebhook = false
     end
 end)
 
