@@ -2719,9 +2719,6 @@ local function SuperClean(fix, ignoreMission)
         util.yield(13)
     end
     util.yield(13)
-    GRAPHICS.REMOVE_PARTICLE_FX_IN_RANGE(pos.x, pos.y, pos.z, 13666)
-    util.yield(13)
-    MISC.CLEAR_AREA(pos.x, pos.y, pos.z, 19999.9, true, false, false, true)
     notify("Done " .. ct .. "+ entities removed!")
     if fix then
         menu.set_state(menu.ref_by_path("Game>Rendering>Potato Mode"), "On")
@@ -2732,25 +2729,21 @@ end
 menu.divider(Game, "Exclude Mission.")
 
 menu.action(Game, 'Super Cleanse No yacht fix', {"scleannysave"}, 'BCS R* is a mess.', function()
-    local fix = false
-    SuperClean(fix, true)
+    SuperClean(false, true)
 end)
 
 menu.action(Game, 'Super Cleanse', {"scleansave"}, 'BCS R* is a mess.', function(click_type)
-    local fix = true
-    SuperClean(fix, true)
+    SuperClean(true, true)
 end)
 
 menu.divider(Game, "Regular")
 
 menu.action(Game, 'Super Cleanse No yacht fix', {"scleanny"}, 'BCS R* is a mess.', function()
-    local fix = false
-    SuperClean(fix, false)
+    SuperClean(false, false)
 end)
 
 menu.action(Game, 'Super Cleanse', {"sclean"}, 'BCS R* is a mess.', function(click_type)
-    local fix = true
-    SuperClean(fix, false)
+    SuperClean(true, false)
 end)
 
 menu.divider(Game, "<3")
