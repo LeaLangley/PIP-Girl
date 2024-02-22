@@ -3584,7 +3584,7 @@ local shrineElements = {
     {var = "pc1", conditions = {2809166081, v3.new(-1801.90, -128.70, 77.99), 0, 0, 0, nil, 13, false}},
     {var = "pc2", conditions = {4151318791, v3.new(-1801.91, -128.70, 78.00), 0, 0, -13, nil, 13, false}},
 }
-local Leas_shrine_blip = nil
+local Leas_shrine_blip = false
 menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Shows Lea's Shrine, Perfect for a hangout spot or Deep thinking.", function()
     if transitionState(true) <3 then
         if not Leas_shrine_blip then
@@ -3602,7 +3602,7 @@ menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Shows Lea's Shri
             entityVar = nil
         end
     else
-        Leas_shrine_blip = nil
+        Leas_shrine_blip = false
     end
     for pairs(shrineElements) as element do
         local entityVar, conditions = element.var, element.conditions
@@ -3614,7 +3614,7 @@ end, function()
     if Leas_shrine_blip then
         util.remove_blip(Leas_shrine_blip)
     end
-    Leas_shrine_blip = nil
+    Leas_shrine_blip = false
     for pairs(shrineElements) as element do
         local entityVar, conditions = element.var, element.conditions
         if does_entity_exist(_G[entityVar]) then
