@@ -2789,6 +2789,7 @@ menu.toggle_loop(Game, "Auto Skip Cutscene", {"pgascut"}, "Automatically skip al
 end)
 
 local warningMessages = {
+    [2034001057] = "Altered version.",
     [896436592] = "This player left the session.",
     [1575023314] = "Timed out joining session.",
     [396931869] = "Timed out joining session.",
@@ -3598,6 +3599,7 @@ menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Shows Lea's Shri
             HUD.BEGIN_TEXT_COMMAND_SET_BLIP_NAME("STRING")
             HUD.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Lea\'s Shrine')
             HUD.END_TEXT_COMMAND_SET_BLIP_NAME(Leas_shrine_blip)
+            entityVar = nil
         end
     else
         Leas_shrine_blip = nil
