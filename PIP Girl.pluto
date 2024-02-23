@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.134"
+local script_version = "1.135"
 
 local lust_upDate = {year=2024, month=2, day=20}
 
@@ -40,9 +40,11 @@ local auto_update_config = {
     source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/PIP%20Girl.pluto",
     script_relpath=SCRIPT_RELPATH,
     verify_file_begins_with="--",
+    silent_updates=true,
+    auto_restart=false,
     check_interval=666,
     silent_updates=true,
-    restart_delay=3666,
+    restart_delay=666,
     dependencies={
         {
             name="logo",
@@ -78,7 +80,6 @@ for _, dependency in pairs(auto_update_config.dependencies) do
     end
 end
 
---util.require_natives(1681379138)
 util.require_natives("3095a")
 local json = require('json')
 
@@ -3596,9 +3597,13 @@ local shrineElements = {
     {var = "pc1", conditions = {2809166081, v3.new(-1801.90, -128.70, 77.99), 0, 0, 0, nil, 13, false}},
     {var = "pc2", conditions = {4151318791, v3.new(-1801.91, -128.70, 78.00), 0, 0, -13, nil, 13, false}},
 }
+local entityVars = {}
+for ipairs(shrineElements) as element do
+    entityVars[element.var] = nil
+end
 local Leas_shrine_blip = false
 menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Shows Lea's Shrine, Perfect for a hangout spot or Deep thinking.", function()
-    if transitionState(true) <3 then
+    if transitionState(true) < 3 then
         if not Leas_shrine_blip then
             Leas_shrine_blip = HUD.ADD_BLIP_FOR_COORD(-1812.212, -127.127, 80.265)
             HUD.SET_BLIP_SPRITE(Leas_shrine_blip, "617")
@@ -3611,30 +3616,31 @@ menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Shows Lea's Shri
             HUD.BEGIN_TEXT_COMMAND_SET_BLIP_NAME("STRING")
             HUD.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Lea\'s Shrine')
             HUD.END_TEXT_COMMAND_SET_BLIP_NAME(Leas_shrine_blip)
-            entityVar = nil
         end
     else
         Leas_shrine_blip = false
     end
-    for pairs(shrineElements) as element do
+
+    for ipairs(shrineElements) as element do
         local entityVar, conditions = element.var, element.conditions
-        _G[entityVar] = SpawnCheck(_G[entityVar], table.unpack(conditions))
+        entityVars[entityVar] = SpawnCheck(entityVars[entityVar], table.unpack(conditions))
         util.yield(113)
     end
+
     util.yield(6666)
 end, function()
     if Leas_shrine_blip then
         util.remove_blip(Leas_shrine_blip)
     end
     Leas_shrine_blip = false
-    for pairs(shrineElements) as element do
-        local entityVar, conditions = element.var, element.conditions
-        if does_entity_exist(_G[entityVar]) then
-            entities.delete(_G[entityVar])
+    for ipairs(shrineElements) as element do
+        local entityVar = element.var
+        if does_entity_exist(entityVars[entityVar]) then
+            entities.delete(entityVars[entityVar])
         end
+        entityVars[element.var] = nil
     end
 end)
-
 --local save_zone = nil
 --menu.toggle_loop(SessionWorld, "LSC Save Zone", {""}, "", function()
 --    if not WEAPON.DOES_AIR_DEFENCE_SPHERE_EXIST(save_zone) then
@@ -4987,7 +4993,8 @@ menu.action(menu.my_root(), "Activate Everyday Goodies", {"pggoodies"}, "Activat
 end)
 
 menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
-    notify(startupmsg)
+    --notify(startupmsg)
+    util.restart_script()
 end)
 
 if os.time() - os.time(lust_upDate) >= 6 * 24 * 60 * 60 then
@@ -5017,3 +5024,13 @@ if not is_player_in_blacklist(rockstarIsBad) then
 end
 
 util.keep_running()
+
+if not filesystem.exists(store_dir..'/version.txt') then
+    local file = io.open(store_dir..'/version.txt', "w")
+    file:close()
+end
+local stored_pip_version = readFromFilePIP(store_dir..'version.txt')
+if stored_pip_version ~= script_version then
+    writeToFilePIP(script_version, store_dir..'version.txt')
+    util.restart_script()
+end
