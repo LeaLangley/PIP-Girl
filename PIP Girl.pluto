@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.135"
+local script_version = "1.136"
 
 local lust_upDate = {year=2024, month=2, day=26}
 
@@ -4993,8 +4993,7 @@ menu.action(menu.my_root(), "Activate Everyday Goodies", {"pggoodies"}, "Activat
 end)
 
 menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
-    --notify(startupmsg)
-    util.restart_script()
+    notify(startupmsg)
 end)
 
 if os.time() - os.time(lust_upDate) >= 6 * 24 * 60 * 60 then
