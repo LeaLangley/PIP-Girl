@@ -1808,7 +1808,7 @@ util.on_stop(function()
     remove_blips()
 end)
 remove_blips()
-local radius = 2
+local repairRadius = 2
 local closestMarker = nil
 local closestDistance = math.huge
 local wasInZone = false
@@ -1917,7 +1917,7 @@ menu.toggle_loop(Stimpak, "Lea's Repair Stop", {"lears"}, "", function()
                 --GRAPHICS.DRAW_MARKER(1, markerPosition.x, markerPosition.y, markerPosition.z - 1, 0, 0, 0, 0, 180, 0, 5, 5, 1, 255, 0, 0, 255, false, false, 180, 0, 0, 0, false)
                 GRAPHICS.DRAW_SPOT_LIGHT(markerPosition.x, markerPosition.y, markerPosition.z + 0.6, 0, 0, -1, 255, 0, 0, 5, 5, 0, 200, 1)
             end
-            if closestDistance <= radius then
+            if closestDistance <= repairRadius then
                 if not wasInZone then
                     local vehicle = get_user_vehicle()
                     wasInZone = true
@@ -2772,10 +2772,10 @@ menu.toggle_loop(Game, "Auto Skip Cutscene", {"pgascut"}, "Automatically skip al
 
         for i, position in pairs(avoidCutsceneSkipHere) do
             local distance = SYSTEM.VDIST(playerPosition.x, playerPosition.y, playerPosition.z, position.x, position.y, position.z)
-            local radius = 25
+            local radiusSkip = 25
             distance = math.floor(distance + 0.5)
         
-            if distance <= radius then
+            if distance <= radiusSkip then
                 skipCutscene = false
                 break
             end
@@ -2858,10 +2858,10 @@ menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warn
             local playerPosition = players.get_position(players.user())
             for i, position in pairs(avoidWarningSkipHere) do
                 local distance = SYSTEM.VDIST(playerPosition.x, playerPosition.y, playerPosition.z, position.x, position.y, position.z)
-                local radius = 25
+                local radiusWarning = 25
                 distance = math.floor(distance + 0.5)
             
-                if distance <= radius then
+                if distance <= radiusWarning then
                     skipWarning = false
                     break
                 end
@@ -4260,21 +4260,21 @@ end)
 
 menu.action(Session, "De-Ghost all Debug", {""}, "", function()
     for players.list_except(true) as pid do
-        local index = find_in_table(in_orb_room, pid)
-        if index then
-            table.remove(in_orb_room, index)
+        local index1 = find_in_table(in_orb_room, pid)
+        if index1 then
+            table.remove(in_orb_room, index1)
         end
-        local index = find_in_table(sussy_god, pid)
-        if index then
-            table.remove(sussy_god, index)
+        local index2 = find_in_table(sussy_god, pid)
+        if index2 then
+            table.remove(sussy_god, index2)
         end
-        local index = find_in_table(sussy_god, pid)
-        if index then
-            table.remove(set_passive, index)
+        local index3 = find_in_table(sussy_god, pid)
+        if index3 then
+            table.remove(set_passive, index3)
         end
-        local index = find_in_table(mk2noob, pid)
-        if index then
-            table.remove(mk2noob, index)
+        local index4 = find_in_table(mk2noob, pid)
+        if index4 then
+            table.remove(mk2noob, index4)
         end
         NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
     end
