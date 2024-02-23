@@ -8,7 +8,7 @@ __________._____________    ________.__       .__
 
 local script_version = "1.135"
 
-local lust_upDate = {year=2024, month=2, day=20}
+local lust_upDate = {year=2024, month=2, day=26}
 
 local startupmsg = "If settings are missing PLS restart lua.\n\nAdded Custom spawns in Session>Join Settings.\nIf you use quick join, set spawn to \"Random\" or \"Last Location\" and u can profit from custom spawn.\n\nLea Tech on top!"
 
