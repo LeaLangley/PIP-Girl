@@ -5006,8 +5006,8 @@ if not filesystem.exists(store_dir..'/version.txt') then
     file:close()
 end
 local stored_pip_version = readFromFilePIP(store_dir..'version.txt')
-if os.time() - tonumber(stored_pip_version) > 1 then
-    util.yield(666)
+if os.time() - tonumber(stored_pip_version) > 3 then
+    util.yield(1666)
     writeToFilePIP(os.time(), store_dir..'version.txt')
     util.restart_script()
 else
