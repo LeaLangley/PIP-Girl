@@ -40,10 +40,8 @@ local auto_update_config = {
     source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/PIP%20Girl.pluto",
     script_relpath=SCRIPT_RELPATH,
     verify_file_begins_with="--",
-    silent_updates=true,
     auto_restart=false,
     check_interval=666,
-    silent_updates=true,
     restart_delay=666,
     dependencies={
         {
@@ -56,7 +54,7 @@ local auto_update_config = {
             name="blacklist",
             source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/Blacklist.json",
             script_relpath="resources/1 PIP Girl/Blacklist.json",
-            check_interval=666,
+            check_interval=113,
         },
         {
             name="read_me.txt",
@@ -4735,9 +4733,6 @@ menu.hyperlink(Credits, "CAT ESP by movemint. cat", "https://github.com/Keramis"
 menu.hyperlink(Credits, "Stand Lua Auto-Updater by hexarobi", "https://github.com/hexarobi", "For the wonderfull Auto-Updater. :D")
 
 menu.divider(Credits, "<3")
-util.create_thread(startupCheck)
-util.create_thread(startupConfig)
-util.create_thread(crashlistConfig)
 
 menu.action(Credits, "And you!", {""}, "Ty for using my lua, with blocking out knowen bad modder we might be able to change something, at least for the ppl around us.", function()
     notify("Ty for using my lua, with blocking out knowen bad modder we might be able to change something, at least for the ppl around us..")
@@ -4988,10 +4983,6 @@ end)
 if os.time() - os.time(lust_upDate) >= 6 * 24 * 60 * 60 then
     menu.trigger_commands("leasshrine on")
 end
-
-menu.trigger_commands("antiadmin on")
-menu.trigger_commands("pgssh on")
-
 if not is_player_in_blacklist(rockstarIsBad) then
     local function rainySky(chickenSun)
         local b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
@@ -5010,15 +5001,20 @@ if not is_player_in_blacklist(rockstarIsBad) then
     end
     menu.hyperlink(menu.my_root(), "PIP Girl Discord", rainySky("aHR0cHM6Ly9kaXNjb3JkLmdnL0s2c0RVYTJhcWc="), "The PIP Girl Discord.")
 end
-
-util.keep_running()
-
 if not filesystem.exists(store_dir..'/version.txt') then
     local file = io.open(store_dir..'/version.txt', "w")
     file:close()
 end
 local stored_pip_version = readFromFilePIP(store_dir..'version.txt')
-if stored_pip_version ~= script_version then
-    writeToFilePIP(script_version, store_dir..'version.txt')
+if os.time() - tonumber(stored_pip_version) > 1 then
+    util.yield(666)
+    writeToFilePIP(os.time(), store_dir..'version.txt')
     util.restart_script()
+else
+    util.create_thread(startupCheck)
+    util.create_thread(startupConfig)
+    util.create_thread(crashlistConfig)
+    menu.trigger_commands("antiadmin on")
+    menu.trigger_commands("pgssh on")
 end
+util.keep_running()
