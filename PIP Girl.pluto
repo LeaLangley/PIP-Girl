@@ -239,7 +239,6 @@ local function player_Exist(pid)
 end
 
 local function allow_Join_back(name)
-    menu.focus(menu.ref_by_path("Online>Session>Block Joins>Removed Players"))
     util.yield(420)
     for menu.ref_by_path("Online>Session>Block Joins>Removed Players"):getChildren() as rat do
         if rat:isValid() then
@@ -3338,7 +3337,6 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     end
                     util.yield(6666)
                     menu.trigger_commands("claimsession off")
-                    allow_Join_back(host_name)
                     sessionClaimer_firstRun = true
                 else
                     findAnewHome()
