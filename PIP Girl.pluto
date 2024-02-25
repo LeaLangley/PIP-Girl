@@ -1272,29 +1272,105 @@ menu.list_select(PIP_Girl, "Org Type", {}, "", {
     organization_type = menu_name
     notify("Next \"Auto Become a CEO/MC\" Register as a :"..menu_name)
 end)
-local joinfriendsceo = false
+local joinfriendsceo = 1
 local invitefriendsinceo = false
 local ceo_ses_code = nil
 local lastCeoName = nil
 menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yourself as CEO and auto switches you to MC/CEO in most situations needed.", function()
     if not NETWORK.NETWORK_IS_ACTIVITY_SESSION() and transitionState(true) == 1 then
-        local uniqueColors = {}  -- Table to store unique organization colors
-        for players.list() as pid do
-            if players.get_boss(pid) ~= -1 then
-                local orgColor = players.get_org_colour(pid)
-                if orgColor and not uniqueColors[orgColor] then
-                    uniqueColors[orgColor] = true
+        if joinfriendsceo ~= 3 then
+            local uniqueColors = {}
+            for players.list() as pid do
+                if players.get_boss(pid) ~= -1 then
+                    local orgColor = players.get_org_colour(pid)
+                    if orgColor and not uniqueColors[orgColor] then
+                        uniqueColors[orgColor] = true
+                    end
+                    util.yield(1)
                 end
+            end
+            local ceoInSession = 0
+            for _ in pairs(uniqueColors) do
+                ceoInSession = ceoInSession + 1
                 util.yield(1)
             end
-        end
-        local ceoInSession = 0
-        for _ in pairs(uniqueColors) do
-            ceoInSession = ceoInSession + 1
-            util.yield(1)
-        end
-        if ceoInSession < 10 then
-            if joinfriendsceo and players.get_boss(players.user()) == -1 then
+            if ceoInSession < 10 then
+                if players.get_boss(players.user()) == -1 then
+                    organization_control(organization_type)
+                    util.yield(13666)
+                end
+            else
+                if joinfriendsceo ~= 1 and players.get_boss(players.user()) == -1 then
+                    for players.list() as pid do
+                        if isFriend(pid) then
+                            if players.get_boss(pid) ~= -1 and players.get_boss(players.user()) == -1 then
+                                menu.trigger_commands("ceojoin " .. players.get_name(pid))
+                                util.yield(213666)
+                            end
+                        end
+                    end
+                end
+                util.yield(6666)
+            end
+            if players.get_boss(players.user()) ~= -1 then
+                local CEOLabels = {
+                    "HIP_HELP_BBOSS",
+                    "HIP_HELP_BBOSS2",
+                    "HPBOARD_REG",
+                    "HPBOARD_REGB",
+                    "HT_NOT_BOSS",
+                    "HUB_PC_BLCK",
+                    "NHPG_HELP_BBOSS",
+                    "OFF_COMP_REG",
+                    "TRUCK_PC_BLCK",
+                    "TUN_HELP_BBOSS",
+                    "BUNK_PC_BLCK",
+                    "CH_FINALE_REG",
+                    "CH_PREP_REG",
+                    "CH_SETUP_REG",
+                    "FHQ_PC_BLCK",
+                    "HANG_PC_BLCK",
+                    "HFBOARD_REG",
+                    "HIBOARD_REG",
+                    "HIBOARD_REGB",
+                    "MP_OFF_LAP_1",
+                    "MP_OFF_LAP_PC",
+                    "OFF_COMP_REG",
+                    "ARC_PC_BLCK",
+                    "ARC_HT_0",
+                    "ARC_HT_0B",
+                    "ACID_SLL_HLP2",
+                    "HRBOARD_REG",
+                    "HRBOARD_REGB",
+                }
+                for _, label in ipairs(CEOLabels) do
+                    if IS_HELP_MSG_DISPLAYED(label) then
+                        organization_control("CEO")
+                        util.yield(1666)
+                    end
+                end
+                local MCLabels = {
+                    "CLBHBKRREG",
+                    "ARC_HT_1",
+                    "ARC_HT_1B",
+                }
+                for _, label in ipairs(MCLabels) do
+                    if IS_HELP_MSG_DISPLAYED(label) then
+                        organization_control("MC")
+                        util.yield(1666)
+                    end
+                end
+                if players.get_boss(players.user()) ~= -1 then
+                    local currentCeoName = menu.get_value(menu.ref_by_path("Online>CEO/MC>Name"))
+                    if currentCeoName ~= urceoname and currentCeoName ~= lastCeoName then
+                        menu.trigger_commands("ceoname " .. urceoname)
+                        util.yield(13)
+                        lastCeoName = menu.get_value(menu.ref_by_path("Online>CEO/MC>Name"))
+                    end
+                end
+            end
+        else
+            if joinfriendsceo ~= 1 and players.get_boss(players.user()) == -1 then
                 for players.list() as pid do
                     if isFriend(pid) then
                         if players.get_boss(pid) ~= -1 and players.get_boss(players.user()) == -1 then
@@ -1304,73 +1380,13 @@ menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yo
                     end
                 end
             end
-            if players.get_boss(players.user()) == -1 then
-                organization_control(organization_type)
-                util.yield(13666)
-            end
-            local CEOLabels = {
-                "HIP_HELP_BBOSS",
-                "HIP_HELP_BBOSS2",
-                "HPBOARD_REG",
-                "HPBOARD_REGB",
-                "HT_NOT_BOSS",
-                "HUB_PC_BLCK",
-                "NHPG_HELP_BBOSS",
-                "OFF_COMP_REG",
-                "TRUCK_PC_BLCK",
-                "TUN_HELP_BBOSS",
-                "BUNK_PC_BLCK",
-                "CH_FINALE_REG",
-                "CH_PREP_REG",
-                "CH_SETUP_REG",
-                "FHQ_PC_BLCK",
-                "HANG_PC_BLCK",
-                "HFBOARD_REG",
-                "HIBOARD_REG",
-                "HIBOARD_REGB",
-                "MP_OFF_LAP_1",
-                "MP_OFF_LAP_PC",
-                "OFF_COMP_REG",
-                "ARC_PC_BLCK",
-                "ARC_HT_0",
-                "ARC_HT_0B",
-                "ACID_SLL_HLP2",
-                "HRBOARD_REG",
-                "HRBOARD_REGB",
-            }
-            for _, label in ipairs(CEOLabels) do
-                if IS_HELP_MSG_DISPLAYED(label) then
-                    organization_control("CEO")
-                    util.yield(1666)
-                end
-            end
-            local MCLabels = {
-                "CLBHBKRREG",
-                "ARC_HT_1",
-                "ARC_HT_1B",
-            }
-            for _, label in ipairs(MCLabels) do
-                if IS_HELP_MSG_DISPLAYED(label) then
-                    organization_control("MC")
-                    util.yield(1666)
-                end
-            end
-            if players.get_boss(players.user()) ~= -1 then
-                local currentCeoName = menu.get_value(menu.ref_by_path("Online>CEO/MC>Name"))
-                if currentCeoName ~= urceoname and currentCeoName ~= lastCeoName then
-                    menu.trigger_commands("ceoname " .. urceoname)
-                    util.yield(13)
-                    lastCeoName = menu.get_value(menu.ref_by_path("Online>CEO/MC>Name"))
-                end
-            end
-            util.yield(666)
-        else
             util.yield(6666)
         end
     else
         lastCeoName = nil
         util.yield(13666)
     end
+    util.yield(666)
 end)
 
 --menu.slider(PIP_Girl, 'Auto CEO/MC Color', {'favceocolor'}, "Enter the Color ID of your CEO.", -1, 14, ceo_color, 1, function (new_value)
@@ -1386,12 +1402,13 @@ end)
 --    util.yield(13666)
 --end)
 
-menu.toggle(PIP_Girl, "Auto Join Friends CEO (!)", {""}, "(also MC) Uses \"Auto Become a CEO/MC\"", function(on)
-    if on then
-        joinfriendsceo = true
-    else
-        joinfriendsceo = false
-    end
+menu.list_select(PIP_Girl, "Auto Join Friends Org (!)", {""}, "Uses \"Auto Become a CEO/MC\"", {
+    {1, "Don't"},
+    {2, "Also"},
+    {3, "Only"},
+}, 1, function(value, menu_name, prev_value, click_type)
+    joinfriendsceo = value
+    notify("Next \"Auto Become a Org\" :"..menu_name)
 end)
 
 local function inviteToCEO(pid)
@@ -1411,7 +1428,7 @@ local function inviteToCEO(pid)
     end
 end
 
-menu.action(PIP_Girl, "Invite All Friends in CEO/MC", {"invceo"}, "Invites all your friends into your CEO/MC.", function()
+menu.action(PIP_Girl, "Invite All Friends in Org", {"invceo"}, "Invites all your friends into your CEO/MC.", function()
     --if transitionState() then
     --    for players.list() as pid do
     --        if isFriend(pid) and players.get_boss(pid) == -1 then
