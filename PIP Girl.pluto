@@ -1828,6 +1828,7 @@ local closestDistance = math.huge
 local wasInZone = false
 local protectMissionVehicles = false
 local function buff_lea_tech(vehicle)
+    requestControl(vehicle)
     menu.trigger_commands("smoothflight on")
     if protectMissionVehicles and not players.is_in_interior(players.user()) then
         if ENTITY.IS_ENTITY_A_MISSION_ENTITY(vehicle) and vehicle ~= entities.get_user_personal_vehicle_as_handle() then
@@ -2115,8 +2116,6 @@ local function repair_lea_tech(vehicle)
     local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
     repairing = false
 
-    requestControl(vehicle)
-
     if engineHealth < 1000 then
         VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + repair_amount)
     end
@@ -2161,7 +2160,6 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
         if vehicle then
             -- Check if the driver seat is empty or if the local player is the driver
             if is_vehicle_free_for_use(vehicle) then
-                requestControl(vehicle)
                 local isDriving = nil
                 if isInVehicle then
                     isDriving = PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true)
