@@ -3598,6 +3598,13 @@ local shrineElements = {
     {var = "roses_2", conditions = {4241635085, v3.new(-1811.66, -128.39, 77.79), 0, 0, 666, nil, 13, false}},
     {var = "firepit", conditions = {1125395611, v3.new(-1806.11, -130.02, 77.79), 0, 0, 0, nil, 13, false}},
     {var = "fire1", conditions = {3229200997, v3.new(-1806.1933, -130.1367, 77.90), 0, 0, 13, nil, 13, false}},
+    {var = "flagpole1", conditions = {-755161417, v3.new(-1799.96, -126.12, 75.18), 0, 0, 0, nil, 13, false}},
+    {var = "flagpole2", conditions = {-755161417, v3.new(-1809.21, -134.90, 75.72), 0, 0, 0, nil, 13, false}},
+    {var = "flagpole3", conditions = {-755161417, v3.new(-1805.41, -118.65, 75.31), 0, 0, 0, nil, 13, false}},
+    {var = "flagpole4", conditions = {-755161417, v3.new(-1804.57, -118.48, 74.96), 0, 0, 0, nil, 13, false}},
+    {var = "flagpole5", conditions = {-755161417, v3.new(-1815.91, -123.55, 74.82), 0, 0, 0, nil, 13, false}},
+    {var = "flagpole6", conditions = {-755161417, v3.new(-1815.41, -123.35, 75.11), 0, 0, 0, nil, 13, false}},
+    {var = "canopy", conditions = {1559093072, v3.new(-1808.43, -125.63, 82.41), 0, 0, 141, nil, 13, false}},
     {var = "pc1", conditions = {2809166081, v3.new(-1801.90, -128.70, 77.99), 0, 0, 0, nil, 13, false}},
     {var = "pc2", conditions = {4151318791, v3.new(-1801.91, -128.70, 78.00), 0, 0, -13, nil, 13, false}},
 }
