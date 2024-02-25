@@ -1217,7 +1217,7 @@ menu.toggle_loop(PIP_Girl, "Nightclub Party Never Stops!", {'ncpop'}, "The hotte
     end
 end)
 
-menu.divider(PIP_Girl, "CEO/MC Options")
+menu.divider(PIP_Girl, "Org Options")
 --local ceo_color = -1
 --local ceo_color_slot_found = nil
 --local first_ceo_color_check = true
@@ -1428,7 +1428,7 @@ local function inviteToCEO(pid)
     end
 end
 
-menu.action(PIP_Girl, "Invite All Friends in Org", {"invceo"}, "Invites all your friends into your CEO/MC.", function()
+menu.action(PIP_Girl, "Invite All Friends in Org", {"invceo"}, "Invites all your friends into your Org.", function()
     --if transitionState() then
     --    for players.list() as pid do
     --        if isFriend(pid) and players.get_boss(pid) == -1 then
