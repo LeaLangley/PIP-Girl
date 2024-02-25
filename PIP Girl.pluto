@@ -3299,7 +3299,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 if not isFriend(players.get_host()) and sessionWorthy() and players.get_host() ~= players.user() then
                     menu.trigger_commands("givecollectibles "..host_name)
                     menu.trigger_commands("ceopay "..host_name.." on")
-                    util.yield(6666)
+                    util.yield(13666)
                     if not isFriend(players.get_host()) and sessionWorthy() then
                         StrategicKick(players.get_host())
                         menu.trigger_commands("timeout"..host_name.." off")
@@ -3308,6 +3308,9 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 local startTime = os.clock()
                 while (os.clock() - startTime) * 1000 < 31666 and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 do
                     if players.get_host() == players.user() then
+                        break
+                    end
+                    if isFriend(players.get_host()) then
                         break
                     end
                     util.yield(1337)
