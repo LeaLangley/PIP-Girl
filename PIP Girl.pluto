@@ -3606,6 +3606,10 @@ local shrineElements = {
     {var = "flagpole5", conditions = {3539805879, v3.new(-1815.91, -123.55, 75.82), 0, 0, 0, nil, 13, false}},
     {var = "flagpole6", conditions = {3539805879, v3.new(-1815.41, -123.35, 76.11), 0, 0, 0, nil, 13, false}},
     {var = "canopy", conditions = {1559093072, v3.new(-1808.43, -125.63, 83.41), 0, 0, 141, nil, 13, false}},
+    {var = "flagpole7", conditions = {3539805879, v3.new(-1799.96, -126.12, 83.13), 0, 0, 0, nil, 13, false}},
+    {var = "flagpole8", conditions = {3539805879, v3.new(-1809.21, -134.90, 83.13), 0, 0, 0, nil, 13, false}},
+    {var = "jpflag", conditions = {4116151441, v3.new(-1799.95, -126.3, 89.63), 0, 0, 13, nil, 13, false}},
+    {var = "cdflag", conditions = {1627828183, v3.new(-1809.17, -135.1, 89.63), 0, 0, -13, nil, 13, false}},
     {var = "pc1", conditions = {2809166081, v3.new(-1801.90, -128.70, 77.99), 0, 0, 0, nil, 13, false}},
     {var = "pc2", conditions = {4151318791, v3.new(-1801.91, -128.70, 78.00), 0, 0, -13, nil, 13, false}},
     {var = "neonbg1", conditions = {2488440396, v3.new(-1811.4531, -122.53303, 79.13), 0, 0, 223, nil, 0, false}},
@@ -3636,13 +3640,13 @@ menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Shows Lea's Shri
             HUD.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Lea\'s Shrine')
             HUD.END_TEXT_COMMAND_SET_BLIP_NAME(Leas_shrine_blip)
         end
-        for ipairs(shrineElements) as element do
-            local entityVar, conditions = element.var, element.conditions
-            entityVars[entityVar] = SpawnCheck(entityVars[entityVar], table.unpack(conditions))
-            util.yield(113)
-        end
     else
         Leas_shrine_blip = false
+    end
+    for ipairs(shrineElements) as element do
+        local entityVar, conditions = element.var, element.conditions
+        entityVars[entityVar] = SpawnCheck(entityVars[entityVar], table.unpack(conditions))
+        util.yield(113)
     end
     util.yield(3666)
 end, function()
@@ -4196,7 +4200,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                             end
                         end
                     end
-                    if not isFriend(players.get_script_host()) and discoveredSince(players.get_script_host()) < 113 or not healthyInternet(players.get_script_host()) then
+                    if not isFriend(players.get_script_host()) and (discoveredSince(players.get_script_host()) < 113 or not healthyInternet(players.get_script_host())) then
                         menu.trigger_commands("scripthost")
                     end
                 end
