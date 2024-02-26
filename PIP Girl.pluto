@@ -3797,7 +3797,7 @@ menu.toggle_loop(SessionMisc, "Block Aggressive Host Token as Host", {""}, "", f
         --end
         util.yield(3666)
         for players.list() as pid do
-            if aggressive(pid) and not isFriend(pid) and players.is_marked_as_attacker(pid) then
+            if aggressive(pid) and not isFriend(pid) then
                 StrategicKick(pid)
             end
         end
