@@ -173,7 +173,12 @@ local function session_type()
     return "Singleplayer"
 end
 
+local pipBooty = false
+
 local function transitionState(state)
+    if not pipBooty then
+        return state and 666 or "UwU"
+    end
     if not util.is_session_transition_active() and util.is_session_started() and players.are_stats_ready(players.user()) then
         return state and 1 or "Docked"
     end
@@ -3502,10 +3507,10 @@ local orbRoomTable2 = nil
 local orbRoomDoorDMG = nil
 
 menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockorb"}, "Blocks the Entrance for the Orb Room", function()
-    orbRoomGlass = SpawnCheck(orbRoomGlass, -1829309699, v3.new(335.882996, 4833.833008, -59.023998), 0, 0, 125, nil, 13, true)
+    orbRoomGlass = SpawnCheck(orbRoomGlass, 2465657597, v3.new(335.882996, 4833.833008, -59.023998), 0, 0, 125, nil, 13, true)
     orbRoomTable = SpawnCheck(orbRoomTable, 81317377, v3.new(328.2, 4829, -58.9), 0, 0, 0, nil, 13, true)
     orbRoomTable2 = SpawnCheck(orbRoomTable2, 81317377, v3.new(328.2, 4829, -59.4), 0, 0, 0, nil, 13, true)
-    orbRoomDoorDMG = SpawnCheck(orbRoomDoorDMG, -1184972439, v3.new(337.611, 4832.954, -58.595), 10, 0, 125, nil, 13, false)
+    orbRoomDoorDMG = SpawnCheck(orbRoomDoorDMG, 3109994857, v3.new(337.611, 4832.954, -58.595), 10, 0, 125, nil, 13, false)
     for players.list() as pid do
         if pid ~= players.user() then
             local players_position = players.get_position(pid)
@@ -3566,7 +3571,7 @@ end)
 
 local antiTerrorGlass = nil
 menu.toggle_loop(SessionWorld, "Anti Terrorbyte", {"blockterror"}, "Blocks the MK2 acces", function()
-    antiTerrorGlass = SpawnCheck(antiTerrorGlass, -1829309699, v3.new(-1420.666, -3014.579, -79.0), 0, 0, -20, nil, 13, true)
+    antiTerrorGlass = SpawnCheck(antiTerrorGlass, 2465657597, v3.new(-1420.666, -3014.579, -79.0), 0, 0, -20, nil, 13, true)
     util.yield(3666)
 end, function()
     if does_entity_exist(antiTerrorGlass) then
@@ -3579,7 +3584,7 @@ local shrineElements = {
     {var = "vamp_candle_2", conditions = {199039671, v3.new(-1812.547, -126.255, 77.788), 0, 0, 0, nil, 13, false}},
     {var = "gravestone", conditions = {1667673456, v3.new(-1812.212, -127.127, 80.265), 0, 180, -70, nil, 13, false}},
     {var = "skull", conditions = {1925085104, v3.new(-1812.212, -127.127, 79.0), 0, 0, 110, nil, 13, false}},
-    {var = "flowers_1", conditions = {-1751947657, v3.new(-1813.49, -131.37, 77.86), 0, 0, 0, nil, 13, false}},
+    {var = "flowers_1", conditions = {2543019639, v3.new(-1813.49, -131.37, 77.86), 0, 0, 0, nil, 13, false}},
     {var = "small_candle_1", conditions = {540021153, v3.new(-1811.97, -127.64, 77.81), 0, 0, 13, nil, 13, false}},
     {var = "small_candle_2", conditions = {540021153, v3.new(-1812.29, -126.63, 77.81), 0, 0, 420, nil, 13, false}},
     {var = "small_candle_3", conditions = {540021153, v3.new(-1811.35, -125.05, 77.81), 0, 0, 666, nil, 13, false}},
@@ -3594,23 +3599,30 @@ local shrineElements = {
     {var = "roses_2", conditions = {4241635085, v3.new(-1811.66, -128.39, 77.79), 0, 0, 666, nil, 13, false}},
     {var = "firepit", conditions = {1125395611, v3.new(-1806.11, -130.02, 77.79), 0, 0, 0, nil, 13, false}},
     {var = "fire1", conditions = {3229200997, v3.new(-1806.1933, -130.1367, 77.90), 0, 0, 13, nil, 13, false}},
-    {var = "flagpole1", conditions = {-755161417, v3.new(-1799.96, -126.12, 75.18), 0, 0, 0, nil, 13, false}},
-    {var = "flagpole2", conditions = {-755161417, v3.new(-1809.21, -134.90, 75.72), 0, 0, 0, nil, 13, false}},
-    {var = "flagpole3", conditions = {-755161417, v3.new(-1805.41, -118.65, 75.31), 0, 0, 0, nil, 13, false}},
-    {var = "flagpole4", conditions = {-755161417, v3.new(-1804.57, -118.48, 74.96), 0, 0, 0, nil, 13, false}},
-    {var = "flagpole5", conditions = {-755161417, v3.new(-1815.91, -123.55, 74.82), 0, 0, 0, nil, 13, false}},
-    {var = "flagpole6", conditions = {-755161417, v3.new(-1815.41, -123.35, 75.11), 0, 0, 0, nil, 13, false}},
-    {var = "canopy", conditions = {1559093072, v3.new(-1808.43, -125.63, 82.41), 0, 0, 141, nil, 13, false}},
+    {var = "flagpole1", conditions = {3539805879, v3.new(-1799.96, -126.12, 76.18), 0, 0, 0, nil, 13, false}},
+    {var = "flagpole2", conditions = {3539805879, v3.new(-1809.21, -134.90, 76.72), 0, 0, 0, nil, 13, false}},
+    {var = "flagpole3", conditions = {3539805879, v3.new(-1805.41, -118.65, 76.31), 0, 0, 0, nil, 13, false}},
+    {var = "flagpole4", conditions = {3539805879, v3.new(-1804.57, -118.48, 75.96), 0, 0, 0, nil, 13, false}},
+    {var = "flagpole5", conditions = {3539805879, v3.new(-1815.91, -123.55, 75.82), 0, 0, 0, nil, 13, false}},
+    {var = "flagpole6", conditions = {3539805879, v3.new(-1815.41, -123.35, 76.11), 0, 0, 0, nil, 13, false}},
+    {var = "canopy", conditions = {1559093072, v3.new(-1808.43, -125.63, 83.41), 0, 0, 141, nil, 13, false}},
     {var = "pc1", conditions = {2809166081, v3.new(-1801.90, -128.70, 77.99), 0, 0, 0, nil, 13, false}},
     {var = "pc2", conditions = {4151318791, v3.new(-1801.91, -128.70, 78.00), 0, 0, -13, nil, 13, false}},
+    {var = "neonbg1", conditions = {2488440396, v3.new(-1811.4531, -122.53303, 79.13), 0, 0, 223, nil, 0, false}},
+    {var = "neon1", conditions = {3289598046, v3.new(-1811.4531, -122.53303, 79.13), 0, 0, 223, nil, 0, false}},
+    {var = "neonbg2", conditions = {4247336133, v3.new(-1807.5847, -120.3335, 79.13), 0, 0, 145, nil, 0, false}},
+    {var = "neon2", conditions = {1086909509, v3.new(-1807.5847, -120.3335, 79.13), 0, 0, 145, nil, 0, false}},
+    {var = "neonbg3", conditions = {3927826330, v3.new(-1803.0785, -121.25219, 79.66), 90, 0, -28, nil, 0, false}},
+    {var = "neon3", conditions = {711334609, v3.new(-1803.0785, -121.25219, 79.66), 90, 0, -28, nil, 0, false}},
 }
 local entityVars = {}
 for ipairs(shrineElements) as element do
     entityVars[element.var] = nil
 end
 local Leas_shrine_blip = false
-menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Shows Lea's Shrine, Perfect for a hangout spot or Deep thinking.", function()
-    if transitionState(true) > 2 then
+menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Shows Lea's Shrine, Perfect for a hangout spot or Deep thinking.\nNormal its a calm and mystical place only lit by fire and candles , once entering a arcade u unlock the bright neon lights of the city~", function()
+    util.yield(1666)
+    if transitionState(true) <3 then
         if not Leas_shrine_blip then
             Leas_shrine_blip = HUD.ADD_BLIP_FOR_COORD(-1812.212, -127.127, 80.265)
             HUD.SET_BLIP_SPRITE(Leas_shrine_blip, "617")
@@ -3624,17 +3636,15 @@ menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Shows Lea's Shri
             HUD.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Lea\'s Shrine')
             HUD.END_TEXT_COMMAND_SET_BLIP_NAME(Leas_shrine_blip)
         end
+        for ipairs(shrineElements) as element do
+            local entityVar, conditions = element.var, element.conditions
+            entityVars[entityVar] = SpawnCheck(entityVars[entityVar], table.unpack(conditions))
+            util.yield(113)
+        end
     else
         Leas_shrine_blip = false
     end
-
-    for ipairs(shrineElements) as element do
-        local entityVar, conditions = element.var, element.conditions
-        entityVars[entityVar] = SpawnCheck(entityVars[entityVar], table.unpack(conditions))
-        util.yield(113)
-    end
-
-    util.yield(6666)
+    util.yield(3666)
 end, function()
     if Leas_shrine_blip then
         util.remove_blip(Leas_shrine_blip)
@@ -4997,7 +5007,7 @@ menu.action(menu.my_root(), "Activate Everyday Goodies", {"pggoodies"}, "Activat
         menu.trigger_commands("leasshrine on")
     end)
 end)
-
+local peter = nil
 menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
     notify(startupmsg)
 end)
@@ -5029,10 +5039,12 @@ if not filesystem.exists(store_dir..'/version.txt') then
 end
 local stored_pip_version = readFromFilePIP(store_dir..'version.txt')
 if os.time() - tonumber(stored_pip_version) > 3 then
+    pipBooty = false
     util.yield(1666)
     writeToFilePIP(os.time(), store_dir..'version.txt')
     util.restart_script()
 else
+    pipBooty = true
     util.create_thread(startupCheck)
     util.create_thread(startupConfig)
     util.create_thread(crashlistConfig)
