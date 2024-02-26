@@ -568,7 +568,6 @@ local function requestModel(hash, timeout)
             return
         end
     end
-    util.request_model(hash, timeout)
 end
 
 local requestControl = entities.request_control
@@ -3613,7 +3612,7 @@ for ipairs(shrineElements) as element do
 end
 local Leas_shrine_blip = false
 menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Shows Lea's Shrine, Perfect for a hangout spot or Deep thinking.", function()
-    if transitionState(true) == 1 then
+    if transitionState(true) > 2 then
         if not Leas_shrine_blip then
             Leas_shrine_blip = HUD.ADD_BLIP_FOR_COORD(-1812.212, -127.127, 80.265)
             HUD.SET_BLIP_SPRITE(Leas_shrine_blip, "617")
