@@ -4133,11 +4133,11 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
             if players.user() == players.get_host() or (players.user() == players.get_script_host() and (not isFriend(players.get_host()) and not isModder(players.get_host()))) then
                 if not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
                     local pid = nil
-                    for players.list() as pid1 do
-                        pid = pid1
-                        if isFriendStuck() then
-                            pid = isFriendStuck()
-                        end
+                    for players.list_only(true, true, false, true) as pid do
+                        --pid = pid1
+                        --if isFriendStuck() then
+                        --    pid = isFriendStuck()
+                        --end
                         local check_timeout = os.time() + 16
                         if isFriend(pid) then
                             check_timeout = os.time() + 10
@@ -4185,7 +4185,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                         notify_cmd(name .. " Finished Loading.")
                                     end
                                     local finisher_timeout = os.time() + 16
-                                    while not isFriendStuck() and NETWORK.NETWORK_GET_AVERAGE_PACKET_LOSS(pid) == 0 and player_Exist(pid) and finisher_timeout > os.time() do
+                                    while NETWORK.NETWORK_GET_AVERAGE_PACKET_LOSS(pid) == 0 and player_Exist(pid) and finisher_timeout > os.time() do
                                         util.yield(113)
                                     end
                                     menu.trigger_commands("scripthost")
