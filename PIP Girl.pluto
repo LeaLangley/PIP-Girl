@@ -242,10 +242,8 @@ local function allow_Join_back(name)
     util.yield(420)
     for menu.ref_by_path("Online>Session>Block Joins>Removed Players"):getChildren() as rat do
         if rat:isValid() then
-            util.yield(13)
             menu.focus(rat)
         end
-        util.yield(13)
     end
     util.yield(666)
     for menu.ref_by_path("Online>Session>Block Joins>Removed Players"):getChildren() as rat do
@@ -3318,7 +3316,6 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 --  Is session under controll?
                 --  <3
                 if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 and (players.get_host() == players.user() or isFriend(players.get_host())) then
-                    allow_Join_back(host_name)
                     warnify("Found u a new Home <3")
                     menu.trigger_commands("claimsession off")
                     if players.user() ~= players.get_script_host() then
@@ -3335,6 +3332,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     if thunderMin ~= 0 then
                         thunderForMin(thunderMin)
                     end
+                    allow_Join_back(host_name)
                     util.yield(6666)
                     menu.trigger_commands("claimsession off")
                     sessionClaimer_firstRun = true
