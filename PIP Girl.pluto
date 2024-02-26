@@ -6,9 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.137"
+local script_version = "1.138"
 
-local lust_upDate = {year=2024, month=2, day=26}
+local lust_upDate = {year=2024, month=3, day=1}
 
 local startupmsg = "If settings are missing PLS restart script.\n\nHave a great day! <3\n\nLea Tech on top!"
 
