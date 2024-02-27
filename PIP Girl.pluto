@@ -4204,7 +4204,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                             while player_Exist(pid) and buffer_timeout > os.time() do
                                 util.yield(113)
                             end
-                            local loading_timeout = os.time() + 30
+                            local loading_timeout = os.time() + 25
                             local fail = false
                             while player_Exist(pid) and isStuck(pid) do
                                 util.yield(666)
@@ -4232,7 +4232,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     if not isStuck(pid) then
                                         notify_cmd(name .. " Finished Loading.")
                                     end
-                                    local finisher_timeout = os.time() + 16
+                                    local finisher_timeout = os.time() + 25
                                     while player_Exist(pid) and finisher_timeout > os.time() do
                                         util.yield(113)
                                     end
