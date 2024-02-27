@@ -2145,6 +2145,8 @@ local saved_vehicle_id = nil
 local saved_trailer_id = nil
 local isInVehicle = false
 local vehicleProtected = false
+local leaTechBlip = nil
+local leaTechBlipVeh = nil
 menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle, and gives it some modern enhancements.", function()
     local cmd_path = "Vehicle>Light Signals>Use Brake Lights When Stopped"
     if transitionState(true) == 1 then
@@ -2215,6 +2217,20 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
                 else
                     saved_trailer_id = nil
                 end
+                if leaTechBlipVeh ~= saved_vehicle_id then
+                    if leaTechBlip then
+                        util.remove_blip(leaTechBlip)
+                    end
+                    leaTechBlip = HUD.ADD_BLIP_FOR_ENTITY(saved_vehicle_id)
+                    HUD.SET_BLIP_SPRITE(leaTechBlip, "617")
+                    HUD.SET_BLIP_COLOUR(leaTechBlip, 76)
+                    HUD.SET_BLIP_DISPLAY(leaTechBlip, 2)
+                    HUD.SET_BLIP_SCALE(leaTechBlip, 0.8)
+                    HUD.BEGIN_TEXT_COMMAND_SET_BLIP_NAME("STRING")
+                    HUD.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Lea Tech Vehicle')
+                    HUD.END_TEXT_COMMAND_SET_BLIP_NAME(leaTechBlip)
+                    HUD.SET_BLIP_PRIORITY(leaTechBlip, 10)
+                end
             end
             util.yield(1000)
         else
@@ -2223,6 +2239,10 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
         end
     else
         util.yield(13666)
+    end
+end, function()
+    if leaTechBlip then
+        util.remove_blip(leaTechBlip)
     end
 end)
 
