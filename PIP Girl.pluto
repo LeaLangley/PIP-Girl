@@ -764,7 +764,7 @@ local set_passive = {}
 
 local function set_as_illusion(pid, tbl, state)
     if isFriend(pid) and tbl ~= in_orb_room then
-        for _, otherTbl in ipairs({in_orb_room, sussy_god, set_passive}) do
+        for ipairs({in_orb_room, sussy_god, set_passive}) as otherTbl do
             local index = find_in_table(otherTbl, pid)
             if index then
                 table.remove(otherTbl, index)
@@ -783,7 +783,7 @@ local function set_as_illusion(pid, tbl, state)
                 table.remove(tbl, index)
             end
             local playerInOtherTables = false
-            for _, otherTbl in ipairs({in_orb_room, sussy_god, set_passive}) do
+            for ipairs({in_orb_room, sussy_god, set_passive}) as otherTbl do
                 if otherTbl ~= tbl then
                     if contains(otherTbl, pid) then
                         playerInOtherTables = true
@@ -4303,19 +4303,19 @@ menu.action(Session, "Ghost God Debug", {""}, "", function()
     local reportString = "Players in all tables:\n"
     
     reportString = reportString .. "Table: in_orb_room\n"
-    for _, pid in ipairs(in_orb_room) do
+    for ipairs(in_orb_room) as pid do
         local playerName = players.get_name_with_tags(pid)
         reportString = reportString .. " Name: " .. playerName .. "\n"
     end
 
     reportString = reportString .. "Table: sussy_god\n"
-    for _, pid in ipairs(sussy_god) do
+    for ipairs(sussy_god) as pid do
         local playerName = players.get_name_with_tags(pid)
         reportString = reportString .. " Name: " .. playerName .. "\n"
     end
 
     reportString = reportString .. "Table: set_passive\n"
-    for _, pid in ipairs(set_passive) do
+    for ipairs(set_passive) as pid do
         local playerName = players.get_name_with_tags(pid)
         reportString = reportString .. " Name: " .. playerName .. "\n"
     end
