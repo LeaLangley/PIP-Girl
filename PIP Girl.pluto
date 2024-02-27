@@ -4267,6 +4267,12 @@ menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"}, "Ghost everyone who i
             util.yield(13666)
         end
     else
+        for ipairs(sussy_god) as pid do
+            if player_Exist(pid) then
+                set_as_illusion(pid, sussy_god, false)
+            end
+        end
+        sussy_god = {}
         util.yield(13666)
     end
 end, function()
