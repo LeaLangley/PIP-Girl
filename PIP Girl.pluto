@@ -3190,36 +3190,40 @@ local function sessionWorthy()
 end
 
 local sessionClaimer_firstRun = true
+local session_claimer_players_range = session_claimer_players
 local function findAnewHome()
+    local findAnewHomeMSG
     if session_type() ~= "Singleplayer" then
         if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 then
-            notify("You are alone.")
+            findAnewHomeMSG = "You are alone."
         elseif PLAYER.GET_NUMBER_OF_PLAYERS() <= session_claimer_players then
-            notify("Not Enoght Player.")
+            findAnewHomeMSG = "Not Enoght Player."
         elseif isModder(players.get_host()) then
-            notify("Host is a Modder.")
+            findAnewHomeMSG = "Host is a Modder."
         else
-            notify("error.")
-        end
-        if transitionState(true) <3 then
-            menu.trigger_commands("unstuck")
-            local findAnewHomeTimeOut = os.time()
-            while transitionState(true) <3 do
-                if os.time() - findAnewHomeTimeOut > 13 then
-                    break
-                end
-                util.yield(13)
-            end
+            findAnewHomeMSG = "error."
         end
     else
         if not sessionClaimer_firstRun then
-            notify("You are in story mode, waiting 13sec")
+            notify("You are in story mode, waiting 13sec.")
             util.yield(13666)
         end
-        notify("You are in story mode, Getting you online.")
+        findAnewHomeMSG = "You are in story mode, Getting you online."
     end
-    if transitionState(true) <3 then
+    if transitionState(true) > 2 then
         menu.trigger_commands("unstuck")
+        local findAnewHomeTimeOut = os.time()
+        while transitionState(true) > 2 do
+            if os.time() - findAnewHomeTimeOut > 13 then
+                break
+            end
+            util.yield(13)
+        end
+    end
+    if findAnewHomeMSG then
+        notify(findAnewHomeMSG.."\nTarged Player Amount: "..session_claimer_players.."\nDynamic Amount: "..session_claimer_players_range)
+    else
+        notify("Targed Player Amount: "..session_claimer_players.."\nDynamic Amount: "..session_claimer_players_range)
     end
     util.yield(1666)
     menu.trigger_commands("go public")
@@ -3245,6 +3249,9 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
     local magnet_path = "Online>Transitions>Matchmaking>Player Magnet"
     local spoof_path = "Online>Spoofing>Host Token Spoofing>Host Token Spoofing"
     if menu.get_state(menu.ref_by_path(spoof_path)) == "On" then
+        if session_claimer_players_range < session_claimer_players then
+            session_claimer_players_range = session_claimer_players
+        end
         for ipairs(SessionClaimerPaths) as entry do
             local current_state = menu.get_state(menu.ref_by_path(entry.path))
             if current_state ~= entry.desired_state then
@@ -3257,8 +3264,8 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         elseif session_claimer_players == 0 then
             local random_number = math.random(1, 32)
             menu.trigger_commands("playermagnet " .. random_number)
-        elseif session_claimer_players < 30 and menu.get_state(menu.ref_by_path(magnet_path)) ~= session_claimer_players then
-            menu.trigger_commands("playermagnet " .. session_claimer_players)
+        elseif session_claimer_players < 30 and menu.get_state(menu.ref_by_path(magnet_path)) ~= session_claimer_players_range then
+            menu.trigger_commands("playermagnet " .. session_claimer_players_range)
         end    
         util.yield(666)
         --  <3
@@ -3338,6 +3345,8 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     allow_Join_back(host_name)
                     warnify("Found u a new Home <3")
                     menu.trigger_commands("claimsession off")
+                    menu.trigger_commands("helibackup")
+                    session_claimer_players_range = session_claimer_players
                     if players.user() ~= players.get_script_host() then
                         menu.trigger_commands("scripthost")
                     end
@@ -3347,14 +3356,14 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     SessionClaimerOriginal_states = {}
                     menu.trigger_commands("resetheadshots")
                     fillUpEverything()
-                    menu.trigger_commands("claimsession off")
                     buff_lea_tech(get_user_vehicle())
+                    menu.trigger_commands("claimsession off")
                     if thunderMin ~= 0 then
                         thunderForMin(thunderMin)
                     end
                     util.yield(6666)
-                    menu.trigger_commands("claimsession off")
                     sessionClaimer_firstRun = true
+                    menu.trigger_commands("claimsession off")
                 else
                     findAnewHome()
                     goto sessionclaimerShortcut
@@ -3365,6 +3374,12 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             end
         end
         ::sessionclaimerShortcut::
+        if session_claimer_players ~= 0 and session_claimer_players < 31 then
+            session_claimer_players_range = session_claimer_players_range + 1
+            if session_claimer_players_range > 30 then
+                session_claimer_players_range = session_claimer_players
+            end
+        end
         util.yield(666)
     else
         notify("You arent spoofing a host token , you should do that.\nIf you dont know what that means, you shouldnt use the function in its current state.")
