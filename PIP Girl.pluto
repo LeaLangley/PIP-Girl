@@ -2229,7 +2229,7 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
                     HUD.BEGIN_TEXT_COMMAND_SET_BLIP_NAME("STRING")
                     HUD.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Lea Tech Vehicle')
                     HUD.END_TEXT_COMMAND_SET_BLIP_NAME(leaTechBlip)
-                    HUD.SET_BLIP_PRIORITY(leaTechBlip, 10)
+                    HUD.SET_BLIP_PRIORITY(leaTechBlip, 25)
                 end
             end
             util.yield(1000)
@@ -5089,4 +5089,3 @@ else
     menu.trigger_commands("antiadmin on")
     menu.trigger_commands("pgssh on")
 end
-util.keep_running()
