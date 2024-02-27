@@ -5123,4 +5123,5 @@ else
     util.create_thread(crashlistConfig)
     menu.trigger_commands("antiadmin on")
     menu.trigger_commands("pgssh on")
+    util.keep_running()
 end
