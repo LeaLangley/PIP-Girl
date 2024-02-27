@@ -3347,9 +3347,6 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     menu.trigger_commands("claimsession off")
                     menu.trigger_commands("helibackup")
                     session_claimer_players_range = session_claimer_players
-                    if players.user() ~= players.get_script_host() then
-                        menu.trigger_commands("scripthost")
-                    end
                     for path, original_state in pairs(SessionClaimerOriginal_states) do
                         menu.set_state(menu.ref_by_path(path), original_state)
                     end
