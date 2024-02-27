@@ -762,15 +762,9 @@ local in_orb_room = {}
 local sussy_god = {}
 local set_passive = {}
 
-local allTables = {
-    in_orb_room,
-    sussy_god,
-    set_passive
-}
-
 local function set_as_illusion(pid, tbl, state)
     if isFriend(pid) and tbl ~= in_orb_room then
-        for ipairs(allTables) as otherTbl do
+        for _, otherTbl in ipairs({in_orb_room, sussy_god, set_passive}) do
             local index = find_in_table(otherTbl, pid)
             if index then
                 table.remove(otherTbl, index)
@@ -789,7 +783,7 @@ local function set_as_illusion(pid, tbl, state)
                 table.remove(tbl, index)
             end
             local playerInOtherTables = false
-            for ipairs(allTables) as otherTbl do
+            for _, otherTbl in ipairs({in_orb_room, sussy_god, set_passive}) do
                 if otherTbl ~= tbl then
                     if contains(otherTbl, pid) then
                         playerInOtherTables = true
@@ -4287,13 +4281,25 @@ end)
 
 menu.action(Session, "Ghost God Debug", {""}, "", function()
     local reportString = "Players in all tables:\n"
-    for category, tbl in pairs(allTables) do
-        reportString = reportString .. "Table: " .. category .. "\n"
-        for _, pid in ipairs(tbl) do
-            local playerName = players.get_name_with_tags(pid)
-            reportString = reportString .. " Name: " .. playerName .. "\n"
-        end
+    
+    reportString = reportString .. "Table: in_orb_room\n"
+    for _, pid in ipairs(in_orb_room) do
+        local playerName = players.get_name_with_tags(pid)
+        reportString = reportString .. " Name: " .. playerName .. "\n"
     end
+
+    reportString = reportString .. "Table: sussy_god\n"
+    for _, pid in ipairs(sussy_god) do
+        local playerName = players.get_name_with_tags(pid)
+        reportString = reportString .. " Name: " .. playerName .. "\n"
+    end
+
+    reportString = reportString .. "Table: set_passive\n"
+    for _, pid in ipairs(set_passive) do
+        local playerName = players.get_name_with_tags(pid)
+        reportString = reportString .. " Name: " .. playerName .. "\n"
+    end
+    
     notify(reportString)  
 end)
 
