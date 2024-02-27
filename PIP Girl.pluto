@@ -2280,7 +2280,7 @@ menu.toggle_loop(Lea_Tech, "Lea Tech Info Overlay", {""}, "", function()
         if vehicle then
             local enginePercent = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle) / 10
             local bodyPercent = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle) / 10
-            util.draw_debug_text("Engine Health: "..string.format("%.1f%%", enginePercent).."\nBody Health: "..string.format("%.1f%%", bodyPercent))
+            util.draw_debug_text(util.reverse_joaat(entities.get_model_hash(vehicle)).."\nEngine Health: "..string.format("%.1f%%", enginePercent).."\nBody Health: "..string.format("%.1f%%", bodyPercent))
         end
     else
         util.yield(13666)
