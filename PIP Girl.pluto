@@ -2160,6 +2160,11 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
                     VEHICLE.SET_VEHICLE_DOORS_SHUT(vehicle, false)
                 end
 
+                if (current_lea_tech_vehicle == nil or current_lea_tech_vehicle ~= vehicle) and not players.is_in_interior(players.user()) then
+                    current_lea_tech_vehicle = vehicle
+                    buff_lea_tech(vehicle)
+                end
+
                 --if not vehicleProtected and is_vehicle_empty(vehicle) then
                 --    ENTITY.FREEZE_ENTITY_POSITION(vehicle, true)
                 --    vehicleProtected = true
@@ -2173,11 +2178,6 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
                     repair_lea_tech(vehicle)
                 end
 
-                -- Apply additional settings to the vehicle
-                if (current_lea_tech_vehicle == nil or current_lea_tech_vehicle ~= vehicle) and not players.is_in_interior(players.user()) then
-                    current_lea_tech_vehicle = vehicle
-                    buff_lea_tech(vehicle)
-                end
                 if VEHICLE.IS_VEHICLE_ATTACHED_TO_TRAILER(vehicle) then
                     local vehicle_mm = nil
                     if saved_trailer_id then
