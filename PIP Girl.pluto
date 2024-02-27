@@ -2123,7 +2123,7 @@ local function repair_lea_tech(vehicle)
         VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, true)
     end
 end
-local saved_vehicle_id = nil
+local current_lea_tech_vehicle = nil
 local saved_trailer_id = nil
 local isInVehicle = false
 local vehicleProtected = false
@@ -2174,8 +2174,8 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
                 end
 
                 -- Apply additional settings to the vehicle
-                if (saved_vehicle_id == nil or saved_vehicle_id ~= vehicle) and not players.is_in_interior(players.user()) then
-                    saved_vehicle_id = vehicle
+                if (current_lea_tech_vehicle == nil or current_lea_tech_vehicle ~= vehicle) and not players.is_in_interior(players.user()) then
+                    current_lea_tech_vehicle = vehicle
                     buff_lea_tech(vehicle)
                 end
                 if VEHICLE.IS_VEHICLE_ATTACHED_TO_TRAILER(vehicle) then
@@ -2199,11 +2199,11 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
                 else
                     saved_trailer_id = nil
                 end
-                if leaTechBlipVeh ~= saved_vehicle_id then
+                if leaTechBlipVeh ~= current_lea_tech_vehicle then
                     if leaTechBlip then
                         util.remove_blip(leaTechBlip)
                     end
-                    leaTechBlip = HUD.ADD_BLIP_FOR_ENTITY(saved_vehicle_id)
+                    leaTechBlip = HUD.ADD_BLIP_FOR_ENTITY(current_lea_tech_vehicle)
                     HUD.SET_BLIP_SPRITE(leaTechBlip, "617")
                     HUD.SET_BLIP_COLOUR(leaTechBlip, 76)
                     HUD.SET_BLIP_DISPLAY(leaTechBlip, 2)
@@ -2254,16 +2254,19 @@ end
 
 menu.toggle_loop(Lea_Tech, "Lea Tech HP Bar", {""}, "", function()
     if transitionState(true) <3 then
-        local vehicle = get_user_vehicle()
-        if vehicle then
+        local target_vehicle = get_user_vehicle()
+        if current_lea_tech_vehicle then
+            target_vehicle = current_lea_tech_vehicle
+        end
+        if target_vehicle then
             local screenWidth, screenHeight = directx.get_client_size()
             local x = 0.0
             local y = 1.0
             local width = 0.228
             local height = 0.003
             local maxHealth = 1000
-            local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
-            local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle)
+            local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(target_vehicle)
+            local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(target_vehicle)
             local yEngine = y
             local yBody = yEngine - height
             draw_bar(engineHealth, maxHealth, x, yEngine, width, height, { r = 34.0/255, g = 139.0/255, b = 34.0/255, a = 1.0 }, { r = 255.0/255, g = 255.0/255, b = 255.0/255, a = 0.0 })
@@ -2276,11 +2279,14 @@ end)
 
 menu.toggle_loop(Lea_Tech, "Lea Tech Info Overlay", {""}, "", function()
     if transitionState(true) < 3 then
-        local vehicle = get_user_vehicle()
-        if vehicle then
-            local enginePercent = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle) / 10
-            local bodyPercent = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle) / 10
-            util.draw_debug_text(util.reverse_joaat(entities.get_model_hash(vehicle)).."\nEngine Health: "..string.format("%.1f%%", enginePercent).."\nBody Health: "..string.format("%.1f%%", bodyPercent))
+        local target_vehicle = get_user_vehicle()
+        if current_lea_tech_vehicle then
+            target_vehicle = current_lea_tech_vehicle
+        end
+        if target_vehicle then
+            local enginePercent = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(target_vehicle) / 10
+            local bodyPercent = VEHICLE.GET_VEHICLE_BODY_HEALTH(target_vehicle) / 10
+            util.draw_debug_text(util.reverse_joaat(entities.get_model_hash(target_vehicle)).."\nEngine Health: "..string.format("%.1f%%", enginePercent).."\nBody Health: "..string.format("%.1f%%", bodyPercent))
         end
     else
         util.yield(13666)
@@ -2289,8 +2295,8 @@ end)
 
 menu.action(Vehicle, "Enter Lea Tech Vehicle", {"enterlea"}, "Enter the current Lea Tech Vehicle", function()
     local target_vehicle = get_user_vehicle()
-    if saved_vehicle_id then
-        target_vehicle = saved_vehicle_id
+    if current_lea_tech_vehicle then
+        target_vehicle = current_lea_tech_vehicle
     end
     if does_entity_exist(target_vehicle) then
         requestControl(target_vehicle)
@@ -2310,8 +2316,8 @@ end)
 
 menu.action(Vehicle, "Detonate Lea Tech Vehicle.", {"boomlea"}, "", function()
     local target_vehicle = get_user_vehicle()
-    if saved_vehicle_id then
-        target_vehicle = saved_vehicle_id
+    if current_lea_tech_vehicle then
+        target_vehicle = current_lea_tech_vehicle
     end
     requestControl(target_vehicle)
     entities.set_can_migrate(target_vehicle, false)
@@ -2334,7 +2340,7 @@ menu.action(Vehicle, "Detonate Lea Tech Vehicle.", {"boomlea"}, "", function()
         VEHICLE.SET_VEHICLE_XENON_LIGHT_COLOR_INDEX(target_vehicle, 8)
         util.yield(3666)
     end
-    VEHICLE.DETONATE_VEHICLE_PHONE_EXPLOSIVE_DEVICE(saved_vehicle_id)
+    VEHICLE.DETONATE_VEHICLE_PHONE_EXPLOSIVE_DEVICE(target_vehicle)
 end)
 
 menu.divider(Vehicle, "Lights")
@@ -2402,7 +2408,7 @@ menu.toggle_loop(Vehicle_Light, "S.O.S. Morse",{"sosmorse"},"",function()
         util.yield(1666)
     end
 end, function()
-    saved_vehicle_id = nil
+    current_lea_tech_vehicle = nil
     isOutVehicle = false
 end)
 
