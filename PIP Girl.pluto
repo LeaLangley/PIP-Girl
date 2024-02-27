@@ -1966,32 +1966,14 @@ end)
 
 menu.divider(Stimpak, "Testing Stuff")
 
-menu.toggle_loop(Stimpak, "(DEBUG) Lea Tech", {""}, "", function()
-    if transitionState(true) <3 then
-        local vehicle = get_user_vehicle()
-        if vehicle then
-            local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
-            local petrolTankHealth = VEHICLE.GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
-            local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle)
-            local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
-            local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
-            if petrolTankHealth ~= 1000 or engineHealth ~= 1000 or bodyHealth ~= 1000 then
-                util.draw_debug_text("\nPetrol Health: " .. petrolTankHealth .. "\nEngine Health: " .. engineHealth .. "\nBody Health: " .. bodyHealth .. "\nHeli Tail Health: " .. heliTailHealth .. "\nHeli Rotor Health: " .. heliRotorHealth)
-            end
-        end
-    else
-        util.yield(13666)
-    end
-end)
-
-menu.action(Stimpak, "(DEBUG) Set Armor/Health to Low", {"dearmor"}, "This is for testing Purpose!\nTurn the options above on and Click this to test them out!", function()
-    if transitionState(true) <3 then
-        PED.SET_PED_ARMOUR(players.user_ped(), 0)
-        local maxHealth = ENTITY.GET_ENTITY_MAX_HEALTH(players.user_ped())
-        local newHealth = math.floor(maxHealth * 0.5)
-        ENTITY.SET_ENTITY_HEALTH(players.user_ped(), newHealth)
-    end
-end)
+--menu.action(Stimpak, "(DEBUG) Set Armor/Health to Low", {"dearmor"}, "This is for testing Purpose!\nTurn the options above on and Click this to test them out!", function()
+--    if transitionState(true) <3 then
+--        PED.SET_PED_ARMOUR(players.user_ped(), 0)
+--        local maxHealth = ENTITY.GET_ENTITY_MAX_HEALTH(players.user_ped())
+--        local newHealth = math.floor(maxHealth * 0.5)
+--        ENTITY.SET_ENTITY_HEALTH(players.user_ped(), newHealth)
+--    end
+--end)
 
 menu.divider(Outfit, "Quick Select")
 
@@ -2261,6 +2243,47 @@ menu.toggle(Lea_Tech, "Lockon Jammer for Mission Vehicles", {""}, "if you lea te
         protectMissionVehicles = true
     else
         protectMissionVehicles = false
+    end
+end)
+
+function draw_bar(value, maxValue, x, y, width, height, barColor, backColor)
+    local barWidth = (value / maxValue) * width
+    directx.draw_rect(x, y - height, width, height, backColor)
+    directx.draw_rect(x, y - height, barWidth, height, barColor)
+end
+
+menu.toggle_loop(Lea_Tech, "Lea Tech HP Bar", {""}, "", function()
+    if transitionState(true) <3 then
+        local vehicle = get_user_vehicle()
+        if vehicle then
+            local screenWidth, screenHeight = directx.get_client_size()
+            local x = 0.0
+            local y = 1.0
+            local width = 0.228
+            local height = 0.003
+            local maxHealth = 1000
+            local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
+            local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle)
+            local yEngine = y
+            local yBody = yEngine - height
+            draw_bar(engineHealth, maxHealth, x, yEngine, width, height, { r = 34.0/255, g = 139.0/255, b = 34.0/255, a = 1.0 }, { r = 255.0/255, g = 255.0/255, b = 255.0/255, a = 0.0 })
+            draw_bar(bodyHealth, maxHealth, x, yBody, width, height, { r = 34.0/255, g = 139.0/255, b = 34.0/255, a = 1.0 }, { r = 255.0/255, g = 255.0/255, b = 255.0/255, a = 0.0 })
+        end
+    else
+        util.yield(13666)
+    end
+end)
+
+menu.toggle_loop(Lea_Tech, "Lea Tech Info Overlay", {""}, "", function()
+    if transitionState(true) < 3 then
+        local vehicle = get_user_vehicle()
+        if vehicle then
+            local enginePercent = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle) / 10
+            local bodyPercent = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle) / 10
+            util.draw_debug_text("Engine Health: "..string.format("%.1f%%", enginePercent).."\nBody Health: "..string.format("%.1f%%", bodyPercent))
+        end
+    else
+        util.yield(13666)
     end
 end)
 
