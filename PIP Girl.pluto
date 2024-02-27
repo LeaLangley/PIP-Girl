@@ -4186,10 +4186,10 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                         --if isFriendStuck() then
                         --    pid = isFriendStuck()
                         --end
-                        local check_timeout = os.time() + 16
-                        if isFriend(pid) then
-                            check_timeout = os.time() + 10
-                        end
+                        local check_timeout = os.time() + 10
+                        --if isFriend(pid) then
+                        --    check_timeout = os.time() + 10
+                        --end
                         while worthToUnstuck(pid) and players.get_script_host() ~= pid and discoveredSince(pid) >= 113 do
                             if os.time() > check_timeout then
                                 break
@@ -4248,7 +4248,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                             end
                         end
                     end
-                    if not isFriend(players.get_script_host()) and (discoveredSince(players.get_script_host()) < 113 or not healthyInternet(players.get_script_host())) then
+                    if not isFriend(players.get_script_host()) and (discoveredSince(players.get_script_host()) < 113 or NETWORK.NETWORK_GET_AVERAGE_PACKET_LOSS(pid) > 0) then
                         menu.trigger_commands("scripthost")
                     end
                 end
