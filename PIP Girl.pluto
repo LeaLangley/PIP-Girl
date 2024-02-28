@@ -6,11 +6,11 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.138"
+local script_version = "1.139"
 
 local lust_upDate = {year=2024, month=3, day=1}
 
-local startupmsg = "If settings are missing PLS restart script.\n\nHave a great day! <3\n\nLea Tech on top!"
+local startupmsg = "If settings are missing PLS restart script.\n\nLea Tech and Lea's Repair/Shrine have been rebranded into:\nAsuka Tech | Asuka's Repair Stops | Asuka's Shrine\n\nAsuka Tech on top!"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1717,9 +1717,9 @@ menu.divider(Stimpak, "Vehicle Related Health")
 
 menu.toggle(Stimpak, "Lea Tech", {""}, "Same as in Vehicle, but its stays here for the ppl who used my old layout.", function(on)
     if on then
-        menu.trigger_commands("leatech on")
+        menu.trigger_commands("asukatech on")
     else
-        menu.trigger_commands("leatech off")
+        menu.trigger_commands("asukatech off")
     end
 end)
 
@@ -1815,7 +1815,7 @@ local closestMarker = nil
 local closestDistance = math.huge
 local wasInZone = false
 local protectMissionVehicles = false
-local function buff_lea_tech(vehicle)
+local function buff_asuka_tech(vehicle)
     requestControl(vehicle)
     menu.trigger_commands("smoothflight on")
     if protectMissionVehicles and not players.is_in_interior(players.user()) then
@@ -1892,69 +1892,6 @@ local function SetInZoneTimer()
     end
     wasInZone = false
 end
-menu.toggle_loop(Stimpak, "Lea's Repair Stop", {"lears"}, "", function()
-    if transitionState(true) == 1 then
-        local playerPosition = players.get_position(players.user())
-        if not blipsCreated then
-            remove_blips()
-            CreateBlips(repairStops)
-            CreateCheckpoints(repairStops)
-        end
-        closestMarker = nil
-        closestDistance = math.huge
-        for pairs(repairStops) as position do
-            local distance = math.sqrt((playerPosition.x - position.x) ^ 2 + (playerPosition.y - position.y) ^ 2 + (playerPosition.z - position.z) ^ 2)
-
-            if distance < closestDistance then
-                closestMarker = position
-                closestDistance = distance
-            end
-        end
-        if closestMarker then
-            local markerPosition = closestMarker
-            if not wasInZone then
-                --GRAPHICS.DRAW_MARKER(1, markerPosition.x, markerPosition.y, markerPosition.z - 1, 0, 0, 0, 0, 180, 0, 2, 2, 2, 255, 0, 128, 66, false, false, 180, 0, 0, 0, false)
-                --GRAPHICS.DRAW_MARKER(1, markerPosition.x, markerPosition.y, markerPosition.z - 1, 0, 0, 0, 0, 180, 0, 5, 5, 1, 255, 0, 128, 255, false, false, 180, 0, 0, 0, false)
-                GRAPHICS.DRAW_SPOT_LIGHT(markerPosition.x, markerPosition.y, markerPosition.z + 0.6, 0, 0, -1, 255, 0, 128, 5, 5, 0, 200, 1)
-            else
-                --GRAPHICS.DRAW_MARKER(1, markerPosition.x, markerPosition.y, markerPosition.z - 1, 0, 0, 0, 0, 180, 0, 5, 5, 1, 255, 0, 0, 255, false, false, 180, 0, 0, 0, false)
-                GRAPHICS.DRAW_SPOT_LIGHT(markerPosition.x, markerPosition.y, markerPosition.z + 0.6, 0, 0, -1, 255, 0, 0, 5, 5, 0, 200, 1)
-            end
-            if closestDistance <= repairRadius then
-                if not wasInZone then
-                    local vehicle = get_user_vehicle()
-                    wasInZone = true
-                    if is_vehicle_free_for_use(vehicle) then
-                        requestControl(vehicle)
-                        menu.trigger_commands("performance")
-                        menu.trigger_commands("fixvehicle")
-                    end
-                    fillUpEverything()
-                    menu.trigger_commands("wanted 0")
-                    menu.trigger_commands("mentalstate 0")
-                    menu.trigger_commands("helibackup")
-                    buff_lea_tech(vehicle)
-                    notify("Come back in 6min for the next Supply.")
-                    util.create_thread(SetInZoneTimer)
-                end
-            end
-        else
-
-            closestMarker = nil
-            closestDistance = math.huge
-        end
-    else
-        closestMarker = nil
-        closestDistance = math.huge
-        blipsCreated = false
-        util.yield(13666)
-    end
-end, function()
-    remove_blips()
-    closestMarker = nil
-    closestDistance = math.huge
-    blipsCreated = false
-end)
 
 menu.divider(Stimpak, "Testing Stuff")
 
@@ -2062,7 +1999,7 @@ menu.slider(Outfit, 'Smart Outfit Lock Helmet Color', {'SmartLockHelmetColor'}, 
     OutfitLockHelmetColor = new_value
 end)
 
-menu.divider(Vehicle, "Lea Tech")
+menu.divider(Vehicle, "Asuka Tech")
 
 local function getTrailer(vehicle)
     local trailerPtr = memory.alloc_int()
@@ -2070,14 +2007,14 @@ local function getTrailer(vehicle)
     local trailer = memory.read_int(trailerPtr)
     return trailer
 end
-local lea_tech_repair_amount = 1
-local lea_tech_mission_repair_amount = 3
-local function repair_lea_tech(vehicle)
+local asuka_tech_repair_amount = 1
+local asuka_tech_mission_repair_amount = 3
+local function repair_asuka_tech(vehicle)
     local repair_amount = 0
     if ENTITY.IS_ENTITY_A_MISSION_ENTITY(vehicle) and vehicle ~= entities.get_user_personal_vehicle_as_handle() then
-        repair_amount = lea_tech_mission_repair_amount
+        repair_amount = asuka_tech_mission_repair_amount
     else
-        repair_amount = lea_tech_repair_amount
+        repair_amount = asuka_tech_repair_amount
     end
     local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
     local petrolTankHealth = VEHICLE.GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
@@ -2115,13 +2052,13 @@ local function repair_lea_tech(vehicle)
         VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, true)
     end
 end
-local current_lea_tech_vehicle = nil
+local current_asuka_tech_vehicle = nil
 local saved_trailer_id = nil
 local isInVehicle = false
 local vehicleProtected = false
-local leaTechBlip = nil
-local leaTechBlipVeh = nil
-menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle, and gives it some modern enhancements.", function()
+local asukaTechBlip = nil
+local asukaTechBlipVeh = nil
+menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly repairs your vehicle, and gives it some modern enhancements.", function()
     local cmd_path = "Vehicle>Light Signals>Use Brake Lights When Stopped"
     if transitionState(true) == 1 then
         if menu.get_state(menu.ref_by_path(cmd_path)) ~= "On" then
@@ -2152,9 +2089,9 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
                     VEHICLE.SET_VEHICLE_DOORS_SHUT(vehicle, false)
                 end
 
-                if (current_lea_tech_vehicle == nil or current_lea_tech_vehicle ~= vehicle) and not players.is_in_interior(players.user()) then
-                    current_lea_tech_vehicle = vehicle
-                    buff_lea_tech(vehicle)
+                if (current_asuka_tech_vehicle == nil or current_asuka_tech_vehicle ~= vehicle) and not players.is_in_interior(players.user()) then
+                    current_asuka_tech_vehicle = vehicle
+                    buff_asuka_tech(vehicle)
                 end
 
                 --if not vehicleProtected and is_vehicle_empty(vehicle) then
@@ -2166,8 +2103,8 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
                 --    vehicleProtected = false
                 --end
 
-                if lea_tech_repair_amount > 0 then
-                    repair_lea_tech(vehicle)
+                if asuka_tech_repair_amount > 0 then
+                    repair_asuka_tech(vehicle)
                 end
 
                 if VEHICLE.IS_VEHICLE_ATTACHED_TO_TRAILER(vehicle) then
@@ -2181,29 +2118,29 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
                     else
                         trailer = getTrailer(vehicle)
                     end
-                    if lea_tech_repair_amount > 0 then
-                        repair_lea_tech(trailer)
+                    if asuka_tech_repair_amount > 0 then
+                        repair_asuka_tech(trailer)
                     end
                     if saved_trailer_id == nil or saved_trailer_id ~= trailer then
                         saved_trailer_id = trailer
-                        buff_lea_tech(trailer)
+                        buff_asuka_tech(trailer)
                     end
                 else
                     saved_trailer_id = nil
                 end
-                if leaTechBlipVeh ~= current_lea_tech_vehicle then
-                    if leaTechBlip then
-                        util.remove_blip(leaTechBlip)
+                if asukaTechBlipVeh ~= current_asuka_tech_vehicle then
+                    if asukaTechBlip then
+                        util.remove_blip(asukaTechBlip)
                     end
-                    leaTechBlip = HUD.ADD_BLIP_FOR_ENTITY(current_lea_tech_vehicle)
-                    HUD.SET_BLIP_SPRITE(leaTechBlip, "617")
-                    HUD.SET_BLIP_COLOUR(leaTechBlip, 76)
-                    HUD.SET_BLIP_DISPLAY(leaTechBlip, 2)
-                    HUD.SET_BLIP_SCALE(leaTechBlip, 0.6)
+                    asukaTechBlip = HUD.ADD_BLIP_FOR_ENTITY(current_asuka_tech_vehicle)
+                    HUD.SET_BLIP_SPRITE(asukaTechBlip, "617")
+                    HUD.SET_BLIP_COLOUR(asukaTechBlip, 76)
+                    HUD.SET_BLIP_DISPLAY(asukaTechBlip, 2)
+                    HUD.SET_BLIP_SCALE(asukaTechBlip, 0.6)
                     HUD.BEGIN_TEXT_COMMAND_SET_BLIP_NAME("STRING")
-                    HUD.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Lea Tech Vehicle')
-                    HUD.END_TEXT_COMMAND_SET_BLIP_NAME(leaTechBlip)
-                    HUD.SET_BLIP_PRIORITY(leaTechBlip, 25)
+                    HUD.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Asuka Tech Vehicle')
+                    HUD.END_TEXT_COMMAND_SET_BLIP_NAME(asukaTechBlip)
+                    HUD.SET_BLIP_PRIORITY(asukaTechBlip, 25)
                 end
             end
             util.yield(1000)
@@ -2215,22 +2152,22 @@ menu.toggle_loop(Vehicle, "Lea Tech", {"leatech"}, "Slowly repairs your vehicle,
         util.yield(13666)
     end
 end, function()
-    if leaTechBlip then
-        util.remove_blip(leaTechBlip)
+    if asukaTechBlip then
+        util.remove_blip(asukaTechBlip)
     end
 end)
 
-local Lea_Tech = menu.list(Vehicle, 'Lea Tech Settings', {}, 'Settings for Lea Tech.', function(); end)
+local Asuka_Tech = menu.list(Vehicle, 'Asuka Tech Settings', {}, 'Settings for Asuka Tech.', function(); end)
 
-menu.slider(Lea_Tech, "Lea Tech Repair Amount", {"leatechrepairamount"}, "The amount that should be repaired per second, default 1.", 0, 13, lea_tech_repair_amount, 1, function (new_value)
-    lea_tech_repair_amount = new_value
+menu.slider(Asuka_Tech, "Asuka Tech Repair Amount", {"asukatechrepairamount"}, "The amount that should be repaired per second, default 1.", 0, 13, asuka_tech_repair_amount, 1, function (new_value)
+    asuka_tech_repair_amount = new_value
 end)
 
-menu.slider(Lea_Tech, "Lea Tech Mission Repair Amount", {"leatechmissionrepairamount"}, "The amount that should be repaired per second if the vehicle is a mission entity, default 3.", 0, 13, lea_tech_mission_repair_amount, 1, function (new_value)
-    lea_tech_mission_repair_amount = new_value
+menu.slider(Asuka_Tech, "Asuka Tech Mission Repair Amount", {"asukatechmissionrepairamount"}, "The amount that should be repaired per second if the vehicle is a mission entity, default 3.", 0, 13, asuka_tech_mission_repair_amount, 1, function (new_value)
+    asuka_tech_mission_repair_amount = new_value
 end)
 
-menu.toggle(Lea_Tech, "Lockon Jammer for Mission Vehicles", {""}, "if you lea tech vehicle is a mission entity , it will gain a lock on jammer.", function(on)
+menu.toggle(Asuka_Tech, "Lockon Jammer for Mission Vehicles", {""}, "if you asuka tech vehicle is a mission entity , it will gain a lock on jammer.", function(on)
     if on then
         protectMissionVehicles = true
     else
@@ -2244,11 +2181,11 @@ function draw_bar(value, maxValue, x, y, width, height, barColor, backColor)
     directx.draw_rect(x, y - height, barWidth, height, barColor)
 end
 
-menu.toggle_loop(Lea_Tech, "Lea Tech HP Bar", {""}, "", function()
+menu.toggle_loop(Asuka_Tech, "Asuka Tech HP Bar", {""}, "", function()
     if transitionState(true) <3 then
         local target_vehicle = get_user_vehicle()
-        if current_lea_tech_vehicle then
-            target_vehicle = current_lea_tech_vehicle
+        if current_asuka_tech_vehicle then
+            target_vehicle = current_asuka_tech_vehicle
         end
         if does_entity_exist(target_vehicle) then
             local screenWidth, screenHeight = directx.get_client_size()
@@ -2269,11 +2206,11 @@ menu.toggle_loop(Lea_Tech, "Lea Tech HP Bar", {""}, "", function()
     end
 end)
 
-menu.toggle_loop(Lea_Tech, "Lea Tech Info Overlay", {""}, "", function()
+menu.toggle_loop(Asuka_Tech, "Asuka Tech Info Overlay", {""}, "", function()
     if transitionState(true) < 3 then
         local target_vehicle = get_user_vehicle()
-        if current_lea_tech_vehicle then
-            target_vehicle = current_lea_tech_vehicle
+        if current_asuka_tech_vehicle then
+            target_vehicle = current_asuka_tech_vehicle
         end
         if does_entity_exist(target_vehicle) then
             local enginePercent = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(target_vehicle) / 10
@@ -2285,10 +2222,10 @@ menu.toggle_loop(Lea_Tech, "Lea Tech Info Overlay", {""}, "", function()
     end
 end)
 
-menu.action(Vehicle, "Enter Lea Tech Vehicle", {"enterlea"}, "Enter the current Lea Tech Vehicle", function()
+menu.action(Vehicle, "Enter Asuka Tech Vehicle", {"enterasuka"}, "Enter the current Asuka Tech Vehicle", function()
     local target_vehicle = get_user_vehicle()
-    if current_lea_tech_vehicle then
-        target_vehicle = current_lea_tech_vehicle
+    if current_asuka_tech_vehicle then
+        target_vehicle = current_asuka_tech_vehicle
     end
     if does_entity_exist(target_vehicle) then
         requestControl(target_vehicle)
@@ -2300,16 +2237,16 @@ menu.action(Vehicle, "Enter Lea Tech Vehicle", {"enterlea"}, "Enter the current 
             PED.SET_PED_INTO_VEHICLE(my_ped, target_vehicle, -2)
         end
         util.yield(666)
-        buff_lea_tech(target_vehicle)
+        buff_asuka_tech(target_vehicle)
     else
-        notify("Could not find a Lea Tech Vehicle. :C")
+        notify("Could not find a Asuka Tech Vehicle. :C")
     end
 end)
 
-menu.action(Vehicle, "Detonate Lea Tech Vehicle.", {"boomlea"}, "", function()
+menu.action(Vehicle, "Detonate Asuka Tech Vehicle", {"boomasuka"}, "", function()
     local target_vehicle = get_user_vehicle()
-    if current_lea_tech_vehicle then
-        target_vehicle = current_lea_tech_vehicle
+    if current_asuka_tech_vehicle then
+        target_vehicle = current_asuka_tech_vehicle
     end
     requestControl(target_vehicle)
     entities.set_can_migrate(target_vehicle, false)
@@ -2400,7 +2337,7 @@ menu.toggle_loop(Vehicle_Light, "S.O.S. Morse",{"sosmorse"},"",function()
         util.yield(1666)
     end
 end, function()
-    current_lea_tech_vehicle = nil
+    current_asuka_tech_vehicle = nil
     isOutVehicle = false
 end)
 
@@ -2437,6 +2374,70 @@ menu.toggle_loop(Vehicle, "Set vehicle light color automatically",{"autocarlight
 end)
 
 menu.divider(Vehicle, "Else")
+
+menu.toggle_loop(Vehicle, "Asuka's Repair Stop", {"asukars"}, "", function()
+    if transitionState(true) == 1 then
+        local playerPosition = players.get_position(players.user())
+        if not blipsCreated then
+            remove_blips()
+            CreateBlips(repairStops)
+            CreateCheckpoints(repairStops)
+        end
+        closestMarker = nil
+        closestDistance = math.huge
+        for pairs(repairStops) as position do
+            local distance = math.sqrt((playerPosition.x - position.x) ^ 2 + (playerPosition.y - position.y) ^ 2 + (playerPosition.z - position.z) ^ 2)
+
+            if distance < closestDistance then
+                closestMarker = position
+                closestDistance = distance
+            end
+        end
+        if closestMarker then
+            local markerPosition = closestMarker
+            if not wasInZone then
+                --GRAPHICS.DRAW_MARKER(1, markerPosition.x, markerPosition.y, markerPosition.z - 1, 0, 0, 0, 0, 180, 0, 2, 2, 2, 255, 0, 128, 66, false, false, 180, 0, 0, 0, false)
+                --GRAPHICS.DRAW_MARKER(1, markerPosition.x, markerPosition.y, markerPosition.z - 1, 0, 0, 0, 0, 180, 0, 5, 5, 1, 255, 0, 128, 255, false, false, 180, 0, 0, 0, false)
+                GRAPHICS.DRAW_SPOT_LIGHT(markerPosition.x, markerPosition.y, markerPosition.z + 0.6, 0, 0, -1, 255, 0, 128, 5, 5, 0, 200, 1)
+            else
+                --GRAPHICS.DRAW_MARKER(1, markerPosition.x, markerPosition.y, markerPosition.z - 1, 0, 0, 0, 0, 180, 0, 5, 5, 1, 255, 0, 0, 255, false, false, 180, 0, 0, 0, false)
+                GRAPHICS.DRAW_SPOT_LIGHT(markerPosition.x, markerPosition.y, markerPosition.z + 0.6, 0, 0, -1, 255, 0, 0, 5, 5, 0, 200, 1)
+            end
+            if closestDistance <= repairRadius then
+                if not wasInZone then
+                    local vehicle = get_user_vehicle()
+                    wasInZone = true
+                    if is_vehicle_free_for_use(vehicle) then
+                        requestControl(vehicle)
+                        menu.trigger_commands("performance")
+                        menu.trigger_commands("fixvehicle")
+                    end
+                    fillUpEverything()
+                    menu.trigger_commands("wanted 0")
+                    menu.trigger_commands("mentalstate 0")
+                    menu.trigger_commands("helibackup")
+                    buff_asuka_tech(vehicle)
+                    notify("Come back in 6min for the next Supply.")
+                    util.create_thread(SetInZoneTimer)
+                end
+            end
+        else
+
+            closestMarker = nil
+            closestDistance = math.huge
+        end
+    else
+        closestMarker = nil
+        closestDistance = math.huge
+        blipsCreated = false
+        util.yield(13666)
+    end
+end, function()
+    remove_blips()
+    closestMarker = nil
+    closestDistance = math.huge
+    blipsCreated = false
+end)
 
 local sparrowHandeling = nil
 menu.toggle_loop(Vehicle, "Heli Sparrow Handling",{""},"All helicopters you enter fly like a sparrow.",function()
@@ -2595,9 +2596,9 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     local couldbefixed = 0
     local indistance = 0
     local auto_light_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Vehicle>Set vehicle light color automatically"
-    local lea_tech_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Stimpak>Lea Tech"
+    local asuka_tech_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Stimpak>Asuka Tech"
     local temp_auto_light = false
-    local temp_lea_tech = false
+    local temp_asuka_tech = false
     local temp_door_lock = false
     
     if playerWaypoint then
@@ -2609,9 +2610,9 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
         temp_auto_light = true
     end
 
-    if menu.get_state(menu.ref_by_path(lea_tech_path)) == "On" then
-        menu.trigger_commands("leatech off")
-        temp_lea_tech = true
+    if menu.get_state(menu.ref_by_path(asuka_tech_path)) == "On" then
+        menu.trigger_commands("asukatech off")
+        temp_asuka_tech = true
     end
 
     if menu.get_state(menu.ref_by_path("Vehicle>Lock Doors>Lock Doors")) == "On" then
@@ -2652,7 +2653,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
             end
             util.yield(213)
             menu.trigger_commands("fixvehicle")
-            buff_lea_tech(vehicle)
+            buff_asuka_tech(vehicle)
             util.yield(213)
             TASK.TASK_LEAVE_VEHICLE(my_ped, vehicle, 16)
             util.yield(213)
@@ -2686,8 +2687,8 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     if temp_auto_light then
         menu.trigger_commands("autocarlights on")
     end
-    if temp_lea_tech then
-        menu.trigger_commands("leatech on")
+    if temp_asuka_tech then
+        menu.trigger_commands("asukatech on")
     end
     if temp_door_lock then
         menu.set_state(menu.ref_by_path("Vehicle>Lock Doors>Lock Doors"), "On")
@@ -3373,7 +3374,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     SessionClaimerOriginal_states = {}
                     menu.trigger_commands("resetheadshots")
                     fillUpEverything()
-                    buff_lea_tech(get_user_vehicle())
+                    buff_asuka_tech(get_user_vehicle())
                     menu.trigger_commands("claimsession off")
                     if thunderMin ~= 0 then
                         thunderForMin(thunderMin)
@@ -3669,25 +3670,25 @@ local entityVars = {}
 for ipairs(shrineElements) as element do
     entityVars[element.var] = nil
 end
-local Leas_shrine_blip = false
-menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Shows Lea's Shrine, Perfect for a hangout spot or Deep thinking.\nNormal its a calm and mystical place only lit by fire and candles , once entering a arcade u unlock the bright neon lights of the city~", function()
+local Asuka_shrine_blip = false
+menu.toggle_loop(SessionWorld, "Asuka's Shrine", {"leasshrine"}, "Shows Asuka's Shrine, Perfect for a hangout spot or Deep thinking.\nNormal its a calm and mystical place only lit by fire and candles , once entering a arcade u unlock the bright neon lights of the city~", function()
     util.yield(1666)
     if transitionState(true) <3 then
-        if not Leas_shrine_blip then
-            Leas_shrine_blip = HUD.ADD_BLIP_FOR_COORD(-1812.212, -127.127, 80.265)
-            HUD.SET_BLIP_SPRITE(Leas_shrine_blip, "617")
-            HUD.SET_BLIP_COLOUR(Leas_shrine_blip, 76)
-            HUD.SET_BLIP_AS_MINIMAL_ON_EDGE(Leas_shrine_blip, true)
-            HUD.SET_RADIUS_BLIP_EDGE(Leas_shrine_blip, true)
-            HUD.SET_BLIP_AS_SHORT_RANGE(Leas_shrine_blip, true)
-            HUD.SET_BLIP_DISPLAY(Leas_shrine_blip, 2)
-            HUD.SET_BLIP_SCALE(Leas_shrine_blip, 0.8)
+        if not Asuka_shrine_blip then
+            Asuka_shrine_blip = HUD.ADD_BLIP_FOR_COORD(-1812.212, -127.127, 80.265)
+            HUD.SET_BLIP_SPRITE(Asuka_shrine_blip, "617")
+            HUD.SET_BLIP_COLOUR(Asuka_shrine_blip, 76)
+            HUD.SET_BLIP_AS_MINIMAL_ON_EDGE(Asuka_shrine_blip, true)
+            HUD.SET_RADIUS_BLIP_EDGE(Asuka_shrine_blip, true)
+            HUD.SET_BLIP_AS_SHORT_RANGE(Asuka_shrine_blip, true)
+            HUD.SET_BLIP_DISPLAY(Asuka_shrine_blip, 2)
+            HUD.SET_BLIP_SCALE(Asuka_shrine_blip, 0.8)
             HUD.BEGIN_TEXT_COMMAND_SET_BLIP_NAME("STRING")
-            HUD.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Lea\'s Shrine')
-            HUD.END_TEXT_COMMAND_SET_BLIP_NAME(Leas_shrine_blip)
+            HUD.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Asuka\'s Shrine')
+            HUD.END_TEXT_COMMAND_SET_BLIP_NAME(Asuka_shrine_blip)
         end
     else
-        Leas_shrine_blip = false
+        Asuka_shrine_blip = false
     end
     for ipairs(shrineElements) as element do
         local entityVar, conditions = element.var, element.conditions
@@ -3696,10 +3697,10 @@ menu.toggle_loop(SessionWorld, "Lea's Shrine", {"leasshrine"}, "Shows Lea's Shri
     end
     util.yield(3666)
 end, function()
-    if Leas_shrine_blip then
-        util.remove_blip(Leas_shrine_blip)
+    if Asuka_shrine_blip then
+        util.remove_blip(Asuka_shrine_blip)
     end
-    Leas_shrine_blip = false
+    Asuka_shrine_blip = false
     for ipairs(shrineElements) as element do
         local entityVar = element.var
         if does_entity_exist(entityVars[entityVar]) then
@@ -4631,7 +4632,7 @@ local function startupCheck()
     else
         auto_updater.run_auto_update(auto_update_config)
         util.yield(restart_delay)
-        notify(script_version.."\nStartup Message:\n"..startupmsg)
+        notify(script_version.."\n"..startupmsg)
     end
 end
 
@@ -5061,8 +5062,8 @@ menu.action(menu.my_root(), "Activate Everyday Goodies", {"pggoodies"}, "Activat
         menu.trigger_commands("pgarmor on")
         menu.trigger_commands("pgbreath on")
         menu.trigger_commands("pgvaid on")
-        menu.trigger_commands("leatech on")
-        menu.trigger_commands("lears on")
+        menu.trigger_commands("asukatech on")
+        menu.trigger_commands("asukars on")
         menu.trigger_commands("pgascon on")
         menu.trigger_commands("pgascut on")
         menu.trigger_commands("pgaaw on")
@@ -5074,7 +5075,7 @@ menu.action(menu.my_root(), "Activate Everyday Goodies", {"pggoodies"}, "Activat
         menu.trigger_commands("blockorb on")
         menu.trigger_commands("blockkosatka on")
         menu.trigger_commands("blockterror on")
-        menu.trigger_commands("leasshrine on")
+        menu.trigger_commands("asukasshrine on")
     end)
 end)
 local peter = nil
@@ -5083,7 +5084,7 @@ menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
 end)
 
 if os.time() - os.time(lust_upDate) >= 6 * 24 * 60 * 60 then
-    menu.trigger_commands("leasshrine on")
+    menu.trigger_commands("asukasshrine on")
 end
 if not is_player_in_blacklist(rockstarIsBad) then
     local function rainySky(chickenSun)
