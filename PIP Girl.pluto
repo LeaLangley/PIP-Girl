@@ -3596,7 +3596,7 @@ end)
 
 local kosatkaMissile1 = nil
 local kosatkaMissile2 = nil
-menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {"blockkosatka"}, "Blocks the Entrance for the Orb Room", function()
+menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {"blockkosatka"}, "Blocks the Missile terminal", function()
     kosatkaMissile1 = SpawnCheck(kosatkaMissile1, 1228076166, v3.new(1558.9, 387.111, -50.666), 0, 0, 0, nil, 13, true)
     kosatkaMissile2 = SpawnCheck(kosatkaMissile2, 1228076166, v3.new(1558.9, 388.777, -50.666), 0, 0, 0, nil, 13, true)
     util.yield(1666)
