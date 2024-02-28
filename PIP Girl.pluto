@@ -2375,7 +2375,7 @@ end)
 
 menu.divider(Vehicle, "Else")
 
-menu.toggle_loop(Vehicle, "Asuka's Repair Stop", {"asukars"}, "", function()
+menu.toggle_loop(Vehicle, "Asuka's Repair Stop's", {"asukars"}, "", function()
     if transitionState(true) == 1 then
         local playerPosition = players.get_position(players.user())
         if not blipsCreated then
