@@ -3395,7 +3395,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         if session_claimer_players ~= 0 and session_claimer_players < 31 then
             session_claimer_players_range = session_claimer_players_range + 1
             if session_claimer_players_range > 30 then
-                session_claimer_players_range = session_claimer_players
+                session_claimer_players_range = session_claimer_players / 2
             end
         end
         util.yield(666)
