@@ -3741,7 +3741,22 @@ menu.toggle_loop(SessionWorld, "Nerf Oppressor MK2s", {""}, "Nerf Oppressor mk2 
                 requestControl(vehicle)
                 VEHICLE.SET_VEHICLE_MOD(vehicle, 10, -1)
             end
-        end    
+        end
+    end
+    util.yield(1666)
+end)
+
+menu.toggle_loop(SessionWorld, "Downgrade Oppressor MK2s", {""}, "Downgrade Oppressor mk2, except Modder and Friend's", function()
+    for players.list_except(true) as pid do
+        if players.get_vehicle_model(pid) == 2069146067 and not isFriend(pid) and not isModder(pid) then
+            local vehicle = PED.GET_VEHICLE_PED_IS_IN(PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid))
+            for vehModNum = 0, 100 do
+                if VEHICLE.GET_VEHICLE_MOD(vehicle, vehModNum) ~= -1 then
+                    requestControl(vehicle)
+                    VEHICLE.SET_VEHICLE_MOD(vehicle, vehModNum, -1)
+                end
+            end
+        end
     end
     util.yield(1666)
 end)
