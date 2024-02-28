@@ -228,16 +228,7 @@ end
 local function player_Exist(pid)
     if pid then
         if players.exists(pid) then
-            local name = players.get_name(pid)
-            if name ~= "undiscoveredplayer" then
-                if name ~= "InvalidPlayer" then
-                    for players.list() as plid do
-                        if plid == pid then
-                            return true
-                        end
-                    end
-                end
-            end
+            return true
         end
     end
     return false
