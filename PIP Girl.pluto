@@ -2074,7 +2074,7 @@ local lea_tech_repair_amount = 1
 local lea_tech_mission_repair_amount = 3
 local function repair_lea_tech(vehicle)
     local repair_amount = 0
-    if ENTITY.IS_ENTITY_A_MISSION_ENTITY(vehicle) then
+    if ENTITY.IS_ENTITY_A_MISSION_ENTITY(vehicle) and vehicle ~= entities.get_user_personal_vehicle_as_handle() then
         repair_amount = lea_tech_mission_repair_amount
     else
         repair_amount = lea_tech_repair_amount
