@@ -4721,10 +4721,9 @@ end
 players.on_leave(removeFromTable)
 
 player_menu = function(pid)
-    if not players.exists(players.user()) or pid == players.user() or isFriend(pid) then
-        if isFriend(pid) then
-            set_as_illusion(pid, set_passive, false)
-        end
+    util.yield(113)
+    if isFriend(pid) then
+        set_as_illusion(pid, set_passive, false)
         return
     end
     local name = players.get_name(pid)
