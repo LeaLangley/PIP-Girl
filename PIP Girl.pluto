@@ -5128,8 +5128,8 @@ end
 local stored_pip_version = readFromFilePIP(store_dir..'version.txt')
 if os.time() - tonumber(stored_pip_version) > 3 then
     pipBooty = false
-    util.yield(1666)
     writeToFilePIP(os.time(), store_dir..'version.txt')
+    util.yield(1666)
     util.restart_script()
 else
     pipBooty = true
