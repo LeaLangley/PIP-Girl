@@ -1868,7 +1868,7 @@ local function buff_asuka_tech(vehicle)
     VEHICLE.SET_VEHICLE_TYRES_CAN_BURST(vehicle, false)
     VEHICLE.SET_VEHICLE_NEEDS_TO_BE_HOTWIRED(vehicle, false)
     VEHICLE.SET_VEHICLE_HAS_BEEN_OWNED_BY_PLAYER(vehicle, true)
-    VEHICLE.SET_VEHICLE_FORCE_AFTERBURNER(vehicle, true)
+    --VEHICLE.SET_VEHICLE_FORCE_AFTERBURNER(vehicle, true)
     AUDIO.ENABLE_VEHICLE_EXHAUST_POPS(vehicle, true)
 end
 local function SetInZoneTimer()
