@@ -2048,7 +2048,8 @@ local function repair_asuka_tech(vehicle)
 end
 local current_asuka_tech_vehicle = nil
 local saved_trailer_id = nil
-local isInVehicle = false
+local isInVehicleAT = false
+local isInInteriorAT = false
 local vehicleProtected = false
 local asukaTechBlip = nil
 local asukaTechBlipVeh = nil
@@ -2064,28 +2065,37 @@ menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly repairs your vehi
             -- Check if the driver seat is empty or if the local player is the driver
             if is_vehicle_free_for_use(vehicle) then
                 local isDriving = nil
-                if isInVehicle then
+                if isInVehicleAT then
                     isDriving = PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true)
                 else
                     isDriving = PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), false)
                 end
-                if isDriving and not isInVehicle then
+                if isDriving and not isInVehicleAT then
                     VEHICLE.SET_VEHICLE_ENGINE_ON(vehicle, true, true, false)
-                    isInVehicle = true
+                    isInVehicleAT = true
                     util.yield(666)
                     VEHICLE.SET_VEHICLE_DOORS_SHUT(vehicle, false)
                     if VEHICLE.DOES_VEHICLE_HAVE_SEARCHLIGHT(vehicle) then
                         VEHICLE.SET_VEHICLE_SEARCHLIGHT(vehicle, true, true)
                     end
-                elseif not isDriving and isInVehicle then
-                    isInVehicle = false
+                elseif not isDriving and isInVehicleAT then
+                    isInVehicleAT = false
                     util.yield(666)
                     VEHICLE.SET_VEHICLE_DOORS_SHUT(vehicle, false)
                 end
 
-                if (current_asuka_tech_vehicle == nil or current_asuka_tech_vehicle ~= vehicle) and not players.is_in_interior(players.user()) then
+                if current_asuka_tech_vehicle == nil or current_asuka_tech_vehicle ~= vehicle then
                     current_asuka_tech_vehicle = vehicle
                     buff_asuka_tech(vehicle)
+                else
+                    local is_in_interior = players.is_in_interior(players.user())
+                    if is_in_interior and not isInInteriorAT then
+                        isInInteriorAT = true
+                        buff_asuka_tech(vehicle)
+                    elseif not is_in_interior and isInInteriorAT then
+                        isInInteriorAT = false
+                        buff_asuka_tech(vehicle)
+                    end
                 end
 
                 --if not vehicleProtected and is_vehicle_empty(vehicle) then
@@ -2139,7 +2149,7 @@ menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly repairs your vehi
             end
             util.yield(1000)
         else
-            isInVehicle = false
+            isInVehicleAT = false
             util.yield(1666)
         end
     else
