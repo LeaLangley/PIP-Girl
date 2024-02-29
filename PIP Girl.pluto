@@ -429,14 +429,14 @@ local function IS_TEXT_DISPLAYED(text) -- trying to be good :sob:
     return HUD.END_TEXT_COMMAND_IS_MESSAGE_DISPLAYED()
 end
 
-local handle_ptr = memory.alloc(13*8)
-local function pid_to_handle(pid)
-    if pid then
-        NETWORK.NETWORK_HANDLE_FROM_PLAYER(pid, handle_ptr, 13)
-        return handle_ptr
-    end
-    return nil
-end
+--local handle_ptr = memory.alloc(13*8)
+--local function pid_to_handle(pid)
+--    if pid then
+--        NETWORK.NETWORK_HANDLE_FROM_PLAYER(pid, handle_ptr, 13)
+--        return handle_ptr
+--    end
+--    return nil
+--end
 
 local function find_in_table(tbl, value)
     for i, v in ipairs(tbl) do
@@ -521,12 +521,12 @@ local function isLoading(pid)
 end
 
 local function isFriend(pid)
-    local hdl = pid_to_handle(pid)
-    if hdl then
-        if NETWORK.NETWORK_IS_FRIEND(hdl) then
-            return true
-        end
-    end
+    --local hdl = pid_to_handle(pid)
+    --if hdl then
+    --    if NETWORK.NETWORK_IS_FRIEND(hdl) then
+    --        return true
+    --    end
+    --end
     for players.list_only(true, true, false, true) as plid do
         if plid == pid then
             return true
