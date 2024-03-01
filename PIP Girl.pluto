@@ -4042,19 +4042,29 @@ menu.divider(SessionInvite, "Other.")
 menu.action(SessionInvite, "Invite Friend's", {"invitefriends"}, "invite all friends.", function()
     if transitionState(true) == 1 then
         local invited = 0
+        local invitedFriends = {}
         if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Friend's")) then
             for menu.ref_by_path("Online>Player History>Noted Players>Friend's"):getChildren() as friend do
                 local friend_target = friend.target
                 if friend_target:getState() ~= "Offline" then
                     menu.trigger_command(friend_target:refByRelPath("Invite To Session"))
                     invited = invited + 1
+                    invitedFriends[#invitedFriends + 1] = friend_target.menu_name
                     util.yield(420)
                 end
             end
         else
             notify("Please create a \"Friend's\" group first.\nYou can do that with \"createfriendsgroup\" Command.")
+            return
         end
-        notify("Invited "..invited.." Friends.")
+        local invitedNames = ""
+        for i, name in ipairs(invitedFriends) do
+            if i > 1 then
+                invitedNames = invitedNames .. ", "
+            end
+            invitedNames = invitedNames .. name
+        end
+        notify("Invited "..invited.." Friends: " .. invitedNames)
     else     
         notify("Wait until you are loaded in.")
     end
