@@ -1195,7 +1195,8 @@ menu.toggle_loop(PIP_Girl, "Nightclub Party Never Stops!", {'ncpop'}, "The hotte
     if transitionState(true) == 1 then
         local ncpop = math.floor(STAT_GET_INT('CLUB_POPULARITY') / 10)
         if ncpop < 88 then
-            menu.trigger_commands('clubpopularity 100')
+            local random_pop = math.random(88, 100)
+            menu.trigger_commands('clubpopularity '..random_value)
             util.yield(66666)
         end
         util.yield(66666)
@@ -1257,7 +1258,7 @@ menu.list_select(PIP_Girl, "Org Type", {}, "", {
     {2, "MC"},
 }, 1, function(value, menu_name, prev_value, click_type)
     organization_type = menu_name
-    notify("Next \"Auto Become a CEO/MC\" Register as a :"..menu_name)
+    notify("Next \"Auto Become a CEO/MC\" Register as a: "..menu_name)
 end)
 local joinfriendsceo = 1
 local invitefriendsinceo = false
@@ -1395,7 +1396,7 @@ menu.list_select(PIP_Girl, "Auto Join Friends Org (!)", {""}, "Uses \"Auto Becom
     {3, "Only"},
 }, 1, function(value, menu_name, prev_value, click_type)
     joinfriendsceo = value
-    notify("Next \"Auto Become a Org\" :"..menu_name)
+    notify("Next \"Auto Become a Org\": "..menu_name)
 end)
 
 local function inviteToCEO(pid)
@@ -1435,7 +1436,7 @@ menu.action(PIP_Girl, "Invite All Friends in Org", {"invceo"}, "Invites all your
     --        end
     --    end
     --end
-    notify("This dosnt work right now sorry :C")
+    notify("This dosnt work right now sowwy. :C")
 end)
 
 menu.divider(PIP_Girl, "Pickup Options")
@@ -3459,13 +3460,19 @@ local function extractCoordinatesFromString(str)
     return tonumber(x), tonumber(y), tonumber(z)
 end
 
-menu.text_input(SessionJoin, "Spawn", {"customspawnpos"}, "", function(input, default_spawn)
-    local components = {}
-    customspawn = input
-    --else
-    --    notify_cmd("Invalid input. Please enter three numerical values.")
-    --end
+menu.text_input(SessionJoin, "Spawn", {"customspawnpos"}, "", function(input)
+    local x, y, z = extractCoordinatesFromString(input)
+    if x and y and z then
+        customspawn = extractCoordinatesFromString(input)
+    else
+        notify("Invalid custom spawn format.\nApplying Default spawn.")
+        menu.trigger_commands("customspawnpos "..default_spawn)
+    end
 end, default_spawn)
+
+if not customspawn then
+    customspawn = extractCoordinatesFromString(default_spawn)
+end
 
 menu.action(SessionJoin, "Set Custom Spawn", {""}, "", function()
     currentpos = players.get_position(players.user())
@@ -3474,23 +3481,9 @@ menu.action(SessionJoin, "Set Custom Spawn", {""}, "", function()
 end)
 
 menu.toggle_loop(SessionJoin, "Use Custom Spawn", {""}, "", function()
-    local spwncrd
-    if not customspawn then
-        spwncrd = v3.new(extractCoordinatesFromString(default_spawn))
-    else
-        local x, y, z = extractCoordinatesFromString(customspawn)
-        if x and y and z then
-            spwncrd = v3.new(x, y, z)
-        else
-            notify("Invalid custom spawn format.\nApplyed Deafult state.")
-            menu.trigger_commands("customspawnpos "..default_spawn)
-            util.yield(1666)
-            return
-        end
-    end
     if not customspawned and transitionState(true) < 3 then
         if not NETWORK.NETWORK_IS_ACTIVITY_SESSION() then
-            players.teleport_3d(players.user(), spwncrd.x, spwncrd.y, spwncrd.z)
+            players.teleport_3d(players.user(), customspawn.x, customspawn.y, customspawn.z)
         end
         menu.trigger_commands("spoofpos off")
         if get_user_vehicle() then
@@ -3502,7 +3495,7 @@ menu.toggle_loop(SessionJoin, "Use Custom Spawn", {""}, "", function()
     if customspawned then
         if transitionState(true) > 2 then
             customspawned = false
-            menu.trigger_commands("spoofedposition "..spwncrd.x..", "..spwncrd.y..", "..spwncrd.z)
+            menu.trigger_commands("spoofedposition "..customspawn.x..", "..customspawn.y..", "..customspawn.z)
             menu.trigger_commands("spoofpos on")
         else
             menu.trigger_commands("spoofpos off")
@@ -4697,6 +4690,7 @@ players.on_join(SessionCheck)
 local function removeFromTable(pid)
     if players.get_script_host() == pid then
         menu.trigger_commands("scripthost")
+        notify_cmd("Saved the Script-Host")
     end
     local index = find_in_table(in_orb_room, pid)
     if index then
