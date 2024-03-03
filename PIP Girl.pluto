@@ -2004,6 +2004,7 @@ local function getTrailer(vehicle)
 end
 local asuka_tech_repair_amount = 1
 local asuka_tech_mission_repair_amount = 3
+local asukaTechBlip = nil
 local function repair_asuka_tech(vehicle)
     local repair_amount = 0
     if ENTITY.IS_ENTITY_A_MISSION_ENTITY(vehicle) and vehicle ~= entities.get_user_personal_vehicle_as_handle() then
@@ -2046,13 +2047,15 @@ local function repair_asuka_tech(vehicle)
         VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, true)
         VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, true)
     end
+    if asukaTechBlip and HUD.DOES_BLIP_EXIST(asukaTechBlip) then
+        HUD.PULSE_BLIP(asukaTechBlip)
+    end
 end
 local current_asuka_tech_vehicle = nil
 local saved_trailer_id = nil
 local isInVehicleAT = false
 local isInInteriorAT = false
 local vehicleProtected = false
-local asukaTechBlip = nil
 local asukaTechBlipVeh = nil
 menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly repairs your vehicle, and gives it some modern enhancements.", function()
     local cmd_path = "Vehicle>Light Signals>Use Brake Lights When Stopped"
@@ -3658,11 +3661,11 @@ local entityVars = {}
 for ipairs(shrineElements) as element do
     entityVars[element.var] = nil
 end
-local Asuka_shrine_blip = false
+local Asuka_shrine_blip = nil
 menu.toggle_loop(SessionWorld, "Asuka's Shrine", {"leasshrine"}, "Shows Asuka's Shrine, Perfect for a hangout spot or Deep thinking.\nNormal its a calm and mystical place only lit by fire and candles , once entering a arcade u unlock the bright neon lights of the city~", function()
     util.yield(1666)
     if transitionState(true) <3 then
-        if not Asuka_shrine_blip then
+        if not Asuka_shrine_blip or not HUD.DOES_BLIP_EXIST(Asuka_shrine_blip) then
             Asuka_shrine_blip = HUD.ADD_BLIP_FOR_COORD(-1812.212, -127.127, 80.265)
             HUD.SET_BLIP_SPRITE(Asuka_shrine_blip, "617")
             HUD.SET_BLIP_COLOUR(Asuka_shrine_blip, 76)
@@ -3676,7 +3679,7 @@ menu.toggle_loop(SessionWorld, "Asuka's Shrine", {"leasshrine"}, "Shows Asuka's 
             HUD.END_TEXT_COMMAND_SET_BLIP_NAME(Asuka_shrine_blip)
         end
     else
-        Asuka_shrine_blip = false
+        Asuka_shrine_blip = nil
     end
     for ipairs(shrineElements) as element do
         local entityVar, conditions = element.var, element.conditions
@@ -3688,7 +3691,7 @@ end, function()
     if Asuka_shrine_blip then
         util.remove_blip(Asuka_shrine_blip)
     end
-    Asuka_shrine_blip = false
+    Asuka_shrine_blip = nil
     for ipairs(shrineElements) as element do
         local entityVar = element.var
         if does_entity_exist(entityVars[entityVar]) then
