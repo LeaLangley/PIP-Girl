@@ -4691,9 +4691,11 @@ end
 players.on_join(SessionCheck)
 
 local function removeFromTable(pid)
-    if players.get_script_host() == pid then
-        menu.trigger_commands("scripthost")
-        notify_cmd("Saved the Script-Host")
+    if transitionState(true) == 1 then
+        if players.get_script_host() == pid then
+            menu.trigger_commands("scripthost")
+            notify_cmd("Saved the Script-Host")
+        end
     end
     local index = find_in_table(in_orb_room, pid)
     if index then
