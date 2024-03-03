@@ -3463,7 +3463,7 @@ end
 menu.text_input(SessionJoin, "Spawn", {"customspawnpos"}, "", function(input)
     local x, y, z = extractCoordinatesFromString(input)
     if x and y and z then
-        customspawn = extractCoordinatesFromString(input)
+        customspawn = { x = x, y = y, z = z }
     else
         notify("Invalid custom spawn format.\nApplying Default spawn.")
         menu.trigger_commands("customspawnpos "..default_spawn)
@@ -3471,7 +3471,8 @@ menu.text_input(SessionJoin, "Spawn", {"customspawnpos"}, "", function(input)
 end, default_spawn)
 
 if not customspawn then
-    customspawn = extractCoordinatesFromString(default_spawn)
+    local x, y, z = extractCoordinatesFromString(default_spawn)
+    customspawn = { x = x, y = y, z = z }
 end
 
 menu.action(SessionJoin, "Set Custom Spawn", {""}, "", function()
