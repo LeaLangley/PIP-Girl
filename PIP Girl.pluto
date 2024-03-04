@@ -3952,7 +3952,7 @@ menu.toggle_loop(SessionInvite, "Post Session Code via Webhook", {""}, "Never sh
             local code = get_session_code()
             if code ~= "N/A" and code ~= "Please wait..." then
                 if code ~= posted_session_code then
-                    if onlyPostasFriendlyHost and not isFriend(players.get_host()) then
+                    if onlyPostasFriendlyHost and (not isFriend(players.get_host()) or PLAYER.GET_NUMBER_OF_PLAYERS() == 1) then
                         goto webhookSkip
                     end
                     posted_session_code = code
@@ -3999,6 +3999,9 @@ menu.toggle_loop(SessionInvite, "Post Session Code via Webhook", {""}, "Never sh
                     local function on_success(body, header_fields, status_code)
                         notify_cmd("Webhook sent successfully!")
                         if inviteAllFriendsOnWebhook then
+                            while ENTITY.GET_ENTITY_SPEED(players.user_ped()) ~= 0 do
+                                util.yield(666)
+                            end
                             menu.trigger_commands("invitefriends")
                         end
                     end
