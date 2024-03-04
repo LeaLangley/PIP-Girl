@@ -2049,9 +2049,6 @@ local function repair_asuka_tech(vehicle)
         VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, true)
         VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, true)
     end
-    if asukaTechBlip and HUD.DOES_BLIP_EXIST(asukaTechBlip) then
-        HUD.PULSE_BLIP(asukaTechBlip)
-    end
 end
 local current_asuka_tech_vehicle = nil
 local saved_trailer_id = nil
