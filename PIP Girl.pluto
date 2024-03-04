@@ -1460,7 +1460,7 @@ local vehicle_money_hashish = {
     -1249748547, --Smugler money
 }
 menu.toggle_loop(PIP_Girl, "Collect all NPC money", {}, "Collect all NPC money.", function()
-    if transitionState(true) == 1 then
+    if transitionState(true) == 1 and ENTITY.GET_ENTITY_HEALTH(players.user_ped()) ~= 0 then
         local pos = players.get_position(players.user())
         if is_user_driving_vehicle() then
             for entities.get_all_pickups_as_handles() as pickup do
