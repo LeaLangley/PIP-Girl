@@ -1813,9 +1813,11 @@ local function buff_asuka_tech(vehicle)
     menu.trigger_commands("smoothflight on")
     if protectMissionVehicles and not players.is_in_interior(players.user()) and not players.is_using_rc_vehicle(players.user()) then
         if ENTITY.IS_ENTITY_A_MISSION_ENTITY(vehicle) and vehicle ~= entities.get_user_personal_vehicle_as_handle() then
-            notify("Installed Lockon Jammer on: "..util.reverse_joaat(entities.get_model_hash(vehicle)))
-            VEHICLE.SET_VEHICLE_ALLOW_HOMING_MISSLE_LOCKON(vehicle, false, false)
-            VEHICLE.SET_VEHICLE_ALLOW_HOMING_MISSLE_LOCKON_SYNCED(vehicle, false, false)
+            if VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1) == players.user_ped() then
+                notify("Installed Lockon Jammer on: "..util.reverse_joaat(entities.get_model_hash(vehicle)))
+                VEHICLE.SET_VEHICLE_ALLOW_HOMING_MISSLE_LOCKON(vehicle, false, false)
+                VEHICLE.SET_VEHICLE_ALLOW_HOMING_MISSLE_LOCKON_SYNCED(vehicle, false, false)
+            end
         end
     end
     local engine = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 11) - 1
