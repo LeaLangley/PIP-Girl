@@ -4158,7 +4158,7 @@ end)
 
 menu.toggle_loop(Session, "Soft Clear Traffic", {"softantitrafic"}, "Clears the traffic around you localy in close range.\nDosnt work with many players in close range.", function()
     if is_user_driving_vehicle() and transitionState(true) == 1 then
-        local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
+        local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(PED.GET_VEHICLE_PED_IS_IN(players.user_ped(), -1)
         if driverPed == players.user_ped() then
             local waiting_for_clear = nil
             local pos = players.get_position(players.user())
