@@ -2139,6 +2139,7 @@ menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly repairs your vehi
                     saved_trailer_id = nil
                 end
                 if asukaTechBlipVeh ~= current_asuka_tech_vehicle then
+                    asukaTechBlipVeh = current_asuka_tech_vehicle
                     if asukaTechBlip then
                         util.remove_blip(asukaTechBlip)
                     end
