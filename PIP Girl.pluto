@@ -3679,6 +3679,7 @@ menu.toggle_loop(SessionWorld, "Asuka's Shrine", {"leasshrine"}, "Shows Asuka's 
             HUD.BEGIN_TEXT_COMMAND_SET_BLIP_NAME("STRING")
             HUD.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Asuka\'s Shrine')
             HUD.END_TEXT_COMMAND_SET_BLIP_NAME(Asuka_shrine_blip)
+            HUD.SET_BLIP_PRIORITY(Asuka_shrine_blip, 66)
         end
     else
         Asuka_shrine_blip = nil
