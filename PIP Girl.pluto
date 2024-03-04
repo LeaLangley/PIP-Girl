@@ -1811,7 +1811,7 @@ local protectMissionVehicles = false
 local function buff_asuka_tech(vehicle)
     requestControl(vehicle)
     menu.trigger_commands("smoothflight on")
-    if protectMissionVehicles and not entities.get_vehicle_has_been_owned_by_player(vehicle) and not players.is_in_interior(players.user()) and not players.is_using_rc_vehicle(players.user()) then
+    if protectMissionVehicles and not players.is_in_interior(players.user()) and not players.is_using_rc_vehicle(players.user()) then
         if ENTITY.IS_ENTITY_A_MISSION_ENTITY(vehicle) and vehicle ~= entities.get_user_personal_vehicle_as_handle() then
             notify("Installed Lockon Jammer on: "..util.reverse_joaat(entities.get_model_hash(vehicle)))
             VEHICLE.SET_VEHICLE_ALLOW_HOMING_MISSLE_LOCKON(vehicle, false, false)
