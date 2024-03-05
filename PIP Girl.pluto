@@ -2009,6 +2009,8 @@ end
 local asuka_tech_repair_amount = 1
 local asuka_tech_mission_repair_amount = 3
 local asukaTechBlip = nil
+local asuka_tech_dirt = 1
+local asuka_tech_dirt_amount = 0.04
 local function repair_asuka_tech(vehicle)
     local repair_amount = 0
     if ENTITY.IS_ENTITY_A_MISSION_ENTITY(vehicle) and vehicle ~= entities.get_user_personal_vehicle_as_handle() then
@@ -2048,6 +2050,16 @@ local function repair_asuka_tech(vehicle)
         VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, false)
         VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, false)
     else
+        if asuka_tech_dirt ~= 1 then
+            local currentDirtLevel = VEHICLE.GET_VEHICLE_DIRT_LEVEL(vehicle)
+            local theDirtyHoe = asuka_tech_dirt_amount * repair_amount
+            if asuka_tech_dirt == 2 then
+                currentDirtLevel = math.min(currentDirtLevel + theDirtyHoe, 15.0)
+            elseif asuka_tech_dirt == 3 then
+                currentDirtLevel = math.max(currentDirtLevel - theDirtyHoe, 0.0)
+            end
+            VEHICLE.SET_VEHICLE_DIRT_LEVEL(vehicle, currentDirtLevel)
+        end
         VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, true)
         VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, true)
     end
@@ -2231,6 +2243,15 @@ menu.toggle_loop(Asuka_Tech, "Asuka Tech Info Overlay", {""}, "", function()
     else
         util.yield(13666)
     end
+end)
+
+menu.list_select(Asuka_Tech, "Asuka Tech Vehicle Dirt", {""}, "Vanilla: Games Default, does nothing.\n\nGain: Gain Dirt every repair tick.\n\nClean: Removes Dirt every repair tick.\n\nIt Does not Add or Remove Dirt all in one, just a little every tick, to give the illusion of pollution/cleaning duo to repairs.", {
+    {1, "Vanilla"},
+    {2, "Gain"},
+    {3, "Clean"},
+}, 1, function(value, menu_name, prev_value, click_type)
+    asuka_tech_dirt = value
+    --notify("Asuka Tech Vehicle Dirt: "..menu_name)
 end)
 
 menu.action(Vehicle, "Enter Asuka Tech Vehicle", {"enterasuka"}, "Enter the current Asuka Tech Vehicle", function()
