@@ -4772,6 +4772,7 @@ player_menu = function(pid)
     local rid = players.get_rockstar_id(pid)
     menu.player_root(pid):divider('PIP Girl')
     local Bad_Modder = menu.list(menu.player_root(pid), 'Bad Modder?', {""}, '', function() end)
+    local FriendlyPIPGirl = menu.list(menu.player_root(pid), 'Friendly', {""}, '', function() end)
     menu.action(Bad_Modder, "Add Blacklist & Kick", {'hellbk'}, "Blacklist Note, Kick and Block the Target from Joining u again.", function ()
         add_in_stand(pid)
         StrategicKick(pid)
@@ -4802,16 +4803,6 @@ player_menu = function(pid)
         menu.trigger_commands("crash "..name)
         util.yield(666)
         crashlistConfig()
-    end)
-    menu.toggle_loop(Bad_Modder, "Ghost Player", {""}, "Ghost the selected player.", function()
-        if transitionState(true) == 1 and player_Exist(pid) then
-            set_as_illusion(pid, set_passive, true)
-        end
-        util.yield(666)
-    end, function()
-        if player_Exist(pid) then
-            set_as_illusion(pid, set_passive, false)
-        end
     end)
     menu.toggle_loop(Bad_Modder, "(Alpha) Report Bot", {"reportbot"}, "Weak menu? Spamm report them >:D", function()
         if player_Exist(pid) then
@@ -4849,6 +4840,39 @@ player_menu = function(pid)
         end
         util.yield(13)
     end)
+    menu.toggle(menu.player_root(pid), "Ghost Player", {""}, "Ghost the selected player.", function(on)
+        if on then
+            set_as_illusion(pid, set_passive, true)
+        else
+            set_as_illusion(pid, set_passive, false)
+        end
+    end)
+    local PGLEVELBOOST
+    PGLEVELBOOST = menu.toggle(FriendlyPIPGirl, "Boost LVL 120", {"boostlevel"}, "Boost them to lvl 120.", function()
+        if players.get_rank(pid) >= 120 and PGLEVELBOOST.value then
+            notify(name.." is already "..players.get_rank(pid))
+            PGLEVELBOOST.value = false
+            return
+        end
+        if not players.are_stats_ready(pid) and PGLEVELBOOST.value then
+            notify(name.." is still loading in , please wait.")
+            PGLEVELBOOST.value = false
+            return
+        end
+        local giveRP = menu.ref_by_rel_path(menu.player_root(pid), "Friendly>Give RP")
+        menu.trigger_command(menu.ref_by_rel_path(menu.player_root(pid), "Friendly>Give Collectibles>All"))
+        while players.get_rank(pid) < 120 and PGLEVELBOOST.value do
+            giveRP:trigger()
+            util.yield(113)
+        end
+        if players.get_rank(pid) >= 120 then
+            notify(name.." Reached "..players.get_rank(pid))
+            PGLEVELBOOST.value = false
+            util.yield(113)
+            return
+        end
+    end)
+    menu.player_root(pid):divider('~=^^=~')
 end
 
 players.on_join(player_menu)
