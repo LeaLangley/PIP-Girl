@@ -2821,11 +2821,18 @@ menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'}, "Auto Interact with 
         }
         for ipairs(interactionsE) as label do
             if IS_HELP_MSG_DISPLAYED(label) then
-                local animStartTime = os.time()
+                local animStartTime = 0
                 menu.trigger_commands("timescale 1000")
                 PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 51, 1)
-                while ENTITY.GET_ENTITY_SPEED(players.user_ped()) ~=0 or os.time() - animStartTime > 3 do
+                while ENTITY.GET_ENTITY_SPEED(players.user_ped()) ~=0 or animStartTime >= 4 do
                     util.yield(666)
+                    animStartTime += 1
+                    if animStartTime >= 4 then
+                        break
+                    end
+                    if ENTITY.GET_ENTITY_SPEED(players.user_ped()) ~=0 then
+                        break
+                    end
                 end
                 menu.trigger_commands("timescale 1")
             end
