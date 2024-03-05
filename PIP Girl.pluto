@@ -2810,12 +2810,6 @@ end)
 
 menu.divider(Game, "<3")
 
-menu.toggle_loop(Game, "Auto Skip Conversation",{"pgascon"},"Automatically skip all conversations.",function()
-    if AUDIO.IS_SCRIPTED_CONVERSATION_ONGOING() then
-        AUDIO.SKIP_TO_NEXT_SCRIPTED_CONVERSATION_LINE()
-    end
-end)
-
 menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'}, "Auto Interact with E in some situations and time warp the animation.", function ()
     if HUD.IS_HELP_MESSAGE_BEING_DISPLAYED() then
         local interactionsE = {
@@ -2838,6 +2832,12 @@ menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'}, "Auto Interact with 
         end
     else
         util.yield(666)
+    end
+end)
+
+menu.toggle_loop(Game, "Auto Skip Conversation",{"pgascon"},"Automatically skip all conversations.",function()
+    if AUDIO.IS_SCRIPTED_CONVERSATION_ONGOING() then
+        AUDIO.SKIP_TO_NEXT_SCRIPTED_CONVERSATION_LINE()
     end
 end)
 
