@@ -2817,7 +2817,7 @@ menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'}, "Auto Interact with 
             "ACID_BOOST_P",
             "CLUB_SAFE_OPEN",
             "OF_VAULT_SAFE_1",
-            "HAN_CRG_PROMPT",
+            "ARCADE_SAFE_O",
         }
         for ipairs(interactionsE) as label do
             if IS_HELP_MSG_DISPLAYED(label) then
