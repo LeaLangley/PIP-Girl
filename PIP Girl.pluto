@@ -6,9 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.139"
+local script_version = "1.140"
 
-local lust_upDate = {year=2024, month=3, day=6}
+local lust_upDate = {year=2024, month=3, day=13}
 
 local startupmsg = "If settings are missing PLS restart script.\n\nLea Tech and Lea's Repair/Shrine have been rebranded into:\nAsuka Tech | Asuka's Repair Stops | Asuka's Shrine\n\nAsuka Tech on top!"
 
@@ -2814,7 +2814,31 @@ menu.toggle_loop(Game, "Auto Skip Conversation",{"pgascon"},"Automatically skip 
     if AUDIO.IS_SCRIPTED_CONVERSATION_ONGOING() then
         AUDIO.SKIP_TO_NEXT_SCRIPTED_CONVERSATION_LINE()
     end
-    util.yield()
+end)
+
+menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'}, "Auto Interact with E in some situations and time warp the animation.", function ()
+    if HUD.IS_HELP_MESSAGE_BEING_DISPLAYED() then
+        local interactionsE = {
+            "FXR_INTER_C",
+            "ACID_BOOST_P",
+            "CLUB_SAFE_OPEN",
+            "OF_VAULT_SAFE_1",
+            "HAN_CRG_PROMPT",
+        }
+        for ipairs(interactionsE) as label do
+            if IS_HELP_MSG_DISPLAYED(label) then
+                local animStartTime = os.time()
+                menu.trigger_commands("timescale 1000")
+                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 51, 1)
+                while ENTITY.GET_ENTITY_SPEED(players.user_ped()) ~=0 or os.time() - animStartTime > 3 do
+                    util.yield(666)
+                end
+                menu.trigger_commands("timescale 1")
+            end
+        end
+    else
+        util.yield(666)
+    end
 end)
 
 local avoidCutsceneSkipHere = {
@@ -5116,7 +5140,7 @@ menu.action(menu.my_root(), "Activate Everyday Goodies", {"pggoodies"}, "Activat
         menu.trigger_commands("asukasshrine on")
     end)
 end)
-local peter = nil
+
 menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
     notify(startupmsg)
 end)
