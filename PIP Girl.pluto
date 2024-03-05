@@ -4889,7 +4889,7 @@ player_menu = function(pid)
         end
         local giveRP = menu.ref_by_rel_path(menu.player_root(pid), "Friendly>Give RP")
         menu.trigger_command(menu.ref_by_rel_path(menu.player_root(pid), "Friendly>Give Collectibles>All"))
-        while players.get_rank(pid) < 120 and PGLEVELBOOST.value do
+        while player_Exist(pid) and giveRP:isValid() and players.get_rank(pid) < 120 and PGLEVELBOOST.value do
             giveRP:trigger()
             util.yield(113)
         end
