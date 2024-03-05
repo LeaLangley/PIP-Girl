@@ -2477,7 +2477,7 @@ menu.toggle_loop(Vehicle, "Heli Sparrow Handling",{""},"All helicopters you ente
         local vehicle = get_user_vehicle()
         if vehicle then
             if VEHICLE.GET_VEHICLE_CLASS(vehicle) == 15 then
-                if is_vehicle_free_for_use(vehicle) then
+                if VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1) == players.user_ped() then
                     if sparrowHandeling == nil or sparrowHandeling ~= vehicle then
                         sparrowHandeling = vehicle
                         menu.trigger_commands("vhacceleration 1.00000")
@@ -2600,7 +2600,7 @@ menu.toggle_loop(Vehicle, "Easier Oppressor MK2 UD Handling",{""},"Makes Upside 
         local vehicle = get_user_vehicle()
         if vehicle then
             if entities.get_model_hash(vehicle) == 2069146067 then
-                if is_vehicle_free_for_use(vehicle) then
+                if VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1) == players.user_ped() then
                     if oppressorHandeling == nil or oppressorHandeling ~= vehicle then
                         oppressorHandeling = vehicle
                         menu.trigger_commands("vhselflevelingpitchtorquescale 0.0000")
