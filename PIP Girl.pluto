@@ -796,7 +796,7 @@ local function StrategicKick(pid)
     if player_Exist(pid) and pid ~= players.user() then
         local name = players.get_name(pid)
         if name ~= players.get_name(players.user()) then
-            set_as_illusion(pid, set_passive, true)
+            menu.trigger_commands("ghostplayer " .. name)
             if transitionState(true) ~= 1 then
                 if transitionState(true) == 1 and menu.get_edition() > 1 then
                     if pid ~= players.get_host() then
@@ -4869,7 +4869,7 @@ player_menu = function(pid)
         end
         util.yield(13)
     end)
-    menu.toggle(menu.player_root(pid), "Ghost Player", {""}, "Ghost the selected player.", function(on)
+    menu.toggle(menu.player_root(pid), "Ghost Player", {"ghostplayer"}, "Ghost the selected player.", function(on)
         if on then
             set_as_illusion(pid, set_passive, true)
         else
