@@ -2080,7 +2080,9 @@ menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly repairs your vehi
 
         local vehicle = get_user_vehicle()
         if vehicle then
-            -- Check if the driver seat is empty or if the local player is the driver
+            if not is_vehicle_free_for_use(vehicle) and current_asuka_tech_vehicle and does_entity_exist(current_asuka_tech_vehicle) then
+                vehicle = current_asuka_tech_vehicle
+            end
             if is_vehicle_free_for_use(vehicle) then
                 local isDriving = nil
                 if isInVehicleAT then
