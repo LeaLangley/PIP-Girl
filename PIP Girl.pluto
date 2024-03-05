@@ -2149,7 +2149,7 @@ menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly repairs your vehi
                 else
                     saved_trailer_id = nil
                 end
-                if asukaTechBlipVeh ~= current_asuka_tech_vehicle then
+                if asukaTechBlipVeh ~= current_asuka_tech_vehicle or (asukaTechBlip and not HUD.DOES_BLIP_EXIST(asukaTechBlip)) then
                     asukaTechBlipVeh = current_asuka_tech_vehicle
                     if asukaTechBlip then
                         util.remove_blip(asukaTechBlip)
