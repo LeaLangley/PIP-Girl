@@ -4734,8 +4734,14 @@ players.on_leave(removeFromTable)
 
 player_menu = function(pid)
     util.yield(113)
+    if player_Exist(pid) and players.get_name(pid) == "UndiscoveredPlayer" then 
+        util.yield(13)
+    end
     if isFriend(pid) then
         set_as_illusion(pid, set_passive, false)
+        return
+    end
+    if not player_Exist(pid) then
         return
     end
     local name = players.get_name(pid)
