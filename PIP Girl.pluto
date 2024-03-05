@@ -4892,6 +4892,14 @@ player_menu = function(pid)
         while player_Exist(pid) and giveRP:isValid() and players.get_rank(pid) < 120 and PGLEVELBOOST.value do
             giveRP:trigger()
             util.yield(113)
+            if not giveRP:isValid() or not player_Exist(pid) then
+                PGLEVELBOOST.value = false
+                break
+            end
+        end
+        if not giveRP:isValid() or not player_Exist(pid) then
+            PGLEVELBOOST.value = false
+            return
         end
         if players.get_rank(pid) >= 120 then
             notify(name.." Reached "..players.get_rank(pid))
