@@ -1926,7 +1926,6 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
         menu.trigger_commands("lockoutfit off")
     else
         if NETWORK.NETWORK_IS_ACTIVITY_SESSION() and 4 >= PLAYER.GET_NUMBER_OF_PLAYERS() then
-            menu.trigger_commands("lockoutfit off")
             if ChangedHelmet then
                 menu.trigger_commands("hat -1")
                 ChangedHelmet = false
@@ -1935,6 +1934,7 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
                 menu.trigger_commands("saveoutfit 1 PIP Girl Temp")
                 temp_holding_outfit = true
             end
+            menu.trigger_commands("lockoutfit off")
         else
             menu.trigger_commands("lockoutfit on")
             if temp_holding_outfit then
@@ -1959,14 +1959,19 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
                     end
                 else
                     if ChangedHelmet then
+                        while ENTITY.GET_ENTITY_SPEED(players.user_ped()) ~=0 do
+                            util.yield(666)
+                            if animStartTime >= 4 then
+                                break
+                            end
+                            if lang.get_string(menu.get_current_menu_list():getParent().menu_name) == "Profiles" then
+                                break
+                            end
+                        end
                         menu.trigger_commands("hat -1")
                         ChangedHelmet = false
                     end
                 end
-                if ChangedHelmet and focused == "Profiles" then
-                    menu.trigger_commands("hat -1")
-                    ChangedHelmet = false
-                end 
             end
         end
     end
@@ -2862,10 +2867,10 @@ menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'}, "Auto Interact with 
                 local animStartTime = 0
                 menu.trigger_commands("timescale 1000")
                 PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 51, 1)
-                while ENTITY.GET_ENTITY_SPEED(players.user_ped()) ~=0 or animStartTime >= 4 do
-                    util.yield(666)
+                while ENTITY.GET_ENTITY_SPEED(players.user_ped()) ~=0 or animStartTime >= 5 do
+                    util.yield(1000)
                     animStartTime += 1
-                    if animStartTime >= 4 then
+                    if animStartTime >= 5 then
                         break
                     end
                     if ENTITY.GET_ENTITY_SPEED(players.user_ped()) ~=0 then
