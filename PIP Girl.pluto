@@ -1961,7 +1961,7 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
                     if ChangedHelmet then
                         while ENTITY.GET_ENTITY_SPEED(players.user_ped()) ~=0 do
                             util.yield(666)
-                            if animStartTime >= 4 then
+                            if ENTITY.GET_ENTITY_SPEED(players.user_ped()) ==0 then
                                 break
                             end
                             if lang.get_string(menu.get_current_menu_list():getParent().menu_name) == "Profiles" then
