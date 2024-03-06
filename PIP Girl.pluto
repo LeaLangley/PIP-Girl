@@ -1595,6 +1595,7 @@ menu.toggle_loop(Stimpak, "Fill me up! On session join", {"pgfmu"}, "Fill you up
     if transitionState(true) == 1 and not filled_up then
         util.yield(3666)
         fillUpEverything()
+        menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
         filled_up = true
     end
     if transitionState(true) ~= 1 then
@@ -3580,6 +3581,8 @@ menu.toggle_loop(SessionJoin, "Use Custom Spawn", {""}, "", function()
         end
     end
     util.yield(1666)
+end, function()
+    menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
 end)
 
 menu.toggle(Session, "Quick Session Join", {"quickjoin"}, " Please Set you're Spawn to \"Last Location\" or \"Random\".\nQuick Session Joining.", function(on)
