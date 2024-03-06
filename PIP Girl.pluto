@@ -3560,23 +3560,25 @@ menu.action(SessionJoin, "Set Custom Spawn", {""}, "", function()
 end)
 
 menu.toggle_loop(SessionJoin, "Use Custom Spawn", {""}, "", function()
-    if not customspawned and transitionState(true) < 3 then
-        if not NETWORK.NETWORK_IS_ACTIVITY_SESSION() then
-            players.teleport_3d(players.user(), customspawn.x, customspawn.y, customspawn.z)
-        end
-        if get_user_vehicle() then
-            entities.delete(get_user_vehicle())
-        end
-        menu.trigger_commands("resetheadshots")
-        menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
-        customspawned = true
-    else
-        if transitionState(true) > 2 then
-            customspawned = false
-            menu.trigger_commands("spoofedposition "..customspawn.x..", "..customspawn.y..", "..customspawn.z)
-            menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "On")
-        else
+    if pipBooty then
+        if not customspawned and transitionState(true) < 3 then
+            if not NETWORK.NETWORK_IS_ACTIVITY_SESSION() then
+                players.teleport_3d(players.user(), customspawn.x, customspawn.y, customspawn.z)
+            end
+            if get_user_vehicle() then
+                entities.delete(get_user_vehicle())
+            end
+            menu.trigger_commands("resetheadshots")
             menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
+            customspawned = true
+        else
+            if transitionState(true) > 2 then
+                customspawned = false
+                menu.trigger_commands("spoofedposition "..customspawn.x..", "..customspawn.y..", "..customspawn.z)
+                menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "On")
+            else
+                menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
+            end
         end
     end
     util.yield(666)
