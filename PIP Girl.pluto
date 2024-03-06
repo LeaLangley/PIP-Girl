@@ -3564,11 +3564,11 @@ menu.toggle_loop(SessionJoin, "Use Custom Spawn", {""}, "", function()
         if not NETWORK.NETWORK_IS_ACTIVITY_SESSION() then
             players.teleport_3d(players.user(), customspawn.x, customspawn.y, customspawn.z)
         end
-        menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
         if get_user_vehicle() then
             entities.delete(get_user_vehicle())
         end
         menu.trigger_commands("resetheadshots")
+        menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
         customspawned = true
     end
     if customspawned then
