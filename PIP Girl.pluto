@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.140"
+local script_version = "1.141"
 
 local lust_upDate = {year=2024, month=3, day=13}
 
@@ -3570,8 +3570,7 @@ menu.toggle_loop(SessionJoin, "Use Custom Spawn", {""}, "", function()
         menu.trigger_commands("resetheadshots")
         menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
         customspawned = true
-    end
-    if customspawned then
+    else
         if transitionState(true) > 2 then
             customspawned = false
             menu.trigger_commands("spoofedposition "..customspawn.x..", "..customspawn.y..", "..customspawn.z)
@@ -3580,7 +3579,7 @@ menu.toggle_loop(SessionJoin, "Use Custom Spawn", {""}, "", function()
             menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
         end
     end
-    util.yield(1666)
+    util.yield(666)
 end, function()
     menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
 end)
