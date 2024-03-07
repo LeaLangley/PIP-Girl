@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.142"
+local script_version = "1.143"
 
 local lust_upDate = {year=2024, month=3, day=13}
 
@@ -79,7 +79,6 @@ for _, dependency in pairs(auto_update_config.dependencies) do
 end
 
 util.require_natives("3095a")
-local json = require('json')
 
 resources_dir = filesystem.resources_dir() .. '/1 PIP Girl/'
 store_dir = filesystem.store_dir() .. '/PIP Girl/'
@@ -626,7 +625,7 @@ local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, ti
                     closestPlayer = pid
                 end
             end
-            util.yield(13 + timeout)
+            util.yield(timeout)
         end
         if closestPlayer then
             requestControl(entity)
@@ -655,17 +654,16 @@ end
 
 local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
     if order == nil then order = 2 end
-    local startTime = os.time()
     if not does_entity_exist(entity) then
         requestModel(hash, timeout)
         entity = entities.create_object(hash, locationV3)
-        util.yield(13 + timeout)
-        startTime = os.time()
+        util.yield(timeout)
+        local startTime = os.time()
         while not does_entity_exist(entity) do
             if os.time() - startTime > timeout or timeout == 0 then
                 break
             end
-            util.yield(13 + timeout)
+            util.yield(timeout)
         end
         requestControl(entity)
         entities.set_can_migrate(entity, false)
@@ -674,7 +672,7 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
         return entity
     else
         objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
-        util.yield(13 + timeout)
+        util.yield(timeout)
         return entity
     end
 end
