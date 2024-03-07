@@ -78,6 +78,15 @@ for _, dependency in pairs(auto_update_config.dependencies) do
     end
 end
 
+local function require_dependency(path)
+    local status, required_dep = pcall(require, path)
+    if not status then
+        error("Could not load "..path..": "..required_dep)
+    else
+        return required_dep
+    end
+end
+
 util.require_natives("3095a")
 local json = require_dependency("json")
 
