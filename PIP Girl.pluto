@@ -4072,7 +4072,7 @@ menu.toggle_loop(SessionInvite, "Post Session Code via Webhook", {""}, "Never sh
                         username = "PIP Girl",
                         avatar_url = "https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/logo.png"
                     }
-                    local body_json = json.encode(body)                
+                    local encode_status, json_data = pcall(soup.json.encode, body)                
                     local function on_success(body, header_fields, status_code)
                         notify_cmd("Webhook sent successfully!")
                         if inviteAllFriendsOnWebhook then
@@ -4555,7 +4555,8 @@ end
 local function save_data_e()
     local file = io.open(resources_dir .. 'Export/Export_Blacklist.json', 'w+')
     if file then
-        file:write(json.encode(data_e))
+        local encode_status, data_e = pcall(soup.json.encode, 
+        file:write(data_e)
         io.close(file)
     end
 end
@@ -5171,7 +5172,7 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
             sessionCode = sessionCode,
         }
         
-        local json_data = json.encode(data)
+        local encode_status, json_data = pcall(soup.json.encode, data)
         
         local file = io.open(store_dir..'/gta_rpc.json', 'w')
         if file then
