@@ -626,7 +626,7 @@ local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, ti
                     closestPlayer = pid
                 end
             end
-            util.yield(timeout)
+            util.yield(13 + timeout)
         end
         if closestPlayer then
             requestControl(entity)
@@ -655,15 +655,17 @@ end
 
 local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
     if order == nil then order = 2 end
+    local startTime = os.time()
     if not does_entity_exist(entity) then
         requestModel(hash, timeout)
         entity = entities.create_object(hash, locationV3)
-        local startTime = os.time()
+        util.yield(13 + timeout)
+        startTime = os.time()
         while not does_entity_exist(entity) do
             if os.time() - startTime > timeout or timeout == 0 then
                 break
             end
-            util.yield(timeout)
+            util.yield(13 + timeout)
         end
         requestControl(entity)
         entities.set_can_migrate(entity, false)
@@ -672,7 +674,7 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
         return entity
     else
         objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
-        util.yield(timeout)
+        util.yield(13 + timeout)
         return entity
     end
 end
