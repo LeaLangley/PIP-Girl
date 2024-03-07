@@ -4080,7 +4080,7 @@ menu.toggle_loop(SessionInvite, "Post Session Code via Webhook", {""}, "Never sh
                         username = "PIP Girl",
                         avatar_url = "https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/logo.png"
                     }
-                    local encode_status, json_data = pcall(soup.json.encode, body)                
+                    local encode_status, body_json = pcall(soup.json.encode, body)                
                     local function on_success(body, header_fields, status_code)
                         notify_cmd("Webhook sent successfully!")
                         if inviteAllFriendsOnWebhook then
