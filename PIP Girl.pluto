@@ -79,6 +79,7 @@ for _, dependency in pairs(auto_update_config.dependencies) do
 end
 
 util.require_natives("3095a")
+local json = require_dependency("json")
 
 resources_dir = filesystem.resources_dir() .. '/1 PIP Girl/'
 store_dir = filesystem.store_dir() .. '/PIP Girl/'
