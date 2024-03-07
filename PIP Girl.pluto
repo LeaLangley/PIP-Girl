@@ -4555,8 +4555,8 @@ end
 local function save_data_e()
     local file = io.open(resources_dir .. 'Export/Export_Blacklist.json', 'w+')
     if file then
-        local encode_status, data_e = pcall(soup.json.encode, 
-        file:write(data_e)
+        local encode_status, data_encoded_e = pcall(soup.json.encode, data_e)
+        file:write(data_encoded_e)
         io.close(file)
     end
 end
