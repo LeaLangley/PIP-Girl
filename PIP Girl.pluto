@@ -5130,6 +5130,7 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
         ["Stash House"] = {289793},
         ["Tattoo Studio"] = {199425, 140033, 180737, 180737, 251137, 176897},
         ["Tequi-La-La"] = {233729},
+        ["Terrorbyte"] = {272129},
         ["The Freakshop"] = {290817},
         ["Torture Room"] = {156929},
         ["Union Depository"] = {134913},
