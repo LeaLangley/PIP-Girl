@@ -596,8 +596,9 @@ local function get_user_vehicle()
     end
 end
 
-local function is_user_driving_vehicle()
-    return (PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true))
+local function is_user_driving_vehicle(bool)
+    if bool == nil then bool = true end
+    return (PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), bool))
 end
 
 local function is_vehicle_free_for_use(vehicle)
@@ -685,6 +686,16 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
         util.yield(timeout)
         return entity
     end
+end
+
+local function allowSpawnCheck()
+    if NETWORK.NETWORK_IS_ACTIVITY_SESSION() then
+        return false
+    end
+    if INTERIOR.GET_INTERIOR_FROM_ENTITY(players.user_ped()) ~= 0 and is_user_driving_vehicle(true) then
+        return false
+    end
+    return true
 end
 
 local function thunderForMin(min)
@@ -1471,7 +1482,7 @@ local vehicle_money_hashish = {
 menu.toggle_loop(PIP_Girl, "Collect all NPC money", {}, "Collect all NPC money.", function()
     if transitionState(true) == 1 and ENTITY.GET_ENTITY_HEALTH(players.user_ped()) ~= 0 then
         local pos = players.get_position(players.user())
-        if is_user_driving_vehicle() then
+        if is_user_driving_vehicle(true) then
             for entities.get_all_pickups_as_handles() as pickup do
                 if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) and not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
                     local pickupHash = entities.get_model_hash(pickup)
@@ -1546,7 +1557,7 @@ end)
 menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a shower in all existing pickups.", function()
     if transitionState(true) == 1 then
         local pos = players.get_position(players.user())
-        local in_vehicle = is_user_driving_vehicle()
+        local in_vehicle = is_user_driving_vehicle(true)
         for entities.get_all_pickups_as_handles() as pickup do
             if not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) and not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
                 if in_vehicle then
@@ -1625,7 +1636,7 @@ end)
 
 menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehicle", {"pghealth"}, "Will recharge health when in cover or vehicle quickly.\nBUT also slowly, almost legit-like, otherwise to 100%.", function()
     if transitionState(true) <3 then
-        local in_vehicle = is_user_driving_vehicle()
+        local in_vehicle = is_user_driving_vehicle(true)
         local playerPed = players.user_ped()
         local isPlayerInCover = PED.IS_PED_IN_COVER(playerPed, false)
         if isPlayerInCover or in_vehicle then
@@ -1647,7 +1658,7 @@ end)
 menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle", {"pgarmor"}, "Will Recharge Armor when in Cover or Vehicle quickly.\nBUT also slowly otherwise to 100%.", function()
     local cmd_path = "Self>Regeneration Rate>Armour"
     if transitionState(true) <3 then
-        local in_vehicle = is_user_driving_vehicle()
+        local in_vehicle = is_user_driving_vehicle(true)
         local playerPed = players.user_ped()
         local isPlayerInCover = PED.IS_PED_IN_COVER(playerPed, false)
         if PED.GET_PED_ARMOUR(players.user_ped()) == PLAYER.GET_PLAYER_MAX_ARMOUR(players.user()) then
@@ -1683,7 +1694,7 @@ end)
 local was_user_in_vehicle = false
 menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {"pgvaid"}, "Using your First Aid kit provided in your vehicle.", function()
     if transitionState(true) <3 then
-        local in_vehicle = is_user_driving_vehicle()
+        local in_vehicle = is_user_driving_vehicle(false)
         local health = ENTITY.GET_ENTITY_HEALTH(players.user_ped())
         if health ~= 0 then
             if in_vehicle and not was_user_in_vehicle then
@@ -2160,9 +2171,9 @@ menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly repairs your vehi
                 end
                 local isDriving = nil
                 if isInVehicleAT then
-                    isDriving = PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true)
+                    isDriving = is_user_driving_vehicle(true)
                 else
-                    isDriving = PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), false)
+                    isDriving = is_user_driving_vehicle(false)
                 end
                 if isDriving and not isInVehicleAT then
                     VEHICLE.SET_VEHICLE_ENGINE_ON(vehicle, true, true, false)
@@ -3615,7 +3626,7 @@ local orbRoomTable2 = nil
 local orbRoomDoorDMG = nil
 
 menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockorb"}, "Blocks the Entrance for the Orb Room", function()
-    if not NETWORK.NETWORK_IS_ACTIVITY_SESSION() then
+    if allowSpawnCheck() then
         orbRoomGlass = SpawnCheck(orbRoomGlass, 2465657597, v3.new(335.882996, 4833.833008, -59.023998), 0, 0, 125, nil, 13, true)
         orbRoomTable = SpawnCheck(orbRoomTable, 81317377, v3.new(328.2, 4829, -58.9), 0, 0, 0, nil, 13, true)
         orbRoomTable2 = SpawnCheck(orbRoomTable2, 81317377, v3.new(328.2, 4829, -59.4), 0, 0, 0, nil, 13, true)
@@ -3644,7 +3655,7 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockorb"}, "Blocks the Entra
             util.yield()
         end
     else
-        util.yield(66666)
+        util.yield(6666)
     end
     util.yield(666)
 end, function()
@@ -3669,11 +3680,11 @@ end)
 local kosatkaMissile1 = nil
 local kosatkaMissile2 = nil
 menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {"blockkosatka"}, "Blocks the Missile terminal", function()
-    if not NETWORK.NETWORK_IS_ACTIVITY_SESSION() then
+    if allowSpawnCheck() then
         kosatkaMissile1 = SpawnCheck(kosatkaMissile1, 1228076166, v3.new(1558.9, 387.111, -50.666), 0, 0, 0, nil, 13, true)
         kosatkaMissile2 = SpawnCheck(kosatkaMissile2, 1228076166, v3.new(1558.9, 388.777, -50.666), 0, 0, 0, nil, 13, true)
     else
-        util.yield(66666)
+        util.yield(6666)
     end
     util.yield(1666)
 end, function()
@@ -3687,10 +3698,10 @@ end)
 
 local antiTerrorGlass = nil
 menu.toggle_loop(SessionWorld, "Anti Terrorbyte", {"blockterror"}, "Blocks the MK2 acces", function()
-    if not NETWORK.NETWORK_IS_ACTIVITY_SESSION() then
+    if allowSpawnCheck() then
         antiTerrorGlass = SpawnCheck(antiTerrorGlass, 2465657597, v3.new(-1420.666, -3014.579, -79.0), 0, 0, -20, nil, 13, true)
     else
-        util.yield(66666)
+        util.yield(6666)
     end
     util.yield(3666)
 end, function()
@@ -3746,7 +3757,7 @@ end
 local Asuka_shrine_blip = nil
 menu.toggle_loop(SessionWorld, "Asuka's Shrine", {"asukasshrine"}, "Shows Asuka's Shrine, Perfect for a hangout spot or Deep thinking.\nNormal its a calm and mystical place only lit by fire and candles , once entering a arcade u unlock the bright neon lights of the city~", function()
     util.yield(1666)
-    if not NETWORK.NETWORK_IS_ACTIVITY_SESSION() then
+    if allowSpawnCheck() then
         if transitionState(true) <3 then
             if not Asuka_shrine_blip or not HUD.DOES_BLIP_EXIST(Asuka_shrine_blip) then
                 Asuka_shrine_blip = HUD.ADD_BLIP_FOR_COORD(-1812.212, -127.127, 80.265)
@@ -3771,7 +3782,7 @@ menu.toggle_loop(SessionWorld, "Asuka's Shrine", {"asukasshrine"}, "Shows Asuka'
             util.yield(113)
         end
     else
-        util.yield(66666)
+        util.yield(6666)
     end
     util.yield(3666)
 end, function()
@@ -4240,7 +4251,7 @@ end, function()
 end)
 
 menu.toggle_loop(Session, "Soft Clear Traffic", {"softantitrafic"}, "Clears the traffic around you localy in close range.\nDosnt work with many players in close range.", function()
-    if is_user_driving_vehicle() and transitionState(true) == 1 then
+    if is_user_driving_vehicle(false) and transitionState(true) == 1 then
         local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(PED.GET_VEHICLE_PED_IS_IN(players.user_ped()), -1)
         if driverPed == players.user_ped() then
             local waiting_for_clear = nil
@@ -5144,7 +5155,7 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
     menu.toggle_loop(Settings, "GTA RPC", {""}, "", function()
         local playerPosition = players.get_position(players.user())
         local streetInfo = get_Street_Names(playerPosition.x, playerPosition.y, playerPosition.z)
-        local vehicleInfo = is_user_driving_vehicle() and util.reverse_joaat(entities.get_model_hash(get_user_vehicle())) or "On Foot"
+        local vehicleInfo = is_user_driving_vehicle(true) and util.reverse_joaat(entities.get_model_hash(get_user_vehicle())) or "On Foot"
         local entSpeed = math.floor(ENTITY.GET_ENTITY_SPEED(players.user_ped()) * 3.6).." km/h"
         local sesType = session_type()
         local sesPlayers = PLAYER.GET_NUMBER_OF_PLAYERS()
