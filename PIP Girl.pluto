@@ -4107,7 +4107,6 @@ menu.toggle_loop(SessionInvite, "Post Session Code via Webhook", {""}, "Never sh
                     --async_http.set_method("POST")
                     async_http.set_post("application/json", body_json)
                     async_http.dispatch()
-                    util.yield(13666)
                 end
             end
         end
