@@ -2306,6 +2306,26 @@ menu.action(Vehicle, "Enter Asuka Tech Vehicle", {"enterasuka"}, "Enter the curr
     end
 end)
 
+menu.action(Vehicle, "Teleport and Enter Asuka Tech Vehicle", {"tpenterasuka"}, "Enter the current Asuka Tech Vehicle", function()
+    local target_vehicle = get_user_vehicle()
+    if current_asuka_tech_vehicle then
+        target_vehicle = current_asuka_tech_vehicle
+    end
+    if does_entity_exist(target_vehicle) then
+        requestControl(target_vehicle)
+        local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(target_vehicle, -1)
+        local my_ped = players.user_ped()
+        if driver == 0 or driver == players.user() then
+            ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, players.get_position(players.user()), true, true, true)
+            PED.SET_PED_INTO_VEHICLE(my_ped, target_vehicle, -1)
+        end
+        util.yield(666)
+        buff_asuka_tech(target_vehicle)
+    else
+        notify("Could not find a Asuka Tech Vehicle. :C")
+    end
+end)
+
 menu.action(Vehicle, "Detonate Asuka Tech Vehicle", {"boomasuka"}, "", function()
     local target_vehicle = get_user_vehicle()
     if current_asuka_tech_vehicle then
