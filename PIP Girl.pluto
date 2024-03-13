@@ -2316,7 +2316,10 @@ menu.action(Vehicle, "Teleport and Enter Asuka Tech Vehicle", {"tpenterasuka"}, 
         local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(target_vehicle, -1)
         local my_ped = players.user_ped()
         if driver == 0 or driver == players.user() then
-            ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, players.get_position(players.user()), true, true, true)
+            local pos = players.get_position(players.user())
+            --local currentRotation = ENTITY.GET_ENTITY_ROTATION(target_vehicle, 2)
+            ENTITY.SET_ENTITY_COORDS_NO_OFFSET(target_vehicle, pos.x, pos.y, pos.z, true, true, true)
+            --ENTITY.SET_ENTITY_ROTATION(target_vehicle, currentRotation.x, currentRotation.y, currentRotation.z, 2, true)
             PED.SET_PED_INTO_VEHICLE(my_ped, target_vehicle, -1)
         end
         util.yield(666)
