@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.144"
+local script_version = "1.145"
 
 local lust_upDate = {year=2024, month=3, day=18}
 
@@ -4801,6 +4801,13 @@ local function SessionCheck(pid)
                         end
                         if session_type() == "Public" then
                             notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
+                            if not util.sc_is_blocked(rid) then
+                                util.sc_block(rid)
+                            end
+                        else
+                            if util.sc_is_blocked(rid) then
+                                util.sc_unblock(rid)
+                            end
                         end
                         add_in_stand(pid)
                         if StandUser(pid) then
