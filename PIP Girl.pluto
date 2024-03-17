@@ -2903,6 +2903,7 @@ menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'}, "Auto Interact with 
             "CBR2_DVCE_1",
             "CBR2_PFTP_4",
             "TR_MD_CONTXT_2",
+            "GG_CONTEXT",
         }
         for ipairs(interactionsE) as label do
             if IS_HELP_MSG_DISPLAYED(label) then
