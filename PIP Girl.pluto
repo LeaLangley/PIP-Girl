@@ -5107,6 +5107,7 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
         ["Blingsgate Motel"] = {149505},
         ["Bunker"] = {258561},
         ["Casino Garage"] = {274945},
+        ["Casino Penthouse"] = {274689},
         ["Casino"] = {275201},
         ["Celltowa"] = {288001},
         ["Cinema"] = {165889},
