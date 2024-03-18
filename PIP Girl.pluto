@@ -4727,6 +4727,12 @@ local function crashlistConfig()
     end
 end
 
+local function sc_block(rid)
+    if not util.sc_is_blocked(rid) then
+        util.sc_block(rid)
+    end
+end
+
 local function add_in_blocking(pid)
     if pid ~= players.user() then
         if not isFriend(pid) then
@@ -4734,9 +4740,7 @@ local function add_in_blocking(pid)
             local rid = players.get_rockstar_id(pid)
             if rid ~= players.get_rockstar_id(players.user()) then
                 if session_type() == "Public" then
-                    if not util.sc_is_blocked(rid) then
-                        util.sc_block(rid)
-                    end
+                    sc_block(rid)
                 end
             end
             if name ~= players.get_name(players.user()) then
@@ -4749,10 +4753,17 @@ local function add_in_blocking(pid)
     end
 end
 
+local function sc_block_bl()
+    for pairs(PIP_Girl_Blacklist) as rid do
+        sc_block(rid)
+    end
+end
+
 local function is_player_in_blacklist(rid)
     local id = tostring(rid)
     return PIP_Girl_Blacklist[id] ~= nil
 end
+
 local energiedrink = players.user()
 local rockstarIsBad = players.get_rockstar_id(energiedrink)
 local function startupCheck()
@@ -5343,6 +5354,7 @@ else
     util.create_thread(startupCheck)
     util.create_thread(startupConfig)
     util.create_thread(crashlistConfig)
+    util.create_thread(sc_block_bl)
     menu.trigger_commands("antiadmin on")
     menu.trigger_commands("pgssh on")
 end
