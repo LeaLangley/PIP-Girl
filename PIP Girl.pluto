@@ -2681,9 +2681,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     local couldbefixed = 0
     local indistance = 0
     local auto_light_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Vehicle>Set vehicle light color automatically"
-    local asuka_tech_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Vehicle>Asuka Tech"
     local temp_auto_light = false
-    local temp_asuka_tech = false
     local temp_door_lock = false
     
     if playerWaypoint then
@@ -2695,16 +2693,10 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
         temp_auto_light = true
     end
 
-    if menu.get_state(menu.ref_by_path(asuka_tech_path)) == "On" then
-        menu.trigger_commands("asukatech off")
-        temp_asuka_tech = true
-    end
-
     if menu.get_state(menu.ref_by_path("Vehicle>Lock Doors>Lock Doors")) == "On" then
         menu.set_state(menu.ref_by_path("Vehicle>Lock Doors>Lock Doors"), "Off")
         temp_door_lock = true
     end
-
 
     for ipairs(nearbyVehicles) as vehicle do
         if ENTITY.GET_ENTITY_HEALTH(vehicle) == 0 then
@@ -2749,7 +2741,6 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
         end
         ::continue_loop::
     end
-    util.yield(13)
     util.yield(420)
     players.teleport_3d(players.user(), playerPosition.x, playerPosition.y, playerPosition.z)
     local message = ""
@@ -2771,9 +2762,6 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     end
     if temp_auto_light then
         menu.trigger_commands("autocarlights on")
-    end
-    if temp_asuka_tech then
-        menu.trigger_commands("asukatech on")
     end
     if temp_door_lock then
         menu.set_state(menu.ref_by_path("Vehicle>Lock Doors>Lock Doors"), "On")
