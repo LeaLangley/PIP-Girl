@@ -4828,6 +4828,12 @@ local function SessionCheck(pid)
                     end
                 end
             end
+        else
+            if players.get_host() == players.user() then
+                if isFriend(pid) then
+                    menu.trigger_command(menu.ref_by_path("Online>Session>Clear Blacklist"))
+                end
+            end
         end
     end
 end
@@ -4839,6 +4845,11 @@ local function removeFromTable(pid)
         if players.get_script_host() == pid then
             menu.trigger_commands("scripthost")
             notify_cmd("Saved the Script-Host")
+        end
+        if players.get_host() == players.user() then
+            if isFriend(pid) then
+                menu.trigger_command(menu.ref_by_path("Online>Session>Clear Blacklist"))
+            end
         end
     end
     local index = find_in_table(in_orb_room, pid)
