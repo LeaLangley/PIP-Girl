@@ -4229,12 +4229,15 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitraffic"}, "Clears the traffic 
     if menu.get_state(menu.ref_by_path("World>Inhabitants>Pedestrians>Disable")) == "Off" then
         menu.set_state(menu.ref_by_path("World>Inhabitants>Pedestrians>Disable"), "On")
     end
+    if menu.get_state(menu.ref_by_path("World>I Like Trains")) == "Off" then
+        menu.set_state(menu.ref_by_path("World>I Like Trains"), "On")
+    end
     if transitionState(true) == 1 then
         if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "On" then
             menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "Off")
         end
         if not pop_multiplier_free then
-            pop_multiplier_free = create_pop_multiplier(pop_multiplier_free, 0.36, 0.0)
+            pop_multiplier_free = create_pop_multiplier(pop_multiplier_free, 0.6, 0.0)
             MISC.CLEAR_AREA(0.0, 0.0, 0.0, 19999.9, true, false, false, true)
             VEHICLE.SET_DISTANT_CARS_ENABLED(false)
             STREAMING.SET_PED_POPULATION_BUDGET(1)
@@ -4242,7 +4245,7 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitraffic"}, "Clears the traffic 
             STREAMING.SET_REDUCE_PED_MODEL_BUDGET(true)
             STREAMING.SET_REDUCE_VEHICLE_MODEL_BUDGET(true)
         else
-            pop_multiplier_free = create_pop_multiplier(pop_multiplier_free, 0.36, 0.0)
+            pop_multiplier_free = create_pop_multiplier(pop_multiplier_free, 0.6, 0.0)
             util.yield(6666)
         end
     else
@@ -4271,7 +4274,7 @@ end, function()
     if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "On" then
         menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "Off")
     end
-    pop_multiplier_repair = create_pop_multiplier(pop_multiplier_repair, 0.6, 0.6)
+    pop_multiplier_repair = create_pop_multiplier(pop_multiplier_repair, 1.0, 0.6)
 end)
 
 menu.toggle_loop(Session, "Soft Clear Traffic", {"softantitrafic"}, "Clears the traffic around you localy in close range.\nDosnt work with many players in close range.", function()
