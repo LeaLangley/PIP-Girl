@@ -4384,7 +4384,6 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     while player_Exist(pid) and finisher_timeout > os.time() do
                                         util.yield(113)
                                     end
-                                    menu.trigger_commands("scripthost")
                                 else
                                     menu.trigger_commands("scripthost")
                                     notify_cmd(name .. " got Lost in the Void.")
