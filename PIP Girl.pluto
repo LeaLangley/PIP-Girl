@@ -2129,7 +2129,9 @@ menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly repairs your vehi
                 end
 
                 if VEHICLE.GET_ARE_BOMB_BAY_DOORS_OPEN(vehicle) then
-                    VEHICLE.SET_VEHICLE_BOMB_AMMO(vehicle, 13)
+                    if VEHICLE.GET_VEHICLE_BOMB_AMMO(vehicle) < 13 then
+                        VEHICLE.SET_VEHICLE_BOMB_AMMO(vehicle, 13)
+                    end
                 end
 
                 if VEHICLE.IS_VEHICLE_ATTACHED_TO_TRAILER(vehicle) then
