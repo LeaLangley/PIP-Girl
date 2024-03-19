@@ -2133,6 +2133,11 @@ menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly repairs your vehi
                         VEHICLE.SET_VEHICLE_BOMB_AMMO(vehicle, 13)
                     end
                 end
+                
+                local counterAmmo = VEHICLE.GET_VEHICLE_COUNTERMEASURE_AMMO(vehicle)
+                if counterAmmo ~= 0 and counterAmmo < 13 then
+                    VEHICLE.SET_VEHICLE_COUNTERMEASURE_AMMO(vehicle, 13)
+                end
 
                 if VEHICLE.IS_VEHICLE_ATTACHED_TO_TRAILER(vehicle) then
                     local vehicle_mm = nil
