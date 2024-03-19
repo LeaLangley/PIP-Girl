@@ -4380,10 +4380,6 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     if not isStuck(pid) then
                                         notify_cmd(name .. " Finished Loading.")
                                     end
-                                    local finisher_timeout = os.time() + 25
-                                    while player_Exist(pid) and finisher_timeout > os.time() do
-                                        util.yield(113)
-                                    end
                                 else
                                     menu.trigger_commands("scripthost")
                                     notify_cmd(name .. " got Lost in the Void.")
@@ -5312,6 +5308,12 @@ util.on_transition_finished(function ()
     if filled_up then
         fillUpEverything()
         menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
+    end
+    while transitionState(true) == 1 do
+        if players.get_script_host() == -1 or not player_Exist(players.get_script_host()) then
+            menu.trigger_commands("scripthost")
+        end
+        util.yield(113)
     end
 end)
 
