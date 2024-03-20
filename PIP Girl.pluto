@@ -2348,6 +2348,7 @@ menu.action(Vehicle, "Detonate Asuka Tech Vehicle", {"boomasuka"}, "", function(
     requestControl(target_vehicle)
     entities.set_can_migrate(target_vehicle, false)
     VEHICLE.ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(target_vehicle)
+    VEHICLE.LOCK_DOORS_WHEN_NO_LONGER_NEEDED(target_vehicle)
     local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(target_vehicle, -1)
     if driverPed ~= players.user_ped() then
         VEHICLE.SET_VEHICLE_ALARM(target_vehicle, true)
@@ -2366,6 +2367,7 @@ menu.action(Vehicle, "Detonate Asuka Tech Vehicle", {"boomasuka"}, "", function(
         util.yield(3666)
     end
     VEHICLE.DETONATE_VEHICLE_PHONE_EXPLOSIVE_DEVICE(target_vehicle)
+    NETWORK.NETWORK_SET_NO_LONGER_NEEDED(target_vehicle, true)
 end)
 
 menu.divider(Vehicle, "Lights")
