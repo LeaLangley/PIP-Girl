@@ -4144,7 +4144,7 @@ menu.toggle_loop(SessionInvite, "Post Session Code via Webhook", {""}, "Never sh
                     local encode_status, body_json = pcall(soup.json.encode, body)                
                     local function on_success(body, header_fields, status_code)
                         notify_cmd("Webhook sent successfully!")
-                        if inviteAllFriendsOnWebhook and not NETWORK.NETWORK_IS_ACTIVITY_SESSION() then
+                        if inviteAllFriendsOnWebhook and not NETWORK.NETWORK_IS_ACTIVITY_SESSION() and session_type() == "Public" then
                             while ENTITY.GET_ENTITY_SPEED(players.user_ped()) ~= 0 do
                                 util.yield(666)
                             end
