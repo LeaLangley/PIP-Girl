@@ -486,12 +486,7 @@ local function isStuck(pid)
     end
     if not players.is_visible(pid) and ENTITY.GET_ENTITY_SPEED(PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)) < 1 and not NETWORK.IS_PLAYER_IN_CUTSCENE(pid) then
         if players.are_stats_ready(pid) then
-            if players.get_money(pid) ~= 0 and players.get_rank(pid) ~= 0 then
-                return true
-            end
-            if players.get_money(pid) ~= 0 and players.get_kd(pid) ~= 0 and players.get_rank(pid) ~= 0 then
-                return true
-            end
+            return true
         end
     end
     return false
@@ -690,6 +685,9 @@ end
 
 local function allowSpawnCheck()
     if NETWORK.NETWORK_IS_ACTIVITY_SESSION() then
+        return false
+    end
+    if not players.is_visible(players.user()) then
         return false
     end
     if INTERIOR.GET_INTERIOR_FROM_ENTITY(players.user_ped()) ~= 0 and is_user_driving_vehicle(true) then
