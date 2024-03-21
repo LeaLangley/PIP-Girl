@@ -2319,6 +2319,7 @@ menu.action(Vehicle, "Enter Asuka Tech Vehicle", {"enterasuka"}, "Enter the curr
     end
 end)
 
+--{ x = 1057.81, y = -3200.08, z = -39.57, zoneName = "San Andreas", streetName = "Buccaneer Way", crossingName = "" },
 menu.action(Vehicle, "Teleport and Enter Asuka Tech Vehicle", {"tpenterasuka"}, "Enter the current Asuka Tech Vehicle", function()
     local target_vehicle = get_user_vehicle()
     if does_entity_exist(current_asuka_tech_vehicle) then
