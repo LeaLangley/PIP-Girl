@@ -2327,15 +2327,25 @@ menu.action(Vehicle, "Teleport and Enter Asuka Tech Vehicle", {"tpenterasuka"}, 
     end
     if does_entity_exist(target_vehicle) then
         requestControl(target_vehicle)
-        local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(target_vehicle, -1)
-        local my_ped = players.user_ped()
-        if driver == 0 or driver == players.user() then
-            local pos = players.get_position(players.user())
-            local currentRotation = players.get_cam_rot(players.user())
-            ENTITY.SET_ENTITY_COORDS_NO_OFFSET(target_vehicle, pos.x, pos.y, pos.z, true, true, true)
-            ENTITY.SET_ENTITY_ROTATION(target_vehicle, 0.0, 0.0, currentRotation.z, 2, true)
-            PED.SET_PED_INTO_VEHICLE(my_ped, target_vehicle, -1)
+        if not is_vehicle_free_for_use(target_vehicle) then
+            ENTITY.SET_ENTITY_COORDS_NO_OFFSET(target_vehicle, 1057.81, -3200.08, -39.57, true, true, true)
+            local TEATV_Timeout = os.time()
+            while not is_vehicle_free_for_use(target_vehicle) do
+                util.yield(666)
+                if os.time() - TEATV_Timeout > 6 then
+                    break
+                end
+                if is_vehicle_free_for_use(target_vehicle, -1) then
+                    break
+                end
+            end
         end
+        requestControl(target_vehicle)
+        local pos = players.get_position(players.user())
+        local currentRotation = players.get_cam_rot(players.user())
+        ENTITY.SET_ENTITY_COORDS_NO_OFFSET(target_vehicle, pos.x, pos.y, pos.z, true, true, true)
+        ENTITY.SET_ENTITY_ROTATION(target_vehicle, 0.0, 0.0, currentRotation.z, 2, true)
+        PED.SET_PED_INTO_VEHICLE(players.user_ped(), target_vehicle, -1)
         util.yield(666)
         buff_asuka_tech(target_vehicle)
     else
