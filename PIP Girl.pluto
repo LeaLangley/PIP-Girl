@@ -4287,9 +4287,7 @@ end, function()
         menu.set_state(menu.ref_by_path("World>Inhabitants>Pedestrians>Disable"), "Off")
     end
     VEHICLE.SET_DISTANT_CARS_ENABLED(true)
-    --STREAMING.SET_PED_POPULATION_BUDGET(3)
     STREAMING.SET_VEHICLE_POPULATION_BUDGET(3)
-    --STREAMING.SET_REDUCE_PED_MODEL_BUDGET(false)
     STREAMING.SET_REDUCE_VEHICLE_MODEL_BUDGET(false)
     pop_multiplier_free = remove_pop_multiplier(pop_multiplier_free)
     if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "On" then
@@ -4302,17 +4300,9 @@ menu.toggle_loop(Session, "Soft Clear Traffic", {"softantitrafic"}, "Clears the 
     if is_user_driving_vehicle(false) and transitionState(true) == 1 then
         local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(PED.GET_VEHICLE_PED_IS_IN(players.user_ped()), -1)
         if driverPed == players.user_ped() then
-            local waiting_for_clear = nil
             local pos = players.get_position(players.user())
             MISC.CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, SYSTEM.ROUND(ENTITY.GET_ENTITY_SPEED(players.user_ped()), 1), false, false, false, false, false, false, 0)
-            if players.user() == players.get_host() then
-                waiting_for_clear = 113
-            else
-                waiting_for_clear = 213
-            end
-            --util.yield(waiting_for_clear)
-            --MISC.CLEAR_AREA_OF_PEDS(pos.x, pos.y, pos.z, 1666, 0)
-            util.yield(waiting_for_clear)
+            util.yield(113)
         end
     else
         util.yield(666)
