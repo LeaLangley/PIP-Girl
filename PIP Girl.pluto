@@ -169,7 +169,7 @@ local function session_type()
             return "Privat"
         end
         if NETWORK.NETWORK_SESSION_IS_CLOSED_FRIENDS() then
-            return "Priends"
+            return "Friends"
         end
         if NETWORK.NETWORK_SESSION_IS_CLOSED_CREW() then
             return "Crew"
