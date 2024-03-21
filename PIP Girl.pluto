@@ -1889,6 +1889,10 @@ local function buff_asuka_tech(vehicle)
     VEHICLE.SET_VEHICLE_HAS_BEEN_OWNED_BY_PLAYER(vehicle, true)
     --VEHICLE.SET_VEHICLE_FORCE_AFTERBURNER(vehicle, true)
     AUDIO.ENABLE_VEHICLE_EXHAUST_POPS(vehicle, true)
+    local buffVehModel = ENTITY.GET_ENTITY_MODEL(vehicle)
+    if buffVehModel == 167522317 then
+        menu.trigger_commands("vehextra1 on")
+    end
 end
 local function SetInZoneTimer()
     wasInZone = true
