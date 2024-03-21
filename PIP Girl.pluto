@@ -2335,7 +2335,7 @@ menu.action(Vehicle, "Teleport and Enter Asuka Tech Vehicle", {"tpenterasuka"}, 
                 if os.time() - TEATV_Timeout > 6 then
                     break
                 end
-                if is_vehicle_free_for_use(target_vehicle, -1) then
+                if is_vehicle_free_for_use(target_vehicle) then
                     break
                 end
             end
