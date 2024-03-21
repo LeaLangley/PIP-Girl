@@ -5323,6 +5323,7 @@ util.on_transition_finished(function ()
     while transitionState(true) == 1 do
         if players.get_script_host() == -1 or not player_Exist(players.get_script_host()) then
             menu.trigger_commands("scripthost")
+            notify_cmd("Saved the Script-Host")
         end
         util.yield(113)
     end
