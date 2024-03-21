@@ -4252,7 +4252,7 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitraffic"}, "Clears the traffic 
             menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "Off")
         end
         if not pop_multiplier_free then
-            pop_multiplier_free = create_pop_multiplier(pop_multiplier_free, 0.6, 0.0)
+            pop_multiplier_free = create_pop_multiplier(pop_multiplier_free, 1.0, 0.0)
             MISC.CLEAR_AREA(0.0, 0.0, 0.0, 19999.9, true, false, false, true)
             VEHICLE.SET_DISTANT_CARS_ENABLED(false)
             STREAMING.SET_PED_POPULATION_BUDGET(1)
@@ -4260,7 +4260,7 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitraffic"}, "Clears the traffic 
             STREAMING.SET_REDUCE_PED_MODEL_BUDGET(true)
             STREAMING.SET_REDUCE_VEHICLE_MODEL_BUDGET(true)
         else
-            pop_multiplier_free = create_pop_multiplier(pop_multiplier_free, 0.6, 0.0)
+            pop_multiplier_free = create_pop_multiplier(pop_multiplier_free, 1.0, 0.0)
             util.yield(6666)
         end
     else
