@@ -3079,15 +3079,15 @@ menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warn
     util.yield(13)
 end)
 
-menu.toggle_loop(Game, "Auto Spin Slots", {''}, "Tiered of manually spinning slots? , thats no more! (does not rig slots , just auto click spin)", function ()
-    if HUD.IS_HELP_MESSAGE_BEING_DISPLAYED() then
-        if IS_HELP_MSG_DISPLAYED("SLOTS_HELPB") then
-            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
-        end
-    else
-        util.yield(66)
-    end
-end)
+--menu.toggle_loop(Game, "Auto Spin Slots", {''}, "Tiered of manually spinning slots? , thats no more! (does not rig slots , just auto click spin)", function ()
+--    if HUD.IS_HELP_MESSAGE_BEING_DISPLAYED() then
+--        if IS_HELP_MSG_DISPLAYED("SLOTS_HELPB") then
+--            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
+--        end
+--    else
+--        util.yield(66)
+--    end
+--end)
 
 menu.divider(Game, "<3")
 
