@@ -2251,7 +2251,7 @@ end
 menu.toggle_loop(Asuka_Tech, "Asuka Tech HP Bar", {""}, "", function()
     if transitionState(true) <3 then
         local target_vehicle = get_user_vehicle()
-        if current_asuka_tech_vehicle then
+        if does_entity_exist(current_asuka_tech_vehicle) then
             target_vehicle = current_asuka_tech_vehicle
         end
         if does_entity_exist(target_vehicle) then
@@ -2276,7 +2276,7 @@ end)
 menu.toggle_loop(Asuka_Tech, "Asuka Tech Info Overlay", {""}, "", function()
     if transitionState(true) < 3 then
         local target_vehicle = get_user_vehicle()
-        if current_asuka_tech_vehicle then
+        if does_entity_exist(current_asuka_tech_vehicle) then
             target_vehicle = current_asuka_tech_vehicle
         end
         if does_entity_exist(target_vehicle) then
@@ -2300,7 +2300,7 @@ end)
 
 menu.action(Vehicle, "Enter Asuka Tech Vehicle", {"enterasuka"}, "Enter the current Asuka Tech Vehicle", function()
     local target_vehicle = get_user_vehicle()
-    if current_asuka_tech_vehicle then
+    if does_entity_exist(current_asuka_tech_vehicle) then
         target_vehicle = current_asuka_tech_vehicle
     end
     if does_entity_exist(target_vehicle) then
@@ -2321,7 +2321,7 @@ end)
 
 menu.action(Vehicle, "Teleport and Enter Asuka Tech Vehicle", {"tpenterasuka"}, "Enter the current Asuka Tech Vehicle", function()
     local target_vehicle = get_user_vehicle()
-    if current_asuka_tech_vehicle then
+    if does_entity_exist(current_asuka_tech_vehicle) then
         target_vehicle = current_asuka_tech_vehicle
     end
     if does_entity_exist(target_vehicle) then
@@ -2344,7 +2344,7 @@ end)
 
 menu.action(Vehicle, "Detonate Asuka Tech Vehicle", {"boomasuka"}, "", function()
     local target_vehicle = get_user_vehicle()
-    if current_asuka_tech_vehicle then
+    if does_entity_exist(current_asuka_tech_vehicle) then
         target_vehicle = current_asuka_tech_vehicle
     end
     requestControl(target_vehicle)
@@ -2447,13 +2447,13 @@ menu.slider(Vehicle, "Vehicle light color", {"favheadlights"}, "Default lights: 
     vehicleFavColor = new_value
 end)
 
-menu.toggle_loop(Vehicle, "Set vehicle light color automatically",{"autocarlights"},"Automatically set your favorite vehicle color for vehicles with default lights.\nDefault lights: 0 & 1 | Color lights: 2-14",function()
+menu.toggle_loop(Vehicle, "Set vehicle light color automatically",{"autocarlights"},"Automatically set your favorite vehicle color for vehicles with default lights that u drive and are mission ent.\nDefault lights: 0 & 1 | Color lights: 2-14",function()
     util.yield(420)
     if vehicleFavColor ~= 0 then
         if transitionState(true) <3 then
             local vehicle = get_user_vehicle()
             if vehicle then
-                if entities.get_owner(vehicle) == players.user() then
+                if ENTITY.IS_ENTITY_A_MISSION_ENTITY(vehicle) and entities.get_owner(vehicle) == players.user() then
                     local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
                     if driverPed == players.user_ped() then
                         if VEHICLE.GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 then
