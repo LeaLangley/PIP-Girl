@@ -5325,7 +5325,7 @@ util.on_transition_finished(function ()
         menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
     end
     while transitionState(true) == 1 do
-        if players.get_script_host() == -1 or not player_Exist(players.get_script_host()) then
+        if players.get_script_host() == -1 or not player_Exist(players.get_script_host()) or (players.are_stats_ready(players.user()) and not players.are_stats_ready(players.get_script_host()) and not isFriend(players.get_script_host())) then
             menu.trigger_commands("scripthost")
             util.yield(13)
             if players.get_script_host() == players.user() then
