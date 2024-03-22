@@ -1891,7 +1891,9 @@ local function buff_asuka_tech(vehicle)
     AUDIO.ENABLE_VEHICLE_EXHAUST_POPS(vehicle, true)
     local buffVehModel = ENTITY.GET_ENTITY_MODEL(vehicle)
     if buffVehModel == 167522317 then
-        menu.trigger_commands("vehextra1 on")
+        if VEHICLE.DOES_EXTRA_EXIST(vehicle, 1) and not VEHICLE.IS_VEHICLE_EXTRA_TURNED_ON(vehicle, 1) then
+            VEHICLE.SET_VEHICLE_EXTRA(vehicle, 1, 0)
+        end
     end
 end
 local function SetInZoneTimer()
