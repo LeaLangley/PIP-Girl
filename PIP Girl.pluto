@@ -700,6 +700,12 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
     end
 end
 
+local function delete_ent(ent)
+    if does_entity_exist(ent) then
+        entities.delete(ent)
+    end
+end
+
 local function thunderForMin(min)
     if transitionState(true) == 1 then
         menu.trigger_commands("thunderon")
@@ -3719,18 +3725,10 @@ end, function()
         set_as_illusion(pid, in_orb_room, false)
     end
     in_orb_room = {}
-    if does_entity_exist(orbRoomGlass) then
-        entities.delete(orbRoomGlass)
-    end
-    if does_entity_exist(orbRoomTable) then
-        entities.delete(orbRoomTable)
-    end
-    if does_entity_exist(orbRoomTable2) then
-        entities.delete(orbRoomTable2)
-    end
-    if does_entity_exist(orbRoomDoorDMG) then
-        entities.delete(orbRoomDoorDMG)
-    end
+    delete_ent(orbRoomGlass)
+    delete_ent(orbRoomTable)
+    delete_ent(orbRoomTable2)
+    delete_ent(orbRoomDoorDMG)
 end)
 
 local kosatkaMissile1 = nil
@@ -3744,12 +3742,8 @@ menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {"blockkosatka"
     end
     util.yield(1666)
 end, function()
-    if does_entity_exist(kosatkaMissile1) then
-        entities.delete(kosatkaMissile1)
-    end
-    if does_entity_exist(kosatkaMissile2) then
-        entities.delete(kosatkaMissile2)
-    end
+    delete_ent(kosatkaMissile1)
+    delete_ent(kosatkaMissile2)
 end)
 
 local antiTerrorGlass = nil
@@ -3761,9 +3755,7 @@ menu.toggle_loop(SessionWorld, "Anti Terrorbyte", {"blockterror"}, "Blocks the M
     end
     util.yield(3666)
 end, function()
-    if does_entity_exist(antiTerrorGlass) then
-        entities.delete(antiTerrorGlass)
-    end
+    delete_ent(antiTerrorGlass)
 end)
 
 local shrineElements = {
@@ -3850,9 +3842,7 @@ end, function()
     Asuka_shrine_blip = nil
     for ipairs(shrineElements) as element do
         local entityVar = element.var
-        if does_entity_exist(entityVars[entityVar]) then
-            entities.delete(entityVars[entityVar])
-        end
+        delete_ent(entityVars[entityVar])
         entityVars[element.var] = nil
     end
 end)
@@ -5317,7 +5307,7 @@ util.on_transition_finished(function ()
             players.teleport_3d(players.user(), customspawn.x, customspawn.y, customspawn.z)
         end
         if get_user_vehicle() then
-            entities.delete(get_user_vehicle())
+            delete_ent(get_user_vehicle())
         end
         menu.trigger_commands("resetheadshots")
         menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
