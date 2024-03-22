@@ -616,73 +616,6 @@ local function is_vehicle_empty(vehicle)
     return true
 end
 
-local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
-    local closestDistance = nil
-    local closestPlayer = players.user_ped()
-    local coordinatesCorrect = false
-    local anglesCorrect = false    
-    if anti_collision then
-        for players.list() as pid do
-            if isFriend(pid) then
-                local playerPos = players.get_position(pid)
-                local distance = SYSTEM.VDIST(locationV3.x, locationV3.y, locationV3.z, playerPos.x, playerPos.y, playerPos.z)
-                if not closestDistance or distance < closestDistance then
-                    closestDistance = distance
-                    closestPlayer = pid
-                end
-            end
-            util.yield(timeout)
-        end
-        if closestPlayer then
-            requestControl(entity)
-            ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(closestPlayer), false)
-        end
-    end
-    local currentCoords = ENTITY.GET_ENTITY_COORDS(entity)
-    coordinatesCorrect = (math.abs(currentCoords.x - locationV3.x) <= 1) and
-                            (math.abs(currentCoords.y - locationV3.y) <= 1) and
-                            (math.abs(currentCoords.z - locationV3.z) <= 1)
-    if not coordinatesCorrect then
-        requestControl(entity)
-        ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3.x, locationV3.y, locationV3.z, true, true, true)
-        ENTITY.FREEZE_ENTITY_POSITION(entity, true)
-    end
-    local currentRotation = ENTITY.GET_ENTITY_ROTATION(entity, order)
-    anglesCorrect = (math.abs(currentRotation.x - pitch) <= 1) and
-                    (math.abs(currentRotation.y - roll) <= 1) and
-                    (math.abs(currentRotation.z - yaw) <= 1)
-    if not anglesCorrect then
-        requestControl(entity)
-        ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
-        ENTITY.FREEZE_ENTITY_POSITION(entity, true)
-    end
-end
-
-local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
-    if order == nil then order = 2 end
-    if not does_entity_exist(entity) then
-        requestModel(hash, timeout)
-        entity = entities.create_object(hash, locationV3)
-        util.yield(timeout)
-        local startTime = os.time()
-        while not does_entity_exist(entity) do
-            if os.time() - startTime > timeout or timeout == 0 then
-                break
-            end
-            util.yield(timeout)
-        end
-        requestControl(entity)
-        entities.set_can_migrate(entity, false)
-        ENTITY.FREEZE_ENTITY_POSITION(entity, true)
-        objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
-        return entity
-    else
-        objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
-        util.yield(timeout)
-        return entity
-    end
-end
-
 local function allowSpawnCheck()
     if NETWORK.NETWORK_IS_ACTIVITY_SESSION() then
         return false
@@ -694,6 +627,77 @@ local function allowSpawnCheck()
         return false
     end
     return true
+end
+
+local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
+    if allowSpawnCheck() then
+        local closestDistance = nil
+        local closestPlayer = players.user_ped()
+        local coordinatesCorrect = false
+        local anglesCorrect = false    
+        if anti_collision then
+            for players.list() as pid do
+                if isFriend(pid) then
+                    local playerPos = players.get_position(pid)
+                    local distance = SYSTEM.VDIST(locationV3.x, locationV3.y, locationV3.z, playerPos.x, playerPos.y, playerPos.z)
+                    if not closestDistance or distance < closestDistance then
+                        closestDistance = distance
+                        closestPlayer = pid
+                    end
+                end
+                util.yield(timeout)
+            end
+            if closestPlayer then
+                requestControl(entity)
+                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(closestPlayer), false)
+            end
+        end
+        local currentCoords = ENTITY.GET_ENTITY_COORDS(entity)
+        coordinatesCorrect = (math.abs(currentCoords.x - locationV3.x) <= 1) and
+                                (math.abs(currentCoords.y - locationV3.y) <= 1) and
+                                (math.abs(currentCoords.z - locationV3.z) <= 1)
+        if not coordinatesCorrect then
+            requestControl(entity)
+            ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3.x, locationV3.y, locationV3.z, true, true, true)
+            ENTITY.FREEZE_ENTITY_POSITION(entity, true)
+        end
+        local currentRotation = ENTITY.GET_ENTITY_ROTATION(entity, order)
+        anglesCorrect = (math.abs(currentRotation.x - pitch) <= 1) and
+                        (math.abs(currentRotation.y - roll) <= 1) and
+                        (math.abs(currentRotation.z - yaw) <= 1)
+        if not anglesCorrect then
+            requestControl(entity)
+            ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
+            ENTITY.FREEZE_ENTITY_POSITION(entity, true)
+        end
+    end
+end
+
+local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
+    if allowSpawnCheck() then
+        if order == nil then order = 2 end
+        if not does_entity_exist(entity) then
+            requestModel(hash, timeout)
+            entity = entities.create_object(hash, locationV3)
+            util.yield(timeout)
+            local startTime = os.time()
+            while not does_entity_exist(entity) do
+                if os.time() - startTime > timeout or timeout == 0 then
+                    break
+                end
+                util.yield(timeout)
+            end
+            requestControl(entity)
+            entities.set_can_migrate(entity, false)
+            ENTITY.FREEZE_ENTITY_POSITION(entity, true)
+            objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
+            return entity
+        else
+            objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
+            util.yield(timeout)
+            return entity
+        end
+    end
 end
 
 local function thunderForMin(min)
@@ -3829,8 +3833,10 @@ menu.toggle_loop(SessionWorld, "Asuka's Shrine", {"asukasshrine"}, "Shows Asuka'
             Asuka_shrine_blip = nil
         end
         for ipairs(shrineElements) as element do
-            local entityVar, conditions = element.var, element.conditions
-            entityVars[entityVar] = SpawnCheck(entityVars[entityVar], table.unpack(conditions))
+            if allowSpawnCheck() then
+                local entityVar, conditions = element.var, element.conditions
+                entityVars[entityVar] = SpawnCheck(entityVars[entityVar], table.unpack(conditions))
+            end
             util.yield(113)
         end
     else
