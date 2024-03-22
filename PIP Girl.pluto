@@ -4850,7 +4850,11 @@ local function removeFromTable(pid)
     if transitionState(true) == 1 then
         if players.get_script_host() == pid then
             menu.trigger_commands("scripthost")
-            notify_cmd("Saved the Script-Host")
+            util.yield(13)
+            if players.get_script_host() == players.user() then
+                notify_cmd("Saved the Script-Host")
+                util.yield(113)
+            end
         end
         if players.get_host() == players.user() then
             if isFriend(pid) then
@@ -5323,9 +5327,14 @@ util.on_transition_finished(function ()
     while transitionState(true) == 1 do
         if players.get_script_host() == -1 or not player_Exist(players.get_script_host()) then
             menu.trigger_commands("scripthost")
-            notify_cmd("Saved the Script-Host")
+            util.yield(13)
+            if players.get_script_host() == players.user() then
+                notify_cmd("Saved the Script-Host")
+                util.yield(113)
+            end
+        else
+            util.yield(113)
         end
-        util.yield(113)
     end
 end)
 
