@@ -4237,8 +4237,16 @@ end)
 local pop_multiplier_free = nil
 local pop_multiplier_repair = nil
 
+local function remove_pop_multiplier(sphereID)
+    if sphereID and MISC.DOES_POP_MULTIPLIER_AREA_EXIST(sphereID) then
+        MISC.REMOVE_POP_MULTIPLIER_AREA(sphereID, true)
+    end
+    return nil
+end
+
 local function create_pop_multiplier(sphereID, pedPOP, vehPOP)
     if not sphereID then
+        pop_multiplier_repair = remove_pop_multiplier(13)
         sphereID = MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19666, pedPOP, vehPOP, false, true)
     end
     if not MISC.DOES_POP_MULTIPLIER_AREA_EXIST(sphereID) then
@@ -4247,15 +4255,8 @@ local function create_pop_multiplier(sphereID, pedPOP, vehPOP)
     return sphereID
 end
 
-local function remove_pop_multiplier(sphereID)
-    if sphereID and MISC.DOES_POP_MULTIPLIER_AREA_EXIST(sphereID) then
-        MISC.REMOVE_POP_MULTIPLIER_AREA(sphereID, true)
-    end
-    return nil
-end
-
 menu.toggle_loop(Session, "Clear Traffic", {"antitraffic"}, "Clears the traffic on the session for everyone.", function()
-    remove_pop_multiplier(pop_multiplier_repair)
+    pop_multiplier_repair = remove_pop_multiplier(pop_multiplier_repair)
     if menu.get_state(menu.ref_by_path("World>Inhabitants>Traffic>Disable")) == "Disabled" then
         menu.trigger_command(menu.ref_by_path("World>Inhabitants>Traffic>Disable>Enabled, Including Parked Cars"))
     end
