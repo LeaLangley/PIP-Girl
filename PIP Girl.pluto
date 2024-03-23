@@ -2121,111 +2121,115 @@ menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly repairs your vehi
                 vehicle = current_asuka_tech_vehicle
             end
             if is_vehicle_free_for_use(vehicle) then
-                if current_asuka_tech_vehicle == nil or current_asuka_tech_vehicle ~= vehicle then
-                    current_asuka_tech_vehicle = vehicle
-                    buff_asuka_tech(vehicle)
-                else
-                    local is_in_interior = players.is_in_interior(players.user())
-                    if is_in_interior and not isInInteriorAT then
-                        isInInteriorAT = true
+                if VEHICLE.IS_VEHICLE_DRIVEABLE(vehicle) then
+                    if current_asuka_tech_vehicle == nil or current_asuka_tech_vehicle ~= vehicle then
+                        current_asuka_tech_vehicle = vehicle
                         buff_asuka_tech(vehicle)
-                    elseif not is_in_interior and isInInteriorAT then
-                        isInInteriorAT = false
-                        buff_asuka_tech(vehicle)
-                    end
-                end
-
-                --if not vehicleProtected and is_vehicle_empty(vehicle) then
-                --    ENTITY.FREEZE_ENTITY_POSITION(vehicle, true)
-                --    vehicleProtected = true
-                --end
-                --if vehicleProtected and not is_vehicle_empty(vehicle) then
-                --    ENTITY.FREEZE_ENTITY_POSITION(vehicle, false)
-                --    vehicleProtected = false
-                --end
-
-                if asuka_tech_repair_amount > 0 then
-                    repair_asuka_tech(vehicle)
-                end
-
-                if VEHICLE.GET_ARE_BOMB_BAY_DOORS_OPEN(vehicle) then
-                    if VEHICLE.GET_VEHICLE_BOMB_AMMO(vehicle) < 13 then
-                        VEHICLE.SET_VEHICLE_BOMB_AMMO(vehicle, 13)
-                    end
-                end
-                
-                local counterAmmo = VEHICLE.GET_VEHICLE_COUNTERMEASURE_AMMO(vehicle)
-                if counterAmmo ~= 0 and counterAmmo < 13 then
-                    VEHICLE.SET_VEHICLE_COUNTERMEASURE_AMMO(vehicle, 13)
-                end
-
-                if VEHICLE.IS_VEHICLE_ATTACHED_TO_TRAILER(vehicle) then
-                    local vehicle_mm = nil
-                    if saved_trailer_id then
-                        vehicle_mm = VEHICLE._GET_VEHICLE_TRAILER_PARENT_VEHICLE(saved_trailer_id)
-                    end
-                    local trailer = nil
-                    if vehicle_mm == vehicle then
-                        trailer = saved_trailer_id
                     else
-                        trailer = getTrailer(vehicle)
+                        local is_in_interior = players.is_in_interior(players.user())
+                        if is_in_interior and not isInInteriorAT then
+                            isInInteriorAT = true
+                            buff_asuka_tech(vehicle)
+                        elseif not is_in_interior and isInInteriorAT then
+                            isInInteriorAT = false
+                            buff_asuka_tech(vehicle)
+                        end
                     end
+
+                    --if not vehicleProtected and is_vehicle_empty(vehicle) then
+                    --    ENTITY.FREEZE_ENTITY_POSITION(vehicle, true)
+                    --    vehicleProtected = true
+                    --end
+                    --if vehicleProtected and not is_vehicle_empty(vehicle) then
+                    --    ENTITY.FREEZE_ENTITY_POSITION(vehicle, false)
+                    --    vehicleProtected = false
+                    --end
+
                     if asuka_tech_repair_amount > 0 then
-                        repair_asuka_tech(trailer)
+                        repair_asuka_tech(vehicle)
                     end
-                    if saved_trailer_id == nil or saved_trailer_id ~= trailer then
-                        saved_trailer_id = trailer
-                        buff_asuka_tech(trailer)
+
+                    if VEHICLE.GET_ARE_BOMB_BAY_DOORS_OPEN(vehicle) then
+                        if VEHICLE.GET_VEHICLE_BOMB_AMMO(vehicle) < 13 then
+                            VEHICLE.SET_VEHICLE_BOMB_AMMO(vehicle, 13)
+                        end
                     end
-                else
-                    saved_trailer_id = nil
-                end
-                if asukaTechBlipVeh ~= current_asuka_tech_vehicle or (asukaTechBlip and not HUD.DOES_BLIP_EXIST(asukaTechBlip)) then
-                    asukaTechBlipVeh = current_asuka_tech_vehicle
-                    if asukaTechBlip then
-                        util.remove_blip(asukaTechBlip)
+                    
+                    local counterAmmo = VEHICLE.GET_VEHICLE_COUNTERMEASURE_AMMO(vehicle)
+                    if counterAmmo ~= 0 and counterAmmo < 13 then
+                        VEHICLE.SET_VEHICLE_COUNTERMEASURE_AMMO(vehicle, 13)
                     end
-                    util.yield(113)
-                    asukaTechBlip = HUD.ADD_BLIP_FOR_ENTITY(current_asuka_tech_vehicle)
-                    HUD.SET_BLIP_DISPLAY(asukaTechBlip, 2)
-                    HUD.SET_BLIP_SCALE(asukaTechBlip, 0.8)
-                    HUD.BEGIN_TEXT_COMMAND_SET_BLIP_NAME("STRING")
-                    HUD.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Asuka Tech Vehicle')
-                    HUD.END_TEXT_COMMAND_SET_BLIP_NAME(asukaTechBlip)
-                    HUD.SET_BLIP_PRIORITY(asukaTechBlip, 13)
-                end
-                if HUD.GET_BLIP_SPRITE(asukaTechBlip) ~= 641 then
-                    HUD.SET_BLIP_SPRITE(asukaTechBlip, 641)
-                end
-                if HUD.GET_BLIP_COLOUR(asukaTechBlip) ~= 76 then
-                    HUD.SET_BLIP_COLOUR(asukaTechBlip, 76)
-                end
-                local isDriving = nil
-                if isInVehicleAT then
-                    isDriving = is_user_driving_vehicle(true)
-                else
-                    isDriving = is_user_driving_vehicle(false)
-                end
-                if isDriving and not isInVehicleAT then
-                    VEHICLE.SET_VEHICLE_ENGINE_ON(vehicle, true, true, false)
-                    isInVehicleAT = true
-                    util.yield(666)
-                    VEHICLE.SET_VEHICLE_DOORS_SHUT(vehicle, false)
-                    if VEHICLE.DOES_VEHICLE_HAVE_SEARCHLIGHT(vehicle) then
-                        VEHICLE.SET_VEHICLE_SEARCHLIGHT(vehicle, true, true)
+
+                    if VEHICLE.IS_VEHICLE_ATTACHED_TO_TRAILER(vehicle) then
+                        local vehicle_mm = nil
+                        if saved_trailer_id then
+                            vehicle_mm = VEHICLE._GET_VEHICLE_TRAILER_PARENT_VEHICLE(saved_trailer_id)
+                        end
+                        local trailer = nil
+                        if vehicle_mm == vehicle then
+                            trailer = saved_trailer_id
+                        else
+                            trailer = getTrailer(vehicle)
+                        end
+                        if asuka_tech_repair_amount > 0 then
+                            repair_asuka_tech(trailer)
+                        end
+                        if saved_trailer_id == nil or saved_trailer_id ~= trailer then
+                            saved_trailer_id = trailer
+                            buff_asuka_tech(trailer)
+                        end
+                    else
+                        saved_trailer_id = nil
                     end
-                    if asukaTechBlip and HUD.DOES_BLIP_EXIST(asukaTechBlip) then
-                        HUD.SET_BLIP_PRIORITY(asukaTechBlip, 25)
-                        HUD.SET_BLIP_SCALE(asukaTechBlip, 0.5)
-                    end
-                elseif not isDriving and isInVehicleAT then
-                    isInVehicleAT = false
-                    util.yield(666)
-                    VEHICLE.SET_VEHICLE_DOORS_SHUT(vehicle, false)
-                    if asukaTechBlip and HUD.DOES_BLIP_EXIST(asukaTechBlip) then
+                    if asukaTechBlipVeh ~= current_asuka_tech_vehicle or (asukaTechBlip and not HUD.DOES_BLIP_EXIST(asukaTechBlip)) then
+                        asukaTechBlipVeh = current_asuka_tech_vehicle
+                        if asukaTechBlip then
+                            util.remove_blip(asukaTechBlip)
+                        end
+                        util.yield(113)
+                        asukaTechBlip = HUD.ADD_BLIP_FOR_ENTITY(current_asuka_tech_vehicle)
+                        HUD.SET_BLIP_DISPLAY(asukaTechBlip, 2)
+                        HUD.SET_BLIP_SCALE(asukaTechBlip, 0.8)
+                        HUD.BEGIN_TEXT_COMMAND_SET_BLIP_NAME("STRING")
+                        HUD.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Asuka Tech Vehicle')
+                        HUD.END_TEXT_COMMAND_SET_BLIP_NAME(asukaTechBlip)
                         HUD.SET_BLIP_PRIORITY(asukaTechBlip, 13)
-                        HUD.SET_BLIP_SCALE(asukaTechBlip, 0.7)
                     end
+                    if HUD.GET_BLIP_SPRITE(asukaTechBlip) ~= 641 then
+                        HUD.SET_BLIP_SPRITE(asukaTechBlip, 641)
+                    end
+                    if HUD.GET_BLIP_COLOUR(asukaTechBlip) ~= 76 then
+                        HUD.SET_BLIP_COLOUR(asukaTechBlip, 76)
+                    end
+                    local isDriving = nil
+                    if isInVehicleAT then
+                        isDriving = is_user_driving_vehicle(true)
+                    else
+                        isDriving = is_user_driving_vehicle(false)
+                    end
+                    if isDriving and not isInVehicleAT then
+                        VEHICLE.SET_VEHICLE_ENGINE_ON(vehicle, true, true, false)
+                        isInVehicleAT = true
+                        util.yield(666)
+                        VEHICLE.SET_VEHICLE_DOORS_SHUT(vehicle, false)
+                        if VEHICLE.DOES_VEHICLE_HAVE_SEARCHLIGHT(vehicle) then
+                            VEHICLE.SET_VEHICLE_SEARCHLIGHT(vehicle, true, true)
+                        end
+                        if asukaTechBlip and HUD.DOES_BLIP_EXIST(asukaTechBlip) then
+                            HUD.SET_BLIP_PRIORITY(asukaTechBlip, 25)
+                            HUD.SET_BLIP_SCALE(asukaTechBlip, 0.5)
+                        end
+                    elseif not isDriving and isInVehicleAT then
+                        isInVehicleAT = false
+                        util.yield(666)
+                        VEHICLE.SET_VEHICLE_DOORS_SHUT(vehicle, false)
+                        if asukaTechBlip and HUD.DOES_BLIP_EXIST(asukaTechBlip) then
+                            HUD.SET_BLIP_PRIORITY(asukaTechBlip, 13)
+                            HUD.SET_BLIP_SCALE(asukaTechBlip, 0.7)
+                        end
+                    end
+                else
+                    NETWORK.NETWORK_SET_NO_LONGER_NEEDED(vehicle, true)
                 end
             end
             util.yield(1000)
