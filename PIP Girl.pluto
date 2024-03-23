@@ -4355,12 +4355,10 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                             if players.get_script_host() ~= pid and stuckDuration > stuckDurationTol and stuckDuration < 313 then
                                 local name = players.get_name(pid)
                                 menu.trigger_commands("givesh " .. name)
-                                util.yield(666)
                                 if players.get_script_host() == pid then
                                     notify_cmd(name .. " is Loading since: "..stuckDuration)
                                 else
                                     notify_cmd(name .. " is Loading too long, since: "..stuckDuration)
-                                    util.yield(6666)
                                 end
                                 local loading_timeout = os.time() + 25
                                 while player_Exist(pid) and isStuck(pid) do
@@ -4374,19 +4372,23 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                         break
                                     end
                                 end
-                                if players.get_script_host() ~= players.user() then
-                                    if stuckDurationTol ~= 10 and discoveredSince(players.get_script_host()) < 113 then
-                                        menu.trigger_commands("scripthost")
+                                if players.get_script_host() ~= -1 then
+                                    if players.get_script_host() ~= players.user() then
+                                        if stuckDurationTol ~= 10 and discoveredSince(players.get_script_host()) < 113 then
+                                            menu.trigger_commands("scripthost")
+                                        end
                                     end
-                                end
-                                if player_Exist(pid) then
-                                    if not isStuck(pid) then
-                                        notify_cmd(name .. " Finished Loading.")
+                                    if player_Exist(pid) then
+                                        if not isStuck(pid) then
+                                            notify_cmd(name .. " Finished Loading.")
+                                        end
+                                    else
+                                        menu.trigger_commands("scripthost")
+                                        notify_cmd(name .. " got Lost in the Void.")
+                                        util.yield(25666)
                                     end
                                 else
-                                    menu.trigger_commands("scripthost")
-                                    notify_cmd(name .. " got Lost in the Void.")
-                                    util.yield(25666)
+                                    util.yield(6666)
                                 end
                             end
                         else
@@ -5262,6 +5264,7 @@ menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
     notify(startupmsg)
 end)
 
+local recoverScripthostCode = nil
 util.on_transition_finished(function ()
 	if customspawned then
         if not NETWORK.NETWORK_IS_ACTIVITY_SESSION() then
@@ -5288,6 +5291,11 @@ util.on_transition_finished(function ()
                 notify_cmd("Saved the Script-Host via on_transition_finished")
                 menu.trigger_command(menu.ref_by_path("Online>Session>Clear Blacklist"))
                 util.yield(666)
+            end
+            if players.get_script_host() == -1 then
+                if recoverScripthostCode ~= get_session_code() then
+                    notify("This session has very moste likely just broke. :c")
+                end
             end
         else
             util.yield(113)
