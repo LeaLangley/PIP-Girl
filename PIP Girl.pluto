@@ -2056,48 +2056,49 @@ local function repair_asuka_tech(vehicle)
     local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle)
     local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
     local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
-    repairing = false
 
-    if engineHealth > 0 and engineHealth < 1000 then
-        VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + repair_amount)
-    end
-    if petrolTankHealth > 0 and petrolTankHealth < 1000 then
-        VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + repair_amount)
-    end
-    if bodyHealth > 0 and bodyHealth < 1000 then
-        VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + repair_amount)
-    end
-    if heliTailHealth > 0 and heliTailHealth < 1000 then
-        VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + repair_amount)
-    end
-    if heliRotorHealth > 0 and heliRotorHealth < 1000 then
-        VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + repair_amount)
-    end
-
-    if petrolTankHealth >= 1000 and engineHealth >= 1000 and bodyHealth >= 1000 then
-        VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, 1000)
-        VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, 1000)
-        VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, 1000)
-        VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, 1000)
-        VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, 1000)
-        VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, false)
-        VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, false)
-    else
-        if asuka_tech_dirt ~= 1 then
-            local currentDirtLevel = VEHICLE.GET_VEHICLE_DIRT_LEVEL(vehicle)
-            local theDirtyHoe = asuka_tech_dirt_amount * repair_amount
-            if asuka_tech_dirt == 2 then
-                currentDirtLevel = math.min(currentDirtLevel + theDirtyHoe, 15.0)
-            elseif asuka_tech_dirt == 3 then
-                currentDirtLevel = math.max(currentDirtLevel - theDirtyHoe, 0.0)
-            end
-            VEHICLE.SET_VEHICLE_DIRT_LEVEL(vehicle, currentDirtLevel)
+    if VEHICLE.IS_VEHICLE_DRIVEABLE(vehicle) then
+        if engineHealth > 0 and engineHealth < 1000 then
+            VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + repair_amount)
         end
-        VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, true)
-        VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, true)
+        if petrolTankHealth > 0 and petrolTankHealth < 1000 then
+            VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + repair_amount)
+        end
+        if bodyHealth > 0 and bodyHealth < 1000 then
+            VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + repair_amount)
+        end
+        if heliTailHealth > 0 and heliTailHealth < 1000 then
+            VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + repair_amount)
+        end
+        if heliRotorHealth > 0 and heliRotorHealth < 1000 then
+            VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + repair_amount)
+        end
+
+        if petrolTankHealth >= 1000 and engineHealth >= 1000 and bodyHealth >= 1000 then
+            VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, 1000)
+            VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, 1000)
+            VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, 1000)
+            VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, 1000)
+            VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, 1000)
+            VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, false)
+            VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, false)
+        else
+            if asuka_tech_dirt ~= 1 then
+                local currentDirtLevel = VEHICLE.GET_VEHICLE_DIRT_LEVEL(vehicle)
+                local theDirtyHoe = asuka_tech_dirt_amount * repair_amount
+                if asuka_tech_dirt == 2 then
+                    currentDirtLevel = math.min(currentDirtLevel + theDirtyHoe, 15.0)
+                elseif asuka_tech_dirt == 3 then
+                    currentDirtLevel = math.max(currentDirtLevel - theDirtyHoe, 0.0)
+                end
+                VEHICLE.SET_VEHICLE_DIRT_LEVEL(vehicle, currentDirtLevel)
+            end
+            VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, true)
+            VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, true)
+        end
     end
 
-    if engineHealth <= 0 and bodyHealth <= 0 then
+    if (engineHealth <= 0 and bodyHealth <= 0) or VEHICLE.IS_VEHICLE_DRIVEABLE(vehicle) then
         NETWORK.NETWORK_SET_NO_LONGER_NEEDED(vehicle, true)
     end
 end
