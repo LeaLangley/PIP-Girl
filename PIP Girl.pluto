@@ -2361,13 +2361,11 @@ menu.action(Vehicle, "Teleport and Enter Asuka Tech Vehicle", {"tpenterasuka"}, 
                 end
             end
         end
-        util.yield(666)
         requestControl(target_vehicle)
         local pos = players.get_position(players.user())
         local currentRotation = players.get_cam_rot(players.user())
         ENTITY.SET_ENTITY_COORDS_NO_OFFSET(target_vehicle, pos.x, pos.y, pos.z, true, true, true)
         ENTITY.SET_ENTITY_ROTATION(target_vehicle, 0.0, 0.0, currentRotation.z, 2, true)
-        util.yield(666)
         if is_vehicle_free_for_use(target_vehicle) then
             PED.SET_PED_INTO_VEHICLE(players.user_ped(), target_vehicle, -1)
         else
