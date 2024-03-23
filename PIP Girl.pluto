@@ -819,11 +819,6 @@ local function StrategicKick(pid)
         if name ~= players.get_name(players.user()) then
             menu.trigger_commands("ghostplayer " .. name)
             if transitionState(true) ~= 1 then
-                if transitionState(true) == 1 and menu.get_edition() > 1 then
-                    if pid ~= players.get_host() then
-                        menu.trigger_commands("loveletterkick " .. name)
-                    end
-                end
                 menu.trigger_commands("kick " .. name)
                 Wait_for_transitionState()
             else
@@ -835,9 +830,6 @@ local function StrategicKick(pid)
                             menu.trigger_commands("loveletterkick " .. name)
                         end
                     else
-                        if pid ~= players.get_host() then
-                            menu.trigger_commands("loveletterkick " .. name)
-                        end
                         menu.trigger_commands("kick " .. name)
                         menu.trigger_commands("ignore " .. name .. " on")
                         menu.trigger_commands("desync " .. name .. " on")
@@ -3731,7 +3723,7 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockorb"}, "Blocks the Entra
     end
     util.yield(666)
 end, function()
-    for ipairs(in_orb_room) as pid do
+    for pid in pairs(in_orb_room) do
         set_as_illusion(pid, in_orb_room, false)
     end
     in_orb_room = {}
@@ -4470,7 +4462,7 @@ menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"}, "Ghost everyone who i
         util.yield(13666)
     end
 end, function()
-    for ipairs(sussy_god) as pid do
+    for pid in pairs(sussy_god) do
         if player_Exist(pid) then
             set_as_illusion(pid, sussy_god, false)
         end
