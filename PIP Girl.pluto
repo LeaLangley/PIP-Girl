@@ -5122,6 +5122,7 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
         ["Maze Bank Tower"] = {239617, 254465, 254721, 254977, 255233, 239873},
         ["Meth Lab"] = {247041},
         ["Mission End Carpark"] = {25090},
+        ["Michael House"] = {36866},
         ["Nightclub"] = {271617, 271873},
         ["Omega's Garage"] = {178433},
         ["Penthouse Garage"] = {275457},
