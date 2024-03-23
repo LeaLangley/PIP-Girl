@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.146"
+local script_version = "1.147"
 
 local lust_upDate = {year=2024, month=3, day=25}
 
@@ -785,28 +785,22 @@ local set_passive = {}
 
 local function set_as_illusion(pid, tbl, state)
     if isFriend(pid) and tbl ~= in_orb_room then
-        for ipairs({in_orb_room, sussy_god, set_passive}) as otherTbl do
-            local index = find_in_table(otherTbl, pid)
-            if index then
-                table.remove(otherTbl, index)
-            end
-        end
+        in_orb_room[pid] = nil
+        sussy_god[pid] = nil
+        set_passive[pid] = nil
         NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
     else
         if state then
-            if not contains(tbl, pid) then
+            if not tbl[pid] then
                 NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
-                table.insert(tbl, pid)
+                tbl[pid] = true
             end
         else
-            local index = find_in_table(tbl, pid)
-            if index then
-                table.remove(tbl, index)
-            end
+            tbl[pid] = nil
             local playerInOtherTables = false
             for ipairs({in_orb_room, sussy_god, set_passive}) as otherTbl do
                 if otherTbl ~= tbl then
-                    if contains(otherTbl, pid) then
+                    if otherTbl[pid] then
                         playerInOtherTables = true
                         break
                     end
@@ -3909,30 +3903,24 @@ menu.toggle_loop(SessionWorld, "Downgrade Oppressor MK2s", {""}, "Downgrade Oppr
 end)
 
 local mk2noob = {}
+
 menu.toggle_loop(SessionWorld, "Spinning Oppressor MK2s", {""}, "Spin all MK2's, except Modder and Friend's", function()
     for players.list_except(true) as pid do
         if players.get_vehicle_model(pid) == 2069146067 and not isFriend(pid) then
             if not isModder(pid) then 
-                local found = false
-                for ipairs(mk2noob) as plid do
-                    if plid == pid then
-                        found = true
-                        break
-                    end
+                if not mk2noob[pid] then
+                    mk2noob[pid] = true
+                    local playerName = players.get_name(pid)
+                    menu.trigger_commands("spin"..playerName.." on")
+                    menu.trigger_commands("slippery"..playerName.." on")
+                    menu.trigger_commands("lock"..playerName.." on")
+                    util.yield(13)
                 end
-                if not found then
-                    table.insert(mk2noob, pid)
-                end
-                local playerName = players.get_name(pid)
-                menu.trigger_commands("spin"..playerName.." on")
-                menu.trigger_commands("slippery"..playerName.." on")
-                menu.trigger_commands("lock"..playerName.." on")
-                util.yield(13)
             end
         else
-            local index = find_in_table(mk2noob, pid)
-            if index then
-                table.remove(mk2noob, index)
+            if mk2noob[pid] then
+                mk2noob[pid] = nil
+                local playerName = players.get_name(pid)
                 menu.trigger_commands("spin"..playerName.." off")
                 menu.trigger_commands("slippery"..playerName.." off")
                 menu.trigger_commands("lock"..playerName.." off")
@@ -3941,15 +3929,14 @@ menu.toggle_loop(SessionWorld, "Spinning Oppressor MK2s", {""}, "Spin all MK2's,
     end
     util.yield(1666)
 end, function()
-    for ipairs(mk2noob) as pid do
-        local index = find_in_table(mk2noob, pid)
+    for pid in pairs(mk2noob) do
         if player_Exist(pid) then
             local playerName = players.get_name(pid)
             menu.trigger_commands("spin"..playerName.." off")
             menu.trigger_commands("slippery"..playerName.." off")
             menu.trigger_commands("lock"..playerName.." off")
         end
-        table.remove(mk2noob, index)
+        mk2noob[pid] = nil
     end
 end)
 
@@ -4374,44 +4361,33 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     util.yield(6666)
                                 end
                                 local loading_timeout = os.time() + 25
-                                local fail = false
                                 while player_Exist(pid) and isStuck(pid) do
                                     util.yield(666)
                                     if os.time() > loading_timeout then
                                         notify_cmd(name .. " took too long to load. Timeout reached.")
-                                        fail = true
+                                        menu.trigger_commands("scripthost")
                                         break
                                     end
-                                    --if not not isFriend(players.get_script_host()) and NETWORK.NETWORK_GET_AVERAGE_PACKET_LOSS(pid) > 0 then
-                                    --    notify_cmd(name .. " has trash internet.")
-                                    --    fail = true
-                                    --    break
-                                    --end
                                     if players.get_script_host() ~= pid then
                                         break
                                     end
                                 end
-                                if not fail then
-                                    if players.get_script_host() ~= players.user() then
-                                        if discoveredSince(players.get_script_host()) < 113 then
-                                            menu.trigger_commands("scripthost")
-                                        end
-                                    end
-                                    if player_Exist(pid) then
-                                        if not isStuck(pid) then
-                                            notify_cmd(name .. " Finished Loading.")
-                                        end
-                                    else
+                                if players.get_script_host() ~= players.user() then
+                                    if discoveredSince(players.get_script_host()) < 113 then
                                         menu.trigger_commands("scripthost")
-                                        notify_cmd(name .. " got Lost in the Void.")
-                                        util.yield(25666)
+                                    end
+                                end
+                                if player_Exist(pid) then
+                                    if not isStuck(pid) then
+                                        notify_cmd(name .. " Finished Loading.")
                                     end
                                 else
                                     menu.trigger_commands("scripthost")
+                                    notify_cmd(name .. " got Lost in the Void.")
                                     util.yield(25666)
                                 end
                             end
-                        elseif stuckPlayers[pid] then
+                        else
                             stuckPlayers[pid] = nil
                         end
                     end
@@ -4528,22 +4504,9 @@ end)
 
 menu.action(Session, "De-Ghost all Debug", {""}, "", function()
     for players.list_except(true) as pid do
-        local index1 = find_in_table(in_orb_room, pid)
-        if index1 then
-            table.remove(in_orb_room, index1)
-        end
-        local index2 = find_in_table(sussy_god, pid)
-        if index2 then
-            table.remove(sussy_god, index2)
-        end
-        local index3 = find_in_table(sussy_god, pid)
-        if index3 then
-            table.remove(set_passive, index3)
-        end
-        local index4 = find_in_table(mk2noob, pid)
-        if index4 then
-            table.remove(mk2noob, index4)
-        end
+        in_orb_room[pid] = nil
+        sussy_god[pid] = nil
+        set_passive[pid] = nil
         NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
     end
     in_orb_room = {}
@@ -4609,7 +4572,7 @@ end)
 
 local data_e = {}
 
-local data_g = {}
+local PIP_Girl_Blacklist = {}
 
 if not filesystem.exists(resources_dir .. 'Export/Export_Blacklist.json') then
     local file = io.open(resources_dir .. 'Export/Export_Blacklist.json', "w")
@@ -4634,7 +4597,6 @@ local function load_data_e()
         local old_data_e = json.decode(contents) or {}
         data_e = old_data_e
 
-        -- Check if old format is detected
         local is_old_format = false
         for id, player in pairs(old_data_e) do
             if player["Name"] then
@@ -4643,7 +4605,6 @@ local function load_data_e()
             end
         end
 
-        -- Convert old format to new format
         if is_old_format then
             data_e = {}
             for id, player in pairs(old_data_e) do
@@ -4652,8 +4613,11 @@ local function load_data_e()
                 end
             end
 
-            -- Save the new format
             save_data_e()
+        end
+
+        for ipairs(data_e) as id do
+            PIP_Girl_Blacklist[id] = true
         end
     else
         local new_file = io.open(resources_dir .. 'Export/Export_Blacklist.json', 'w')
@@ -4673,27 +4637,15 @@ local function load_data_g()
         local contents = file:read('*all')
         io.close(file)
         local json_data = json.decode(contents) or {}
-        data_g = json_data or {} -- Assuming data_g is a table
+        for ipairs(json_data) as id do
+            PIP_Girl_Blacklist[id] = true
+        end
     end
 end
 
 load_data_e()
 
 load_data_g()
-
-local PIP_Girl_Blacklist = {}
-
-local function load_PIP_Girl_Blacklist()
-    for ipairs(data_g) as id do
-        PIP_Girl_Blacklist[id] = true
-    end
-
-    for ipairs(data_e) as id do
-        PIP_Girl_Blacklist[id] = true
-    end
-end
-
-load_PIP_Girl_Blacklist()
 
 local function add_player_to_blacklist(rid)
     if pid ~= players.user() then
@@ -4877,22 +4829,11 @@ local function removeFromTable(pid)
             end
         end
     end
-    local index = find_in_table(in_orb_room, pid)
-    if index then
-        table.remove(in_orb_room, index)
-    end
-    local index = find_in_table(sussy_god, pid)
-    if index then
-        table.remove(sussy_god, index)
-    end
-    local index = find_in_table(sussy_god, pid)
-    if index then
-        table.remove(set_passive, index)
-    end
-    local index = find_in_table(mk2noob, pid)
-    if index then
-        table.remove(mk2noob, index)
-    end
+    in_orb_room[pid] = nil
+    sussy_god[pid] = nil
+    set_passive[pid] = nil
+    mk2noob[pid] = nil    
+    stuckPlayers[pid] = nil
 end
 
 players.on_leave(removeFromTable)
