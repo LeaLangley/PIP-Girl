@@ -2369,9 +2369,9 @@ menu.action(Vehicle, "Teleport and Enter Asuka Tech Vehicle", {"tpenterasuka"}, 
         ENTITY.SET_ENTITY_ROTATION(target_vehicle, 0.0, 0.0, currentRotation.z, 2, true)
         util.yield(666)
         if is_vehicle_free_for_use(target_vehicle) then
-            PED.SET_PED_INTO_VEHICLE(my_ped, target_vehicle, -1)
+            PED.SET_PED_INTO_VEHICLE(players.user_ped(), target_vehicle, -1)
         else
-            PED.SET_PED_INTO_VEHICLE(my_ped, target_vehicle, -2)
+            PED.SET_PED_INTO_VEHICLE(players.user_ped(), target_vehicle, -2)
         end
         util.yield(666)
         buff_asuka_tech(target_vehicle)
