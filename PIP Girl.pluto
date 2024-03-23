@@ -4239,10 +4239,11 @@ end
 
 local function create_pop_multiplier(sphereID, pedPOP, vehPOP)
     if not sphereID then
-        pop_multiplier_repair = remove_pop_multiplier(13)
+        remove_pop_multiplier(13)
         sphereID = MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19666, pedPOP, vehPOP, false, true)
     end
     if not MISC.DOES_POP_MULTIPLIER_AREA_EXIST(sphereID) then
+        remove_pop_multiplier(13)
         sphereID = MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19666, pedPOP, vehPOP, false, true)
     end
     return sphereID
@@ -4482,19 +4483,19 @@ menu.action(Session, "Ghost God Debug", {""}, "", function()
     local reportString = "Players in all tables:\n"
     
     reportString = reportString .. "Table: in_orb_room\n"
-    for ipairs(in_orb_room) as pid do
+    for pid in pairs(in_orb_room) do
         local playerName = players.get_name_with_tags(pid)
         reportString = reportString .. " Name: " .. playerName .. "\n"
     end
 
     reportString = reportString .. "Table: sussy_god\n"
-    for ipairs(sussy_god) as pid do
+    for pid in pairs(sussy_god) do
         local playerName = players.get_name_with_tags(pid)
         reportString = reportString .. " Name: " .. playerName .. "\n"
     end
 
     reportString = reportString .. "Table: set_passive\n"
-    for ipairs(set_passive) as pid do
+    for pid in pairs(set_passive) do
         local playerName = players.get_name_with_tags(pid)
         reportString = reportString .. " Name: " .. playerName .. "\n"
     end
