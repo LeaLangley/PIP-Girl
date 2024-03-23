@@ -2356,6 +2356,7 @@ menu.action(Vehicle, "Teleport and Enter Asuka Tech Vehicle", {"tpenterasuka"}, 
                 end
             end
         end
+        util.yield(666)
         requestControl(target_vehicle)
         local pos = players.get_position(players.user())
         local currentRotation = players.get_cam_rot(players.user())
