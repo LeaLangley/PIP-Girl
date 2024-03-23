@@ -4374,7 +4374,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     end
                                 end
                                 if players.get_script_host() ~= players.user() then
-                                    if discoveredSince(players.get_script_host()) < 113 then
+                                    if stuckDurationTol ~= 10 and discoveredSince(players.get_script_host()) < 113 then
                                         menu.trigger_commands("scripthost")
                                     end
                                 end
@@ -4391,9 +4391,6 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                         else
                             stuckPlayers[pid] = nil
                         end
-                    end
-                    if not isFriend(players.get_script_host()) and discoveredSince(players.get_script_host()) < 113 then
-                        menu.trigger_commands("scripthost")
                     end
                 end
             else
