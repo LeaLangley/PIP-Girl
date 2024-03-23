@@ -1899,7 +1899,7 @@ local function buff_asuka_tech(vehicle)
     VEHICLE.SET_VEHICLE_HAS_BEEN_OWNED_BY_PLAYER(vehicle, true)
     --VEHICLE.SET_VEHICLE_FORCE_AFTERBURNER(vehicle, true)
     AUDIO.ENABLE_VEHICLE_EXHAUST_POPS(vehicle, true)
-    NETWORK.NETWORK_SET_NO_LONGER_NEEDED(target_vehicle, false)
+    NETWORK.NETWORK_SET_NO_LONGER_NEEDED(vehicle, false)
     local buffVehModel = ENTITY.GET_ENTITY_MODEL(vehicle)
     if buffVehModel == 167522317 then
         if VEHICLE.DOES_EXTRA_EXIST(vehicle, 1) and not VEHICLE.IS_VEHICLE_EXTRA_TURNED_ON(vehicle, 1) then
@@ -2098,7 +2098,7 @@ local function repair_asuka_tech(vehicle)
     end
 
     if engineHealth <= 0 and bodyHealth <= 0 then
-        NETWORK.NETWORK_SET_NO_LONGER_NEEDED(target_vehicle, true)
+        NETWORK.NETWORK_SET_NO_LONGER_NEEDED(vehicle, true)
     end
 end
 local current_asuka_tech_vehicle = nil
