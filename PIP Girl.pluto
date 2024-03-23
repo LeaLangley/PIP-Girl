@@ -4355,7 +4355,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                             if players.get_script_host() ~= pid and stuckDuration > stuckDurationTol and stuckDuration < 313 then
                                 local name = players.get_name(pid)
                                 menu.trigger_commands("givesh " .. name)
-                                util.yield(13)
+                                util.yield(666)
                                 if players.get_script_host() == pid then
                                     notify_cmd(name .. " is Loading since: "..stuckDuration)
                                 else
