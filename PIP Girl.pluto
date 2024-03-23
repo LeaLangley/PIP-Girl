@@ -4861,6 +4861,7 @@ local function removeFromTable(pid)
             util.yield(13)
             if players.get_script_host() == players.user() then
                 notify_cmd("Saved the Script-Host via on_leave")
+                menu.trigger_command(menu.ref_by_path("Online>Session>Clear Blacklist"))
                 util.yield(113)
             end
         end
@@ -5338,6 +5339,7 @@ util.on_transition_finished(function ()
             util.yield(13)
             if players.get_script_host() == players.user() then
                 notify_cmd("Saved the Script-Host via on_transition_finished")
+                menu.trigger_command(menu.ref_by_path("Online>Session>Clear Blacklist"))
                 util.yield(666)
             end
         else
