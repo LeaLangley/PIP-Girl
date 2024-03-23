@@ -4359,6 +4359,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                 if players.get_script_host() == pid then
                                     notify_cmd(name .. " is Loading since: "..stuckDuration)
                                 else
+                                    notify_cmd(name .. " is Loading too long, since: "..stuckDuration)
                                     util.yield(6666)
                                 end
                                 local loading_timeout = os.time() + 25
