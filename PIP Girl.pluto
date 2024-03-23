@@ -2940,9 +2940,9 @@ menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'}, "Auto Interact with 
         }
         for ipairs(interactionsE) as label do
             if IS_HELP_MSG_DISPLAYED(label) then
+                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 51, 1)
                 local animStartTime = 0
                 menu.trigger_commands("timescale 1000")
-                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 51, 1)
                 while ENTITY.GET_ENTITY_SPEED(players.user_ped()) ~=0 or animStartTime >= 5 do
                     util.yield(1000)
                     animStartTime += 1
