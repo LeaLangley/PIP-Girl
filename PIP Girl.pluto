@@ -5338,7 +5338,7 @@ util.on_transition_finished(function ()
             util.yield(13)
             if players.get_script_host() == players.user() then
                 notify_cmd("Saved the Script-Host via on_transition_finished")
-                util.yield(113)
+                util.yield(666)
             end
         else
             util.yield(113)
