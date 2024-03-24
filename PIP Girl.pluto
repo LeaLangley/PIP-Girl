@@ -1819,7 +1819,9 @@ local closestDistance = math.huge
 local wasInZone = false
 local protectMissionVehicles = false
 local function buff_asuka_tech(vehicle)
-    requestControl(vehicle)
+    if is_vehicle_free_for_use(vehicle) then
+        requestControl(vehicle)
+    end
     menu.trigger_commands("smoothflight on")
     if protectMissionVehicles and not players.is_in_interior(players.user()) and not players.is_using_rc_vehicle(players.user()) then
         if ENTITY.IS_ENTITY_A_MISSION_ENTITY(vehicle) and vehicle ~= entities.get_user_personal_vehicle_as_handle() then
