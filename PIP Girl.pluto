@@ -4348,7 +4348,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                             if isFriend(pid) then
                                 stuckDurationTol = 13
                             end
-                            if scriptHost ~= pid and stuckDuration > stuckDurationTol and stuckDuration and not timeoutIgnore[pid] or (timeoutIgnore[pid] and os.time() > timeoutIgnore[pid]) then
+                            if scriptHost ~= pid and stuckDuration > stuckDurationTol and stuckDuration and (not timeoutIgnore[pid] or (timeoutIgnore[pid] and os.time() > timeoutIgnore[pid])) then
                                 local name = players.get_name(pid)
                                 menu.trigger_commands("givesh " .. name)
                                 local givingSHTimeout = os.time() + 6
