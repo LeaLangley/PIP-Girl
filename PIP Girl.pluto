@@ -4344,7 +4344,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                 stuckPlayers[pid] = os.time()
                             end
                             local stuckDuration = os.time() - stuckPlayers[pid]
-                            local stuckDurationTol = 16
+                            local stuckDurationTol = 20
                             if isFriend(pid) then
                                 stuckDurationTol = 13
                             end
@@ -4373,7 +4373,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     if os.time() > loading_timeout then
                                         notify_cmd(name .. " took too long to load. Timeout reached.")
                                         menu.trigger_commands("scripthost")
-                                        timeoutIgnore[pid] = os.time() + 120
+                                        timeoutIgnore[pid] = os.time() + 222
                                         break
                                     end
                                     if players.get_script_host() ~= pid then
