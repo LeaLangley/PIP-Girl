@@ -4321,7 +4321,7 @@ local function healthyInternet(pid)
 end
 
 local function worthToUnstuck(pid)
-    if player_Exist(pid) and isStuck(pid) and healthyInternet(pid) and discoveredSince(pid) >= 113 then
+    if player_Exist(pid) and isStuck(pid) and healthyInternet(pid) then
         return true
     else
         return false
@@ -4333,7 +4333,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
     if transitionState(true) == 1 then
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
             if players.user() == players.get_host() or (players.user() == players.get_script_host() and (not isFriend(players.get_host()) and not isModder(players.get_host()))) then
-                if not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) and discoveredSince(players.user()) > 113 then
+                if not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
                     for players.list() as pid do
                         if worthToUnstuck(pid) then
                             if not stuckPlayers[pid] then
@@ -4366,7 +4366,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                 end
                                 if players.get_script_host() ~= -1 then
                                     if players.get_script_host() ~= players.user() then
-                                        if stuckDurationTol ~= 10 and discoveredSince(players.get_script_host()) < 113 then
+                                        if stuckDurationTol ~= 10 and not players.are_stats_ready(pid) then
                                             menu.trigger_commands("scripthost")
                                         end
                                     end
@@ -5285,12 +5285,15 @@ util.on_transition_finished(function ()
                 util.yield(666)
             end
         end
-        if recoverScripthostCode ~= get_session_code() then
+        if players.get_script_host() == -1 then
+            util.yield(413)
             if players.get_script_host() == -1 then
-                util.yield(113)
-                if players.get_script_host() == -1 then
+                if recoverScripthostCode ~= get_session_code() then
                     recoverScripthostCode = get_session_code()
                     notify("This session has very moste likely just broke. :c")
+                end
+                if players.get_host() == players.user() then
+                    menu.trigger_commands("scripthost")
                 end
             end
         end
