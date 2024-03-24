@@ -5303,7 +5303,7 @@ util.on_transition_finished(function ()
                 end
             end
         end
-        util.yield(113)
+        util.yield(13)
     end
 end)
 
