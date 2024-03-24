@@ -5292,7 +5292,7 @@ util.on_transition_finished(function ()
             end
         end
         if players.get_script_host() == -1 then
-            util.yield(413)
+            util.yield(666)
             if players.get_script_host() == -1 then
                 if recoverScripthostCode ~= get_session_code() then
                     recoverScripthostCode = get_session_code()
