@@ -4329,6 +4329,8 @@ local function worthToUnstuck(pid)
 end
 
 local stuckPlayers = {}
+local timeoutIgnore = {}
+
 menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
     if transitionState(true) == 1 then
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
@@ -4344,9 +4346,11 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                             if isFriend(pid) then
                                 stuckDurationTol = 10
                             end
-                            if players.get_script_host() ~= pid and stuckDuration > stuckDurationTol and stuckDuration < 313 then
+                            if scriptHost ~= pid and stuckDuration > stuckDurationTol and stuckDuration < 313 and not timeoutIgnore[pid] or os.time() > timeoutIgnore[pid] then
                                 local name = players.get_name(pid)
                                 menu.trigger_commands("givesh " .. name)
+                                timeoutIgnore[pid] = nil
+                                util.yield(113)
                                 if players.get_script_host() == pid then
                                     notify_cmd(name .. " is Loading since: "..stuckDuration)
                                 else
@@ -4358,6 +4362,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     if os.time() > loading_timeout then
                                         notify_cmd(name .. " took too long to load. Timeout reached.")
                                         menu.trigger_commands("scripthost")
+                                        timeoutIgnore[pid] = os.time() + 120
                                         break
                                     end
                                     if players.get_script_host() ~= pid then
@@ -4827,6 +4832,7 @@ local function removeFromTable(pid)
     set_passive[pid] = nil
     mk2noob[pid] = nil    
     stuckPlayers[pid] = nil
+    timeoutIgnore[pid] = nil
 end
 
 players.on_leave(removeFromTable)
