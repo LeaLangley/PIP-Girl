@@ -5306,7 +5306,7 @@ util.on_transition_finished(function ()
             if players.get_script_host() == -1 then
                 if recoverScripthostCode ~= get_session_code() then
                     recoverScripthostCode = get_session_code()
-                    notify("This session has very moste likely just broke. :c")
+                    notify_cmd("This session has very moste likely just broke. :c")
                 end
                 if players.get_host() == players.user() then
                     menu.trigger_commands("scripthost")
