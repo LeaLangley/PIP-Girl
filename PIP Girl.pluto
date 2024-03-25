@@ -4191,10 +4191,21 @@ menu.action(SessionInvite, "Invite Friend's", {"invitefriends"}, "invite all fri
     if transitionState(true) == 1 then
         local invited = 0
         local invitedFriends = {}
+        local dndList = readFromFilePIP(store_dir..'dnd_list.txt')
         if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Friend's")) then
             for menu.ref_by_path("Online>Player History>Noted Players>Friend's"):getChildren() as friend do
                 local friend_target = friend.target
-                if friend_target:getState() ~= "Offline" then
+                local skipInvite = false
+                if not dndList then
+                    local cleanFriendName = friend_name:match("([^\r\n]+)")
+                    for name in dndList:gmatch("[^\r\n]+") do
+                        if cleanFriendName == name then
+                            skipInvite = true
+                            break
+                        end
+                    end
+                end
+                if not skipInvite and friend_target:getState() ~= "Offline" then
                     menu.trigger_command(friend_target:refByRelPath("Invite To Session"))
                     invited = invited + 1
                     invitedFriends[#invitedFriends + 1] = friend_target.menu_name
@@ -4407,16 +4418,16 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     util.yield(25666)
                                 end
                             end
-                            if not isFriend(players.get_script_host()) then
-                                if not players.are_stats_ready(players.get_script_host()) then
-                                    menu.trigger_commands("scripthost")
-                                end
-                                if not healthyInternet(players.get_script_host()) then
-                                    menu.trigger_commands("scripthost")
-                                end
-                            end
                         else
                             stuckPlayers[pid] = nil
+                        end
+                        if not isFriend(players.get_script_host()) then
+                            if not players.are_stats_ready(players.get_script_host()) then
+                                menu.trigger_commands("scripthost")
+                            end
+                            if not healthyInternet(players.get_script_host()) then
+                                menu.trigger_commands("scripthost")
+                            end
                         end
                         ::skipSSH::
                     end
