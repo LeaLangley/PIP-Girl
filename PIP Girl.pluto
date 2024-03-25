@@ -4959,7 +4959,7 @@ player_menu = function(pid)
             return
         end
         menu.trigger_command(menu.ref_by_rel_path(menu.player_root(pid), "Friendly>Give Collectibles>All"))
-        while player_Exist(pid) and giveRP:isValid() and players.get_rank(pid) < 120 and PGLEVELBOOST.value do
+        while player_Exist(pid) and players.get_rank(pid) < 120 and PGLEVELBOOST.value do
             menu.trigger_commands("rp " .. name)
             util.yield(113)
             if not giveRP:isValid() or not player_Exist(pid) then
