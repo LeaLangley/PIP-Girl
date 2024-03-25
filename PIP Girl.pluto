@@ -3536,7 +3536,6 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 --  Is session under controll?
                 --  <3
                 if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 and (players.get_host() == players.user() or isFriend(players.get_host())) then
-                    allow_Join_back(host_name)
                     warnify("Found u a new Home <3")
                     menu.trigger_commands("helibackup")
                     session_claimer_players_range = session_claimer_players
