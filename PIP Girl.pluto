@@ -4397,6 +4397,14 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     util.yield(25666)
                                 end
                             end
+                            if not isFriend(players.get_script_host()) then
+                                if not players.are_stats_ready(players.get_script_host()) then
+                                    menu.trigger_commands("scripthost")
+                                end
+                                if not healthyInternet(players.get_script_host()) then
+                                    menu.trigger_commands("scripthost")
+                                end
+                            end
                         else
                             stuckPlayers[pid] = nil
                         end
