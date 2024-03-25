@@ -4191,16 +4191,18 @@ menu.action(SessionInvite, "Invite Friend's", {"invitefriends"}, "invite all fri
     if transitionState(true) == 1 then
         local invited = 0
         local invitedFriends = {}
+        local ignoredDueToDND = {}
         local dndList = readFromFilePIP(store_dir..'dnd_list.txt')
         if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Friend's")) then
             for menu.ref_by_path("Online>Player History>Noted Players>Friend's"):getChildren() as friend do
                 local friend_target = friend.target
                 local skipInvite = false
-                if not dndList then
-                    local cleanFriendName = friend_target.menu_name:match("([^\r\n]+)")
+                if dndList then
+                    local cleanFriendName = friend_target.menu_name:gsub("[-_]", ""):lower()
                     for name in dndList:gmatch("[^\r\n]+") do
-                        if cleanFriendName == name then
+                        if cleanFriendName == name:lower() then
                             skipInvite = true
+                            ignoredDueToDND[#ignoredDueToDND + 1] = friend_target.menu_name
                             break
                         end
                     end
@@ -4223,7 +4225,18 @@ menu.action(SessionInvite, "Invite Friend's", {"invitefriends"}, "invite all fri
             end
             invitedNames = invitedNames .. name
         end
-        notify("Invited "..invited.." Friends: " .. invitedNames)
+        local ignoredNames = ""
+        for i, name in ipairs(ignoredDueToDND) do
+            if i > 1 then
+                ignoredNames = ignoredNames .. ", "
+            end
+            ignoredNames = ignoredNames .. name
+        end
+        local notificationMessage = "Invited "..invited.." Friends: " .. invitedNames
+        if #ignoredDueToDND > 0 then
+            notificationMessage = notificationMessage .. "\nSkipped due to DND: " .. table.concat(ignoredDueToDND, ", ")
+        end
+        notify(notificationMessage)        
     else     
         notify("Wait until you are loaded in.")
     end
