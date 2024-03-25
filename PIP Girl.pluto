@@ -4268,6 +4268,7 @@ menu.toggle_loop(Session, "Clear Traffic", {"antitraffic"}, "Clears the traffic 
     else
         if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "Off" then
             menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "On")
+            menu.apply_default_state(menu.ref_by_path("World>Inhabitants>Pedestrians>Disable"))
         end
         pop_multiplier_free = remove_pop_multiplier(pop_multiplier_free)
         util.yield(6666)
@@ -4279,9 +4280,7 @@ end, function()
     if menu.get_state(menu.ref_by_path("World>Inhabitants>Traffic>Disable")) ~= "Disabled" then
         menu.trigger_command(menu.ref_by_path("World>Inhabitants>Traffic>Disable>Disabled"))
     end
-    if menu.get_state(menu.ref_by_path("World>Inhabitants>Pedestrians>Disable")) == "On" then
-        menu.set_state(menu.ref_by_path("World>Inhabitants>Pedestrians>Disable"), "Off")
-    end
+    menu.apply_default_state(menu.ref_by_path("World>Inhabitants>Pedestrians>Disable"))
     VEHICLE.SET_DISTANT_CARS_ENABLED(true)
     STREAMING.SET_VEHICLE_POPULATION_BUDGET(3)
     STREAMING.SET_REDUCE_VEHICLE_MODEL_BUDGET(false)
