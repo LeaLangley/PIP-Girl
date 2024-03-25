@@ -4363,7 +4363,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     util.yield(13)
                                     if os.time() > givingSHTimeout then
                                         notify_cmd(name .. " took too long to give SH.")
-                                        timeoutIgnore[pid] = os.time() + 420
+                                        timeoutIgnore[pid] = os.time() + 213
                                         goto skipSSH
                                     end
                                     if players.get_script_host() == pid then
@@ -4379,6 +4379,12 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     util.yield(13)
                                     if os.time() > loading_timeout then
                                         notify_cmd(name .. " took too long to load. Timeout reached.")
+                                        menu.trigger_commands("scripthost")
+                                        timeoutIgnore[pid] = os.time() + 420
+                                        break
+                                    end
+                                    if not healthyInternet(pid) then
+                                        notify_cmd(name .. " trashy internet.")
                                         menu.trigger_commands("scripthost")
                                         timeoutIgnore[pid] = os.time() + 420
                                         break
