@@ -5346,7 +5346,8 @@ util.on_transition_finished(function ()
         fillUpEverything()
         menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
     end
-    while transitionState(true) == 1 do
+    local doTheThighs = true
+    while transitionState(true) == 1 and doTheThighs do
         if players.get_host() == players.user() then
             if not player_Exist(players.get_script_host()) or (not players.are_stats_ready(players.get_script_host()) and not isFriend(players.get_script_host())) then
                 menu.trigger_commands("scripthost")
@@ -5372,6 +5373,7 @@ util.on_transition_finished(function ()
             util.yield(6666)
         end
         if transitionState(true) ~= 1 then
+            doTheThighs = false
             break
         end
     end
