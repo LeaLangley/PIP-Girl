@@ -4353,7 +4353,7 @@ local function healthyInternet(pid)
 end
 
 local function worthToUnstuck(pid)
-    if player_Exist(pid) and isStuck(pid) and healthyInternet(pid) and discoveredSince(pid) > 113 then
+    if player_Exist(pid) and isStuck(pid) and healthyInternet(pid) then
         return true
     else
         return false
@@ -4369,7 +4369,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
             if players.user() == players.get_host() or (players.user() == players.get_script_host() and (not isFriend(players.get_host()) and not isModder(players.get_host()))) then
                 if not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
                     for players.list() as pid do
-                        if worthToUnstuck(pid) then
+                        if worthToUnstuck(pid) and discoveredSince(pid) > 113 then
                             if not stuckPlayers[pid] then
                                 stuckPlayers[pid] = os.time()
                             end
@@ -4387,10 +4387,16 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                 local name = players.get_name(pid)
                                 menu.trigger_commands("givesh " .. name)
                                 local givingSHTimeout = os.time() + 6
-                                while player_Exist(pid) and isStuck(pid) and players.get_script_host() ~= pid do
+                                while worthToUnstuck(pid) and players.get_script_host() ~= pid do
                                     util.yield(13)
                                     if os.time() > givingSHTimeout then
                                         notify_cmd(name .. " took too long to give SH.")
+                                        timeoutIgnore[pid] = os.time() + 420
+                                        goto skipSSH
+                                    end
+                                    if healthyInternet(pid) then
+                                        notify_cmd(name .. " has trashy internet.")
+                                        menu.trigger_commands("scripthost")
                                         timeoutIgnore[pid] = os.time() + 420
                                         goto skipSSH
                                     end
@@ -4403,7 +4409,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     timeoutIgnore[pid] = nil
                                 end
                                 local loading_timeout = os.time() + 13
-                                while player_Exist(pid) and isStuck(pid) do
+                                while worthToUnstuck(pid) do
                                     util.yield(13)
                                     if os.time() > loading_timeout then
                                         notify_cmd(name .. " took too long to load. Timeout reached.")
