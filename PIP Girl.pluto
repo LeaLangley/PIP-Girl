@@ -1941,6 +1941,10 @@ local temp_holding_outfit = nil
 menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you outfit only if u dont have interaction menu open or in some critical mission.", function()
     local focused = lang.get_string(menu.get_current_menu_list():getParent().menu_name)
     if util.is_interaction_menu_open() then
+        if ChangedHelmet then
+            menu.trigger_commands("hat -1")
+            ChangedHelmet = false
+        end
         menu.trigger_commands("lockoutfit off")
     else
         if NETWORK.NETWORK_IS_ACTIVITY_SESSION() and 4 >= PLAYER.GET_NUMBER_OF_PLAYERS() then
