@@ -5319,14 +5319,12 @@ util.on_transition_finished(function ()
                 end
             end
             if players.get_script_host() == -1 then
-                util.yield(666)
+                util.yield(213)
                 if players.get_script_host() == -1 then
+                    menu.trigger_commands("scripthost")
                     if recoverScripthostCode ~= get_session_code() then
                         recoverScripthostCode = get_session_code()
                         notify_cmd("This session has very moste likely just broke. :c")
-                    end
-                    if players.get_host() == players.user() then
-                        menu.trigger_commands("scripthost")
                     end
                 end
             end
