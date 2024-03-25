@@ -4355,7 +4355,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     timeoutIgnore[pid] = nil
                                 end
                             end
-                            if scriptHost ~= pid and stuckDuration > stuckDurationTol and stuckDuration and (not timeoutIgnore[pid] or (timeoutIgnore[pid] and os.time() > timeoutIgnore[pid])) then
+                            if scriptHost ~= pid and stuckDuration > stuckDurationTol and stuckDuration < 420 and (not timeoutIgnore[pid] or (timeoutIgnore[pid] and os.time() > timeoutIgnore[pid])) then
                                 local name = players.get_name(pid)
                                 menu.trigger_commands("givesh " .. name)
                                 local givingSHTimeout = os.time() + 6
@@ -4363,7 +4363,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     util.yield(13)
                                     if os.time() > givingSHTimeout then
                                         notify_cmd(name .. " took too long to give SH.")
-                                        timeoutIgnore[pid] = os.time() + 213
+                                        timeoutIgnore[pid] = os.time() + 420
                                         goto skipSSH
                                     end
                                     if players.get_script_host() == pid then
@@ -4380,7 +4380,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     if os.time() > loading_timeout then
                                         notify_cmd(name .. " took too long to load. Timeout reached.")
                                         menu.trigger_commands("scripthost")
-                                        timeoutIgnore[pid] = os.time() + 420
+                                        timeoutIgnore[pid] = os.time() + 213
                                         break
                                     end
                                     if not healthyInternet(pid) then
