@@ -4197,7 +4197,7 @@ menu.action(SessionInvite, "Invite Friend's", {"invitefriends"}, "invite all fri
                 local friend_target = friend.target
                 local skipInvite = false
                 if not dndList then
-                    local cleanFriendName = friend_name:match("([^\r\n]+)")
+                    local cleanFriendName = friend_target.menu_name:match("([^\r\n]+)")
                     for name in dndList:gmatch("[^\r\n]+") do
                         if cleanFriendName == name then
                             skipInvite = true
