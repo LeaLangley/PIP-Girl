@@ -5334,6 +5334,9 @@ util.on_transition_finished(function ()
         else
             util.yield(6666)
         end
+        if transitionState(true) ~= 1 then
+            break
+        end
     end
 end)
 
