@@ -3951,9 +3951,12 @@ end)
 
 menu.action(SessionMisc, "Cleanup \"Friend's\" Group", {"cleanupfriends"}, "remove non friends from this group.", function()
     if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Friend's")) then
+        menu.trigger_commands("findplayer Friend's")
         for menu.ref_by_path("Online>Player History>Noted Players>Friend's"):getChildren() as friend do
             local friend_target = friend.target
             if friend_target then
+                local name = friend_target.menu_name:gsub("%s?%[.*%]", "")
+                menu.trigger_commands("findplayer "..name)
                 if friend_target:isValid() then
                     if friend_target:refByRelPath("Whitelist Join"):isValid() then
                         friend_target:refByRelPath("Whitelist Join").value = false
@@ -3970,6 +3973,7 @@ menu.action(SessionMisc, "Cleanup \"Friend's\" Group", {"cleanupfriends"}, "remo
         end
         util.yield(666)
         menu.trigger_commands("createfriendsgroup")
+        menu.focus(menu.ref_by_path("Stand>Lua Scripts>"..SCRIPT_NAME..">Session>Misc>Create \"Friend's\" Group"))
     else
         notify("You dont have a \"Friend's\" Group. so we created one for you.")
         menu.trigger_commands("createfriendsgroup")
@@ -4384,7 +4388,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                         break
                                     end
                                     if not healthyInternet(pid) then
-                                        notify_cmd(name .. " trashy internet.")
+                                        notify_cmd(name .. " has trashy internet.")
                                         menu.trigger_commands("scripthost")
                                         timeoutIgnore[pid] = os.time() + 420
                                         break
