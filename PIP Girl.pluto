@@ -4398,10 +4398,6 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                             if timeoutIgnore[pid] then
                                 if timeoutIgnore[pid] < os.time() then
                                     timeoutIgnore[pid] = nil
-                                else
-                                    if players.get_script_host() == pid then
-                                        get_ScriptHost()
-                                    end
                                 end
                             end
                             if scriptHost ~= pid and stuckDuration > stuckDurationTol and stuckDuration < 420 and (not timeoutIgnore[pid] or (timeoutIgnore[pid] and os.time() > timeoutIgnore[pid])) then
@@ -4411,13 +4407,8 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                 while worthToUnstuck(pid) and players.get_script_host() ~= pid do
                                     util.yield(13)
                                     if os.time() > givingSHTimeout then
-                                        notify_cmd(name .. " took too long to give SH.")
-                                        timeoutIgnore[pid] = os.time() + 420
-                                        goto skipSSH
-                                    end
-                                    if not healthyInternet(pid) then
-                                        notify_cmd(name .. " has trashy internet.")
                                         get_ScriptHost()
+                                        notify_cmd(name .. " took too long to give SH.")
                                         timeoutIgnore[pid] = os.time() + 420
                                         goto skipSSH
                                     end
@@ -4467,6 +4458,11 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                             end
                             if not healthyInternet(players.get_script_host()) then
                                 get_ScriptHost()
+                            end
+                            if timeoutIgnore[players.get_script_host()] then
+                                if timeoutIgnore[pid] > os.time() then
+                                    get_ScriptHost()
+                                end
                             end
                         end
                         ::skipSSH::
