@@ -4190,7 +4190,7 @@ end)
 
 menu.divider(SessionInvite, "Other.")
 
-menu.action(SessionInvite, "Invite Friend's", {"invitefriends"}, "invite all friends.", function()
+menu.action(SessionInvite, "Invite Friend's", {"invitefriends"}, "Invite all friends.", function()
     if transitionState(true) == 1 then
         local invited = 0
         local invitedFriends = {}
@@ -4203,7 +4203,8 @@ menu.action(SessionInvite, "Invite Friend's", {"invitefriends"}, "invite all fri
                 if dndList then
                     local cleanFriendName = friend_target.menu_name:gsub("[-_]", ""):lower()
                     for name in dndList:gmatch("[^\r\n]+") do
-                        if cleanFriendName == name:lower() then
+                        local cleanDNDName = name:gsub("[-_]", ""):lower()
+                        if cleanFriendName == cleanDNDName then
                             skipInvite = true
                             ignoredDueToDND[#ignoredDueToDND + 1] = friend_target.menu_name
                             break
@@ -4218,28 +4219,16 @@ menu.action(SessionInvite, "Invite Friend's", {"invitefriends"}, "invite all fri
                 end
             end
         else
-            notify("Please create a \"Friend's\" group first.\nYou can do that with \"createfriendsgroup\" Command.")
+            notify("Please create a \"Friend's\" group first.\nYou can do that with the \"createfriendsgroup\" command.")
             return
         end
-        local invitedNames = ""
-        for i, name in ipairs(invitedFriends) do
-            if i > 1 then
-                invitedNames = invitedNames .. ", "
-            end
-            invitedNames = invitedNames .. name
-        end
-        local ignoredNames = ""
-        for i, name in ipairs(ignoredDueToDND) do
-            if i > 1 then
-                ignoredNames = ignoredNames .. ", "
-            end
-            ignoredNames = ignoredNames .. name
-        end
-        local notificationMessage = "Invited "..invited.." Friends: " .. invitedNames
+        local invitedNames = table.concat(invitedFriends, ", ")
+        local ignoredNames = table.concat(ignoredDueToDND, ", ")
+        local notificationMessage = "Invited " .. invited .. " Friend's: " .. invitedNames
         if #ignoredDueToDND > 0 then
-            notificationMessage = notificationMessage .. "\nSkipped due to DND: " .. table.concat(ignoredDueToDND, ", ")
+            notificationMessage = notificationMessage .. "\nSkipped due to DND: " .. ignoredNames
         end
-        notify(notificationMessage)        
+        notify(notificationMessage)
     else     
         notify("Wait until you are loaded in.")
     end
@@ -4379,13 +4368,18 @@ end
 
 local stuckPlayers = {}
 local timeoutIgnore = {}
+local smartScriptHostMode = 1
 
 menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
     if transitionState(true) == 1 then
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
             if players.user() == players.get_host() or (players.user() == players.get_script_host() and (not isFriend(players.get_host()) and not isModder(players.get_host()))) then
-                if not isStuck(players.get_script_host()) and player_Exist(players.get_script_host()) then
-                    for players.list() as pid do
+                if smartScriptHostMode ~= 1 then
+                    local playerList = players.list_only(true, true, false, true)
+                    if smartScriptHostMode == 3 then
+                        playerList = players.list()
+                    end
+                    for playerList as pid do
                         if worthToUnstuck(pid) and discoveredSince(pid) > 113 then
                             if not stuckPlayers[pid] then
                                 stuckPlayers[pid] = os.time()
@@ -4452,22 +4446,22 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                         else
                             stuckPlayers[pid] = nil
                         end
-                        if not isFriend(players.get_script_host()) then
-                            if not players.are_stats_ready(players.get_script_host()) then
-                                get_ScriptHost()
-                            end
-                            if not healthyInternet(players.get_script_host()) then
-                                get_ScriptHost()
-                            end
-                            if timeoutIgnore[players.get_script_host()] then
-                                if timeoutIgnore[pid] > os.time() then
-                                    get_ScriptHost()
-                                end
-                            end
-                        end
-                        ::skipSSH::
                     end
                 end
+                if not isFriend(players.get_script_host()) then
+                    if not players.are_stats_ready(players.get_script_host()) then
+                        get_ScriptHost()
+                    end
+                    if not healthyInternet(players.get_script_host()) then
+                        get_ScriptHost()
+                    end
+                    if timeoutIgnore[players.get_script_host()] then
+                        if timeoutIgnore[pid] > os.time() then
+                            get_ScriptHost()
+                        end
+                    end
+                end
+                ::skipSSH::
             else
                 if isStuck(players.user()) then
                     util.yield(9666)
@@ -4496,6 +4490,14 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
         util.yield(13666)
     end
     util.yield(666)
+end)
+
+menu.list_select(Session, "Smart Script Host Help", {""}, "uses in the option above", {
+    {1, "Myself"},
+    {2, "Friendly"},
+    {3, "Everyone"},
+}, 1, function(value, menu_name, prev_value, click_type)
+    smartScriptHostMode = value
 end)
 
 local function selfSave()
