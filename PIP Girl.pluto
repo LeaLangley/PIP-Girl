@@ -334,26 +334,29 @@ local function orbroomdetection(pid)
     return false
 end
 
-local function StandDetectionsRead(pid)
+local function hasAnyDetection(pid)
     util.yield(13)
-    local PlayerRootChildrenArray = menu.player_root(pid):getChildren()
-    for PlayerRootChildrenArray as Child do
-        if Child:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and lang.get_string(Child.menu_name, "en"):startswith "Classification: " then
-            local DetectionsArray = Child:getChildren()
-            for Index, Detection in DetectionsArray do
-                DetectionsArray[Index] = lang.get_string(Detection.menu_name, "en")
+    if player_Exist(pid) then
+        for menu.player_root(pid):getChildren() as cmd do
+            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING then
+                return true
             end
-            return DetectionsArray
         end
     end
+    return false
 end
 
-local function isModder(pid)
-    if players.is_marked_as_modder(pid) or players.is_marked_as_modder_or_admin(pid) then --or (StandDetectionsRead(pid) and #(StandDetectionsRead(pid)) > 0) then
+
+local function isModder(pid, bool)
+    if players.is_marked_as_modder(pid) or players.is_marked_as_modder_or_admin(pid) then
         return true
-    else
-        return false
     end
+    if bool then
+        if hasAnyDetection(pid) then
+            return true
+        end
+    end
+    return false
 end
 
 local urceoname = ""
@@ -3373,7 +3376,7 @@ end)
 
 local function sessionWorthy()
     if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players then
-        if (not isModder(players.get_host()) or isFriend(players.get_host())) and players.get_host_queue_position(players.user()) <= 1 then
+        if (not isModder(players.get_host(), true) or isFriend(players.get_host())) and players.get_host_queue_position(players.user()) <= 1 then
             return true
         end
         if isFriend(players.get_host()) then
@@ -3392,7 +3395,7 @@ local function findAnewHome()
             findAnewHomeMSG = "You are alone."
         elseif PLAYER.GET_NUMBER_OF_PLAYERS() <= session_claimer_players then
             findAnewHomeMSG = "Not Enoght Player."
-        elseif isModder(players.get_host()) then
+        elseif isModder(players.get_host(), true) then
             findAnewHomeMSG = "Host is a Modder."
         else
             findAnewHomeMSG = "error."
@@ -3709,7 +3712,7 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockorb"}, "Blocks the Entra
                     if not menu.is_ref_valid(menu.ref_by_path("Stand>Lua Scripts>JinxScript>Detections>Normal Detections>Orbital Cannon")) or menu.get_state(menu.ref_by_path("Stand>Lua Scripts>JinxScript>Detections>Normal Detections>Orbital Cannon")) == "Off" then
                         if not isFriend(pid) then
                             notify(players.get_name(pid).." is in Orb Room.")
-                            if not isModder(pid) then
+                            if not isModder(pid, true) then
                                 menu.trigger_commands("interiorkick "..players.get_name(pid))
                             end
                         end
