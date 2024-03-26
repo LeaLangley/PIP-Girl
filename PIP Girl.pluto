@@ -4401,7 +4401,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                         timeoutIgnore[pid] = os.time() + 420
                                         goto skipSSH
                                     end
-                                    if healthyInternet(pid) then
+                                    if not healthyInternet(pid) then
                                         notify_cmd(name .. " has trashy internet.")
                                         menu.trigger_commands("scripthost")
                                         timeoutIgnore[pid] = os.time() + 420
