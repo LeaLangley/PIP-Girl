@@ -4363,6 +4363,20 @@ local function worthToUnstuck(pid)
     end
 end
 
+local function get_ScriptHost()
+    local requesting_SH = os.time() + 6
+    menu.trigger_commands("scripthost")
+    while players.get_script_host() ~= players.user() do
+        util.yield(13)
+        if players.get_script_host() == players.user() then
+            break
+        end
+        if os.time() > requesting_SH then
+            break
+        end
+    end
+end
+
 local stuckPlayers = {}
 local timeoutIgnore = {}
 
@@ -4386,7 +4400,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     timeoutIgnore[pid] = nil
                                 else
                                     if players.get_script_host() == pid then
-                                        menu.trigger_commands("scripthost")
+                                        get_ScriptHost()
                                     end
                                 end
                             end
@@ -4403,7 +4417,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     end
                                     if not healthyInternet(pid) then
                                         notify_cmd(name .. " has trashy internet.")
-                                        menu.trigger_commands("scripthost")
+                                        get_ScriptHost()
                                         timeoutIgnore[pid] = os.time() + 420
                                         goto skipSSH
                                     end
@@ -4420,13 +4434,13 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                     util.yield(13)
                                     if os.time() > loading_timeout then
                                         notify_cmd(name .. " took too long to load. Timeout reached.")
-                                        menu.trigger_commands("scripthost")
+                                        get_ScriptHost()
                                         timeoutIgnore[pid] = os.time() + 213
                                         break
                                     end
                                     if not healthyInternet(pid) then
                                         notify_cmd(name .. " has trashy internet.")
-                                        menu.trigger_commands("scripthost")
+                                        get_ScriptHost()
                                         timeoutIgnore[pid] = os.time() + 420
                                         break
                                     end
@@ -4439,7 +4453,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                                         notify_cmd(name .. " Finished Loading.")
                                     end
                                 else
-                                    menu.trigger_commands("scripthost")
+                                    get_ScriptHost()
                                     notify_cmd(name .. " got Lost in the Void.")
                                     util.yield(25666)
                                 end
@@ -4449,10 +4463,10 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                         end
                         if not isFriend(players.get_script_host()) then
                             if not players.are_stats_ready(players.get_script_host()) then
-                                menu.trigger_commands("scripthost")
+                                get_ScriptHost()
                             end
                             if not healthyInternet(players.get_script_host()) then
-                                menu.trigger_commands("scripthost")
+                                get_ScriptHost()
                             end
                         end
                         ::skipSSH::
@@ -4463,7 +4477,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                     util.yield(9666)
                     if isStuck(players.user()) then
                         if players.user() ~= players.get_script_host() then
-                            menu.trigger_commands("scripthost")
+                            get_ScriptHost()
                             notify("You are loading too long.")
                         end
                     else
@@ -4478,7 +4492,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                     util.yield(666)
                 end
                 util.yield(666)
-                menu.trigger_commands("scripthost")
+                get_ScriptHost()
                 util.yield(6666)
             end
         end
