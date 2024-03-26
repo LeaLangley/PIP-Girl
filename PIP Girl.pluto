@@ -3715,8 +3715,6 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockorb"}, "Blocks the Entra
                         end
                         if not isModder(pid, true) then
                             menu.trigger_commands("interiorkick "..players.get_name(pid))
-                        else
-                            menu.trigger_commands("timeout"..players.get_name(pid).." on")
                         end
                         if not orbroomdetection(pid) then
                             players.add_detection(pid, "Glitched Orb Room Access", TOAST_DEFAULT, 13)
