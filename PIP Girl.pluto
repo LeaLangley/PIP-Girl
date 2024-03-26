@@ -3709,18 +3709,18 @@ menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockorb"}, "Blocks the Entra
                 local distance = SYSTEM.VDIST(players_position.x, players_position.y, players_position.z, 328.47, 4828.87, -58.54)
                 if distance <= 9 then
                     set_as_illusion(pid, in_orb_room, true)
-                    if not menu.is_ref_valid(menu.ref_by_path("Stand>Lua Scripts>JinxScript>Detections>Normal Detections>Orbital Cannon")) or menu.get_state(menu.ref_by_path("Stand>Lua Scripts>JinxScript>Detections>Normal Detections>Orbital Cannon")) == "Off" then
-                        if not isFriend(pid) then
+                    if not isFriend(pid) then
+                        if not menu.is_ref_valid(menu.ref_by_path("Stand>Lua Scripts>JinxScript>Detections>Normal Detections>Orbital Cannon")) or menu.get_state(menu.ref_by_path("Stand>Lua Scripts>JinxScript>Detections>Normal Detections>Orbital Cannon")) == "Off" then
                             notify(players.get_name(pid).." is in Orb Room.")
-                            if not isModder(pid, true) then
-                                menu.trigger_commands("interiorkick "..players.get_name(pid))
-                            else
-                                menu.trigger_commands("timeout"..players.get_name(pid).." on")
-                            end
                         end
-                    end
-                    if not isFriend(pid) and not orbroomdetection(pid) then
-                        players.add_detection(pid, "Glitched Orb Room Access", TOAST_DEFAULT, 13)
+                        if not isModder(pid, true) then
+                            menu.trigger_commands("interiorkick "..players.get_name(pid))
+                        else
+                            menu.trigger_commands("timeout"..players.get_name(pid).." on")
+                        end
+                        if not orbroomdetection(pid) then
+                            players.add_detection(pid, "Glitched Orb Room Access", TOAST_DEFAULT, 13)
+                        end
                     end
                 else
                     set_as_illusion(pid, in_orb_room, false)
