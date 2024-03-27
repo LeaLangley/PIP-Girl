@@ -3458,10 +3458,12 @@ local session_claimer_players_range = session_claimer_players
 
 local function findGudSession()
 	local RegionSearch = menu.get_state(menu.ref_by_path("Online>Session Browser>Region")) .. "; "
-	if string.match(RegionSearch, "Don't") then
+	if string.match(RegionSearch, "Don't Filter") then
 		notify("Pick a Region Filter First")
         menu.focus(menu.ref_by_path("Online>Session Browser>Region>Don't Override"))
         menu.trigger_command(menu.ref_by_path("Online>Session Browser>Region>Don't Override"))
+        RegionSearch = "; (%d+) Players"
+        util.yield(420)
 	end
     menu.set_value(menu.ref_by_path("Online>Session Browser>Min Players"), session_claimer_players_range)
     menu.set_value(menu.ref_by_path("Online>Session Browser>Max Players"), 30)
@@ -3477,7 +3479,7 @@ local function findGudSession()
 				if string.match(menu.get_menu_name(Sessions), RegionSearch) then
 					SessionsLoaded = true
 					break
-				end
+                end
 			end
 			util.yield()
 		end
@@ -3491,9 +3493,11 @@ local function findGudSession()
 	repeat
 		WaitingIndex = WaitingIndex +1
 		for menu.get_children(menu.ref_by_path("Online>Session Browser")) as Sessions do
-			if string.match(menu.get_menu_name(Sessions), RegionSearch) then
-				SessionsLoaded = true
-			end
+            if menu.is_ref_valid(Sessions) then
+                if string.match(menu.get_menu_name(Sessions), RegionSearch) then
+                    SessionsLoaded = true
+                end
+            end
 			util.yield()
 		end
 		util.yield()
@@ -3505,19 +3509,21 @@ local function findGudSession()
 	local SessionIndex = 0
 	repeat
 		for i, Sessions in ipairs(menu.get_children(menu.ref_by_path("Online>Session Browser"))) do
-			if not menu.is_open() then
-				local LoopingSessions = false
-				return
-			end
-			if (SessionIndex < i) then
-				SessionIndex = SessionIndex +1
-				if string.match(menu.get_menu_name(Sessions), RegionSearch) and menu.is_ref_valid(Sessions) then
-					if CheckSession(Sessions) then
-                        SessionFound = true
-						return true
-					end
-				end
-			end
+            if not menu.is_open() then
+                local LoopingSessions = false
+                return false
+            end
+            if menu.is_ref_valid(Sessions) then
+                if (SessionIndex < i) then
+                    SessionIndex = SessionIndex +1
+                    if string.match(menu.get_menu_name(Sessions), RegionSearch) and menu.is_ref_valid(Sessions) then
+                        if CheckSession(Sessions) then
+                            SessionFound = true
+                            return true
+                        end
+                    end
+                end
+            end
 			util.yield()
 		end
 		menu.focus(menu.ref_by_path("Online>Session Browser>Refresh"))
