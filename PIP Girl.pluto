@@ -3375,7 +3375,7 @@ menu.toggle(SessionClaimer, "Claim current session, or else", {""}, "Not Working
 end)
 
 local function sessionWorthy()
-    if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players then
+    if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
         if (not isModder(players.get_host(), true) or isFriend(players.get_host())) and players.get_host_queue_position(players.user()) <= 1 then
             return true
         end
@@ -3439,6 +3439,7 @@ local SessionClaimerPaths = {
     {path = "Online>Transitions>Show Array Sync Progress", desired_state = "On"},
 }
 local SessionClaimerOriginal_states = {}
+
 menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session with Selcted Size.\nChecks if the host is not a Modder or Friend.\nClaims the Host if all clear and next as host.\nElse looks for a better place to stay.\n\nAdmin Bailing & Auto Accept Warning included.", function()
     --  <3
     --  Setting up the Filter
