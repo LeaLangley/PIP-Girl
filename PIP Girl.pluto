@@ -6,9 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.147"
+local script_version = "1.148"
 
-local lust_upDate = {year=2024, month=3, day=25}
+local lust_upDate = {year=2024, month=4, day=1}
 
 local startupmsg = "If settings are missing PLS restart script.\n\nLea Tech and Lea's Repair/Shrine have been rebranded into:\nAsuka Tech | Asuka's Repair Stops | Asuka's Shrine\n\nAsuka Tech on top!"
 
@@ -3374,9 +3374,160 @@ menu.toggle(SessionClaimer, "Claim current session, or else", {""}, "Not Working
     end
 end)
 
+local function IsTokenSpooferInLobby(Sessions)
+	for menu.get_children(Sessions) as PlayerList do
+		util.yield()
+		if menu.is_ref_valid(PlayerList) then
+			local PlayerInfo = menu.get_help_text(PlayerList)
+			if PlayerInfo != "" and string.sub(string.sub(PlayerInfo, (string.find(PlayerInfo,"\n",7)+13)), 0, 2) == "00" then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+local function IsPlayerListLoaded(Sessions)
+	local PlayerListTimeout = 0
+	local PlayerListLoaded = false
+	repeat
+		PlayerListTimeout = PlayerListTimeout +1
+		if PlayerListTimeout == 30 then
+			util.toast("Can't join this Lobby")
+		end
+		for menu.get_children(Sessions) as PlayerList do
+			if menu.is_ref_valid(PlayerList) and string.match(lang.get_string(menu.get_menu_name(PlayerList)), "/32") then
+				util.yield(600)
+				return true
+			end
+		util.yield()
+		end
+	util.yield()
+	until PlayerListLoaded
+end
+
+local function CheckSessionPlayerList(Sessions)
+	local ValidCMDRefTimeOut = 0
+	repeat
+		ValidCMDRefTimeOut = ValidCMDRefTimeOut +1
+		if menu.is_ref_valid(Sessions) then
+			if IsPlayerListLoaded(Sessions) and not IsTokenSpooferInLobby(Sessions) then
+                for menu.get_children(Sessions) as SessionSubList do
+                    if lang.get_string(menu.get_menu_name(SessionSubList)) == "Join" then
+                        menu.trigger_command(SessionSubList)
+                        util.yield()
+                        menu.focus(menu.ref_by_path("Online>Session Browser>Refresh"))
+                        return true
+                    end
+                end
+			end
+			return false
+		end		
+	until ValidCMDRefTimeOut == 100
+	return false
+end
+
+local function CheckSession(Sessions)
+	util.yield()
+	menu.trigger_command(Sessions)
+	local SesTimeoutIndex = 0
+	local SessionSubMenuLoaded = false
+	repeat
+		SesTimeoutIndex = SesTimeoutIndex +1
+		if SesTimeoutIndex == 100 then
+			util.toast("Took too long to Load Session Submenu")
+			return false
+		end		
+		for menu.get_children(Sessions) as SessionSubList do
+			if lang.get_string(menu.get_menu_name(SessionSubList)) == "Request Member List" then
+				menu.trigger_command(SessionSubList)
+				util.yield()
+				if CheckSessionPlayerList(Sessions) then
+					return true
+				end
+				return false
+			end						
+			util.yield()
+		end
+		util.yield()
+	until SessionSubMenuLoaded	
+end
+
+local sessionClaimer_firstRun = true
+local session_claimer_players_range = session_claimer_players
+
+local function findGudSession()
+	local RegionSearch = menu.get_state(menu.ref_by_path("Online>Session Browser>Region")) .. "; "
+	if string.match(RegionSearch, "Don't") then
+		notify("Pick a Region Filter First")
+        menu.focus(menu.ref_by_path("Online>Session Browser>Region>Don't Override"))
+        menu.trigger_command(menu.ref_by_path("Online>Session Browser>Region>Don't Override"))
+	end
+    menu.set_value(menu.ref_by_path("Online>Session Browser>Min Players"), session_claimer_players_range)
+    menu.set_value(menu.ref_by_path("Online>Session Browser>Max Players"), 30)
+	menu.focus(menu.ref_by_path("Online>Session Browser>Refresh"))
+	menu.trigger_command(menu.ref_by_path("Online>Session Browser>Refresh"))
+	local SessionsLoaded = true
+	local WaitingIndex = 0
+	repeat
+		WaitingIndex = WaitingIndex +1
+		SessionsLoaded = false
+		for menu.get_children(menu.ref_by_path("Online>Session Browser")) as Sessions do
+			if menu.is_ref_valid(Sessions) then
+				if string.match(menu.get_menu_name(Sessions), RegionSearch) then
+					SessionsLoaded = true
+					break
+				end
+			end
+			util.yield()
+		end
+		util.yield()
+	until not SessionsLoaded or WaitingIndex == 100
+	if SessionsLoaded then
+		return false
+	end
+	SessionsLoaded = false
+	WaitingIndex = 0
+	repeat
+		WaitingIndex = WaitingIndex +1
+		for menu.get_children(menu.ref_by_path("Online>Session Browser")) as Sessions do
+			if string.match(menu.get_menu_name(Sessions), RegionSearch) then
+				SessionsLoaded = true
+			end
+			util.yield()
+		end
+		util.yield()
+	until SessionsLoaded or WaitingIndex == 1000
+	if not SessionsLoaded then
+		return false
+	end
+	local SessionFound = false
+	local SessionIndex = 0
+	repeat
+		for i, Sessions in ipairs(menu.get_children(menu.ref_by_path("Online>Session Browser"))) do
+			if not menu.is_open() then
+				local LoopingSessions = false
+				return
+			end
+			if (SessionIndex < i) then
+				SessionIndex = SessionIndex +1
+				if string.match(menu.get_menu_name(Sessions), RegionSearch) and menu.is_ref_valid(Sessions) then
+					if CheckSession(Sessions) then
+                        SessionFound = true
+						return true
+					end
+				end
+			end
+			util.yield()
+		end
+		menu.focus(menu.ref_by_path("Online>Session Browser>Refresh"))
+		util.yield(100)
+	until SessionFound
+end
+
 local function sessionWorthy()
     if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
-        if (not isModder(players.get_host(), true) or isFriend(players.get_host())) and players.get_host_queue_position(players.user()) <= 1 then
+        if (not isModder(players.get_host()) or isFriend(players.get_host())) and players.get_host_queue_position(players.user()) <= 1 then
             return true
         end
         if isFriend(players.get_host()) then
@@ -3386,8 +3537,6 @@ local function sessionWorthy()
     return false
 end
 
-local sessionClaimer_firstRun = true
-local session_claimer_players_range = session_claimer_players
 local function findAnewHome()
     local findAnewHomeMSG
     if session_type() ~= "Singleplayer" then
@@ -3395,7 +3544,7 @@ local function findAnewHome()
             findAnewHomeMSG = "You are alone."
         elseif PLAYER.GET_NUMBER_OF_PLAYERS() <= session_claimer_players then
             findAnewHomeMSG = "Not Enoght Player."
-        elseif isModder(players.get_host(), true) then
+        elseif isModder(players.get_host()) then
             findAnewHomeMSG = "Host is a Modder."
         else
             findAnewHomeMSG = "error."
@@ -3410,7 +3559,7 @@ local function findAnewHome()
     if transitionState(true) > 2 and session_type() ~= "Singleplayer" then
         menu.trigger_commands("unstuck")
         local findAnewHomeTimeOut = os.time()
-        while transitionState(true) > 2 do
+        while transitionState(true) ~= 1 do
             if os.time() - findAnewHomeTimeOut > 13 then
                 break
             end
@@ -3423,7 +3572,15 @@ local function findAnewHome()
         notify("Targed Player Amount: "..session_claimer_players.."\nDynamic Amount: "..session_claimer_players_range)
     end
     util.yield(1666)
-    menu.trigger_commands("go public")
+    --menu.trigger_commands("go public")
+    if menu.get_edition() > 1 then
+        findGudSession()
+    else
+        menu.trigger_commands("go public")
+    end
+    while transitionState(true) ~= 3 or session_type() == "Singleplayer" do
+        util.yield(13)
+    end
     util.yield(1666)
 end
 
@@ -5367,36 +5524,36 @@ util.on_transition_finished(function ()
         menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
     end
     local doTheThighs = true
-    while transitionState(true) == 1 and doTheThighs do
-        if players.get_host() == players.user() then
-            if not player_Exist(players.get_script_host()) or (not players.are_stats_ready(players.get_script_host()) and not isFriend(players.get_script_host())) then
-                menu.trigger_commands("scripthost")
-                util.yield(413)
-                if players.get_script_host() == players.user() then
-                    notify_cmd("Saved the Script-Host via on_transition_finished")
-                    menu.trigger_command(menu.ref_by_path("Online>Session>Clear Blacklist"))
-                    util.yield(666)
-                end
-            end
-            if players.get_script_host() == -1 then
-                util.yield(213)
-                if players.get_script_host() == -1 then
-                    menu.trigger_commands("scripthost")
-                    if recoverScripthostCode ~= get_session_code() then
-                        recoverScripthostCode = get_session_code()
-                        notify_cmd("This session has very moste likely just broke. :c")
-                    end
-                end
-            end
-            util.yield(13)
-        else
-            util.yield(6666)
-        end
-        if transitionState(true) ~= 1 then
-            doTheThighs = false
-            break
-        end
-    end
+    --while transitionState(true) == 1 and doTheThighs do
+    --    if players.get_host() == players.user() then
+    --        if not player_Exist(players.get_script_host()) or (not players.are_stats_ready(players.get_script_host()) and not isFriend(players.get_script_host())) then
+    --            menu.trigger_commands("scripthost")
+    --            util.yield(413)
+    --            if players.get_script_host() == players.user() then
+    --                notify_cmd("Saved the Script-Host via on_transition_finished")
+    --                menu.trigger_command(menu.ref_by_path("Online>Session>Clear Blacklist"))
+    --                util.yield(666)
+    --            end
+    --        end
+    --        if players.get_script_host() == -1 then
+    --            util.yield(213)
+    --            if players.get_script_host() == -1 then
+    --                menu.trigger_commands("scripthost")
+    --                if recoverScripthostCode ~= get_session_code() then
+    --                    recoverScripthostCode = get_session_code()
+    --                    notify_cmd("This session has very moste likely just broke. :c")
+    --                end
+    --            end
+    --        end
+    --        util.yield(13)
+    --    else
+    --        util.yield(6666)
+    --    end
+    --    if transitionState(true) ~= 1 then
+    --        doTheThighs = false
+    --        break
+    --    end
+    --end
 end)
 
 if os.time() - os.time(lust_upDate) >= 6 * 24 * 60 * 60 then
