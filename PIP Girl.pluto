@@ -3566,7 +3566,7 @@ local function findAnewHome()
     if transitionState(true) > 2 and session_type() ~= "Singleplayer" then
         menu.trigger_commands("unstuck")
         local findAnewHomeTimeOut = os.time()
-        while transitionState(true) > 2 do
+        while transitionState(true) ~= 1 do
             if os.time() - findAnewHomeTimeOut > 13 then
                 break
             end
@@ -3669,8 +3669,8 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             --  If Session remains in a Claim-able state.
             --  <3
             if sessionWorthy() then
-                while transitionState(true) > 1 and sessionWorthy() do
-                    if session_type() == "Singleplayer" then
+                while transitionState(true) ~= 1 do
+                    if session_type() == "Singleplayer" or not sessionWorthy() then
                         findAnewHome()
                         goto sessionclaimerShortcut
                     end
