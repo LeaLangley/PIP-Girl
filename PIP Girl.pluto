@@ -3786,7 +3786,7 @@ menu.divider(Session, "<3")
 
 local SessionJoin = menu.list(Session, 'Join Settings', {}, 'Session Join Settings.', function(); end)
 
-local customspawned = true
+local customspawned = false
 local customspawn = nil
 local default_spawn = string.format("x:%.2f y:%.2f z:%.2f", -1806.73, -126.08, 78.7865)
 
@@ -5530,7 +5530,7 @@ util.on_transition_finished(function ()
         fillUpEverything()
         menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
     end
-    local doTheThighs = true
+    --local doTheThighs = true
     --while transitionState(true) == 1 and doTheThighs do
     --    if players.get_host() == players.user() then
     --        if not player_Exist(players.get_script_host()) or (not players.are_stats_ready(players.get_script_host()) and not isFriend(players.get_script_host())) then
