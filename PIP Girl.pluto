@@ -3786,7 +3786,7 @@ menu.divider(Session, "<3")
 
 local SessionJoin = menu.list(Session, 'Join Settings', {}, 'Session Join Settings.', function(); end)
 
-local customspawned = false
+local customspawned
 local customspawn = nil
 local default_spawn = string.format("x:%.2f y:%.2f z:%.2f", -1806.73, -126.08, 78.7865)
 
@@ -3822,8 +3822,6 @@ menu.toggle(SessionJoin, "Use Custom Spawn", {""}, "", function(on)
     else
         customspawned = false
     end
-end, function()
-    menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
 end)
 
 menu.toggle(Session, "Quick Session Join", {"quickjoin"}, " Please Set you're Spawn to \"Last Location\" or \"Random\".\nQuick Session Joining.", function(on)
