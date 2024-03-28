@@ -3392,9 +3392,6 @@ local function IsPlayerListLoaded(Sessions)
 	local PlayerListLoaded = false
 	repeat
 		PlayerListTimeout = PlayerListTimeout +1
-		if PlayerListTimeout == 30 then
-			util.toast("Can't join this Lobby")
-		end
 		for menu.get_children(Sessions) as PlayerList do
 			if menu.is_ref_valid(PlayerList) and string.match(lang.get_string(menu.get_menu_name(PlayerList)), "/32") then
 				util.yield(600)
@@ -3416,7 +3413,7 @@ local function CheckSessionPlayerList(Sessions)
                     if lang.get_string(menu.get_menu_name(SessionSubList)) == "Join" then
                         menu.trigger_command(SessionSubList)
                         util.yield()
-                        menu.focus(menu.ref_by_path("Online>Session Browser>Refresh"))
+                        menu.focus(menu.ref_by_path("Players>Settings"))
                         return true
                     end
                 end
@@ -3457,78 +3454,82 @@ local sessionClaimer_firstRun = true
 local session_claimer_players_range = session_claimer_players
 
 local function findGudSession()
-	local RegionSearch = menu.get_state(menu.ref_by_path("Online>Session Browser>Region")) .. "; "
-	if string.match(RegionSearch, "Don't Filter") then
-		notify("Pick a Region Filter First")
-        menu.focus(menu.ref_by_path("Online>Session Browser>Region>Don't Override"))
-        menu.trigger_command(menu.ref_by_path("Online>Session Browser>Region>Don't Override"))
-        RegionSearch = "; (%d+) Players"
-        util.yield(420)
-	end
-    menu.set_value(menu.ref_by_path("Online>Session Browser>Min Players"), session_claimer_players_range)
-    menu.set_value(menu.ref_by_path("Online>Session Browser>Max Players"), 30)
-	menu.focus(menu.ref_by_path("Online>Session Browser>Refresh"))
-	menu.trigger_command(menu.ref_by_path("Online>Session Browser>Refresh"))
-	local SessionsLoaded = true
-	local WaitingIndex = 0
-	repeat
-		WaitingIndex = WaitingIndex +1
-		SessionsLoaded = false
-		for menu.get_children(menu.ref_by_path("Online>Session Browser")) as Sessions do
-			if menu.is_ref_valid(Sessions) then
-				if string.match(menu.get_menu_name(Sessions), RegionSearch) then
-					SessionsLoaded = true
-					break
-                end
-			end
-			util.yield()
-		end
-		util.yield()
-	until not SessionsLoaded or WaitingIndex == 100
-	if SessionsLoaded then
-		return false
-	end
-	SessionsLoaded = false
-	WaitingIndex = 0
-	repeat
-		WaitingIndex = WaitingIndex +1
-		for menu.get_children(menu.ref_by_path("Online>Session Browser")) as Sessions do
-            if menu.is_ref_valid(Sessions) then
-                if string.match(menu.get_menu_name(Sessions), RegionSearch) then
-                    SessionsLoaded = true
-                end
+    if session_type() == "Singleplayer" then
+        menu.trigger_commands("go solo")
+        local spgosolotimeout = os.time() + 16
+        while transitionState(true) ~= 1 do
+            util.yield(666)
+            if os.time() > spgosolotimeout then
+                break
             end
-			util.yield()
-		end
-		util.yield()
-	until SessionsLoaded or WaitingIndex == 1000
-	if not SessionsLoaded then
-		return false
-	end
-	local SessionFound = false
-	local SessionIndex = 0
-	repeat
-		for i, Sessions in ipairs(menu.get_children(menu.ref_by_path("Online>Session Browser"))) do
-            if not menu.is_open() then
-                local LoopingSessions = false
-                return false
+        end
+    end
+    local LoopingSessions = false
+    repeat
+        local RegionSearch = menu.get_state(menu.ref_by_path("Online>Session Browser>Region")) .. "; "
+        if string.match(RegionSearch, "Don't Filter") then
+            notify("Pick a Region Filter, optinal, we chose \"Don't Override\" for now.")
+            menu.focus(menu.ref_by_path("Online>Session Browser>Region>Don't Override"))
+            menu.trigger_command(menu.ref_by_path("Online>Session Browser>Region>Don't Override"))
+            RegionSearch = "; (%d+) Players"
+            util.yield(420)
+        end
+        menu.set_value(menu.ref_by_path("Online>Session Browser>Min Players"), session_claimer_players_range)
+        menu.set_value(menu.ref_by_path("Online>Session Browser>Max Players"), 30)
+        menu.focus(menu.ref_by_path("Online>Session Browser>Refresh"))
+        menu.trigger_command(menu.ref_by_path("Online>Session Browser>Refresh"))
+        local SessionsLoaded = true
+        local WaitingIndex = 0
+        repeat
+            WaitingIndex = WaitingIndex +1
+            SessionsLoaded = false
+            for menu.get_children(menu.ref_by_path("Online>Session Browser")) as Sessions do
+                if menu.is_ref_valid(Sessions) then
+                    if string.match(menu.get_menu_name(Sessions), RegionSearch) then
+                        SessionsLoaded = true
+                        break
+                    end
+                end
+                util.yield()
             end
-            if menu.is_ref_valid(Sessions) then
-                if (SessionIndex < i) then
-                    SessionIndex = SessionIndex +1
-                    if string.match(menu.get_menu_name(Sessions), RegionSearch) and menu.is_ref_valid(Sessions) then
-                        if CheckSession(Sessions) then
-                            SessionFound = true
-                            return true
+            util.yield()
+        until not SessionsLoaded or WaitingIndex == 100
+        SessionsLoaded = false
+        WaitingIndex = 0
+        repeat
+            WaitingIndex = WaitingIndex +1
+            for menu.get_children(menu.ref_by_path("Online>Session Browser")) as Sessions do
+                if menu.is_ref_valid(Sessions) then
+                    if string.match(menu.get_menu_name(Sessions), RegionSearch) then
+                        SessionsLoaded = true
+                    end
+                end
+                util.yield()
+            end
+            util.yield()
+        until SessionsLoaded or WaitingIndex == 1000
+        local SessionFound = false
+        local SessionIndex = 0
+        repeat
+            for i, Sessions in ipairs(menu.get_children(menu.ref_by_path("Online>Session Browser"))) do
+                if menu.is_ref_valid(Sessions) then
+                    if (SessionIndex < i) then
+                        SessionIndex = SessionIndex +1
+                        if string.match(menu.get_menu_name(Sessions), RegionSearch) and menu.is_ref_valid(Sessions) then
+                            if CheckSession(Sessions) then
+                                SessionFound = true
+                                LoopingSessions = false
+                                return true
+                            end
                         end
                     end
                 end
+                util.yield()
             end
-			util.yield()
-		end
-		menu.focus(menu.ref_by_path("Online>Session Browser>Refresh"))
-		util.yield(100)
-	until SessionFound
+            menu.focus(menu.ref_by_path("Online>Session Browser>Refresh"))
+            util.yield(100)
+        until SessionFound
+    until not LoopingSessions
 end
 
 local function sessionWorthy()
@@ -3565,7 +3566,7 @@ local function findAnewHome()
     if transitionState(true) > 2 and session_type() ~= "Singleplayer" then
         menu.trigger_commands("unstuck")
         local findAnewHomeTimeOut = os.time()
-        while transitionState(true) ~= 1 do
+        while transitionState(true) > 2 do
             if os.time() - findAnewHomeTimeOut > 13 then
                 break
             end
