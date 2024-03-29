@@ -619,6 +619,18 @@ local function is_vehicle_empty(vehicle)
     return true
 end
 
+local function get_number_of_passengers(vehicle)
+    local setsINT = VEHICLE.GET_VEHICLE_MODEL_NUMBER_OF_SEATS(entities.get_model_hash(vehicle))
+    local passengerCount = 0
+    for seat = -1, setsINT do
+        local seater = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, seat, true)
+        if seater and seater ~= 0 then
+            passengerCount = passengerCount + 1
+        end
+    end
+    return passengerCount
+end
+
 local function allowSpawnCheck()
     if NETWORK.NETWORK_IS_ACTIVITY_SESSION() then
         return false
@@ -4580,12 +4592,17 @@ menu.list_select(Session, "Smart Script Host Help", {""}, "uses in the option ab
     smartScriptHostMode = value
 end)
 
-local function selfSave()
+local function selfSafe()
     if menu.get_state(menu.ref_by_path("Self>Immortality")) == "On" then
         return true
     end
     if players.is_godmode(players.user()) then
         return true
+    end
+    if players.get_vehicle_model(players.user()) == -32878452 or players.get_vehicle_model(players.user()) == -42959138 then
+        if get_number_of_passengers(PED.GET_VEHICLE_PED_IS_IN(players.user_ped(), true)) > 1 then
+            return true
+        end
     end
     return false
 end
@@ -4593,7 +4610,7 @@ end
 local in_self_god = false
 menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"}, "Ghost everyone who is a god mode except Friends.\nIf they are not god anymore , it will de-ghost", function()
     if transitionState(true) <3 then
-        if not selfSave() then
+        if not selfSafe() then
             in_self_god = false
             for players.list_except(true) as pid do
                 if not isFriend(pid) and not players.is_using_rc_vehicle(pid) and not players.is_in_interior(pid)then
@@ -5528,37 +5545,6 @@ util.on_transition_finished(function ()
         fillUpEverything()
         menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
     end
-    --local doTheThighs = true
-    --while transitionState(true) == 1 and doTheThighs do
-    --    if players.get_host() == players.user() then
-    --        if not player_Exist(players.get_script_host()) or (not players.are_stats_ready(players.get_script_host()) and not isFriend(players.get_script_host())) then
-    --            menu.trigger_commands("scripthost")
-    --            util.yield(413)
-    --            if players.get_script_host() == players.user() then
-    --                notify_cmd("Saved the Script-Host via on_transition_finished")
-    --                menu.trigger_command(menu.ref_by_path("Online>Session>Clear Blacklist"))
-    --                util.yield(666)
-    --            end
-    --        end
-    --        if players.get_script_host() == -1 then
-    --            util.yield(213)
-    --            if players.get_script_host() == -1 then
-    --                menu.trigger_commands("scripthost")
-    --                if recoverScripthostCode ~= get_session_code() then
-    --                    recoverScripthostCode = get_session_code()
-    --                    notify_cmd("This session has very moste likely just broke. :c")
-    --                end
-    --            end
-    --        end
-    --        util.yield(13)
-    --    else
-    --        util.yield(6666)
-    --    end
-    --    if transitionState(true) ~= 1 then
-    --        doTheThighs = false
-    --        break
-    --    end
-    --end
 end)
 
 if os.time() - os.time(lust_upDate) >= 6 * 24 * 60 * 60 then
@@ -5587,7 +5573,7 @@ if not filesystem.exists(store_dir..'/version.txt') then
     file:close()
 end
 local stored_pip_version = readFromFilePIP(store_dir..'version.txt')
-if stored_pip_version == nil or tonumber(stored_pip_version) == nil then
+if stored_pip_version == nil or stored_pip_version == "" or tonumber(stored_pip_version) == nil then
     stored_pip_version = os.time()
     writeToFilePIP(os.time(), store_dir..'version.txt')
 end
