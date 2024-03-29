@@ -3468,7 +3468,7 @@ local session_claimer_players_range = session_claimer_players
 local function findGudSession()
     if session_type() == "Singleplayer" then
         menu.trigger_commands("go solo")
-        local spgosolotimeout = os.time() + 16
+        local spgosolotimeout = os.time() + 25
         while transitionState(true) ~= 1 do
             util.yield(666)
             if os.time() > spgosolotimeout then
