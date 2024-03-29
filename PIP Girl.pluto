@@ -5420,6 +5420,8 @@ if not filesystem.exists(store_dir..'/version.txt') then
 end
 local stored_pip_version = readFromFilePIP(store_dir..'version.txt')
 if stored_pip_version == nil or stored_pip_version == "" or tonumber(stored_pip_version) == nil then
+    io.remove(store_dir..'version.txt')
+    util.yield(666)
     stored_pip_version = os.time()
     writeToFilePIP(os.time(), store_dir..'version.txt')
 end
