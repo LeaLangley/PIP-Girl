@@ -3591,12 +3591,7 @@ local function findAnewHome()
         notify("Targed Player Amount: "..session_claimer_players.."\nDynamic Amount: "..session_claimer_players_range)
     end
     util.yield(1666)
-    --menu.trigger_commands("go public")
-    if menu.get_edition() > 1 then
-        findGudSession()
-    else
-        menu.trigger_commands("go public")
-    end
+    menu.trigger_commands("go public")
     while transitionState(true) ~= 3 or session_type() == "Singleplayer" do
         util.yield(13)
     end
