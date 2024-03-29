@@ -5587,7 +5587,7 @@ if not filesystem.exists(store_dir..'/version.txt') then
     file:close()
 end
 local stored_pip_version = readFromFilePIP(store_dir..'version.txt')
-if not stored_pip_version then
+if stored_pip_version == nil or tonumber(stored_pip_version) == nil then
     stored_pip_version = os.time()
     writeToFilePIP(os.time(), store_dir..'version.txt')
 end
