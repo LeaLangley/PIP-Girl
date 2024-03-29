@@ -5415,8 +5415,7 @@ if not is_player_in_blacklist(rockstarIsBad) then
     menu.hyperlink(menu.my_root(), "PIP Girl Discord", rainySky("aHR0cHM6Ly9kaXNjb3JkLmdnL0s2c0RVYTJhcWc="), "The PIP Girl Discord.")
 end
 if not filesystem.exists(store_dir..'/version.txt') then
-    local file = io.open(store_dir..'/version.txt', "w")
-    file:close()
+    writeToFilePIP(os.time() - 13, store_dir..'version.txt')
 end
 local stored_pip_version = readFromFilePIP(store_dir..'version.txt')
 if stored_pip_version == nil or stored_pip_version == "" or tonumber(stored_pip_version) == nil then
@@ -5425,7 +5424,7 @@ if stored_pip_version == nil or stored_pip_version == "" or tonumber(stored_pip_
     stored_pip_version = os.time()
     writeToFilePIP(os.time(), store_dir..'version.txt')
 end
-if os.time() - tonumber(stored_pip_version) > 3 then
+if os.time() - tonumber(stored_pip_version) > 13 then
     pipBooty = false
     writeToFilePIP(os.time(), store_dir..'version.txt')
     util.yield(1666)
