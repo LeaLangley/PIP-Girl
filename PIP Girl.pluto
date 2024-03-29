@@ -4466,78 +4466,79 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
     if transitionState(true) == 1 then
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
             if players.user() == players.get_host() or (players.user() == players.get_script_host() and (not isFriend(players.get_host()) and not isModder(players.get_host()))) then
-                if smartScriptHostMode ~= 1 then
-                    local playerList = players.list_only(true, true, false, true)
-                    if smartScriptHostMode == 3 then
-                        playerList = players.list()
-                    end
-                    for playerList as pid do
-                        if worthToUnstuck(pid) and discoveredSince(pid) > 113 then
-                            if not stuckPlayers[pid] then
-                                stuckPlayers[pid] = os.time()
+                local playerList = {players.user()}
+                if smartScriptHostMode == 2 then
+                    playerList = players.list_only(true, true, false, true)
+                end
+                if smartScriptHostMode == 3 then
+                    playerList = players.list()
+                end
+                for playerList as pid do
+                    if worthToUnstuck(pid) and discoveredSince(pid) > 113 then
+                        if not stuckPlayers[pid] then
+                            stuckPlayers[pid] = os.time()
+                        end
+                        local stuckDuration = os.time() - stuckPlayers[pid]
+                        local stuckDurationTol = 20
+                        if isFriend(pid) then
+                            stuckDurationTol = 13
+                        end
+                        if timeoutIgnore[pid] then
+                            if timeoutIgnore[pid] < os.time() then
+                                timeoutIgnore[pid] = nil
                             end
-                            local stuckDuration = os.time() - stuckPlayers[pid]
-                            local stuckDurationTol = 20
-                            if isFriend(pid) then
-                                stuckDurationTol = 13
-                            end
-                            if timeoutIgnore[pid] then
-                                if timeoutIgnore[pid] < os.time() then
-                                    timeoutIgnore[pid] = nil
-                                end
-                            end
-                            if scriptHost ~= pid and stuckDuration > stuckDurationTol and stuckDuration < 420 and (not timeoutIgnore[pid] or (timeoutIgnore[pid] and os.time() > timeoutIgnore[pid])) then
-                                local name = players.get_name(pid)
-                                menu.trigger_commands("givesh " .. name)
-                                local givingSHTimeout = os.time() + 6
-                                while worthToUnstuck(pid) and players.get_script_host() ~= pid do
-                                    util.yield(13)
-                                    if os.time() > givingSHTimeout then
-                                        get_ScriptHost()
-                                        notify_cmd(name .. " took too long to give SH.")
-                                        timeoutIgnore[pid] = os.time() + 420
-                                        goto skipSSH
-                                    end
-                                    if players.get_script_host() == pid then
-                                        break
-                                    end
+                        end
+                        if scriptHost ~= pid and stuckDuration > stuckDurationTol and stuckDuration < 420 and (not timeoutIgnore[pid] or (timeoutIgnore[pid] and os.time() > timeoutIgnore[pid])) then
+                            local name = players.get_name(pid)
+                            menu.trigger_commands("givesh " .. name)
+                            local givingSHTimeout = os.time() + 6
+                            while worthToUnstuck(pid) and players.get_script_host() ~= pid do
+                                util.yield(13)
+                                if os.time() > givingSHTimeout then
+                                    get_ScriptHost()
+                                    notify_cmd(name .. " took too long to give SH.")
+                                    timeoutIgnore[pid] = os.time() + 420
+                                    goto skipSSH
                                 end
                                 if players.get_script_host() == pid then
-                                    notify_cmd(name .. " is Loading since: "..stuckDuration)
-                                    timeoutIgnore[pid] = nil
-                                end
-                                local loading_timeout = os.time() + 13
-                                while worthToUnstuck(pid) do
-                                    util.yield(13)
-                                    if os.time() > loading_timeout then
-                                        notify_cmd(name .. " took too long to load. Timeout reached.")
-                                        get_ScriptHost()
-                                        timeoutIgnore[pid] = os.time() + 213
-                                        break
-                                    end
-                                    if not healthyInternet(pid) then
-                                        notify_cmd(name .. " has trashy internet.")
-                                        get_ScriptHost()
-                                        timeoutIgnore[pid] = os.time() + 420
-                                        break
-                                    end
-                                    if players.get_script_host() ~= pid then
-                                        break
-                                    end
-                                end
-                                if player_Exist(pid) then
-                                    if not isStuck(pid) then
-                                        notify_cmd(name .. " Finished Loading.")
-                                    end
-                                else
-                                    get_ScriptHost()
-                                    notify_cmd(name .. " got Lost in the Void.")
-                                    util.yield(25666)
+                                    break
                                 end
                             end
-                        else
-                            stuckPlayers[pid] = nil
+                            if players.get_script_host() == pid then
+                                notify_cmd(name .. " is Loading since: "..stuckDuration)
+                                timeoutIgnore[pid] = nil
+                            end
+                            local loading_timeout = os.time() + 13
+                            while worthToUnstuck(pid) do
+                                util.yield(13)
+                                if os.time() > loading_timeout then
+                                    notify_cmd(name .. " took too long to load. Timeout reached.")
+                                    get_ScriptHost()
+                                    timeoutIgnore[pid] = os.time() + 213
+                                    break
+                                end
+                                if not healthyInternet(pid) then
+                                    notify_cmd(name .. " has trashy internet.")
+                                    get_ScriptHost()
+                                    timeoutIgnore[pid] = os.time() + 420
+                                    break
+                                end
+                                if players.get_script_host() ~= pid then
+                                    break
+                                end
+                            end
+                            if player_Exist(pid) then
+                                if not isStuck(pid) then
+                                    notify_cmd(name .. " Finished Loading.")
+                                end
+                            else
+                                get_ScriptHost()
+                                notify_cmd(name .. " got Lost in the Void.")
+                                util.yield(25666)
+                            end
                         end
+                    else
+                        stuckPlayers[pid] = nil
                     end
                 end
                 if not isFriend(players.get_script_host()) then
