@@ -2492,7 +2492,7 @@ menu.toggle_loop(Vehicle, "Set vehicle light color automatically",{"autocarlight
         if transitionState(true) <3 then
             local vehicle = get_user_vehicle()
             if vehicle then
-                if ENTITY.IS_ENTITY_A_MISSION_ENTITY(vehicle) and entities.get_owner(vehicle) == players.user() then
+                if entities.get_owner(vehicle) == players.user() then
                     local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
                     if driverPed == players.user_ped() then
                         if VEHICLE.GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 then
