@@ -3449,6 +3449,7 @@ local SessionClaimerPaths = {
 }
 local SessionClaimerOriginal_states = {}
 
+local session_claimer_players_range = session_claimer_players
 menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session with Selcted Size.\nChecks if the host is not a Modder or Friend.\nClaims the Host if all clear and next as host.\nElse looks for a better place to stay.\n\nAdmin Bailing & Auto Accept Warning included.", function()
     --  <3
     --  Setting up the Filter
