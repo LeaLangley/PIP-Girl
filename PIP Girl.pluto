@@ -1902,7 +1902,7 @@ local function buff_asuka_tech(vehicle)
     NETWORK.NETWORK_SET_NO_LONGER_NEEDED(vehicle, false)
     local buffVehModel = ENTITY.GET_ENTITY_MODEL(vehicle)
     if buffVehModel == 167522317 then
-        if VEHICLE.DOES_EXTRA_EXIST(vehicle, 1) and not VEHICLE.IS_VEHICLE_EXTRA_TURNED_ON(vehicle, 1) then
+        if VEHICLE.GET_VEHICLE_MOD(vehicle, 10) == 1 and VEHICLE.DOES_EXTRA_EXIST(vehicle, 1) and not VEHICLE.IS_VEHICLE_EXTRA_TURNED_ON(vehicle, 1) then
             VEHICLE.SET_VEHICLE_EXTRA(vehicle, 1, 0)
         end
     end
