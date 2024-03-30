@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.151"
+local script_version = "1.152"
 
 local lust_upDate = {year=2024, month=4, day=1}
 
@@ -4690,6 +4690,7 @@ local PIP_Girl_Blacklist = {}
 
 if not filesystem.exists(resources_dir .. 'Export/Export_Blacklist.json') then
     local file = io.open(resources_dir .. 'Export/Export_Blacklist.json', "w")
+    file:write(json_empty_array)
     file:close()
 end
 
@@ -4707,7 +4708,10 @@ local function load_data_e()
     if file then
         local contents = file:read('*all')
         io.close(file)
-
+        if contents == '' then
+            contents = "[]"
+            writeToFilePIP("[]", resources_dir .. 'Export/Export_Blacklist.json')
+        end
         local old_data_e = json.decode(contents) or {}
         data_e = old_data_e
 
