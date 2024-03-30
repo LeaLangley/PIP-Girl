@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.150"
+local script_version = "1.151"
 
 local lust_upDate = {year=2024, month=4, day=1}
 
@@ -78,17 +78,8 @@ for _, dependency in pairs(auto_update_config.dependencies) do
     end
 end
 
-local function require_dependency(path)
-    local status, required_dep = pcall(require, path)
-    if not status then
-        error("Could not load "..path..": "..required_dep)
-    else
-        return required_dep
-    end
-end
-
 util.require_natives("3095a")
-local json = require_dependency("json")
+local json = require("json")
 
 resources_dir = filesystem.resources_dir() .. '/1 PIP Girl/'
 store_dir = filesystem.store_dir() .. '/PIP Girl/'
