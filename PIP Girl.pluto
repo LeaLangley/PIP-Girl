@@ -4690,7 +4690,7 @@ local PIP_Girl_Blacklist = {}
 
 if not filesystem.exists(resources_dir .. 'Export/Export_Blacklist.json') then
     local file = io.open(resources_dir .. 'Export/Export_Blacklist.json', "w")
-    file:write(json_empty_array)
+    file:write("[]")
     file:close()
 end
 
