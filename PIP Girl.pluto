@@ -4403,7 +4403,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                 ::skipSSH::
             else
                 if isStuck(players.user()) then
-                    util.yield(9666)
+                    util.yield(13666)
                     if isStuck(players.user()) then
                         if players.user() ~= players.get_script_host() then
                             get_ScriptHost()
