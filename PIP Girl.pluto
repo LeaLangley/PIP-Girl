@@ -1471,12 +1471,10 @@ end
 menu.action(PIP_Girl, "Invite All Friends in Org", {"invorg"}, "Invites all your friends into your Org.", function()
     if transitionState(true) == 1 then
         inviteAllToCEO()
+    else
+        notify("Wait untill fully loaded in.")
     end
-end, function(pid)
-    if transitionState(true) == 1 then
-        inviteToCEO(pid)
-    end
-end, "$", COMMANDPERM_FRIENDLY)
+end)
 
 menu.divider(PIP_Girl, "Pickup Options")
 
