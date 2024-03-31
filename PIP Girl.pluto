@@ -125,8 +125,7 @@ local function getMPX()
 end
 
 local function STAT_GET_INT(Stat)
-    local Int_PTR = menu.get_value(menu.ref_by_path("Online>Quick Progress>Stat Editor>Raw Stats>"..getMPX()..Stat))
-    return Int_PTR
+    return util.stat_get_int64(getMPX()..Stat)
 end
 
 local function ADD_MP_INDEX(stat)
