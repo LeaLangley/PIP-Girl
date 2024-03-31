@@ -1463,7 +1463,7 @@ menu.action(PIP_Girl, "Invite All Friends in Org", {"invorg"}, "Invites all your
     else
         notify("Wait untill fully loaded in.")
     end
-end)
+end, nil, "invorg", COMMANDPERM_FRIENDLY)
 
 menu.divider(PIP_Girl, "Pickup Options")
 
