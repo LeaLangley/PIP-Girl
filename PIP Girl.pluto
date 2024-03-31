@@ -1459,7 +1459,11 @@ end
 
 menu.action(PIP_Girl, "Invite All Friends in Org", {"invorg"}, "Invites all your friends into your Org.", function()
     if transitionState(true) == 1 then
-        inviteAllToCEO()
+        if players.get_boss(players.user()) ~= -1 then
+            inviteAllToCEO()
+        else
+            notify("Register as something first.")
+        end
     else
         notify("Wait untill fully loaded in.")
     end
