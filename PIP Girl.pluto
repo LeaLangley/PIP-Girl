@@ -3674,7 +3674,9 @@ menu.toggle(Session, "Quick Session Join", {"quickjoin"}, " Please Set you're Sp
         menu.trigger_commands("speedupfmmc on")
         menu.trigger_commands("speedupspawn on")
         menu.trigger_commands("skipswoopdown on")
-        STAT_SET_INT("SPAWN_LOCATION_SETTING", 2)
+        if not customspawned then
+            STAT_SET_INT("SPAWN_LOCATION_SETTING", 2)
+        end
     else
         menu.ref_by_path("Online>Transitions>Speed Up>Don't Wait For Data Broadcast"):applyDefaultState()
         menu.ref_by_path("Online>Transitions>Speed Up>Don't Wait For Mission Launcher"):applyDefaultState()
