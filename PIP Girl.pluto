@@ -257,9 +257,20 @@ local function allow_Join_back(name)
     end
 end
 
+local function hasDetection(pid, detection)  -- credit to jinx script
+	if player_Exist(pid) and menu.player_root(pid):isValid() then
+		for menu.player_root(pid):getChildren() as cmd do
+			if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath(detection):isValid() and player_Exist(pid) then
+				return true
+			end
+		end
+	end
+	return false
+end
+
 local function StandUser(pid) -- credit to sapphire for this and jinx script
     util.yield(13)
-    if player_Exist(pid) and pid ~= players.user() then
+    if player_Exist(pid) and pid ~= players.user() and menu.player_root(pid):isValid() then
         for menu.player_root(pid):getChildren() as cmd do
             if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Stand User"):isValid() then
                 return true
@@ -271,7 +282,7 @@ end
 
 local function discoveredSince(pid)
     util.yield(13)
-    if player_Exist(pid) then
+    if player_Exist(pid) and menu.player_root(pid):isValid() then
         local playerPath = menu.player_root(pid)
         local timeString = playerPath:refByRelPath("Information>Discovered").value
         if timeString and type(timeString) == "string" then
@@ -287,7 +298,7 @@ end
 
 local function wannabeGod(pid)
     util.yield(13)
-    if player_Exist(pid) and pid ~= players.user() then
+    if player_Exist(pid) and pid ~= players.user() and menu.player_root(pid):isValid() then
         for menu.player_root(pid):getChildren() as cmd do
             if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Attacking While Invulnerable"):isValid() then
                 return true
@@ -302,7 +313,7 @@ end
 
 local function aggressive(pid)
     util.yield(13)
-    if player_Exist(pid) and pid ~= players.user() then
+    if player_Exist(pid) and pid ~= players.user() and menu.player_root(pid):isValid() then
         for menu.player_root(pid):getChildren() as cmd do
             if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Spoofed Host Token (Aggressive)"):isValid() then
                 return true
@@ -314,7 +325,7 @@ end
 
 local function orbroomdetection(pid)
     util.yield(13)
-    if player_Exist(pid) and pid ~= players.user() then
+    if player_Exist(pid) and pid ~= players.user() and menu.player_root(pid):isValid() then
         for menu.player_root(pid):getChildren() as cmd do
             if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Glitched Orb Room Access"):isValid() then
                 return true
@@ -326,7 +337,7 @@ end
 
 local function hasAnyDetection(pid)
     util.yield(13)
-    if player_Exist(pid) then
+    if player_Exist(pid) and menu.player_root(pid):isValid() then
         for menu.player_root(pid):getChildren() as cmd do
             if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING then
                 return true
@@ -5385,6 +5396,43 @@ menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
     notify(startupmsg)
 end)
 
+local function get_prostitutes_solicited(pid)
+    return memory.read_int(memory.script_global(1845263 + 1 + (pid * 877) + 205 + 54))
+end
+
+local function get_lapdances_amount(pid) 
+    return memory.read_int(memory.script_global(1845263 + 1 + (pid * 877) + 205 + 55))
+end
+
+local function userIdentification()
+    while true do
+        if transitionState(true) == 1 then
+            local currentTime = os.time()
+            local currentMonth = tonumber(os.date("%m", currentTime))
+            local currentDay = tonumber(os.date("%d", currentTime))
+            if STAT_GET_INT("PROSTITUTES_FREQUENTED") ~= currentDay then
+                STAT_SET_INT("PROSTITUTES_FREQUENTED", currentDay)
+            end
+            if STAT_GET_INT("LAP_DANCED_BOUGHT") ~= currentMonth then
+                STAT_SET_INT("LAP_DANCED_BOUGHT", currentDay)
+            end
+            for players.list_except(true) as pid do
+                util.toast(get_lapdances_amount(pid))
+                util.toast(get_prostitutes_solicited(pid))
+                if not hasDetection(pid, "PIP Girl User") then
+                    if get_lapdances_amount(pid) == currentMonth then
+                        if get_prostitutes_solicited(pid) == currentDay then
+                            players.add_detection(pid, "PIP Girl User", TOAST_DEFAULT, 100)
+                        end
+                    end
+                end
+                util.yield(666)
+            end
+        end
+        util.yield(113666)
+    end
+end
+
 local recoverScripthostCode = nil
 util.on_transition_finished(function ()
 	if customspawned then
@@ -5448,6 +5496,7 @@ else
     util.create_thread(startupCheck)
     util.create_thread(startupConfig)
     util.create_thread(crashlistConfig)
+    util.create_thread(userIdentification)
     menu.trigger_commands("antiadmin on")
 end
 
