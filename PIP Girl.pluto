@@ -129,7 +129,7 @@ local function STAT_GET_INT(Stat)
     return Int_PTR
 end
 
-function ADD_MP_INDEX(stat)
+local function ADD_MP_INDEX(stat)
     local Exceptions = {
         "MP_CHAR_STAT_RALLY_ANIM",
         "MP_CHAR_ARMOUR_1_COUNT",
@@ -150,8 +150,8 @@ function ADD_MP_INDEX(stat)
     return stat
 end
 
-function STAT_SET_INT(stat, value)
-    STATS.STAT_SET_INT(util.joaat(ADD_MP_INDEX(stat)), value, true)
+local function STAT_SET_INT(stat, value)
+    menu.set_value(menu.ref_by_path("Online>Quick Progress>Stat Editor>Raw Stats>"..getMPX()..Stat), value)
 end
 
 local function session_type()
@@ -3662,6 +3662,7 @@ end)
 menu.toggle(SessionJoin, "Use Custom Spawn", {""}, "", function(on)
     if on then
         customspawned = true
+        STAT_SET_INT("SPAWN_LOCATION_SETTING", 4)
     else
         customspawned = false
     end
@@ -3673,7 +3674,7 @@ menu.toggle(Session, "Quick Session Join", {"quickjoin"}, " Please Set you're Sp
         menu.trigger_commands("speedupfmmc on")
         menu.trigger_commands("speedupspawn on")
         menu.trigger_commands("skipswoopdown on")
-        --warnify("Set you're Spawn to \"Last Location\" or \"Random\".")
+        STAT_SET_INT("SPAWN_LOCATION_SETTING", 2)
     else
         menu.ref_by_path("Online>Transitions>Speed Up>Don't Wait For Data Broadcast"):applyDefaultState()
         menu.ref_by_path("Online>Transitions>Speed Up>Don't Wait For Mission Launcher"):applyDefaultState()
@@ -5384,6 +5385,7 @@ end)
 local recoverScripthostCode = nil
 util.on_transition_finished(function ()
 	if customspawned then
+        STAT_SET_INT("SPAWN_LOCATION_SETTING", 4)
         if not NETWORK.NETWORK_IS_ACTIVITY_SESSION() then
             players.teleport_3d(players.user(), customspawn.x, customspawn.y, customspawn.z)
         end
