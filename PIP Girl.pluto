@@ -780,9 +780,7 @@ local function Wait_for_transitionState()
     while transitionState(true) ~= 1 and ses_cod == get_session_code() do
         util.yield(666)
     end
-    if ses_cod == get_session_code() then
-        players.dispatch_on_join()
-    end
+    players.dispatch_on_join()
 end
 
 local in_orb_room = {}
