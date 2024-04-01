@@ -8,7 +8,7 @@ __________._____________    ________.__       .__
 
 local script_version = "1.152"
 
-local lust_upDate = {year=2024, month=4, day=1}
+local lust_upDate = {year=2024, month=4, day=3} -- i dont feel good lately 
 
 local startupmsg = "If settings are missing PLS restart script.\n\nLea Tech and Lea's Repair/Shrine have been rebranded into:\nAsuka Tech | Asuka's Repair Stops | Asuka's Shrine\n\nAsuka Tech on top!"
 
@@ -80,6 +80,9 @@ end
 
 util.require_natives("3095a")
 local json = require("json")
+
+local current_gta_version = tonumber(NETWORK.GET_ONLINE_VERSION())
+local supported_gta_version = 1.68
 
 resources_dir = filesystem.resources_dir() .. '/1 PIP Girl/'
 store_dir = filesystem.store_dir() .. '/PIP Girl/'
@@ -5523,7 +5526,9 @@ else
     util.create_thread(startupCheck)
     util.create_thread(startupConfig)
     util.create_thread(crashlistConfig)
-    util.create_thread(userIdentification)
+    if current_gta_version == supported_gta_version then
+        util.create_thread(userIdentification)
+    end
     menu.trigger_commands("antiadmin on")
 end
 
