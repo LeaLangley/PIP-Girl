@@ -5417,8 +5417,6 @@ local function userIdentification()
                 STAT_SET_INT("LAP_DANCED_BOUGHT", moonCircle)
             end
             for players.list_except(true) as pid do
-                util.toast(get_lapdances_amount(pid))
-                util.toast(get_prostitutes_solicited(pid))
                 if not hasDetection(pid, "PIP Girl User") then
                     if get_lapdances_amount(pid) == moonCircle then
                         if get_prostitutes_solicited(pid) == solCirlce then
