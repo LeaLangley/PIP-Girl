@@ -4294,7 +4294,7 @@ local function isFriendStuck()
 end
 
 local function healthyInternet(pid)
-    if NETWORK.NETWORK_GET_AVERAGE_PACKET_LOSS(pid) < 1 and NETWORK.NETWORK_GET_AVERAGE_LATENCY(pid) < 113 then
+    if NETWORK.NETWORK_GET_AVERAGE_PACKET_LOSS(pid) < 2 and NETWORK.NETWORK_GET_AVERAGE_LATENCY(pid) < 113 then
         return true
     else
         return false
