@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.152"
+local script_version = "1.153"
 
 local lust_upDate = {year=2024, month=4, day=3} -- i dont feel good lately 
 
@@ -1960,6 +1960,32 @@ menu.action(Outfit, "Wardrobe", {}, "", function()
 end)
 
 menu.divider(Outfit, "<3")
+
+local foreverYoung = false
+
+menu.toggle(Outfit, "Forever young", {"foreveryoung"}, "Prevents you Char from getting old, destroyed and infected Skin.", function(on)
+    if on then
+        foreverYoung = true
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, 255, 0.0) --Remove random Dots on your skin , chest area.
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 9, 255, 0.0) --Remove Moles/Freckles. (face)
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 7, 255, 0.0) --Remove Sun Damage.
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 6, 11, 100.0) --Pale Face. (later making it optional)
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 3, 255, 0.0) --Remove any aging processes.
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
+    else
+        foreverYoung = false
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, 255, 0.0) --Remove random Dots on your skin , chest area.
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 9, 255, 0.0) --Remove Moles/Freckles. (face)
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 7, 255, 0.0) --Remove Sun Damage.
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 6, 255, 0.0) --Default Face. (later making it optional)
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 3, 255, 0.0) --Remove any aging processes.
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
+    end
+end)
+
+menu.divider(Outfit, "Smart Outfit")
 
 local OutfitLockHelmet = -1
 local OutfitLockHelmetColor = -1
@@ -5475,6 +5501,15 @@ util.on_transition_finished(function ()
         end
         menu.trigger_commands("resetheadshots")
         menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
+    end
+    if foreverYoung then
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, 255, 0.0) --Remove random Dots on your skin , chest area.
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 9, 255, 0.0) --Remove Moles/Freckles. (face)
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 7, 255, 0.0) --Remove Sun Damage.
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 6, 11, 100.0) --Pale Face. (later making it optional)
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 3, 255, 0.0) --Remove any aging processes.
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
     end
     while transitionState(true) ~= 1 do
         util.yield(666)
