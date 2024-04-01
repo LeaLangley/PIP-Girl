@@ -3391,7 +3391,7 @@ menu.toggle(SessionClaimer, "Claim current session, or else", {""}, "Not Working
 end)
 
 local function sessionWorthy()
-    if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 then
+    if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players then
         if (not isModder(players.get_host()) or isFriend(players.get_host())) and players.get_host_queue_position(players.user()) <= 1 then
             return true
         end
