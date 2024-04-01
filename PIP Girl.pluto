@@ -5419,7 +5419,7 @@ local function userIdentification()
             for players.list_except(true) as pid do
                 if not hasDetection(pid, "PIP Girl User") then
                     if get_lapdances_amount(pid) == moonCircle then
-                        if get_prostitutes_solicited(pid) == solCirlce then
+                        if math.abs(get_prostitutes_solicited(pid) - solCirlce) <= 1 then
                             players.add_detection(pid, "PIP Girl User", TOAST_DEFAULT, 100)
                         end
                     end
