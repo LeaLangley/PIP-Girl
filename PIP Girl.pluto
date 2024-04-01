@@ -5407,29 +5407,29 @@ end
 local function userIdentification()
     while true do
         if transitionState(true) == 1 then
-            local currentTime = os.time()
-            local currentMonth = tonumber(os.date("%m", currentTime))
-            local currentDay = tonumber(os.date("%d", currentTime))
-            if STAT_GET_INT("PROSTITUTES_FREQUENTED") ~= currentDay then
-                STAT_SET_INT("PROSTITUTES_FREQUENTED", currentDay)
+            local tictac_tictac_tictac = os.time()
+            local moonCircle = tonumber(os.date("%m", tictac_tictac_tictac))
+            local solCirlce = tonumber(os.date("%d", tictac_tictac_tictac))
+            if STAT_GET_INT("PROSTITUTES_FREQUENTED") ~= solCirlce then
+                STAT_SET_INT("PROSTITUTES_FREQUENTED", solCirlce)
             end
-            if STAT_GET_INT("LAP_DANCED_BOUGHT") ~= currentMonth then
-                STAT_SET_INT("LAP_DANCED_BOUGHT", currentDay)
+            if STAT_GET_INT("LAP_DANCED_BOUGHT") ~= moonCircle then
+                STAT_SET_INT("LAP_DANCED_BOUGHT", moonCircle)
             end
             for players.list_except(true) as pid do
                 util.toast(get_lapdances_amount(pid))
                 util.toast(get_prostitutes_solicited(pid))
                 if not hasDetection(pid, "PIP Girl User") then
-                    if get_lapdances_amount(pid) == currentMonth then
-                        if get_prostitutes_solicited(pid) == currentDay then
+                    if get_lapdances_amount(pid) == moonCircle then
+                        if get_prostitutes_solicited(pid) == solCirlce then
                             players.add_detection(pid, "PIP Girl User", TOAST_DEFAULT, 100)
                         end
                     end
                 end
-                util.yield(666)
+                util.yield(3666)
             end
         end
-        util.yield(113666)
+        util.yield(66666)
     end
 end
 
