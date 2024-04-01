@@ -4972,6 +4972,14 @@ end
 
 players.on_leave(removeFromTable)
 
+local function get_prostitutes_solicited(pid)
+    return memory.read_int(memory.script_global(1845263 + 1 + (pid * 877) + 205 + 54))
+end
+
+local function get_lapdances_amount(pid) 
+    return memory.read_int(memory.script_global(1845263 + 1 + (pid * 877) + 205 + 55))
+end
+
 player_menu = function(pid)
     util.yield(113)
     if player_Exist(pid) and players.get_name(pid) == "UndiscoveredPlayer" then 
@@ -5396,20 +5404,12 @@ menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
     notify(startupmsg)
 end)
 
-local function get_prostitutes_solicited(pid)
-    return memory.read_int(memory.script_global(1845263 + 1 + (pid * 877) + 205 + 54))
-end
-
-local function get_lapdances_amount(pid) 
-    return memory.read_int(memory.script_global(1845263 + 1 + (pid * 877) + 205 + 55))
-end
-
 local function userIdentification()
     while true do
         if transitionState(true) == 1 then
             local tictac_tictac_tictac = os.time()
-            local moonCircle = tonumber(os.date("%m", tictac_tictac_tictac))
-            local solCirlce = tonumber(os.date("%d", tictac_tictac_tictac))
+            local moonCircle = tonumber(os.date("%m", tictac_tictac_tictac)) + 113
+            local solCirlce = tonumber(os.date("%d", tictac_tictac_tictac)) + 113
             if STAT_GET_INT("PROSTITUTES_FREQUENTED") ~= solCirlce then
                 STAT_SET_INT("PROSTITUTES_FREQUENTED", solCirlce)
             end
