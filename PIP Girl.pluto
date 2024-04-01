@@ -4947,6 +4947,8 @@ end
 
 players.on_join(SessionCheck)
 
+local IdentificationTimeout = {}
+
 local function removeFromTable(pid)
     if transitionState(true) == 1 then
         if players.get_script_host() == pid then
@@ -4970,6 +4972,7 @@ local function removeFromTable(pid)
     mk2noob[pid] = nil    
     stuckPlayers[pid] = nil
     timeoutIgnore[pid] = nil
+    IdentificationTimeout[pid] = nil
 end
 
 players.on_leave(removeFromTable)
@@ -5406,6 +5409,16 @@ menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
     notify(startupmsg)
 end)
 
+local function addIdentificationTimeout(pid)
+    if isFriend(pid) and isModder(pid) then
+        IdentificationTimeout[pid] = 3
+    elseif isFriend(pid) or isModder(pid) then
+        IdentificationTimeout[pid] = 6
+    else
+        IdentificationTimeout[pid] = 13
+    end
+end
+
 local function userIdentification()
     while true do
         if transitionState(true) == 1 then
@@ -5421,9 +5434,21 @@ local function userIdentification()
             for players.list_except(true) as pid do
                 if not hasDetection(pid, "PIP Girl User") then
                     if players.are_stats_ready(pid) then
-                        if get_lapdances_amount(pid) == moonCircle then
-                            if math.abs(get_prostitutes_solicited(pid) - solCirlce) <= 1 then
-                                players.add_detection(pid, "PIP Girl User", TOAST_DEFAULT, 100)
+                        if IdentificationTimeout[pid] == nil then
+                            if math.abs(get_lapdances_amount(pid) - moonCircle) <= 1 then
+                                if math.abs(get_prostitutes_solicited(pid) - solCirlce) <= 1 then
+                                    players.add_detection(pid, "PIP Girl User", TOAST_DEFAULT, 100)
+                                else
+                                    addIdentificationTimeout(pid)
+                                end
+                            else
+                                addIdentificationTimeout(pid)
+                            end
+                        else
+                            if IdentificationTimeout[pid] ~= 1 then
+                                IdentificationTimeout[pid] = IdentificationTimeout[pid] - 1
+                            else
+                                IdentificationTimeout[pid] = nil
                             end
                         end
                     end
