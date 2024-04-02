@@ -1844,6 +1844,12 @@ local closestMarker = nil
 local closestDistance = math.huge
 local wasInZone = false
 local protectMissionVehicles = false
+local function checkVehMod(vehicle, mod)
+    if VEHICLE.DOES_EXTRA_EXIST(vehicle, mod) and not VEHICLE.IS_VEHICLE_EXTRA_TURNED_ON(vehicle, mod) then
+        return true
+    end
+    return false
+end
 local function buff_asuka_tech(vehicle)
     if is_vehicle_free_for_use(vehicle) then
         requestControl(vehicle)
@@ -1916,8 +1922,19 @@ local function buff_asuka_tech(vehicle)
     NETWORK.NETWORK_SET_NO_LONGER_NEEDED(vehicle, false)
     local buffVehModel = ENTITY.GET_ENTITY_MODEL(vehicle)
     if buffVehModel == 167522317 then
-        if VEHICLE.GET_VEHICLE_MOD(vehicle, 10) == 1 and VEHICLE.DOES_EXTRA_EXIST(vehicle, 1) and not VEHICLE.IS_VEHICLE_EXTRA_TURNED_ON(vehicle, 1) then
+        if VEHICLE.GET_VEHICLE_MOD(vehicle, 10) == 1 and checkVehMod(vehicle, 1) then
             VEHICLE.SET_VEHICLE_EXTRA(vehicle, 1, 0)
+        end
+    end
+    if buffVehModel == 1770332643 then
+        if checkVehMod(vehicle, 1) then
+            VEHICLE.SET_VEHICLE_EXTRA(vehicle, 1, 0)
+        end
+        if checkVehMod(vehicle, 10) then
+            VEHICLE.SET_VEHICLE_EXTRA(vehicle, 10, 0)
+        end
+        if checkVehMod(vehicle, 11) then
+            VEHICLE.SET_VEHICLE_EXTRA(vehicle, 11, 0)
         end
     end
 end
@@ -2527,14 +2544,14 @@ menu.toggle_loop(Vehicle, "Set vehicle light color automatically",{"autocarlight
     if vehicleFavColor ~= 0 then
         if transitionState(true) <3 then
             local vehicle = get_user_vehicle()
-            if vehicle then
-                if entities.get_owner(vehicle) == players.user() then
-                    local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
-                    if driverPed == players.user_ped() then
-                        if VEHICLE.GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 then
-                            vehicleLightsSet = vehicle
-                            menu.trigger_commands("headlights "..vehicleFavColor)
-                        end
+            if vehicle and VEHICLE.GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 then
+                if DECORATOR.DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 then
+                    vehicleLightsSet = vehicle
+                    menu.trigger_commands("headlights "..vehicleFavColor)
+                else
+                    if vehicle == entities.get_user_personal_vehicle_as_handle() then
+                        vehicleLightsSet = vehicle
+                        menu.trigger_commands("headlights "..vehicleFavColor)
                     end
                 end
             end
