@@ -5438,57 +5438,6 @@ menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
     notify(startupmsg)
 end)
 
-local function addIdentificationTimeout(pid)
-    if isFriend(pid) and isModder(pid) then
-        IdentificationTimeout[pid] = 3
-    elseif isFriend(pid) or isModder(pid) then
-        IdentificationTimeout[pid] = 6
-    else
-        IdentificationTimeout[pid] = 13
-    end
-end
-
-local function userIdentification()
-    while true do
-        if transitionState(true) == 1 then
-            local tictac_tictac_tictac = os.time()
-            local moonCircle = tonumber(os.date("%m", tictac_tictac_tictac)) + 113
-            local solCirlce = tonumber(os.date("%d", tictac_tictac_tictac)) + 113
-            if STAT_GET_INT("PROSTITUTES_FREQUENTED") ~= solCirlce then
-                STAT_SET_INT("PROSTITUTES_FREQUENTED", solCirlce)
-            end
-            if STAT_GET_INT("LAP_DANCED_BOUGHT") ~= moonCircle then
-                STAT_SET_INT("LAP_DANCED_BOUGHT", moonCircle)
-            end
-            for players.list_except(true) as pid do
-                if not hasDetection(pid, "PIP Girl User") then
-                    if players.are_stats_ready(pid) then
-                        if IdentificationTimeout[pid] == nil then
-                            if math.abs(get_lapdances_amount(pid) - moonCircle) <= 1 then
-                                if math.abs(get_prostitutes_solicited(pid) - solCirlce) <= 1 then
-                                    players.add_detection(pid, "PIP Girl User", TOAST_DEFAULT, 100)
-                                else
-                                    addIdentificationTimeout(pid)
-                                end
-                            else
-                                addIdentificationTimeout(pid)
-                            end
-                        else
-                            if IdentificationTimeout[pid] ~= 1 then
-                                IdentificationTimeout[pid] = IdentificationTimeout[pid] - 1
-                            else
-                                IdentificationTimeout[pid] = nil
-                            end
-                        end
-                    end
-                end
-                util.yield(3666)
-            end
-        end
-        util.yield(66666)
-    end
-end
-
 local recoverScripthostCode = nil
 util.on_transition_finished(function ()
 	if customspawned then
@@ -5561,9 +5510,14 @@ else
     util.create_thread(startupCheck)
     util.create_thread(startupConfig)
     util.create_thread(crashlistConfig)
-    --if current_gta_version == supported_gta_version then
-    --    util.create_thread(userIdentification)
-    --end
+    if current_gta_version == supported_gta_version then
+        if STAT_GET_INT("PROSTITUTES_FREQUENTED") ~= 0 then
+            STAT_SET_INT("PROSTITUTES_FREQUENTED", 0)
+        end
+        if STAT_GET_INT("LAP_DANCED_BOUGHT") ~= 0 then
+            STAT_SET_INT("LAP_DANCED_BOUGHT", 0)
+        end
+    end
     menu.trigger_commands("antiadmin on")
 end
 
