@@ -1737,15 +1737,14 @@ menu.toggle_loop(Stimpak, "Oxygen", {"pgbreath"}, "Just breath.\nAlso gives u Mo
         if ENTITY.IS_ENTITY_IN_WATER(players.user_ped()) then
             PED.SET_ENABLE_SCUBA(players.user_ped(), true)
             PED.ENABLE_MP_LIGHT(players.user_ped(), true)
-            PED.SET_PED_MAX_TIME_UNDERWATER(players.user_ped(), 666)
             util.yield(1666)
         else
             PED.SET_ENABLE_SCUBA(players.user_ped(), false)
             PED.ENABLE_MP_LIGHT(players.user_ped(), false)
             util.yield(3666)
         end
-        if ENTITY.IS_ENTITY_IN_WATER(get_user_vehicle()) then
-            PED.SET_PED_MAX_TIME_UNDERWATER(players.user_ped(), 666)
+        if PED.GET_PED_DIES_IN_WATER(players.user_ped()) then
+            PED.SET_PED_DIES_IN_WATER(players.user_ped(), false)
             util.yield(3666)
         end
     else
