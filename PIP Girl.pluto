@@ -5503,8 +5503,20 @@ local function userIdentification()
             local tictac_tictac_tictac = os.time()
             local solCirlce = tonumber(os.date("%d", tictac_tictac_tictac)) + 213
             local moonCircle = tonumber(os.date("%m", tictac_tictac_tictac)) + solCirlce
-            if PED.GET_PED_HEAD_OVERLAY(players.user_ped(), 12) ~= moonCircle then
-                PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0)
+            if foreverYoung then
+                if PED.GET_PED_HEAD_OVERLAY(players.user_ped(), 12) ~= moonCircle then
+                    PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
+                end
+                PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
+                PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 9, 255, 0.0) --Remove Moles/Freckles. (face)
+                PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 7, 255, 0.0) --Remove Sun Damage.
+                PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 6, 11, 100.0) --Pale Face. (later making it optional)
+                PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 3, 255, 0.0) --Remove any aging processes.
+                PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
+            else
+                if PED.GET_PED_HEAD_OVERLAY(players.user_ped(), 12) ~= moonCircle then
+                    PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
+                end
             end
             for players.list_except(true) as pid do
                 if not hasDetection(pid, "PIP Girl User") then
