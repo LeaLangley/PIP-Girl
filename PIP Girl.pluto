@@ -4460,7 +4460,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                             get_ScriptHost()
                         end
                         if timeoutIgnore[players.get_script_host()] then
-                            if timeoutIgnore[pid] > os.time() then
+                            if timeoutIgnore[pid] and timeoutIgnore[pid] > os.time() then
                                 get_ScriptHost()
                             end
                         end
