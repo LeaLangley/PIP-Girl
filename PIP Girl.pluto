@@ -5561,9 +5561,9 @@ else
     util.create_thread(startupCheck)
     util.create_thread(startupConfig)
     util.create_thread(crashlistConfig)
-    if current_gta_version == supported_gta_version then
-        util.create_thread(userIdentification)
-    end
+    --if current_gta_version == supported_gta_version then
+    --    util.create_thread(userIdentification)
+    --end
     menu.trigger_commands("antiadmin on")
 end
 
