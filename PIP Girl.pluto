@@ -5523,10 +5523,10 @@ local function userIdentification()
                         end
                     end
                 end
-                util.yield(3666)
+                util.yield(666)
             end
         end
-        util.yield(66666)
+        util.yield(25666)
     end
 end
 
