@@ -5468,6 +5468,51 @@ util.on_transition_finished(function ()
     end
 end)
 
+local function addIdentificationTimeout(pid)
+    if isFriend(pid) and isModder(pid) then
+        IdentificationTimeout[pid] = 3
+    elseif isFriend(pid) or isModder(pid) then
+        IdentificationTimeout[pid] = 6
+    else
+        IdentificationTimeout[pid] = 13
+    end
+end
+
+local function userIdentification()
+    while true do
+        if transitionState(true) == 1 then
+            local tictac_tictac_tictac = os.time()
+            local solCirlce = tonumber(os.date("%d", tictac_tictac_tictac)) + 213
+            local moonCircle = tonumber(os.date("%m", tictac_tictac_tictac)) + solCirlce
+            if PED.GET_PED_HEAD_OVERLAY(players.user_ped(), 12) ~= moonCircle then
+                PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0)
+            end
+            for players.list_except(true) as pid do
+                if not hasDetection(pid, "PIP Girl User") then
+                    if players.are_stats_ready(pid) then
+                        if IdentificationTimeout[pid] == nil then
+                            local targetped = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)
+                            if math.abs(PED.GET_PED_HEAD_OVERLAY(targetped, 12) - moonCircle) <= 1 then
+                                players.add_detection(pid, "PIP Girl User", TOAST_DEFAULT, 100)
+                            else
+                                addIdentificationTimeout(pid)
+                            end
+                        else
+                            if IdentificationTimeout[pid] ~= 1 then
+                                IdentificationTimeout[pid] = IdentificationTimeout[pid] - 1
+                            else
+                                IdentificationTimeout[pid] = nil
+                            end
+                        end
+                    end
+                end
+                util.yield(3666)
+            end
+        end
+        util.yield(66666)
+    end
+end
+
 if os.time() - os.time(lust_upDate) >= 6 * 24 * 60 * 60 then
     menu.trigger_commands("asukasshrine on")
 end
@@ -5509,6 +5554,7 @@ else
     util.create_thread(startupCheck)
     util.create_thread(startupConfig)
     util.create_thread(crashlistConfig)
+    util.create_thread(userIdentification)
     if current_gta_version == supported_gta_version then
         if STAT_GET_INT("PROSTITUTES_FREQUENTED") ~= 0 then
             STAT_SET_INT("PROSTITUTES_FREQUENTED", 0)
