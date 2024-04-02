@@ -6,9 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.153"
+local script_version = "1.154"
 
-local lust_upDate = {year=2024, month=4, day=3} -- i dont feel good lately 
+local lust_upDate = {year=2024, month=4, day=6} -- i feel 50% better ... jesus
 
 local startupmsg = "If settings are missing PLS restart script.\n\nLea Tech and Lea's Repair/Shrine have been rebranded into:\nAsuka Tech | Asuka's Repair Stops | Asuka's Shrine\n\nAsuka Tech on top!"
 
