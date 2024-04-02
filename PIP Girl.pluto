@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.154"
+local script_version = "1.155"
 
 local lust_upDate = {year=2024, month=4, day=6} -- i feel 50% better ... jesus
 
@@ -1865,30 +1865,32 @@ local function buff_asuka_tech(vehicle)
         end
     end
     local engine = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 11) - 1
-    local breaks = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 12) - 1
-    local gearbox = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 13) - 1
-    local suspension = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 15) - 1
-    local armor = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 16) - 1
     if engine > -1 then
         if VEHICLE.GET_VEHICLE_MOD(vehicle, 11) ~= engine then
             VEHICLE.SET_VEHICLE_MOD(vehicle, 11, engine)
         end
     end
+    local breaks = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 12) - 1
     if breaks > -1 then
         if VEHICLE.GET_VEHICLE_MOD(vehicle, 12) ~= breaks then
             VEHICLE.SET_VEHICLE_MOD(vehicle, 12, breaks)
         end
     end
+    local gearbox = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 13) - 1
     if gearbox > -1 then
         if VEHICLE.GET_VEHICLE_MOD(vehicle, 13) ~= gearbox then
             VEHICLE.SET_VEHICLE_MOD(vehicle, 13, gearbox)
         end
     end
-    if suspension > -1 then
-        if VEHICLE.GET_VEHICLE_MOD(vehicle, 15) ~= suspension then
-            VEHICLE.SET_VEHICLE_MOD(vehicle, 15, suspension)
+    if DECORATOR.DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 then
+        local suspension = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 15) - 1
+        if suspension > -1 then
+            if VEHICLE.GET_VEHICLE_MOD(vehicle, 15) ~= suspension then
+                VEHICLE.SET_VEHICLE_MOD(vehicle, 15, suspension)
+            end
         end
     end
+    local armor = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 16) - 1
     if armor > -1 then
         if VEHICLE.GET_VEHICLE_MOD(vehicle, 16) ~= armor then
             VEHICLE.SET_VEHICLE_MOD(vehicle, 16, armor)
