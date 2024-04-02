@@ -4394,7 +4394,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                             local stuckDuration = os.time() - stuckPlayers[pid]
                             local stuckDurationTol = 20
                             if isFriend(pid) then
-                                stuckDurationTol = 16
+                                stuckDurationTol = 13
                             end
                             if timeoutIgnore[pid] then
                                 if timeoutIgnore[pid] < os.time() then
