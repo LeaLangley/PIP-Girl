@@ -1975,10 +1975,12 @@ menu.divider(Outfit, "<3")
 
 local foreverYoung = false
 
+local moonCircle = 255
+
 menu.toggle(Outfit, "Forever young", {"foreveryoung"}, "Prevents you Char from getting old, destroyed and infected Skin.", function(on)
     if on then
         foreverYoung = true
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, 255, 0.0) --Remove random Dots on your skin , chest area.
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 0.0) --Remove random Dots on your skin , chest area.
         PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
         PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 9, 255, 0.0) --Remove Moles/Freckles. (face)
         PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 7, 255, 0.0) --Remove Sun Damage.
@@ -2062,7 +2064,7 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
         util.yield(666)
     end
     if foreverYoung and transitionState(true) <3 then
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, 255, 0.0) --Remove random Dots on your skin , chest area.
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 0.0) --Remove random Dots on your skin , chest area.
         PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
         PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 9, 255, 0.0) --Remove Moles/Freckles. (face)
         PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 7, 255, 0.0) --Remove Sun Damage.
@@ -5466,7 +5468,7 @@ util.on_transition_finished(function ()
         menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
     end
     if foreverYoung then
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, 255, 0.0) --Remove random Dots on your skin , chest area.
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 0.0) --Remove random Dots on your skin , chest area.
         PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
         PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 9, 255, 0.0) --Remove Moles/Freckles. (face)
         PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 7, 255, 0.0) --Remove Sun Damage.
@@ -5495,10 +5497,10 @@ end
 
 local function userIdentification()
     while true do
-        if transitionState(true) == 1 then
+        if transitionState(true) <3 then
             local tictac_tictac_tictac = os.time()
             local solCirlce = tonumber(os.date("%d", tictac_tictac_tictac)) + 213
-            local moonCircle = tonumber(os.date("%m", tictac_tictac_tictac)) + solCirlce
+            moonCircle = tonumber(os.date("%m", tictac_tictac_tictac)) + solCirlce
             if foreverYoung then
                 if PED.GET_PED_HEAD_OVERLAY(players.user_ped(), 12) ~= moonCircle then
                     PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
