@@ -5521,7 +5521,8 @@ local function userIdentification()
                     if players.are_stats_ready(pid) then
                         if IdentificationTimeout[pid] == nil then
                             local targetped = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)
-                            if does_entity_exist(targetped) and math.abs(PED.GET_PED_HEAD_OVERLAY(targetped, 12) - moonCircle) <= 1 then
+                            local pedmodel = ENTITY.GET_ENTITY_MODEL(targetped)
+                            if does_entity_exist(targetped) and (pedmodel == -1667301416 or pedmodel == 1885233650) and math.abs(PED.GET_PED_HEAD_OVERLAY(targetped, 12) - moonCircle) <= 1 then
                                 players.add_detection(pid, "PIP Girl User", TOAST_DEFAULT, 100)
                             else
                                 addIdentificationTimeout(pid)
