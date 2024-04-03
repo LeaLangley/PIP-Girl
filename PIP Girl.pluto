@@ -4347,7 +4347,7 @@ local function healthyInternet(pid)
 end
 
 local function worthToUnstuck(pid)
-    if player_Exist(pid) and isStuck(pid) and healthyInternet(pid) then
+    if player_Exist(pid) and isStuck(pid) and healthyInternet(pid) and discoveredSince(pid) > 113 then
         return true
     else
         return false
@@ -4385,7 +4385,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
                         playerList = players.list()
                     end
                     for playerList as pid do
-                        if worthToUnstuck(pid) and discoveredSince(pid) > 113 then
+                        if worthToUnstuck(pid) then
                             if not stuckPlayers[pid] then
                                 stuckPlayers[pid] = os.time()
                             end
