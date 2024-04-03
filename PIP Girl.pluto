@@ -1987,13 +1987,6 @@ menu.toggle(Outfit, "Forever young", {"foreveryoung"}, "Prevents you Char from g
         PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
     else
         foreverYoung = false
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, 255, 0.0) --Remove random Dots on your skin , chest area.
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 9, 255, 0.0) --Remove Moles/Freckles. (face)
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 7, 255, 0.0) --Remove Sun Damage.
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 6, 255, 0.0) --Default Face. (later making it optional)
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 3, 255, 0.0) --Remove any aging processes.
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
     end
 end)
 
@@ -2067,6 +2060,15 @@ menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you
         util.yield(13)
     else
         util.yield(666)
+    end
+    if foreverYoung and transitionState(true) <3 then
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, 255, 0.0) --Remove random Dots on your skin , chest area.
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 9, 255, 0.0) --Remove Moles/Freckles. (face)
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 7, 255, 0.0) --Remove Sun Damage.
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 6, 11, 100.0) --Pale Face. (later making it optional)
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 3, 255, 0.0) --Remove any aging processes.
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
     end
 end, function()
     menu.trigger_commands("lockoutfit off")
