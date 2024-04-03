@@ -2615,7 +2615,7 @@ menu.toggle_loop(Vehicle, "Asuka's Repair Stop's", {"asukars"}, "", function()
         blipsCreated = false
         util.yield(13666)
     end
-    uti.yield(1000)
+    util.yield(1000)
 end, function()
     remove_blips()
     closestMarker = nil
