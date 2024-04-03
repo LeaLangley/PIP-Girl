@@ -2994,23 +2994,22 @@ menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'}, "Auto Interact with 
             "RE_CS_INTER",
             "FXR_INT_RP_SC",
             "FXR_INT_RP_C2",
+            "SMH_SEDPADAREA",
+            "SMH_SEDPADSRT",
         }
         for ipairs(interactionsE) as label do
             if IS_HELP_MSG_DISPLAYED(label) then
                 PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 51, 1)
-                local animStartTime = 0
-                menu.trigger_commands("timescale 1000")
-                while ENTITY.GET_ENTITY_SPEED(players.user_ped()) ~=0 or animStartTime >= 5 do
-                    util.yield(1000)
-                    animStartTime += 1
-                    if animStartTime >= 5 then
-                        break
-                    end
-                    if ENTITY.GET_ENTITY_SPEED(players.user_ped()) ~=0 then
-                        break
-                    end
-                end
-                menu.trigger_commands("timescale 1")
+                break
+            end
+        end
+        local interactionsX = {
+            "MBS_DPAD_DROPB",
+        }
+        for ipairs(interactionsX) as label do
+            if IS_HELP_MSG_DISPLAYED(label) then
+                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 51, 1)
+                break
             end
         end
     else
