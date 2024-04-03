@@ -3710,7 +3710,7 @@ end)
 menu.toggle(SessionJoin, "Use Custom Spawn", {""}, "", function(on)
     if on then
         customspawned = true
-        STAT_SET_INT("SPAWN_LOCATION_SETTING", 4)
+        STAT_SET_INT("SPAWN_LOCATION_SETTING", 2)
     else
         customspawned = false
     end
@@ -5448,7 +5448,7 @@ end)
 local recoverScripthostCode = nil
 util.on_transition_finished(function ()
 	if customspawned then
-        STAT_SET_INT("SPAWN_LOCATION_SETTING", 4)
+        STAT_SET_INT("SPAWN_LOCATION_SETTING", 2)
         if not NETWORK.NETWORK_IS_ACTIVITY_SESSION() then
             players.teleport_3d(players.user(), customspawn.x, customspawn.y, customspawn.z)
         end
