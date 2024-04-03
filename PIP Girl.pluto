@@ -1833,7 +1833,7 @@ util.on_stop(function()
     remove_blips()
 end)
 remove_blips()
-local repairRadius = 2
+local repairRadius = 3
 local closestMarker = nil
 local closestDistance = math.huge
 local wasInZone = false
@@ -1940,14 +1940,14 @@ local function SetInZoneTimer()
         HUD.SET_BLIP_COLOUR(blip, 1)
     end
     for checkpoints as check do
-        GRAPHICS.SET_CHECKPOINT_RGBA(check, 255, 13, 13, 10)
+        GRAPHICS.SET_CHECKPOINT_RGBA2(check, 255, 13, 13, 10)
     end
     util.yield(369666)
     for blips as blip do
         HUD.SET_BLIP_COLOUR(blip, 48)
     end
     for checkpoints as check do
-        GRAPHICS.SET_CHECKPOINT_RGBA(check, 255, 0, 128, 66)
+        GRAPHICS.SET_CHECKPOINT_RGBA2(check, 255, 0, 128, 66)
     end
     wasInZone = false
 end
@@ -2587,14 +2587,6 @@ menu.toggle_loop(Vehicle, "Asuka's Repair Stop's", {"asukars"}, "", function()
         end
         if closestMarker then
             local markerPosition = closestMarker
-            if not wasInZone then
-                --GRAPHICS.DRAW_MARKER(1, markerPosition.x, markerPosition.y, markerPosition.z - 1, 0, 0, 0, 0, 180, 0, 2, 2, 2, 255, 0, 128, 66, false, false, 180, 0, 0, 0, false)
-                --GRAPHICS.DRAW_MARKER(1, markerPosition.x, markerPosition.y, markerPosition.z - 1, 0, 0, 0, 0, 180, 0, 5, 5, 1, 255, 0, 128, 255, false, false, 180, 0, 0, 0, false)
-                GRAPHICS.DRAW_SPOT_LIGHT(markerPosition.x, markerPosition.y, markerPosition.z + 0.6, 0, 0, -1, 255, 0, 128, 5, 5, 0, 200, 1)
-            else
-                --GRAPHICS.DRAW_MARKER(1, markerPosition.x, markerPosition.y, markerPosition.z - 1, 0, 0, 0, 0, 180, 0, 5, 5, 1, 255, 0, 0, 255, false, false, 180, 0, 0, 0, false)
-                GRAPHICS.DRAW_SPOT_LIGHT(markerPosition.x, markerPosition.y, markerPosition.z + 0.6, 0, 0, -1, 255, 0, 0, 5, 5, 0, 200, 1)
-            end
             if closestDistance <= repairRadius then
                 if not wasInZone then
                     local vehicle = get_user_vehicle()
@@ -2614,7 +2606,6 @@ menu.toggle_loop(Vehicle, "Asuka's Repair Stop's", {"asukars"}, "", function()
                 end
             end
         else
-
             closestMarker = nil
             closestDistance = math.huge
         end
@@ -2624,6 +2615,7 @@ menu.toggle_loop(Vehicle, "Asuka's Repair Stop's", {"asukars"}, "", function()
         blipsCreated = false
         util.yield(13666)
     end
+    uti.yield(1000)
 end, function()
     remove_blips()
     closestMarker = nil
