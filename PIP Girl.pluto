@@ -6,11 +6,11 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.155"
+local script_version = "1.156"
 
 local lust_upDate = {year = 2024, month = 4, day = 13, hour = 0, min = 0, sec = 0}
 
-local startupmsg = "If settings are missing PLS restart script.\n\nLea Tech and Lea's Repair/Shrine have been rebranded into:\nAsuka Tech | Asuka's Repair Stops | Asuka's Shrine\n\nAsuka Tech on top!"
+local startupmsg = "First run in 1.156?\nSettings in Script should never be lost from now on!\nCheck you settings one last time to make sure.\n\nAsuka Tech on top!"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -927,7 +927,7 @@ local function fillUpEverything()
     menu.trigger_commands("clubpopularity 100")
     menu.trigger_commands("removebounty")
 end
-
+--[[
 local function CayoBasics()
     fillUpEverything()
     STAT_SET_INT("H4_MISSIONS", -1)
@@ -954,7 +954,7 @@ local function CayoNotify()
     util.yield(1666)
     notify("The Cayo heist with a sweet legit-like preset.\nIf you're inside the submarine, go manually out and in again to refresh the board.")    
 end
---[[
+
 menu.action(PIP_Girl_Heist, 'Cayo 1 Player Preset (!)', {}, "", function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'Want to set up cayo?', function()
         if transitionState(true) == 1 then
@@ -1219,7 +1219,7 @@ menu.action(PIP_Girl_Heist, 'Cayo 4 Player 25/25/25/25 Preset (!)', {}, "", func
     end, true)
 end)
 ]]--
-menu.toggle_loop(PIP_Girl, "Nightclub Party Never Stops!", {'ncpop'}, "The hottest NC in whole LS.\nKeeps you pop at 90-100%", function ()
+path_nc_pop = menu.toggle_loop(PIP_Girl, "Nightclub Party Never Stops!", {'ncpop'}, "The hottest NC in whole LS.\nKeeps you pop at 90-100%", function ()
     if transitionState(true) == 1 then
         local ncpop = math.floor(STAT_GET_INT('CLUB_POPULARITY') / 10)
         if ncpop < 88 then
@@ -1277,11 +1277,11 @@ menu.divider(PIP_Girl, "Org Options")
 --    end
 --end
 
-menu.text_input(PIP_Girl, "CEO Name", {"pgceoname"}, "(Also works for MC) You can press Ctrl+U and select colors, but no special GTA icons, sadly.", function(input_str, click_type)
+path_org_name = menu.text_input(PIP_Girl, "CEO Name", {"pgceoname"}, "(Also works for MC) You can press Ctrl+U and select colors, but no special GTA icons, sadly.", function(input_str, click_type)
     urceoname = input_str
 end)
 local organization_type = "CEO"
-menu.list_select(PIP_Girl, "Org Type", {}, "", {
+path_org_type = menu.list_select(PIP_Girl, "Org Type", {}, "", {
     {1, "CEO"},
     {2, "MC"},
 }, 1, function(value, menu_name, prev_value, click_type)
@@ -1292,7 +1292,7 @@ local joinfriendsceo = 1
 local invitefriendsinceo = false
 local ceo_ses_code = nil
 local lastCeoName = nil
-menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yourself as CEO and auto switches you to MC/CEO in most situations needed.", function()
+path_auto_org = menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yourself as CEO and auto switches you to MC/CEO in most situations needed.", function()
     if not NETWORK.NETWORK_IS_ACTIVITY_SESSION() and transitionState(true) == 1 then
         if joinfriendsceo ~= 3 then
             local uniqueColors = {}
@@ -1418,7 +1418,7 @@ end)
 --    util.yield(13666)
 --end)
 
-menu.list_select(PIP_Girl, "Auto Join Friends Org (!)", {""}, "Uses \"Auto Become a CEO/MC\"", {
+path_join_friends_org = menu.list_select(PIP_Girl, "Auto Join Friends Org (!)", {""}, "Uses \"Auto Become a CEO/MC\"", {
     {1, "Don't"},
     {2, "Also"},
     {3, "Only"},
@@ -1494,7 +1494,7 @@ local vehicle_money_hashish = {
     1745876935, --underwater money xD
     -1249748547, --Smugler money
 }
-menu.toggle_loop(PIP_Girl, "Collect all NPC money", {}, "Collect all NPC money.", function()
+path_collect_money = menu.toggle_loop(PIP_Girl, "Collect all NPC money", {}, "Collect all NPC money.", function()
     if transitionState(true) == 1 and ENTITY.GET_ENTITY_HEALTH(players.user_ped()) ~= 0 then
         local pos = players.get_position(players.user())
         if is_user_driving_vehicle(true) then
@@ -1625,7 +1625,7 @@ menu.action(Stimpak, "Refill Health & Armour",{"newborn"},"Regenerate to max you
 end)
 
 local filled_up = false
-menu.toggle(Stimpak, "Fill me up! On session join", {"pgfmu"}, "Fill you up with health, armor, snacks, and ammo on session join.", function(on)
+path_fill_me_up = menu.toggle(Stimpak, "Fill me up! On session join", {"pgfmu"}, "Fill you up with health, armor, snacks, and ammo on session join.", function(on)
     if on then
         filled_up = true
     else
@@ -1634,7 +1634,7 @@ menu.toggle(Stimpak, "Fill me up! On session join", {"pgfmu"}, "Fill you up with
 end)
 
 local dead = 0
-menu.toggle_loop(Stimpak, "Auto Armor after Death",{"pgblessing"},"A body armor will be applied automatically when respawning.", function()
+path_auto_armor = menu.toggle_loop(Stimpak, "Auto Armor after Death",{"pgblessing"},"A body armor will be applied automatically when respawning.", function()
     if transitionState(true) <3 then
         local health = ENTITY.GET_ENTITY_HEALTH(players.user_ped())
         if health == 0 and dead == 0 then
@@ -1649,7 +1649,7 @@ menu.toggle_loop(Stimpak, "Auto Armor after Death",{"pgblessing"},"A body armor 
     end
 end)
 
-menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehicle", {"pghealth"}, "Will recharge health when in cover or vehicle quickly.\nBUT also slowly, almost legit-like, otherwise to 100%.", function()
+path_recharge_health = menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehicle", {"pghealth"}, "Will recharge health when in cover or vehicle quickly.\nBUT also slowly, almost legit-like, otherwise to 100%.", function()
     if transitionState(true) <3 then
         local in_vehicle = is_user_driving_vehicle(true)
         local playerPed = players.user_ped()
@@ -1670,7 +1670,7 @@ end, function()
     PLAYER.SET_PLAYER_HEALTH_RECHARGE_MULTIPLIER(players.user(), 0.1)
 end)
 
-menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle", {"pgarmor"}, "Will Recharge Armor when in Cover or Vehicle quickly.\nBUT also slowly otherwise to 100%.", function()
+path_recharge_armor = menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle", {"pgarmor"}, "Will Recharge Armor when in Cover or Vehicle quickly.\nBUT also slowly otherwise to 100%.", function()
     local cmd_path = "Self>Regeneration Rate>Armour"
     if transitionState(true) <3 then
         local in_vehicle = is_user_driving_vehicle(true)
@@ -1707,7 +1707,7 @@ end, function()
 end)
 
 local was_user_in_vehicle = false
-menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {"pgvaid"}, "Using your First Aid kit provided in your vehicle.", function()
+path_first_aid_kit = menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {"pgvaid"}, "Using your First Aid kit provided in your vehicle.", function()
     if transitionState(true) <3 then
         local in_vehicle = is_user_driving_vehicle(false)
         local health = ENTITY.GET_ENTITY_HEALTH(players.user_ped())
@@ -1726,7 +1726,7 @@ menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {"pgva
     end
 end)
 
-menu.toggle_loop(Stimpak, "Oxygen", {"pgbreath"}, "Just breath.\nAlso gives u Movement and light from Scuba gear without having one equiped.", function()
+path_oxygen = menu.toggle_loop(Stimpak, "Oxygen", {"pgbreath"}, "Just breath.\nAlso gives u Movement and light from Scuba gear without having one equiped.", function()
     if transitionState(true) <3 then
         if ENTITY.IS_ENTITY_IN_WATER(players.user_ped()) then
             PED.SET_ENABLE_SCUBA(players.user_ped(), true)
@@ -1952,146 +1952,6 @@ local function SetInZoneTimer()
     wasInZone = false
 end
 
---menu.action(Stimpak, "(DEBUG) Set Armor/Health to Low", {"dearmor"}, "This is for testing Purpose!\nTurn the options above on and Click this to test them out!", function()
---    if transitionState(true) <3 then
---        PED.SET_PED_ARMOUR(players.user_ped(), 0)
---        local maxHealth = ENTITY.GET_ENTITY_MAX_HEALTH(players.user_ped())
---        local newHealth = math.floor(maxHealth * 0.5)
---        ENTITY.SET_ENTITY_HEALTH(players.user_ped(), newHealth)
---    end
---end)
-
-menu.divider(Outfit, "Quick Select")
-
-menu.action(Outfit, "Edit Outfit", {}, "", function()
-    menu.trigger_commands("outfit")
-end)
-
-menu.action(Outfit, "Wardrobe", {}, "", function()
-    menu.trigger_commands("wardrobe")
-end)
-
-menu.divider(Outfit, "<3")
-
-local foreverYoung = false
-
-local moonCircle = 255
-
-menu.toggle(Outfit, "Forever young", {"foreveryoung"}, "Prevents you Char from getting old, destroyed and infected Skin.", function(on)
-    if on then
-        foreverYoung = true
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 9, 255, 0.0) --Remove Moles/Freckles. (face)
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 7, 255, 0.0) --Remove Sun Damage.
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 6, 11, 100.0) --Pale Face. (later making it optional)
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 3, 255, 0.0) --Remove any aging processes.
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
-    else
-        foreverYoung = false
-    end
-end)
-
-menu.divider(Outfit, "Smart Outfit")
-
-local OutfitLockHelmet = -1
-local OutfitLockHelmetColor = -1
-local ChangedHelmet = false
-local temp_holding_outfit = nil
-menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you outfit only if u dont have interaction menu open or in some critical mission.", function()
-    local focused = lang.get_string(menu.get_current_menu_list():getParent().menu_name)
-    if util.is_interaction_menu_open() then
-        if ChangedHelmet then
-            menu.trigger_commands("hat -1")
-            ChangedHelmet = false
-        end
-        menu.trigger_commands("lockoutfit off")
-    else
-        if NETWORK.NETWORK_IS_ACTIVITY_SESSION() and 4 >= PLAYER.GET_NUMBER_OF_PLAYERS() then
-            if ChangedHelmet then
-                menu.trigger_commands("hat -1")
-                ChangedHelmet = false
-            end
-            if not temp_holding_outfit then
-                menu.trigger_commands("saveoutfit 1 PIP Girl Temp")
-                temp_holding_outfit = true
-            end
-            menu.trigger_commands("lockoutfit off")
-        else
-            menu.trigger_commands("lockoutfit on")
-            if temp_holding_outfit then
-                menu.trigger_commands("outfit 1PIPGirlTemp")
-                temp_holding_outfit = false
-            end
-            if OutfitLockHelmet ~= -1 then
-                local vehicleClass = VEHICLE.GET_VEHICLE_CLASS(PED.GET_VEHICLE_PED_IS_IN(players.user_ped(), true))
-                if PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) and vehicleClass then
-                    if menu.get_state(menu.ref_by_path("Self>Appearance>Outfit>Hat")) == "-1" and focused ~= "Profiles" then
-                        if vehicleClass == 8 or vehicleClass == 13 then
-                            menu.trigger_commands("hat "..OutfitLockHelmet)
-                            util.yield(13)
-                            if OutfitLockHelmetColor ~= -1 then
-                                menu.trigger_commands("hatvar "..OutfitLockHelmetColor)
-                            end
-                            ChangedHelmet = true
-                        end
-                    end
-                else
-                    if ChangedHelmet then
-                        while ENTITY.GET_ENTITY_SPEED(players.user_ped()) ~=0 do
-                            util.yield(666)
-                            if ENTITY.GET_ENTITY_SPEED(players.user_ped()) ==0 then
-                                break
-                            end
-                            if lang.get_string(menu.get_current_menu_list():getParent().menu_name) == "Profiles" then
-                                break
-                            end
-                        end
-                        menu.trigger_commands("hat -1")
-                        ChangedHelmet = false
-                    end
-                end
-            end
-        end
-    end
-    if ChangedHelmet and focused == "Profiles" then
-        menu.trigger_commands("hat -1")
-        ChangedHelmet = false
-    end 
-    if focused == "Stand" or focused == "Profiles" then
-        util.yield(13)
-    else
-        util.yield(666)
-    end
-    if foreverYoung and transitionState(true) <3 then
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 9, 255, 0.0) --Remove Moles/Freckles. (face)
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 7, 255, 0.0) --Remove Sun Damage.
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 6, 11, 100.0) --Pale Face. (later making it optional)
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 3, 255, 0.0) --Remove any aging processes.
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
-    end
-end, function()
-    menu.trigger_commands("lockoutfit off")
-    if ChangedHelmet then
-        menu.trigger_commands("hat -1")
-        ChangedHelmet = false
-    end
-    if temp_holding_outfit then
-        menu.trigger_commands("outfit 1PIPGirlTemp")
-        temp_holding_outfit = false
-    end
-end)
-
-menu.slider(Outfit, 'Smart Outfit Lock Helmet', {'SmartLockHelmet'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet.', -1, 201, OutfitLockHelmet, 1, function (new_value)
-    OutfitLockHelmet = new_value
-end)
-
-menu.slider(Outfit, 'Smart Outfit Lock Helmet Color', {'SmartLockHelmetColor'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet Color.', -1, 50, OutfitLockHelmetColor, 1, function (new_value)
-    OutfitLockHelmetColor = new_value
-end)
-
 menu.divider(Vehicle, "Asuka Tech")
 
 local function getTrailer(vehicle)
@@ -2164,7 +2024,7 @@ local isInVehicleAT = false
 local isInInteriorAT = false
 local vehicleProtected = false
 local asukaTechBlipVeh = nil
-menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly repairs your vehicle, and gives it some modern enhancements.", function()
+path_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly repairs your vehicle, and gives it some modern enhancements.", function()
     local cmd_path = "Vehicle>Light Signals>Use Brake Lights When Stopped"
     if transitionState(true) == 1 and players.is_visible(players.user()) then
         if menu.get_state(menu.ref_by_path(cmd_path)) ~= "On" then
@@ -2304,15 +2164,15 @@ end)
 
 local Asuka_Tech = menu.list(Vehicle, 'Asuka Tech Settings', {}, 'Settings for Asuka Tech.', function(); end)
 
-menu.slider(Asuka_Tech, "Asuka Tech Repair Amount", {"asukatechrepairamount"}, "The amount that should be repaired per second, default 1.", 0, 13, asuka_tech_repair_amount, 1, function (new_value)
+path_asuka_tech_repair = menu.slider(Asuka_Tech, "Asuka Tech Repair Amount", {"asukatechrepairamount"}, "The amount that should be repaired per second, default 1.", 0, 13, asuka_tech_repair_amount, 1, function (new_value)
     asuka_tech_repair_amount = new_value
 end)
 
-menu.slider(Asuka_Tech, "Asuka Tech Mission Repair Amount", {"asukatechmissionrepairamount"}, "The amount that should be repaired per second if the vehicle is a mission entity, default 3.", 0, 13, asuka_tech_mission_repair_amount, 1, function (new_value)
+path_asuka_tech_mission_repair = menu.slider(Asuka_Tech, "Asuka Tech Mission Repair Amount", {"asukatechmissionrepairamount"}, "The amount that should be repaired per second if the vehicle is a mission entity, default 3.", 0, 13, asuka_tech_mission_repair_amount, 1, function (new_value)
     asuka_tech_mission_repair_amount = new_value
 end)
 
-menu.toggle(Asuka_Tech, "Lockon Jammer for Mission Vehicles", {""}, "if you asuka tech vehicle is a mission entity , it will gain a lock on jammer.", function(on)
+path_asuka_tech_lockon_jammer = menu.toggle(Asuka_Tech, "Lockon Jammer for Mission Vehicles", {""}, "if you asuka tech vehicle is a mission entity , it will gain a lock on jammer.", function(on)
     if on then
         protectMissionVehicles = true
     else
@@ -2326,7 +2186,7 @@ function draw_bar(value, maxValue, x, y, width, height, barColor, backColor)
     directx.draw_rect(x, y - height, barWidth, height, barColor)
 end
 
-menu.toggle_loop(Asuka_Tech, "Asuka Tech HP Bar", {""}, "", function()
+path_asuka_tech_hp_bar = menu.toggle_loop(Asuka_Tech, "Asuka Tech HP Bar", {""}, "", function()
     if transitionState(true) <3 then
         local target_vehicle = get_user_vehicle()
         if does_entity_exist(current_asuka_tech_vehicle) then
@@ -2351,7 +2211,7 @@ menu.toggle_loop(Asuka_Tech, "Asuka Tech HP Bar", {""}, "", function()
     end
 end)
 
-menu.toggle_loop(Asuka_Tech, "Asuka Tech Info Overlay", {""}, "", function()
+path_asuka_tech_info_overlay = menu.toggle_loop(Asuka_Tech, "Asuka Tech Info Overlay", {""}, "", function()
     if transitionState(true) < 3 then
         local target_vehicle = get_user_vehicle()
         if does_entity_exist(current_asuka_tech_vehicle) then
@@ -2367,7 +2227,7 @@ menu.toggle_loop(Asuka_Tech, "Asuka Tech Info Overlay", {""}, "", function()
     end
 end)
 
-menu.list_select(Asuka_Tech, "Asuka Tech Vehicle Dirt", {""}, "Vanilla: Games Default, does nothing.\n\nGain: Gain Dirt every repair tick.\n\nClean: Removes Dirt every repair tick.\n\nIt Does not Add or Remove Dirt all in one, just a little every tick, to give the illusion of pollution/cleaning duo to repairs.", {
+path_asuka_tech_dirt = menu.list_select(Asuka_Tech, "Asuka Tech Vehicle Dirt", {""}, "Vanilla: Games Default, does nothing.\n\nGain: Gain Dirt every repair tick.\n\nClean: Removes Dirt every repair tick.\n\nIt Does not Add or Remove Dirt all in one, just a little every tick, to give the illusion of pollution/cleaning duo to repairs.", {
     {1, "Vanilla"},
     {2, "Gain"},
     {3, "Clean"},
@@ -2468,7 +2328,7 @@ menu.divider(Vehicle, "Lights")
 
 local Vehicle_Light = menu.list(Vehicle, 'Vehicle Light Rhythm', {}, 'Flash the lights pretty and nice.', function(); end)
 
-menu.toggle_loop(Vehicle_Light, "S.O.S. Morse",{"sosmorse"},"",function()
+path_vehicle_light_rhythm_sos = menu.toggle_loop(Vehicle_Light, "S.O.S. Morse",{"sosmorse"},"",function()
     local vehicle = get_user_vehicle()
     if vehicle then
         VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
@@ -2535,11 +2395,11 @@ end)
 
 local vehicleFavColor = 0
 
-menu.slider(Vehicle, "Vehicle light color", {"favheadlights"}, "Default lights: 0 & 1 | Color lights: 2-14", 2, 14, vehicleFavColor, 1, function (new_value)
+path_vehicle_light_color = menu.slider(Vehicle, "Vehicle light color", {"favheadlights"}, "Default lights: 0 & 1 | Color lights: 2-14", 2, 14, vehicleFavColor, 1, function (new_value)
     vehicleFavColor = new_value
 end)
 
-menu.toggle_loop(Vehicle, "Set vehicle light color automatically",{"autocarlights"},"Automatically set your favorite vehicle color for vehicles with default lights that u drive and are mission ent.\nDefault lights: 0 & 1 | Color lights: 2-14",function()
+path_auto_vehicle_light_color = menu.toggle_loop(Vehicle, "Set vehicle light color automatically",{"autocarlights"},"Automatically set your favorite vehicle color for vehicles with default lights that u drive and are mission ent.\nDefault lights: 0 & 1 | Color lights: 2-14",function()
     util.yield(420)
     if vehicleFavColor ~= 0 then
         if transitionState(true) <3 then
@@ -2567,7 +2427,7 @@ end)
 
 menu.divider(Vehicle, "Else")
 
-menu.toggle_loop(Vehicle, "Asuka's Repair Stop's", {"asukars"}, "", function()
+path_asukas_repair_stops = menu.toggle_loop(Vehicle, "Asuka's Repair Stop's", {"asukars"}, "", function()
     if transitionState(true) == 1 then
         local playerPosition = players.get_position(players.user())
         if not blipsCreated then
@@ -2624,7 +2484,7 @@ end, function()
 end)
 
 local sparrowHandeling = nil
-menu.toggle_loop(Vehicle, "Heli Sparrow Handling",{""},"All helicopters you enter fly like a sparrow.",function()
+path_heli_sparrow_handling = menu.toggle_loop(Vehicle, "Heli Sparrow Handling",{""},"All helicopters you enter fly like a sparrow.",function()
     if not players.is_in_interior(players.user()) and transitionState(true) <3 then
         local vehicle = get_user_vehicle()
         if vehicle then
@@ -2747,7 +2607,7 @@ menu.toggle_loop(Vehicle, "Heli Sparrow Handling",{""},"All helicopters you ente
 end)
 
 local oppressorHandeling = nil
-menu.toggle_loop(Vehicle, "Easier Oppressor MK2 UD Handling",{""},"Makes Upside down little easier, good for lea(-rning).",function()
+path_easy_opmk2ud_handling = menu.toggle_loop(Vehicle, "Easier Oppressor MK2 UD Handling",{""},"Makes Upside down little easier, good for lea(-rning).",function()
     if transitionState(true) <3 then
         local vehicle = get_user_vehicle()
         if vehicle then
@@ -2874,6 +2734,137 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     end
 end)
 
+menu.divider(Outfit, "Quick Select")
+
+menu.action(Outfit, "Edit Outfit", {}, "", function()
+    menu.trigger_commands("outfit")
+end)
+
+menu.action(Outfit, "Wardrobe", {}, "", function()
+    menu.trigger_commands("wardrobe")
+end)
+
+menu.divider(Outfit, "<3")
+
+local foreverYoung = false
+
+local moonCircle = 255
+
+path_vampire_young = menu.toggle(Outfit, "Forever young", {"foreveryoung"}, "Prevents you Char from getting old, destroyed and infected Skin.", function(on)
+    if on then
+        foreverYoung = true
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 9, 255, 0.0) --Remove Moles/Freckles. (face)
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 7, 255, 0.0) --Remove Sun Damage.
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 6, 11, 100.0) --Pale Face. (later making it optional)
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 3, 255, 0.0) --Remove any aging processes.
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
+    else
+        foreverYoung = false
+    end
+end)
+
+menu.divider(Outfit, "Smart Outfit")
+
+local OutfitLockHelmet = -1
+local OutfitLockHelmetColor = -1
+local ChangedHelmet = false
+local temp_holding_outfit = nil
+path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you outfit only if u dont have interaction menu open or in some critical mission.", function()
+    local focused = lang.get_string(menu.get_current_menu_list():getParent().menu_name)
+    if util.is_interaction_menu_open() then
+        if ChangedHelmet then
+            menu.trigger_commands("hat -1")
+            ChangedHelmet = false
+        end
+        menu.trigger_commands("lockoutfit off")
+    else
+        if NETWORK.NETWORK_IS_ACTIVITY_SESSION() and 4 >= PLAYER.GET_NUMBER_OF_PLAYERS() then
+            if ChangedHelmet then
+                menu.trigger_commands("hat -1")
+                ChangedHelmet = false
+            end
+            if not temp_holding_outfit then
+                menu.trigger_commands("saveoutfit 1 PIP Girl Temp")
+                temp_holding_outfit = true
+            end
+            menu.trigger_commands("lockoutfit off")
+        else
+            menu.trigger_commands("lockoutfit on")
+            if temp_holding_outfit then
+                menu.trigger_commands("outfit 1PIPGirlTemp")
+                temp_holding_outfit = false
+            end
+            if OutfitLockHelmet ~= -1 then
+                local vehicleClass = VEHICLE.GET_VEHICLE_CLASS(PED.GET_VEHICLE_PED_IS_IN(players.user_ped(), true))
+                if PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) and vehicleClass then
+                    if menu.get_state(menu.ref_by_path("Self>Appearance>Outfit>Hat")) == "-1" and focused ~= "Profiles" then
+                        if vehicleClass == 8 or vehicleClass == 13 then
+                            menu.trigger_commands("hat "..OutfitLockHelmet)
+                            util.yield(13)
+                            if OutfitLockHelmetColor ~= -1 then
+                                menu.trigger_commands("hatvar "..OutfitLockHelmetColor)
+                            end
+                            ChangedHelmet = true
+                        end
+                    end
+                else
+                    if ChangedHelmet then
+                        while ENTITY.GET_ENTITY_SPEED(players.user_ped()) ~=0 do
+                            util.yield(666)
+                            if ENTITY.GET_ENTITY_SPEED(players.user_ped()) ==0 then
+                                break
+                            end
+                            if lang.get_string(menu.get_current_menu_list():getParent().menu_name) == "Profiles" then
+                                break
+                            end
+                        end
+                        menu.trigger_commands("hat -1")
+                        ChangedHelmet = false
+                    end
+                end
+            end
+        end
+    end
+    if ChangedHelmet and focused == "Profiles" then
+        menu.trigger_commands("hat -1")
+        ChangedHelmet = false
+    end 
+    if focused == "Stand" or focused == "Profiles" then
+        util.yield(13)
+    else
+        util.yield(666)
+    end
+    if foreverYoung and transitionState(true) <3 then
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 9, 255, 0.0) --Remove Moles/Freckles. (face)
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 7, 255, 0.0) --Remove Sun Damage.
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 6, 11, 100.0) --Pale Face. (later making it optional)
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 3, 255, 0.0) --Remove any aging processes.
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
+    end
+end, function()
+    menu.trigger_commands("lockoutfit off")
+    if ChangedHelmet then
+        menu.trigger_commands("hat -1")
+        ChangedHelmet = false
+    end
+    if temp_holding_outfit then
+        menu.trigger_commands("outfit 1PIPGirlTemp")
+        temp_holding_outfit = false
+    end
+end)
+
+path_bike_helmet_var = menu.slider(Outfit, 'Smart Outfit Lock Helmet', {'SmartLockHelmet'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet.', -1, 201, OutfitLockHelmet, 1, function (new_value)
+    OutfitLockHelmet = new_value
+end)
+
+path_bike_helmet_color = menu.slider(Outfit, 'Smart Outfit Lock Helmet Color', {'SmartLockHelmetColor'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet Color.', -1, 50, OutfitLockHelmetColor, 1, function (new_value)
+    OutfitLockHelmetColor = new_value
+end)
+
 local function SuperClean(fix, ignoreMission)
     local ct = 0
     menu.trigger_commands("deleterope")
@@ -2972,7 +2963,7 @@ end)
 
 menu.divider(Game, "<3")
 
-menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'}, "Auto Interact with E in some situations and time warp the animation.", function ()
+path_auto_interact = menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'}, "Auto Interact with E in some situations and time warp the animation.", function ()
     if HUD.IS_HELP_MESSAGE_BEING_DISPLAYED() then
         local interactionsE = {
             "FXR_INTER_C",
@@ -3017,7 +3008,7 @@ menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'}, "Auto Interact with 
     end
 end)
 
-menu.toggle_loop(Game, "Auto Skip Conversation",{"pgascon"},"Automatically skip all conversations.",function()
+path_auto_skip_conversation = menu.toggle_loop(Game, "Auto Skip Conversation",{"pgascon"},"Automatically skip all conversations.",function()
     if AUDIO.IS_SCRIPTED_CONVERSATION_ONGOING() then
         AUDIO.SKIP_TO_NEXT_SCRIPTED_CONVERSATION_LINE()
     end
@@ -3031,7 +3022,7 @@ local avoidCutsceneSkipHere = {
     { x = 5054.02, y = -5773.01, z = -3.76 }, -- Cayo Drainage
     { x = 819.66, y = -2206.27, z = 30.95 }, -- Cassino Hatch
 }
-menu.toggle_loop(Game, "Auto Skip Cutscene", {"pgascut"}, "Automatically skip all cutscenes.", function()
+path_auto_skip_cutscene = menu.toggle_loop(Game, "Auto Skip Cutscene", {"pgascut"}, "Automatically skip all cutscenes.", function()
     if transitionState(true) <3 and CUTSCENE.IS_CUTSCENE_PLAYING() then
         local playerPosition = players.get_position(players.user())
         local skipCutscene = true
@@ -3116,7 +3107,7 @@ local avoidWarningSkipHere = {
     { x = 1561.05, y = 385.90, z = -49.69 }, -- Cayo Outfit Selection
 }
 local lastWarnifyTime = {}
-menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warnings in the game.", function()
+path_auto_accept_warning = menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warnings in the game.", function()
     local mess_hash = math.abs(HUD.GET_WARNING_SCREEN_MESSAGE_HASH())
 
     if mess_hash ~= 0 and (mess_hash ~= 976109292 and mess_hash ~= 1642168465) then
@@ -3179,7 +3170,7 @@ end)
 menu.divider(Game, "<3")
 
 local playerthingy = {}
-menu.toggle_loop(Game, "Enhanced Name Tag's", {""}, "hai", function()
+path_enhanced_name_tags = menu.toggle_loop(Game, "Enhanced Name Tag's", {""}, "hai", function()
     if not menu.is_in_screenshot_mode() then
         for players.list_except(true) as pid do
             local playerthing
@@ -3335,7 +3326,7 @@ local function espOnPlayer(pid, namesync)
     end
 end
 
-menu.toggle_loop(Game, "Name ESP", {"pgesp"}, "ESP", function ()
+path_name_esp = menu.toggle_loop(Game, "Name ESP", {"pgesp"}, "ESP", function ()
     if transitionState(true) == 1 and not menu.is_in_screenshot_mode() then
         local playerlist = players.list(false, true, true)
         for i = 1, #playerlist do
@@ -3347,7 +3338,7 @@ menu.toggle_loop(Game, "Name ESP", {"pgesp"}, "ESP", function ()
 end)
 
 if menu.get_edition() > 1 then
-    menu.toggle_loop(Game,"Bone ESP While Armed", {"aimboneesp"}, "Also counts for armed vehicles.", function()
+    path_bone_esp_while_armed = menu.toggle_loop(Game,"Bone ESP While Armed", {"aimboneesp"}, "Also counts for armed vehicles.", function()
         local weapon = math.abs(WEAPON.GET_SELECTED_PED_WEAPON(players.user_ped()))
         if not menu.is_in_screenshot_mode() and weapon ~= 1122011548 and weapon ~= 1569615261 then
             menu.trigger_command(menu.ref_by_path("World>Inhabitants>Player ESP>Bone ESP>Low Latency Rendering"))
@@ -3409,16 +3400,16 @@ end
 
 menu.divider(SessionClaimer, "Player Amount Filter")
 local session_claimer_players = 0
-menu.slider(SessionClaimer, 'Session Size', {'claimsessionsize'}, 'Select the Size of a Session u want to claim.\nThis Value can be saved in a Profile!^^\n(!) Size 31-32 is very rare to reach, so its only use would be filling the Player History.', 0, 32, session_claimer_players, 1, function (new_value)
+path_session_size = menu.slider(SessionClaimer, 'Session Size', {'claimsessionsize'}, 'Select the Size of a Session u want to claim.\nThis Value can be saved in a Profile!^^\n(!) Size 31-32 is very rare to reach, so its only use would be filling the Player History.', 0, 32, session_claimer_players, 1, function (new_value)
     session_claimer_players = new_value
 end)
 menu.divider(SessionClaimer, "Misc")
 local thunderMin = 0
-menu.slider(SessionClaimer, 'Thunder for X min', {''}, 'After u claimed a session show Thunder for X amount of min.', 0, 6, thunderMin, 1, function (new_value)
+path_thunder_for_minutes = menu.slider(SessionClaimer, 'Thunder for X min', {''}, 'After u claimed a session show Thunder for X amount of min.', 0, 6, thunderMin, 1, function (new_value)
     thunderMin = new_value
 end)
 local session_claimer_here = false
-menu.toggle(SessionClaimer, "Claim current session, or else", {""}, "Not Working! Has been temporally disabled , have to recode it.\ninstead of seartching for a new session, check first if the current session is any good.", function(on)
+path_claim_current_session = menu.toggle(SessionClaimer, "Claim current session, or else", {""}, "Not Working! Has been temporally disabled , have to recode it.\ninstead of seartching for a new session, check first if the current session is any good.", function(on)
     if on then
         session_claimer_here = true
     else
@@ -3686,7 +3677,7 @@ local function extractCoordinatesFromString(str)
     return tonumber(x), tonumber(y), tonumber(z)
 end
 
-menu.text_input(SessionJoin, "Spawn", {"customspawnpos"}, "", function(input)
+path_custom_spawn = menu.text_input(SessionJoin, "Spawn", {"customspawnpos"}, "", function(input)
     local x, y, z = extractCoordinatesFromString(input)
     if x and y and z then
         customspawn = { x = x, y = y, z = z }
@@ -3707,7 +3698,7 @@ menu.action(SessionJoin, "Set Custom Spawn", {""}, "", function()
     menu.trigger_commands("customspawnpos " .. customspawn)
 end)
 
-menu.toggle(SessionJoin, "Use Custom Spawn", {""}, "", function(on)
+path_use_custom_spawn = menu.toggle(SessionJoin, "Use Custom Spawn", {""}, "", function(on)
     if on then
         customspawned = true
         STAT_SET_INT("SPAWN_LOCATION_SETTING", 2)
@@ -3716,15 +3707,13 @@ menu.toggle(SessionJoin, "Use Custom Spawn", {""}, "", function(on)
     end
 end)
 
-menu.toggle(Session, "Quick Session Join", {"quickjoin"}, " Please Set you're Spawn to \"Last Location\" or \"Random\".\nQuick Session Joining.", function(on)
+path_quick_session_join = menu.toggle(Session, "Quick Session Join", {"quickjoin"}, " Please Set you're Spawn to \"Last Location\" or \"Random\".\nQuick Session Joining.", function(on)
     if on then
         menu.trigger_commands("skipbroadcast on")
         menu.trigger_commands("speedupfmmc on")
         menu.trigger_commands("speedupspawn on")
         menu.trigger_commands("skipswoopdown on")
-        if not customspawned then
-            STAT_SET_INT("SPAWN_LOCATION_SETTING", 2)
-        end
+        STAT_SET_INT("SPAWN_LOCATION_SETTING", 2)
     else
         menu.ref_by_path("Online>Transitions>Speed Up>Don't Wait For Data Broadcast"):applyDefaultState()
         menu.ref_by_path("Online>Transitions>Speed Up>Don't Wait For Mission Launcher"):applyDefaultState()
@@ -3754,7 +3743,7 @@ local orbRoomTable = nil
 local orbRoomTable2 = nil
 local orbRoomDoorDMG = nil
 
-menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockorb"}, "Blocks the Entrance for the Orb Room", function()
+path_block_orb_room = menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockorb"}, "Blocks the Entrance for the Orb Room", function()
     if allowSpawnCheck() then
         orbRoomGlass = SpawnCheck(orbRoomGlass, 2465657597, v3.new(335.882996, 4833.833008, -59.023998), 0, 0, 125, nil, 13, true)
         orbRoomTable = SpawnCheck(orbRoomTable, 81317377, v3.new(328.2, 4829, -58.9), 0, 0, 0, nil, 13, true)
@@ -3800,7 +3789,7 @@ end)
 
 local kosatkaMissile1 = nil
 local kosatkaMissile2 = nil
-menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {"blockkosatka"}, "Blocks the Missile terminal", function()
+path_block_kosatka_missile_terminal = menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {"blockkosatka"}, "Blocks the Missile terminal", function()
     if allowSpawnCheck() then
         kosatkaMissile1 = SpawnCheck(kosatkaMissile1, 1228076166, v3.new(1558.9, 387.111, -50.666), 0, 0, 0, nil, 13, true)
         kosatkaMissile2 = SpawnCheck(kosatkaMissile2, 1228076166, v3.new(1558.9, 388.777, -50.666), 0, 0, 0, nil, 13, true)
@@ -3814,7 +3803,7 @@ end, function()
 end)
 
 local antiTerrorGlass = nil
-menu.toggle_loop(SessionWorld, "Anti Terrorbyte", {"blockterror"}, "Blocks the MK2 acces", function()
+path_anit_terrorbyte = menu.toggle_loop(SessionWorld, "Anti Terrorbyte", {"blockterror"}, "Blocks the MK2 acces", function()
     if allowSpawnCheck() then
         antiTerrorGlass = SpawnCheck(antiTerrorGlass, 2465657597, v3.new(-1420.666, -3014.579, -79.0), 0, 0, -20, nil, 13, true)
     else
@@ -3870,7 +3859,7 @@ for ipairs(shrineElements) as element do
     entityVars[element.var] = nil
 end
 local Asuka_shrine_blip = nil
-menu.toggle_loop(SessionWorld, "Asuka's Shrine", {"asukasshrine"}, "Shows Asuka's Shrine, Perfect for a hangout spot or Deep thinking.\nNormal its a calm and mystical place only lit by fire and candles , once entering a arcade u unlock the bright neon lights of the city~", function()
+path_asukas_shrine = menu.toggle_loop(SessionWorld, "Asuka's Shrine", {"asukasshrine"}, "Shows Asuka's Shrine, Perfect for a hangout spot or Deep thinking.\nNormal its a calm and mystical place only lit by fire and candles , once entering a arcade u unlock the bright neon lights of the city~", function()
     util.yield(1666)
     if allowSpawnCheck() then
         if transitionState(true) <3 then
@@ -3931,7 +3920,7 @@ end)
 --    WEAPON.REMOVE_AIR_DEFENCE_SPHERE(save_zone)
 --end)
 
-menu.toggle_loop(SessionWorld, "Nerf Oppressor MK2s", {""}, "Nerf Oppressor mk2 weapons, except Modder and Friend's", function()
+path_nerf_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Nerf Oppressor MK2s", {""}, "Nerf Oppressor mk2 weapons, except Modder and Friend's", function()
     for players.list_except(true) as pid do
         if players.get_vehicle_model(pid) == 2069146067 and not isFriend(pid) and not isModder(pid) then
             local vehicle = PED.GET_VEHICLE_PED_IS_IN(PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid))
@@ -3944,7 +3933,7 @@ menu.toggle_loop(SessionWorld, "Nerf Oppressor MK2s", {""}, "Nerf Oppressor mk2 
     util.yield(1666)
 end)
 
-menu.toggle_loop(SessionWorld, "Downgrade Oppressor MK2s", {""}, "Downgrade Oppressor mk2, except Modder and Friend's", function()
+path_downgrade_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Downgrade Oppressor MK2s", {""}, "Downgrade Oppressor mk2, except Modder and Friend's", function()
     for players.list_except(true) as pid do
         if players.get_vehicle_model(pid) == 2069146067 and not isFriend(pid) and not isModder(pid) then
             local vehicle = PED.GET_VEHICLE_PED_IS_IN(PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid))
@@ -3961,7 +3950,7 @@ end)
 
 local mk2noob = {}
 
-menu.toggle_loop(SessionWorld, "Spinning Oppressor MK2s", {""}, "Spin all MK2's, except Modder and Friend's", function()
+path_spinning_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Spinning Oppressor MK2s", {""}, "Spin all MK2's, except Modder and Friend's", function()
     for players.list_except(true) as pid do
         if players.get_vehicle_model(pid) == 2069146067 and not isFriend(pid) then
             if not isModder(pid) then 
@@ -4040,10 +4029,10 @@ menu.action(SessionMisc, "Cleanup \"Friend's\" Group", {"cleanupfriends"}, "remo
     end
 end)
 
-menu.toggle_loop(SessionMisc, "Kick Aggressive Host Token on Attack", {""}, "", function()
+path_kick_aggressive_on_attack = menu.toggle_loop(SessionMisc, "Kick Aggressive Host Token on Attack", {""}, "", function()
     if transitionState(true) <3 then
         for players.list() as pid do
-            if aggressive(pid) and not isFriend(pid) and players.is_marked_as_attacker(pid) then
+            if players.is_marked_as_attacker(pid) and aggressive(pid) and not isFriend(pid) then
                 StrategicKick(pid)
             end
         end
@@ -4053,7 +4042,7 @@ menu.toggle_loop(SessionMisc, "Kick Aggressive Host Token on Attack", {""}, "", 
     end
 end)
 
-menu.toggle_loop(SessionMisc, "Block Aggressive Host Token as Host", {""}, "", function()
+path_kick_aggressive_as_host = menu.toggle_loop(SessionMisc, "Block Aggressive Host Token as Host", {""}, "", function()
     if players.user() == players.get_host() then
         --if menu.is_ref_valid(menu.ref_by_path("Online>Protections>Detections>Spoofed Host Token (Aggressive)>Kick>Strangers")) then
         --    menu.trigger_command(menu.ref_by_path("Online>Protections>Detections>Spoofed Host Token (Aggressive)>Kick>Strangers"))
@@ -4153,7 +4142,7 @@ discord_webhook = readFromFilePIP(store_dir..'do_not_share_webhook.txt')
 local posted_session_code = readFromFilePIP(store_dir..'session_code.txt')
 local onlyPostasFriendlyHost = false
 local inviteAllFriendsOnWebhook = false
-menu.toggle_loop(SessionInvite, "Post Session Code via Webhook", {""}, "Never share you webhook ever!", function()
+path_post_session_code_via_webhook = menu.toggle_loop(SessionInvite, "Post Session Code via Webhook", {""}, "Never share you webhook ever!", function()
     if discord_webhook then
         if transitionState(true) == 1 then
             local code = get_session_code()
@@ -4235,7 +4224,7 @@ menu.toggle_loop(SessionInvite, "Post Session Code via Webhook", {""}, "Never sh
     util.yield(13666)
 end)
 
-menu.toggle(SessionInvite, "Only Post if Host or Host is Friendly", {""}, "", function(on)
+path_post_webhook_if_friendly = menu.toggle(SessionInvite, "Only Post if Host or Host is Friendly", {""}, "", function(on)
     if on then
         onlyPostasFriendlyHost = true
     else
@@ -4243,7 +4232,7 @@ menu.toggle(SessionInvite, "Only Post if Host or Host is Friendly", {""}, "", fu
     end
 end)
 
-menu.toggle(SessionInvite, "Invite all Friends on webhook send", {""}, "", function(on)
+path_invite_all_friends_on_webhook = menu.toggle(SessionInvite, "Invite all Friends on webhook send", {""}, "", function(on)
     if on then
         inviteAllFriendsOnWebhook = true
     else
@@ -4363,7 +4352,7 @@ local stuckPlayers = {}
 local timeoutIgnore = {}
 local smartScriptHostMode = 1
 
-menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
+path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
     if transitionState(true) == 1 then
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
             if discoveredSince(players.user()) >= 113 then
@@ -4488,7 +4477,7 @@ menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host t
     util.yield(666)
 end)
 
-menu.list_select(Session, "Smart Script Host Help", {""}, "uses in the option above", {
+path_smart_script_host_mode = menu.list_select(Session, "Smart Script Host Help", {""}, "uses in the option above", {
     {1, "Myself"},
     {2, "Friendly"},
     {3, "Everyone"},
@@ -4512,7 +4501,7 @@ local function selfSafe()
 end
 
 local in_self_god = false
-menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"}, "Ghost everyone who is a god mode except Friends.\nIf they are not god anymore , it will de-ghost", function()
+path_ghost_god_mode = menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"}, "Ghost everyone who is a god mode except Friends.\nIf they are not god anymore , it will de-ghost", function()
     if transitionState(true) <3 then
         if not selfSafe() then
             in_self_god = false
@@ -4584,7 +4573,7 @@ local function create_pop_multiplier(sphereID, pedPOP, vehPOP)
     return sphereID
 end
 
-menu.toggle_loop(Session, "Clear Traffic", {"antitraffic"}, "Clears the traffic on the session for everyone.", function()
+path_clear_traffic = menu.toggle_loop(Session, "Clear Traffic", {"antitraffic"}, "Clears the traffic on the session for everyone.", function()
     pop_multiplier_repair = remove_pop_multiplier(pop_multiplier_repair)
     if menu.get_state(menu.ref_by_path("World>Inhabitants>Traffic>Disable")) == "Disabled" then
         menu.trigger_command(menu.ref_by_path("World>Inhabitants>Traffic>Disable>Enabled, Including Parked Cars"))
@@ -4632,7 +4621,7 @@ end, function()
     pop_multiplier_repair = create_pop_multiplier(pop_multiplier_repair, 1.0, 1.0)
 end)
 
-menu.toggle_loop(Session, "Soft Clear Traffic", {"softantitrafic"}, "Clears the traffic around you localy in close range.\nDosnt work with many players in close range.", function()
+path_soft_clear_traffic = menu.toggle_loop(Session, "Soft Clear Traffic", {"softantitrafic"}, "Clears the traffic around you localy in close range.\nDosnt work with many players in close range.", function()
     if is_user_driving_vehicle(false) and transitionState(true) == 1 then
         local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(PED.GET_VEHICLE_PED_IS_IN(players.user_ped()), -1)
         if driverPed == players.user_ped() then
@@ -5442,7 +5431,7 @@ menu.action(menu.my_root(), "Activate Everyday Goodies", {"pggoodies"}, "Activat
 end)
 
 menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
-    notify(startupmsg)
+    notify(path_block_orb_room.value)
 end)
 
 local recoverScripthostCode = nil
@@ -5483,6 +5472,96 @@ local function addIdentificationTimeout(pid)
         IdentificationTimeout[pid] = 6
     else
         IdentificationTimeout[pid] = 13
+    end
+end
+
+function load_and_apply_config()
+    local data_cfg = {
+        --PIP Girl
+        store_nc_pop = path_nc_pop,
+        store_org_name = path_org_name,
+        store_org_type = path_org_type,
+        store_auto_org = path_auto_org,
+        store_join_friends_org = path_join_friends_org,
+        store_collect_money = path_collect_money,
+        --Stimpak
+        store_fill_me_up = path_fill_me_up,
+        store_auto_armor = path_auto_armor,
+        store_recharge_health = path_recharge_health,
+        store_recharge_armor = path_recharge_armor,
+        store_first_aid_kit = path_first_aid_kit,
+        store_oxygen = path_oxygen,
+        --Vehicle
+        store_asuka_tech = path_asuka_tech,
+        store_asuka_tech_repair = path_asuka_tech_repair,
+        store_asuka_tech_mission_repair = path_asuka_tech_mission_repair,
+        store_asuka_tech_lockon_jammer = path_asuka_tech_lockon_jammer,
+        store_asuka_tech_hp_bar = path_asuka_tech_hp_bar,
+        store_asuka_tech_info_overlay = path_asuka_tech_info_overlay,
+        store_asuka_tech_dirt = path_asuka_tech_dirt,
+        store_vehicle_light_rhythm_sos = path_vehicle_light_rhythm_sos,
+        store_vehicle_light_color = path_vehicle_light_color,
+        store_auto_vehicle_light_color = path_auto_vehicle_light_color,
+        store_asukas_repair_stops = path_asukas_repair_stops,
+        store_heli_sparrow_handling = path_heli_sparrow_handling,
+        store_easy_opmk2ud_handling = path_easy_opmk2ud_handling,
+        --Outfit
+        store_vampire_young = path_vampire_young,
+        store_smart_outfit_lock = path_smart_outfit_lock,
+        store_bike_helmet_var = path_bike_helmet_var,
+        store_bike_helmet_color = path_bike_helmet_color,
+        --Game
+        store_auto_interact = path_auto_interact,
+        store_auto_skip_conversation = path_auto_skip_conversation,
+        store_auto_skip_cutscene = path_auto_skip_cutscene,
+        store_auto_accept_warning = path_auto_accept_warning,
+        store_enhanced_name_tags = path_enhanced_name_tags,
+        store_name_esp = path_name_esp,
+        store_bone_esp_while_armed = path_bone_esp_while_armed,
+        --Session
+        store_session_size = path_session_size,
+        store_thunder_for_minutes = path_thunder_for_minutes,
+        store_claim_current_session = path_claim_current_session,
+        store_custom_spawn = path_custom_spawn,
+        store_use_custom_spawn = path_use_custom_spawn,
+        store_quick_session_join = path_quick_session_join,
+        store_block_orb_room = path_block_orb_room,
+        store_block_kosatka_missile_terminal = path_block_kosatka_missile_terminal,
+        store_anit_terrorbyte = path_anit_terrorbyte,
+        store_asukas_shrine = path_asukas_shrine,
+        store_nerf_oppressor_mk2 = path_nerf_oppressor_mk2,
+        store_downgrade_oppressor_mk2 = path_downgrade_oppressor_mk2,
+        store_spinning_oppressor_mk2 = path_spinning_oppressor_mk2,
+        store_kick_aggressive_on_attack = path_kick_aggressive_on_attack,
+        store_kick_aggressive_as_host = path_kick_aggressive_as_host,
+        store_post_session_code_via_webhook = path_post_session_code_via_webhook,
+        store_post_webhook_if_friendly = path_post_webhook_if_friendly,
+        store_invite_all_friends_on_webhook = path_invite_all_friends_on_webhook,
+        store_smart_script_host = path_smart_script_host,
+        store_smart_script_host_mode = path_smart_script_host_mode,
+        store_ghost_god_mode = path_ghost_god_mode,
+        store_clear_traffic = path_clear_traffic,
+        store_soft_clear_traffic = path_soft_clear_traffic,
+    }
+    local file = io.open(store_dir..'/settings.json', 'r')
+    if file then
+        local config_data = file:read("*all")
+        file:close()
+
+        local decode_status, decoded_data = pcall(soup.json.decode, config_data)
+        if decode_status then
+            for store, path in pairs(data_cfg) do
+                local value = decoded_data[store]
+                if value ~= nil and value ~= false then
+                    menu.set_value(path, value)
+                end
+            end
+            print("Config loaded and applied successfully.")
+        else
+            print("Error: Unable to decode config data.")
+        end
+    else
+        print("Error: Unable to open config file.")
     end
 end
 
@@ -5530,6 +5609,81 @@ local function userIdentification()
                 util.yield(3666)
             end
         end
+        local data_cfg = {
+            --PIP Girl
+            store_nc_pop = menu.get_value(path_nc_pop),
+            store_org_name = menu.get_value(path_org_name),
+            store_org_type = menu.get_value(path_org_type),
+            store_auto_org = menu.get_value(path_auto_org),
+            store_join_friends_org = menu.get_value(path_join_friends_org),
+            store_collect_money = menu.get_value(path_collect_money),
+            --Stimpak
+            store_fill_me_up = menu.get_value(path_fill_me_up),
+            store_auto_armor = menu.get_value(path_auto_armor),
+            store_recharge_health = menu.get_value(path_recharge_health),
+            store_recharge_armor = menu.get_value(path_recharge_armor),
+            store_first_aid_kit = menu.get_value(path_first_aid_kit),
+            store_oxygen = menu.get_value(path_oxygen),
+            --Vehicle
+            store_asuka_tech = menu.get_value(path_asuka_tech),
+            store_asuka_tech_repair = menu.get_value(path_asuka_tech_repair),
+            store_asuka_tech_mission_repair = menu.get_value(path_asuka_tech_mission_repair),
+            store_asuka_tech_lockon_jammer = menu.get_value(path_asuka_tech_lockon_jammer),
+            store_asuka_tech_hp_bar = menu.get_value(path_asuka_tech_hp_bar),
+            store_asuka_tech_info_overlay = menu.get_value(path_asuka_tech_info_overlay),
+            store_asuka_tech_dirt = menu.get_value(path_asuka_tech_dirt),
+            store_vehicle_light_rhythm_sos = menu.get_value(path_vehicle_light_rhythm_sos),
+            store_vehicle_light_color = menu.get_value(path_vehicle_light_color),
+            store_auto_vehicle_light_color = menu.get_value(path_auto_vehicle_light_color),
+            store_asukas_repair_stops = menu.get_value(path_asukas_repair_stops),
+            store_heli_sparrow_handling = menu.get_value(path_heli_sparrow_handling),
+            store_easy_opmk2ud_handling = menu.get_value(path_easy_opmk2ud_handling),
+            --Outfit
+            store_vampire_young = menu.get_value(path_vampire_young),
+            store_smart_outfit_lock = menu.get_value(path_smart_outfit_lock),
+            store_bike_helmet_var = menu.get_value(path_bike_helmet_var),
+            store_bike_helmet_color = menu.get_value(path_bike_helmet_color),
+            --Game
+            store_auto_interact = menu.get_value(path_auto_interact),
+            store_auto_skip_conversation = menu.get_value(path_auto_skip_conversation),
+            store_auto_skip_cutscene = menu.get_value(path_auto_skip_cutscene),
+            store_auto_accept_warning = menu.get_value(path_auto_accept_warning),
+            store_enhanced_name_tags = menu.get_value(path_enhanced_name_tags),
+            store_name_esp = menu.get_value(path_name_esp),
+            store_bone_esp_while_armed = menu.get_value(path_bone_esp_while_armed),
+            --Session
+            store_session_size = menu.get_value(path_session_size),
+            store_thunder_for_minutes = menu.get_value(path_thunder_for_minutes),
+            store_claim_current_session = menu.get_value(path_claim_current_session),
+            store_custom_spawn = menu.get_value(path_custom_spawn),
+            store_use_custom_spawn = menu.get_value(path_use_custom_spawn),
+            store_quick_session_join = menu.get_value(path_quick_session_join),
+            store_block_orb_room = menu.get_value(path_block_orb_room),
+            store_block_kosatka_missile_terminal = menu.get_value(path_block_kosatka_missile_terminal),
+            store_anit_terrorbyte = menu.get_value(path_anit_terrorbyte),
+            store_asukas_shrine = menu.get_value(path_asukas_shrine),
+            store_nerf_oppressor_mk2 = menu.get_value(path_nerf_oppressor_mk2),
+            store_downgrade_oppressor_mk2 = menu.get_value(path_downgrade_oppressor_mk2),
+            store_spinning_oppressor_mk2 = menu.get_value(path_spinning_oppressor_mk2),
+            store_kick_aggressive_on_attack = menu.get_value(path_kick_aggressive_on_attack),
+            store_kick_aggressive_as_host = menu.get_value(path_kick_aggressive_as_host),
+            store_post_session_code_via_webhook = menu.get_value(path_post_session_code_via_webhook),
+            store_post_webhook_if_friendly = menu.get_value(path_post_webhook_if_friendly),
+            store_invite_all_friends_on_webhook = menu.get_value(path_invite_all_friends_on_webhook),
+            store_smart_script_host = menu.get_value(path_smart_script_host),
+            store_smart_script_host_mode = menu.get_value(path_smart_script_host_mode),
+            store_ghost_god_mode = menu.get_value(path_ghost_god_mode),
+            store_clear_traffic = menu.get_value(path_clear_traffic),
+            store_soft_clear_traffic = menu.get_value(path_soft_clear_traffic),
+        }
+        local encode_status, json_data = pcall(soup.json.encode, data_cfg)
+        local file = io.open(store_dir..'/settings.json', 'w')
+        if file then
+            file:write(json_data)
+            file:close()
+        else
+            print("Error: Unable to open file for writing.")
+        end
         util.yield(25666)
     end
 end
@@ -5572,6 +5726,7 @@ if os.time() - tonumber(stored_pip_version) > 13 then
     util.restart_script()
 else
     pipBooty = true
+    load_and_apply_config()
     util.create_thread(startupCheck)
     util.create_thread(startupConfig)
     util.create_thread(crashlistConfig)
