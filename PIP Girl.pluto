@@ -1829,9 +1829,6 @@ local function remove_blips()
         checkpoints = {}
     end
 end
-util.on_stop(function()
-    remove_blips()
-end)
 remove_blips()
 local repairRadius = 3
 local closestMarker = nil
@@ -5431,7 +5428,7 @@ menu.action(menu.my_root(), "Activate Everyday Goodies", {"pggoodies"}, "Activat
 end)
 
 menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
-    notify(path_block_orb_room.value)
+    notify(startupmsg)
 end)
 
 local recoverScripthostCode = nil
@@ -5475,7 +5472,7 @@ local function addIdentificationTimeout(pid)
     end
 end
 
-function load_and_apply_config()
+local function load_and_apply_config()
     local data_cfg = {
         --PIP Girl
         store_nc_pop = path_nc_pop,
@@ -5565,6 +5562,91 @@ function load_and_apply_config()
     end
 end
 
+local function save_config()
+    local data_cfg = {
+        --PIP Girl
+        store_nc_pop = menu.get_value(path_nc_pop),
+        store_org_name = menu.get_value(path_org_name),
+        store_org_type = menu.get_value(path_org_type),
+        store_auto_org = menu.get_value(path_auto_org),
+        store_join_friends_org = menu.get_value(path_join_friends_org),
+        store_collect_money = menu.get_value(path_collect_money),
+        --Stimpak
+        store_fill_me_up = menu.get_value(path_fill_me_up),
+        store_auto_armor = menu.get_value(path_auto_armor),
+        store_recharge_health = menu.get_value(path_recharge_health),
+        store_recharge_armor = menu.get_value(path_recharge_armor),
+        store_first_aid_kit = menu.get_value(path_first_aid_kit),
+        store_oxygen = menu.get_value(path_oxygen),
+        --Vehicle
+        store_asuka_tech = menu.get_value(path_asuka_tech),
+        store_asuka_tech_repair = menu.get_value(path_asuka_tech_repair),
+        store_asuka_tech_mission_repair = menu.get_value(path_asuka_tech_mission_repair),
+        store_asuka_tech_lockon_jammer = menu.get_value(path_asuka_tech_lockon_jammer),
+        store_asuka_tech_hp_bar = menu.get_value(path_asuka_tech_hp_bar),
+        store_asuka_tech_info_overlay = menu.get_value(path_asuka_tech_info_overlay),
+        store_asuka_tech_dirt = menu.get_value(path_asuka_tech_dirt),
+        store_vehicle_light_rhythm_sos = menu.get_value(path_vehicle_light_rhythm_sos),
+        store_vehicle_light_color = menu.get_value(path_vehicle_light_color),
+        store_auto_vehicle_light_color = menu.get_value(path_auto_vehicle_light_color),
+        store_asukas_repair_stops = menu.get_value(path_asukas_repair_stops),
+        store_heli_sparrow_handling = menu.get_value(path_heli_sparrow_handling),
+        store_easy_opmk2ud_handling = menu.get_value(path_easy_opmk2ud_handling),
+        --Outfit
+        store_vampire_young = menu.get_value(path_vampire_young),
+        store_smart_outfit_lock = menu.get_value(path_smart_outfit_lock),
+        store_bike_helmet_var = menu.get_value(path_bike_helmet_var),
+        store_bike_helmet_color = menu.get_value(path_bike_helmet_color),
+        --Game
+        store_auto_interact = menu.get_value(path_auto_interact),
+        store_auto_skip_conversation = menu.get_value(path_auto_skip_conversation),
+        store_auto_skip_cutscene = menu.get_value(path_auto_skip_cutscene),
+        store_auto_accept_warning = menu.get_value(path_auto_accept_warning),
+        store_enhanced_name_tags = menu.get_value(path_enhanced_name_tags),
+        store_name_esp = menu.get_value(path_name_esp),
+        store_bone_esp_while_armed = menu.get_value(path_bone_esp_while_armed),
+        --Session
+        store_session_size = menu.get_value(path_session_size),
+        store_thunder_for_minutes = menu.get_value(path_thunder_for_minutes),
+        store_claim_current_session = menu.get_value(path_claim_current_session),
+        store_custom_spawn = menu.get_value(path_custom_spawn),
+        store_use_custom_spawn = menu.get_value(path_use_custom_spawn),
+        store_quick_session_join = menu.get_value(path_quick_session_join),
+        store_block_orb_room = menu.get_value(path_block_orb_room),
+        store_block_kosatka_missile_terminal = menu.get_value(path_block_kosatka_missile_terminal),
+        store_anit_terrorbyte = menu.get_value(path_anit_terrorbyte),
+        store_asukas_shrine = menu.get_value(path_asukas_shrine),
+        store_nerf_oppressor_mk2 = menu.get_value(path_nerf_oppressor_mk2),
+        store_downgrade_oppressor_mk2 = menu.get_value(path_downgrade_oppressor_mk2),
+        store_spinning_oppressor_mk2 = menu.get_value(path_spinning_oppressor_mk2),
+        store_kick_aggressive_on_attack = menu.get_value(path_kick_aggressive_on_attack),
+        store_kick_aggressive_as_host = menu.get_value(path_kick_aggressive_as_host),
+        store_post_session_code_via_webhook = menu.get_value(path_post_session_code_via_webhook),
+        store_post_webhook_if_friendly = menu.get_value(path_post_webhook_if_friendly),
+        store_invite_all_friends_on_webhook = menu.get_value(path_invite_all_friends_on_webhook),
+        store_smart_script_host = menu.get_value(path_smart_script_host),
+        store_smart_script_host_mode = menu.get_value(path_smart_script_host_mode),
+        store_ghost_god_mode = menu.get_value(path_ghost_god_mode),
+        store_clear_traffic = menu.get_value(path_clear_traffic),
+        store_soft_clear_traffic = menu.get_value(path_soft_clear_traffic),
+    }
+    local encode_status, json_data = pcall(soup.json.encode, data_cfg)
+    local file = io.open(store_dir..'/settings.json', 'w')
+    if file then
+        file:write(json_data)
+        file:close()
+    else
+        print("Error: Unable to open file for writing.")
+    end
+end
+
+util.on_stop(function()
+    remove_blips()
+    if pipBooty then
+        save_config()
+    end
+end)
+
 local function userIdentification()
     while true do
         if transitionState(true) <3 then
@@ -5609,81 +5691,7 @@ local function userIdentification()
                 util.yield(3666)
             end
         end
-        local data_cfg = {
-            --PIP Girl
-            store_nc_pop = menu.get_value(path_nc_pop),
-            store_org_name = menu.get_value(path_org_name),
-            store_org_type = menu.get_value(path_org_type),
-            store_auto_org = menu.get_value(path_auto_org),
-            store_join_friends_org = menu.get_value(path_join_friends_org),
-            store_collect_money = menu.get_value(path_collect_money),
-            --Stimpak
-            store_fill_me_up = menu.get_value(path_fill_me_up),
-            store_auto_armor = menu.get_value(path_auto_armor),
-            store_recharge_health = menu.get_value(path_recharge_health),
-            store_recharge_armor = menu.get_value(path_recharge_armor),
-            store_first_aid_kit = menu.get_value(path_first_aid_kit),
-            store_oxygen = menu.get_value(path_oxygen),
-            --Vehicle
-            store_asuka_tech = menu.get_value(path_asuka_tech),
-            store_asuka_tech_repair = menu.get_value(path_asuka_tech_repair),
-            store_asuka_tech_mission_repair = menu.get_value(path_asuka_tech_mission_repair),
-            store_asuka_tech_lockon_jammer = menu.get_value(path_asuka_tech_lockon_jammer),
-            store_asuka_tech_hp_bar = menu.get_value(path_asuka_tech_hp_bar),
-            store_asuka_tech_info_overlay = menu.get_value(path_asuka_tech_info_overlay),
-            store_asuka_tech_dirt = menu.get_value(path_asuka_tech_dirt),
-            store_vehicle_light_rhythm_sos = menu.get_value(path_vehicle_light_rhythm_sos),
-            store_vehicle_light_color = menu.get_value(path_vehicle_light_color),
-            store_auto_vehicle_light_color = menu.get_value(path_auto_vehicle_light_color),
-            store_asukas_repair_stops = menu.get_value(path_asukas_repair_stops),
-            store_heli_sparrow_handling = menu.get_value(path_heli_sparrow_handling),
-            store_easy_opmk2ud_handling = menu.get_value(path_easy_opmk2ud_handling),
-            --Outfit
-            store_vampire_young = menu.get_value(path_vampire_young),
-            store_smart_outfit_lock = menu.get_value(path_smart_outfit_lock),
-            store_bike_helmet_var = menu.get_value(path_bike_helmet_var),
-            store_bike_helmet_color = menu.get_value(path_bike_helmet_color),
-            --Game
-            store_auto_interact = menu.get_value(path_auto_interact),
-            store_auto_skip_conversation = menu.get_value(path_auto_skip_conversation),
-            store_auto_skip_cutscene = menu.get_value(path_auto_skip_cutscene),
-            store_auto_accept_warning = menu.get_value(path_auto_accept_warning),
-            store_enhanced_name_tags = menu.get_value(path_enhanced_name_tags),
-            store_name_esp = menu.get_value(path_name_esp),
-            store_bone_esp_while_armed = menu.get_value(path_bone_esp_while_armed),
-            --Session
-            store_session_size = menu.get_value(path_session_size),
-            store_thunder_for_minutes = menu.get_value(path_thunder_for_minutes),
-            store_claim_current_session = menu.get_value(path_claim_current_session),
-            store_custom_spawn = menu.get_value(path_custom_spawn),
-            store_use_custom_spawn = menu.get_value(path_use_custom_spawn),
-            store_quick_session_join = menu.get_value(path_quick_session_join),
-            store_block_orb_room = menu.get_value(path_block_orb_room),
-            store_block_kosatka_missile_terminal = menu.get_value(path_block_kosatka_missile_terminal),
-            store_anit_terrorbyte = menu.get_value(path_anit_terrorbyte),
-            store_asukas_shrine = menu.get_value(path_asukas_shrine),
-            store_nerf_oppressor_mk2 = menu.get_value(path_nerf_oppressor_mk2),
-            store_downgrade_oppressor_mk2 = menu.get_value(path_downgrade_oppressor_mk2),
-            store_spinning_oppressor_mk2 = menu.get_value(path_spinning_oppressor_mk2),
-            store_kick_aggressive_on_attack = menu.get_value(path_kick_aggressive_on_attack),
-            store_kick_aggressive_as_host = menu.get_value(path_kick_aggressive_as_host),
-            store_post_session_code_via_webhook = menu.get_value(path_post_session_code_via_webhook),
-            store_post_webhook_if_friendly = menu.get_value(path_post_webhook_if_friendly),
-            store_invite_all_friends_on_webhook = menu.get_value(path_invite_all_friends_on_webhook),
-            store_smart_script_host = menu.get_value(path_smart_script_host),
-            store_smart_script_host_mode = menu.get_value(path_smart_script_host_mode),
-            store_ghost_god_mode = menu.get_value(path_ghost_god_mode),
-            store_clear_traffic = menu.get_value(path_clear_traffic),
-            store_soft_clear_traffic = menu.get_value(path_soft_clear_traffic),
-        }
-        local encode_status, json_data = pcall(soup.json.encode, data_cfg)
-        local file = io.open(store_dir..'/settings.json', 'w')
-        if file then
-            file:write(json_data)
-            file:close()
-        else
-            print("Error: Unable to open file for writing.")
-        end
+        save_config()
         util.yield(25666)
     end
 end
