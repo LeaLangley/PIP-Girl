@@ -5431,7 +5431,6 @@ menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
     notify(startupmsg)
 end)
 
-local recoverScripthostCode = nil
 util.on_transition_finished(function ()
 	if customspawned then
         STAT_SET_INT("SPAWN_LOCATION_SETTING", 4)
@@ -5453,6 +5452,7 @@ util.on_transition_finished(function ()
         PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 3, 255, 0.0) --Remove any aging processes.
         PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
     end
+    save_config()
     while transitionState(true) ~= 1 do
         util.yield(666)
     end
@@ -5650,6 +5650,37 @@ util.on_pre_stop(function()
     end
 end)
 
+util.on_transition_finished(function ()
+	if customspawned then
+        STAT_SET_INT("SPAWN_LOCATION_SETTING", 4)
+        if not NETWORK.NETWORK_IS_ACTIVITY_SESSION() then
+            players.teleport_3d(players.user(), customspawn.x, customspawn.y, customspawn.z)
+        end
+        if get_user_vehicle() then
+            delete_ent(get_user_vehicle())
+        end
+        menu.trigger_commands("resetheadshots")
+        menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
+    end
+    if foreverYoung then
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 9, 255, 0.0) --Remove Moles/Freckles. (face)
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 7, 255, 0.0) --Remove Sun Damage.
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 6, 11, 100.0) --Pale Face. (later making it optional)
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 3, 255, 0.0) --Remove any aging processes.
+        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
+    end
+    save_config()
+    while transitionState(true) ~= 1 do
+        util.yield(666)
+    end
+    if filled_up then
+        fillUpEverything()
+        menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
+    end
+end)
+
 local function userIdentification()
     while true do
         if transitionState(true) <3 then
@@ -5694,7 +5725,6 @@ local function userIdentification()
                 util.yield(3666)
             end
         end
-        save_config()
         util.yield(25666)
     end
 end
