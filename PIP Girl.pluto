@@ -6,11 +6,11 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.156"
+local script_version = "1.157"
 
-local lust_upDate = {year = 2024, month = 4, day = 13, hour = 0, min = 0, sec = 0}
+local lust_upDate = {year = 2024, month = 4, day = 16, hour = 6, min = 6, sec = 6}
 
-local startupmsg = "First run in 1.156?\nSettings in Script should never be lost from now on!\nCheck you settings one last time to make sure.\n\nAsuka Tech on top!"
+local startupmsg = "Sorry... First run in 1.157?\nSettings in Script should never be lost from now on!\nNow for real... i fucked up a function that sometimes would not save you settings...\nCheck you settings one last time to make sure.\n\nAsuka Tech on top!"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -5642,6 +5642,9 @@ end
 
 util.on_stop(function()
     remove_blips()
+end)
+
+util.on_pre_stop(function()
     if pipBooty then
         save_config()
     end
