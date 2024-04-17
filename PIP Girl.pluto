@@ -6,11 +6,11 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.158"
+local script_version = "1.159"
 
 local lust_upDate = {year = 2024, month = 4, day = 20, hour = 6, min = 6, sec = 6}
 
-local startupmsg = "Sorry... First run in 1.157?\nSettings in Script should never be lost from now on!\nNow for real... i fucked up a function that sometimes would not save you settings...\nCheck you settings one last time to make sure.\n\nAsuka Tech on top!"
+local startupmsg = "Sorry... First run since 1.156?\nSettings in Script should never be lost from now on!\nNow for real... i fucked up a function that sometimes would not save you settings...\nCheck you settings one last time to make sure.\n\nAsuka Tech on top!"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -1564,42 +1564,64 @@ local function buff_asuka_tech(vehicle)
             end
         end
     end
-    local engine = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 11) - 1
-    if engine > -1 then
-        if VEHICLE.GET_VEHICLE_MOD(vehicle, 11) ~= engine then
-            VEHICLE.SET_VEHICLE_MOD(vehicle, 11, engine)
+
+    if not VEHICLE.GET_IS_VEHICLE_PRIMARY_COLOUR_CUSTOM(vehicle) and not VEHICLE.GET_IS_VEHICLE_SECONDARY_COLOUR_CUSTOM(vehicle) then
+        VEHICLE.SET_VEHICLE_MOD_KIT(vehicle, 0)
+        local engine = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 11) - 1
+        if engine > -1 then
+            if VEHICLE.GET_VEHICLE_MOD(vehicle, 11) ~= engine then
+                VEHICLE.SET_VEHICLE_MOD(vehicle, 11, engine)
+            end
         end
-    end
-    local breaks = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 12) - 1
-    if breaks > -1 then
-        if VEHICLE.GET_VEHICLE_MOD(vehicle, 12) ~= breaks then
-            VEHICLE.SET_VEHICLE_MOD(vehicle, 12, breaks)
+        local breaks = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 12) - 1
+        if breaks > -1 then
+            if VEHICLE.GET_VEHICLE_MOD(vehicle, 12) ~= breaks then
+                VEHICLE.SET_VEHICLE_MOD(vehicle, 12, breaks)
+            end
         end
-    end
-    local gearbox = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 13) - 1
-    if gearbox > -1 then
-        if VEHICLE.GET_VEHICLE_MOD(vehicle, 13) ~= gearbox then
-            VEHICLE.SET_VEHICLE_MOD(vehicle, 13, gearbox)
+        local gearbox = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 13) - 1
+        if gearbox > -1 then
+            if VEHICLE.GET_VEHICLE_MOD(vehicle, 13) ~= gearbox then
+                VEHICLE.SET_VEHICLE_MOD(vehicle, 13, gearbox)
+            end
         end
-    end
-    if DECORATOR.DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 then
-        local suspension = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 15) - 1
-        if suspension > -1 then
-            if VEHICLE.GET_VEHICLE_MOD(vehicle, 15) ~= suspension then
-                VEHICLE.SET_VEHICLE_MOD(vehicle, 15, suspension)
+        if DECORATOR.DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 then
+            local suspension = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 15) - 1
+            if suspension > -1 then
+                if VEHICLE.GET_VEHICLE_MOD(vehicle, 15) ~= suspension then
+                    VEHICLE.SET_VEHICLE_MOD(vehicle, 15, suspension)
+                end
+            end
+        end
+        local armor = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 16) - 1
+        if armor > -1 then
+            if VEHICLE.GET_VEHICLE_MOD(vehicle, 16) ~= armor then
+                VEHICLE.SET_VEHICLE_MOD(vehicle, 16, armor)
+            end
+        end
+        VEHICLE.TOGGLE_VEHICLE_MOD(vehicle, 18, true)
+        if VEHICLE.DOES_VEHICLE_HAVE_SEARCHLIGHT(vehicle) then
+            VEHICLE.SET_VEHICLE_SEARCHLIGHT(vehicle, true, true)
+        end
+        local buffVehModel = ENTITY.GET_ENTITY_MODEL(vehicle)
+        if buffVehModel == 167522317 then
+            if VEHICLE.GET_VEHICLE_MOD(vehicle, 10) == 1 and checkVehMod(vehicle, 1) then
+                VEHICLE.SET_VEHICLE_EXTRA(vehicle, 1, 0)
+            end
+        end
+        if buffVehModel == 1770332643 then
+            if checkVehMod(vehicle, 1) then
+                VEHICLE.SET_VEHICLE_EXTRA(vehicle, 1, 0)
+            end
+            if checkVehMod(vehicle, 10) then
+                VEHICLE.SET_VEHICLE_EXTRA(vehicle, 10, 0)
+            end
+            if checkVehMod(vehicle, 11) then
+                VEHICLE.SET_VEHICLE_EXTRA(vehicle, 11, 0)
             end
         end
     end
-    local armor = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 16) - 1
-    if armor > -1 then
-        if VEHICLE.GET_VEHICLE_MOD(vehicle, 16) ~= armor then
-            VEHICLE.SET_VEHICLE_MOD(vehicle, 16, armor)
-        end
-    end
-    VEHICLE.TOGGLE_VEHICLE_MOD(vehicle, 18, true)
-    if VEHICLE.DOES_VEHICLE_HAVE_SEARCHLIGHT(vehicle) then
-        VEHICLE.SET_VEHICLE_SEARCHLIGHT(vehicle, true, true)
-    end
+
     VEHICLE.SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
     VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
     VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, false)
@@ -1622,23 +1644,6 @@ local function buff_asuka_tech(vehicle)
     --VEHICLE.SET_VEHICLE_FORCE_AFTERBURNER(vehicle, true)
     AUDIO.ENABLE_VEHICLE_EXHAUST_POPS(vehicle, true)
     NETWORK.NETWORK_SET_NO_LONGER_NEEDED(vehicle, false)
-    local buffVehModel = ENTITY.GET_ENTITY_MODEL(vehicle)
-    if buffVehModel == 167522317 then
-        if VEHICLE.GET_VEHICLE_MOD(vehicle, 10) == 1 and checkVehMod(vehicle, 1) then
-            VEHICLE.SET_VEHICLE_EXTRA(vehicle, 1, 0)
-        end
-    end
-    if buffVehModel == 1770332643 then
-        if checkVehMod(vehicle, 1) then
-            VEHICLE.SET_VEHICLE_EXTRA(vehicle, 1, 0)
-        end
-        if checkVehMod(vehicle, 10) then
-            VEHICLE.SET_VEHICLE_EXTRA(vehicle, 10, 0)
-        end
-        if checkVehMod(vehicle, 11) then
-            VEHICLE.SET_VEHICLE_EXTRA(vehicle, 11, 0)
-        end
-    end
 end
 local function SetInZoneTimer()
     wasInZone = true
