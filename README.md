@@ -1,7 +1,8 @@
-# PIP Girl lua for Stand Mod Menu.
-PIP Girl is a lua made for my and friends privat use.
-It's Public and everyone can use it, but ill leave here not much explanation since it is in heavy developent and subject to change.
+# PIP Girl script for Stand Mod Menu.
+PIP Girl is a script made for my and friends privat use.
+But it's Public and everyone can use it, but ill leave here not much explanation since it is in heavy developent and subject to change.
 Yet u can already enjoy all the features included , with many of them being quality of life improvments and more!
+(no toxic features , 100% improvements for you and others :3 )
 
 # [Download!](https://github.com/LeaLangley/PIP-Girl/releases/download/Stable/PIP_Girl.pluto)
 
