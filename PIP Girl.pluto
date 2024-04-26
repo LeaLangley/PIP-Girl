@@ -6,9 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.160"
+local script_version = "1.161"
 
-local lust_upDate = {year = 2024, month = 4, day = 20, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 5, day = 2, hour = 6, min = 6, sec = 6}
 
 local startupmsg = "Sorry... First run since 1.156?\nSettings in Script should never be lost from now on!\nNow for real... i fucked up a function that sometimes would not save you settings...\nCheck you settings one last time to make sure.\n\nAsuka Tech on top!"
 
@@ -4584,9 +4584,7 @@ local function add_in_blocking(pid)
             local rid = players.get_rockstar_id(pid)
             if rid ~= players.get_rockstar_id(players.user()) then
                 if session_type() == "Public" then
-                    if not util.sc_is_blocked(rid) then
-                        sc_block(rid)
-                    end
+                    sc_block(rid)
                 end
             end
             if name ~= players.get_name(players.user()) then
@@ -4660,20 +4658,31 @@ local function SessionCheck(pid)
                         if name == players.get_name(players.user()) then
                             name = "N/A"
                         end
-                        if session_type() == "Public" then
-                            notify("Detected Blacklisted Player: \n" .. name .. " - " .. rid)
-                        end
                         add_in_blocking(pid)
-                        if StandUser(pid) then
-                            notify("This Blacklist is a Stand User, we don't kick them until they attack: \n" .. name .. " - " .. rid)
+                        local notification = ""
+                        if isModder(pid) and pid == players.get_host() then
+                            notification = "This Blacklist is Host, we don't kick them until they attack."
                             menu.trigger_commands("hellaa " .. name .. " on")
+                            menu.trigger_commands("ghostplayer " .. name .. " on")
+                        elseif StandUser(pid) then
+                            notification = "This Blacklist is a Stand User, we don't kick them until they attack."
+                            menu.trigger_commands("hellaa " .. name .. " on")
+                            menu.trigger_commands("ghostplayer " .. name .. " on")
                         else
                             if session_type() == "Public" then
                                 StrategicKick(pid)
                             else
                                 menu.trigger_commands("hellaa " .. name .. " on")
+                                menu.trigger_commands("ghostplayer " .. name .. " on")
                             end
                         end
+                        if session_type() == "Public" then
+                            local finalNotification = "Detected Blacklisted Player: \n" .. name .. " - " .. rid
+                            if notification ~= "" then
+                                finalNotification = finalNotification .. "\n" .. notification
+                            end
+                            notify(finalNotification)
+                        end                        
                     end
                 end
             end
