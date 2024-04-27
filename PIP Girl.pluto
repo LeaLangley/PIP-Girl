@@ -4149,9 +4149,6 @@ path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"
                         if not players.are_stats_ready(players.get_script_host()) then
                             get_ScriptHost()
                         end
-                        if not healthyInternet(players.get_script_host()) then
-                            get_ScriptHost()
-                        end
                         if timeoutIgnore[players.get_script_host()] then
                             if timeoutIgnore[pid] and timeoutIgnore[pid] > os.time() then
                                 get_ScriptHost()
