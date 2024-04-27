@@ -1644,6 +1644,7 @@ local function buff_asuka_tech(vehicle)
     --VEHICLE.SET_VEHICLE_FORCE_AFTERBURNER(vehicle, true)
     AUDIO.ENABLE_VEHICLE_EXHAUST_POPS(vehicle, true)
     NETWORK.NETWORK_SET_NO_LONGER_NEEDED(vehicle, false)
+    VEHICLE.SET_VEHICLE_BROKEN_PARTS_DONT_AFFECT_AI_HANDLING(vehicle, true)
 end
 local function SetInZoneTimer()
     wasInZone = true
