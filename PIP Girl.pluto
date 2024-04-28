@@ -4070,7 +4070,7 @@ path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"
     if transitionState(true) == 1 then
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
             if discoveredSince(players.user()) >= 113 then
-                if players.user() == players.get_host() or (players.user() == players.get_script_host() and (not isFriend(players.get_host()) and not isModder(players.get_host()))) then
+                --[[if players.user() == players.get_host() or (players.user() == players.get_script_host() and (not isFriend(players.get_host()) and not isModder(players.get_host()))) then
                     local playerList = {players.user()}
                     if smartScriptHostMode == 2 then
                         playerList = players.list_only(true, true, false, true)
@@ -4157,17 +4157,16 @@ path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"
                         end
                     end
                     ::skipSSH::
-                else
+                else]]--
+                if isStuck(players.user()) then
+                    util.yield(13666)
                     if isStuck(players.user()) then
-                        util.yield(13666)
-                        if isStuck(players.user()) then
-                            if players.user() ~= players.get_script_host() then
-                                get_ScriptHost()
-                                notify("You are loading too long.")
-                            end
-                        else
-                            util.yield(13666)
+                        if players.user() ~= players.get_script_host() then
+                            get_ScriptHost()
+                            notify("You are loading too long.")
                         end
+                    else
+                        util.yield(13666)
                     end
                 end
             end
