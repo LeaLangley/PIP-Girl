@@ -4745,6 +4745,12 @@ player_menu = function(pid)
     if player_Exist(pid) and players.get_name(pid) == "UndiscoveredPlayer" then 
         util.yield(13)
     end
+    if not player_Exist(pid) then
+        return
+    end
+    local name = players.get_name(pid)
+    local rid = players.get_rockstar_id(pid)
+    menu.player_root(pid):divider('PIP Girl')
     local FriendlyPIPGirl = menu.list(menu.player_root(pid), 'Friendly', {""}, '', function() end)
     local PGLEVELBOOST
     PGLEVELBOOST = menu.toggle(FriendlyPIPGirl, "Boost LVL 120", {"boostlevel"}, "Boost them to lvl 120.", function()
@@ -4782,12 +4788,6 @@ player_menu = function(pid)
         set_as_illusion(pid, set_passive, false)
         return
     end
-    if not player_Exist(pid) then
-        return
-    end
-    local name = players.get_name(pid)
-    local rid = players.get_rockstar_id(pid)
-    menu.player_root(pid):divider('PIP Girl')
     local Bad_Modder = menu.list(menu.player_root(pid), 'Bad Modder?', {""}, '', function() end)
     menu.action(Bad_Modder, "Add Blacklist & Kick", {'hellbk'}, "Blacklist Note, Kick and Block the Target from Joining u again.", function ()
         add_in_blocking(pid)
