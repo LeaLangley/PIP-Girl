@@ -4161,6 +4161,16 @@ path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"
                     end
                     ::skipSSH::
                 else]]--
+            if players.user() == players.get_host() and not isFriend(players.get_script_host()) then
+                if not players.are_stats_ready(players.get_script_host()) then
+                    get_ScriptHost()
+                end
+                if timeoutIgnore[players.get_script_host()] then
+                    if timeoutIgnore[pid] and timeoutIgnore[pid] > os.time() then
+                        get_ScriptHost()
+                    end
+                end
+            end
             if isStuck(players.user()) then
                 util.yield(20666)
                 if isStuck(players.user()) then
