@@ -3184,7 +3184,7 @@ local function findAnewHome()
     while transitionState(true) ~= 3 or session_type() == "Singleplayer" do
         util.yield(13)
     end
-    util.yield(1666)
+    util.yield(666)
 end
 
 local SessionClaimerPaths = {
@@ -3229,9 +3229,13 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         --  <3
         --  Waiting to Join a Session
         --  <3
-        local join_timeout = os.time()
+        local join_timeout_start = os.time()
+        local join_timeout_time = 13
+        if sessionClaimer_firstRun or session_type() == "Singleplayer" then
+            join_timeout_time = 25
+        end
         while transitionState(true) > 2 do
-            if os.time() - join_timeout > 13 then
+            if os.time() - join_timeout_start > join_timeout_time then
                 break
             end
             if session_type() == "Singleplayer" then
