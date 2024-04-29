@@ -4338,11 +4338,15 @@ end)
 
 path_soft_clear_traffic = menu.toggle_loop(Session, "Soft Clear Traffic", {"softantitrafic"}, "Clears the traffic around you localy in close range.\nDosnt work with many players in close range.", function()
     if is_user_driving_vehicle(false) and transitionState(true) == 1 then
-        local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(PED.GET_VEHICLE_PED_IS_IN(players.user_ped()), -1)
-        if driverPed == players.user_ped() then
-            local pos = players.get_position(players.user())
-            MISC.CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, SYSTEM.ROUND(ENTITY.GET_ENTITY_SPEED(players.user_ped()) * 6, 1), false, false, false, false, false, false, 0)
-            util.yield(113)
+        if ENTITY.GET_ENTITY_HEIGHT_ABOVE_GROUND(players.user_ped()) < 13 then
+            local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(PED.GET_VEHICLE_PED_IS_IN(players.user_ped()), -1)
+            if driverPed == players.user_ped() then
+                local pos = players.get_position(players.user())
+                MISC.CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, SYSTEM.ROUND(ENTITY.GET_ENTITY_SPEED(players.user_ped()) * 6, 1), false, false, false, false, false, false, 0)
+                util.yield(113)
+            end
+        else
+            util.yield(666)
         end
     else
         util.yield(666)
