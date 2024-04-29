@@ -4746,40 +4746,40 @@ player_menu = function(pid)
         util.yield(13)
     end
     local FriendlyPIPGirl = menu.list(menu.player_root(pid), 'Friendly', {""}, '', function() end)
-    if isFriend(pid) then
-        set_as_illusion(pid, set_passive, false)
-        local PGLEVELBOOST
-        PGLEVELBOOST = menu.toggle(FriendlyPIPGirl, "Boost LVL 120", {"boostlevel"}, "Boost them to lvl 120.", function()
-            if players.get_rank(pid) >= 120 and PGLEVELBOOST.value then
-                notify(name.." is already "..players.get_rank(pid))
-                PGLEVELBOOST.value = false
-                return
-            end
-            if not players.are_stats_ready(pid) and PGLEVELBOOST.value then
-                notify(name.." is still loading in , please wait.")
-                PGLEVELBOOST.value = false
-                return
-            end
-            menu.trigger_command(menu.ref_by_rel_path(menu.player_root(pid), "Friendly>Give Collectibles>All"))
-            while player_Exist(pid) and players.get_rank(pid) < 120 and PGLEVELBOOST.value do
-                menu.trigger_commands("rp " .. name)
-                util.yield(113)
-                if not player_Exist(pid) then
-                    PGLEVELBOOST.value = false
-                    break
-                end
-            end
+    local PGLEVELBOOST
+    PGLEVELBOOST = menu.toggle(FriendlyPIPGirl, "Boost LVL 120", {"boostlevel"}, "Boost them to lvl 120.", function()
+        if players.get_rank(pid) >= 120 and PGLEVELBOOST.value then
+            notify(name.." is already "..players.get_rank(pid))
+            PGLEVELBOOST.value = false
+            return
+        end
+        if not players.are_stats_ready(pid) and PGLEVELBOOST.value then
+            notify(name.." is still loading in , please wait.")
+            PGLEVELBOOST.value = false
+            return
+        end
+        menu.trigger_command(menu.ref_by_rel_path(menu.player_root(pid), "Friendly>Give Collectibles>All"))
+        while player_Exist(pid) and players.get_rank(pid) < 120 and PGLEVELBOOST.value do
+            menu.trigger_commands("rp " .. name)
+            util.yield(113)
             if not player_Exist(pid) then
                 PGLEVELBOOST.value = false
-                return
+                break
             end
-            if players.get_rank(pid) >= 120 then
-                notify(name.." Reached "..players.get_rank(pid))
-                PGLEVELBOOST.value = false
-                util.yield(113)
-                return
-            end
-        end)
+        end
+        if not player_Exist(pid) then
+            PGLEVELBOOST.value = false
+            return
+        end
+        if players.get_rank(pid) >= 120 then
+            notify(name.." Reached "..players.get_rank(pid))
+            PGLEVELBOOST.value = false
+            util.yield(113)
+            return
+        end
+    end)
+    if isFriend(pid) then
+        set_as_illusion(pid, set_passive, false)
         return
     end
     if not player_Exist(pid) then
