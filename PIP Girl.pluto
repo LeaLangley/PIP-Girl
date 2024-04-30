@@ -703,13 +703,9 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
             requestControl(entity)
             entities.set_can_migrate(entity, false)
             ENTITY.FREEZE_ENTITY_POSITION(entity, true)
-            objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
-            return entity
-        else
-            objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
-            util.yield(timeout)
-            return entity
         end
+        objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
+        return entity
     end
 end
 
