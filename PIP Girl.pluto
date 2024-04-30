@@ -647,7 +647,10 @@ local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, ti
         local closestDistance = nil
         local closestPlayer = players.user()
         local coordinatesCorrect = false
-        local anglesCorrect = false    
+        local anglesCorrect = false
+        ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3, true, true, true)
+        ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
+        ENTITY.FREEZE_ENTITY_POSITION(entity, true)
         if anti_collision then
             for players.list_only(true, true, false, true) as pid do
                 local distance = SYSTEM.VDIST(locationV3, players.get_position(pid))
@@ -661,24 +664,6 @@ local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, ti
                 requestControl(entity)
                 ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(closestPlayer), false)
             end
-        end
-        local currentCoords = ENTITY.GET_ENTITY_COORDS(entity)
-        coordinatesCorrect = (math.abs(currentCoords.x - locationV3.x) <= 1) and
-                                (math.abs(currentCoords.y - locationV3.y) <= 1) and
-                                (math.abs(currentCoords.z - locationV3.z) <= 1)
-        if not coordinatesCorrect then
-            requestControl(entity)
-            ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3, true, true, true)
-            ENTITY.FREEZE_ENTITY_POSITION(entity, true)
-        end
-        local currentRotation = ENTITY.GET_ENTITY_ROTATION(entity, order)
-        anglesCorrect = (math.abs(currentRotation.x - pitch) <= 1) and
-                        (math.abs(currentRotation.y - roll) <= 1) and
-                        (math.abs(currentRotation.z - yaw) <= 1)
-        if not anglesCorrect then
-            requestControl(entity)
-            ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
-            ENTITY.FREEZE_ENTITY_POSITION(entity, true)
         end
     end
 end
