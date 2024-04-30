@@ -662,7 +662,9 @@ local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, ti
             end
             if closestPlayer then
                 requestControl(entity)
-                if closestPlayer ~= players.user() then
+                if closestPlayer == players.user() then
+                    entities.set_can_migrate(entity, false)
+                else
                     entities.set_can_migrate(entity, true)
                 end
                 ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(closestPlayer), false)
