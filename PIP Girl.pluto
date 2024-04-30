@@ -2697,6 +2697,16 @@ path_auto_interact = menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'},
                 break
             end
         end
+        local interactionsRemove = {
+            "SMH_SEDPADSRT",
+            "SMH_STDPADDEL",
+        }
+        for ipairs(interactionsRemove) as label do
+            if IS_HELP_MSG_DISPLAYED(label) then
+                HUD.CLEAR_ALL_HELP_MESSAGES()
+                break
+            end
+        end
     else
         util.yield(66)
     end
