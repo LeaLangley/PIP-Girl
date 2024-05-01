@@ -2025,7 +2025,7 @@ end)
 
 menu.divider(Vehicle, "Lights")
 
-local Vehicle_Light = menu.list(Vehicle, 'Vehicle Light Rhythm', {}, 'Flash the lights pretty and nice.', function(); end)
+local Vehicle_Light = menu.list(Vehicle, 'Vehicle Light Modes', {}, 'Flash the lights pretty and nice.', function(); end)
 
 path_vehicle_light_rhythm_sos = menu.toggle_loop(Vehicle_Light, "S.O.S. Morse",{"sosmorse"},"",function()
     local vehicle = get_user_vehicle()
@@ -2090,7 +2090,10 @@ path_vehicle_light_rhythm_sos = menu.toggle_loop(Vehicle_Light, "S.O.S. Morse",{
 end, function()
     current_asuka_tech_vehicle = nil
     isOutVehicle = false
-    VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 0)
+    local vehicle = get_user_vehicle()
+    if vehicle then
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 0)
+    end
 end)
 
 local prevSpeedRapid = 0
@@ -2098,20 +2101,25 @@ path_vehicle_light_rhythm_rapid_slowdown = menu.toggle_loop(Vehicle_Light, "Flas
     local vehicle = get_user_vehicle()
     if is_user_driving_vehicle(true) then
         local entSpeed = math.floor(ENTITY.GET_ENTITY_SPEED(vehicle) * 3.6) -- Convert speed to km/h
-        
-        if (prevSpeedRapid - entSpeed) > 50 then
-            for _ = 1, 10 do
+        if (prevSpeedRapid - entSpeed) > 47 then
+            for _ = 1, 13 do
                 VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
-                util.yield(100)
+                util.yield(66)
                 VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
-                util.yield(100)
+                util.yield(66)
             end
+        else
+            util.yield(666)
         end
+        prevSpeedRapid = entSpeed
     end
 end, function()
     current_asuka_tech_vehicle = nil
     isOutVehicle = false
-    VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 0)
+    local vehicle = get_user_vehicle()
+    if vehicle then
+        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 0)
+    end
 end)
 
 local vehicleFavColor = 0
@@ -5229,6 +5237,7 @@ local function load_and_apply_config()
         store_asuka_tech_info_overlay = path_asuka_tech_info_overlay,
         store_asuka_tech_dirt = path_asuka_tech_dirt,
         store_vehicle_light_rhythm_sos = path_vehicle_light_rhythm_sos,
+        path_vehicle_light_rhythm_rapid_slowdown = path_vehicle_light_rhythm_rapid_slowdown,
         store_vehicle_light_color = path_vehicle_light_color,
         store_auto_vehicle_light_color = path_auto_vehicle_light_color,
         store_asukas_repair_stops = path_asukas_repair_stops,
@@ -5319,6 +5328,7 @@ local function save_config()
         store_asuka_tech_info_overlay = menu.get_value(path_asuka_tech_info_overlay),
         store_asuka_tech_dirt = menu.get_value(path_asuka_tech_dirt),
         store_vehicle_light_rhythm_sos = menu.get_value(path_vehicle_light_rhythm_sos),
+        path_vehicle_light_rhythm_rapid_slowdown = menu.get_value(path_vehicle_light_rhythm_rapid_slowdown),
         store_vehicle_light_color = menu.get_value(path_vehicle_light_color),
         store_auto_vehicle_light_color = menu.get_value(path_auto_vehicle_light_color),
         store_asukas_repair_stops = menu.get_value(path_asukas_repair_stops),
