@@ -238,7 +238,6 @@ end
 
 local function allow_Join_back(name)
     for i = 1, 3 do
-        menu.focus(menu.ref_by_path("Online>Session>Block Joins>Removed Players"))
         util.yield(666)
         for menu.ref_by_path("Online>Session>Block Joins>Removed Players"):getChildren() as rat do
             if rat:isValid() then
