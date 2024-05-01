@@ -10,7 +10,7 @@ local script_version = "1.161"
 
 local lust_upDate = {year = 2024, month = 5, day = 2, hour = 6, min = 6, sec = 6}
 
-local startupmsg = "Sorry... First run since 1.156?\nSettings in Script should never be lost from now on!\nNow for real... i fucked up a function that sometimes would not save you settings...\nCheck you settings one last time to make sure.\n\nAsuka Tech on top!"
+local startupmsg = "PIP Girl remembers your settings! :D\nSettings changed in Script will never be lost!\n\nAsuka Tech on top!"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
