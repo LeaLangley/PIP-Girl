@@ -2095,22 +2095,27 @@ end, function()
     end
 end)
 
-local prevSpeedRapid = 0
 path_vehicle_light_rhythm_rapid_slowdown = menu.toggle_loop(Vehicle_Light, "Flash on Rapid slowdown",{"rapidslowdownwarn"},"",function()
     local vehicle = get_user_vehicle()
     if is_user_driving_vehicle(true) then
-        local entSpeed = math.floor(ENTITY.GET_ENTITY_SPEED(vehicle) * 3.6) -- Convert speed to km/h
-        if (PAD.GET_CONTROL_VALUE(2, 72) > 213 or PAD.IS_CONTROL_PRESSED(2, 76)) and entSpeed > 13 then
-            for _ = 1, 3 do
-                VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
-                util.yield(66)
-                VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
-                util.yield(66)
+        local speedVector = ENTITY.GET_ENTITY_SPEED_VECTOR(vehicle, true)
+        local forwardSpeedKmh = math.abs(speedVector.y) * 3.6
+        if PAD.GET_CONTROL_VALUE(2, 72) > 213 or PAD.IS_CONTROL_PRESSED(2, 76) then
+            if speedVector.y > 0 and forwardSpeedKmh > 13 then
+                for _ = 1, 3 do
+                    VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+                    util.yield(66)
+                    VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+                    util.yield(66)
+                end
+            else
+                util.yield(111)
             end
         else
             util.yield(111)
         end
-        prevSpeedRapid = entSpeed
+    else
+        util.yield(111)
     end
 end, function()
     current_asuka_tech_vehicle = nil
@@ -5456,6 +5461,7 @@ local function userIdentification()
                 end
                 util.yield(3666)
             end
+            save_config()
         end
         util.yield(25666)
     end
