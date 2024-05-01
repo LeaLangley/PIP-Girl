@@ -2134,20 +2134,15 @@ path_vehicle_light_color = menu.slider(Vehicle, "Vehicle light color", {"favhead
     vehicleFavColor = new_value
 end)
 
-path_auto_vehicle_light_color = menu.toggle_loop(Vehicle, "Set vehicle light color automatically",{"autocarlights"},"Automatically set your favorite vehicle color for vehicles with default lights that u drive and are mission ent.\nDefault lights: 0 & 1 | Color lights: 2-14",function()
+path_auto_vehicle_light_color = menu.toggle_loop(Vehicle, "Auto Vehicle Light Color",{"autocarlights"},"Automatically set your favorite vehicle color for vehicles with default lights that u drive and are mission ent.\nDefault lights: 0 & 1 | Color lights: 2-14",function()
     util.yield(420)
     if vehicleFavColor ~= 0 then
         if transitionState(true) <3 then
             local vehicle = get_user_vehicle()
-            if vehicle and is_user_driving_vehicle(false) and VEHICLE.GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 then
-                if DECORATOR.DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 then
+            if vehicle and VEHICLE.GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 then
+                if DECORATOR.DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 or vehicle == entities.get_user_personal_vehicle_as_handle() then
                     vehicleLightsSet = vehicle
                     menu.trigger_commands("headlights "..vehicleFavColor)
-                else
-                    if vehicle == entities.get_user_personal_vehicle_as_handle() then
-                        vehicleLightsSet = vehicle
-                        menu.trigger_commands("headlights "..vehicleFavColor)
-                    end
                 end
             end
             util.yield(3666)
