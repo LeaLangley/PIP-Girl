@@ -2100,7 +2100,7 @@ path_vehicle_light_rhythm_rapid_slowdown = menu.toggle_loop(Vehicle_Light, "Flas
     local vehicle = get_user_vehicle()
     if is_user_driving_vehicle(true) then
         local entSpeed = math.floor(ENTITY.GET_ENTITY_SPEED(vehicle) * 3.6) -- Convert speed to km/h
-        if (prevSpeedRapid - entSpeed) > 11 then
+        if (PAD.GET_CONTROL_VALUE(2, 72) > 213 or PAD.IS_CONTROL_PRESSED(2, 76)) and entSpeed > 13 then
             for _ = 1, 3 do
                 VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
                 util.yield(66)
