@@ -820,7 +820,7 @@ local function StrategicKick(pid)
                         if not isLoading(pid) and not isLoading(players.user()) then
                             menu.trigger_commands("ban " .. name)
                         else
-                            menu.trigger_commands("loveletterkick " .. name)
+                            menu.trigger_commands("kick " .. name)
                         end
                     else
                         menu.trigger_commands("kick " .. name)
