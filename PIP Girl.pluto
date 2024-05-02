@@ -5508,6 +5508,7 @@ else
     util.create_thread(crashlistConfig)
     util.create_thread(userIdentification)
     menu.trigger_commands("antiadmin on")
+    menu.set_state(menu.ref_by_path("Online>Session>Stand User Identification>For Strangers"), "Off")
 end
 
 util.keep_running()
