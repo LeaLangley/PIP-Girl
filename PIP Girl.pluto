@@ -2717,6 +2717,7 @@ path_auto_interact = menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'},
             "FXR_INT_RP_C2",
             "SMH_SEDPADAREA",
             "SMH_SEDPADSRT",
+            "GRT_DRP_HA",
         }
         for ipairs(interactionsE) as label do
             if IS_HELP_MSG_DISPLAYED(label) then
