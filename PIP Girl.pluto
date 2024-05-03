@@ -6,9 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.161"
+local script_version = "1.162"
 
-local lust_upDate = {year = 2024, month = 5, day = 2, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 5, day = 8, hour = 6, min = 6, sec = 6}
 
 local startupmsg = "PIP Girl remembers your settings! :D\nSettings changed in Script will never be lost!\n\nAsuka Tech on top!"
 
@@ -3195,7 +3195,7 @@ local function findAnewHome()
     if transitionState(true) > 2 and session_type() ~= "Singleplayer" then
         menu.trigger_commands("unstuck")
         local findAnewHomeTimeOut = os.time()
-        while transitionState(true) ~= 1 do
+        while transitionState(true) > 2 do
             if os.time() - findAnewHomeTimeOut > 13 then
                 break
             end
