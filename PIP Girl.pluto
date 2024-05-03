@@ -2736,6 +2736,7 @@ path_auto_interact = menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'},
         local interactionsRemove = {
             "SMH_SEDPADSRT",
             "SMH_STDPADDEL",
+            "ARCADE_PAY_ENTER_M",
         }
         for ipairs(interactionsRemove) as label do
             if IS_HELP_MSG_DISPLAYED(label) then
