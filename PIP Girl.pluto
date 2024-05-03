@@ -5497,20 +5497,20 @@ if stored_pip_version == nil or stored_pip_version == "" or tonumber(stored_pip_
     stored_pip_version = os.time()
     writeToFilePIP(os.time(), store_dir..'version.txt')
 end
-if os.time() - tonumber(stored_pip_version) > 13 then
-    pipBooty = false
-    writeToFilePIP(os.time(), store_dir..'version.txt')
-    util.yield(1666)
-    util.restart_script()
-else
-    pipBooty = true
-    load_and_apply_config()
-    util.create_thread(startupCheck)
-    util.create_thread(startupConfig)
-    util.create_thread(crashlistConfig)
-    util.create_thread(userIdentification)
-    menu.trigger_commands("antiadmin on")
-    menu.set_state(menu.ref_by_path("Online>Session>Stand User Identification>For Strangers"), "Off")
-end
+--if os.time() - tonumber(stored_pip_version) > 13 then
+--    pipBooty = false
+--    writeToFilePIP(os.time(), store_dir..'version.txt')
+--    util.yield(1666)
+--    util.restart_script()
+--else
+pipBooty = true
+load_and_apply_config()
+util.create_thread(startupCheck)
+util.create_thread(startupConfig)
+util.create_thread(crashlistConfig)
+util.create_thread(userIdentification)
+menu.trigger_commands("antiadmin on")
+menu.set_state(menu.ref_by_path("Online>Session>Stand User Identification>For Strangers"), "Off")
+--end
 
 util.keep_running()
