@@ -575,7 +575,7 @@ end
 
 local function get_user_vehicle()
     local userVehicleHandle = entities.get_user_vehicle_as_handle(true)
-    if userVehicleHandle == -1 then
+    if userVehicleHandle == INVALID_GUID then
         return entities.get_user_personal_vehicle_as_handle()
     else
         return userVehicleHandle
