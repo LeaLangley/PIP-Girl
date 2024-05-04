@@ -1960,7 +1960,7 @@ menu.action(Vehicle, "Teleport and Enter Asuka Tech Vehicle", {"tpenterasuka"}, 
             local TEATV_Timeout = os.time()
             while not is_vehicle_free_for_use(target_vehicle) do
                 util.yield(666)
-                if os.time() - TEATV_Timeout > 6 then
+                if os.time() - TEATV_Timeout > 13 then
                     break
                 end
                 if is_vehicle_free_for_use(target_vehicle) then
@@ -4180,7 +4180,7 @@ path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"
                 end
                 ::skipSSH::
             else]]--
-            if not isFriend(players.get_script_host()) and players.get_host() == players.get_user() then
+            if not isFriend(players.get_script_host()) and players.get_host() == players.user() then
                 if not players.are_stats_ready(players.get_script_host()) then
                     get_ScriptHost()
                 end
