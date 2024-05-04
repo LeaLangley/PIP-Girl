@@ -4180,7 +4180,7 @@ path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"
                 end
                 ::skipSSH::
             else]]--
-            if not isFriend(players.get_script_host()) then
+            if not isFriend(players.get_script_host()) and players.get_host() == players.get_user() then
                 if not players.are_stats_ready(players.get_script_host()) then
                     get_ScriptHost()
                 end
