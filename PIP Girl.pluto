@@ -2974,87 +2974,85 @@ function getOrgColor(pid)
 end
 
 local function espOnPlayer(pid, namesync)
-    if (not players.is_in_interior(pid) and not players.is_in_interior(players.user())) or (players.is_in_interior(pid) and players.is_in_interior(players.user())) then
-        --coordinate stuff
-        local targetped = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)
-        local ppos = ENTITY.GET_ENTITY_COORDS(targetped)
-        local mypos = players.get_cam_pos(players.user())
-        local vdist = SYSTEM.VDIST(mypos.x, mypos.y, mypos.z, ppos.x, ppos.y, ppos.z)
-        local show_distance = 0
-        if not PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) then
-            show_distance = 420
-        else
-            show_distance = 666
-        end
-        if vdist <= show_distance then
-            local playerHeadOffset = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(targetped, 0, 0, 1.0)
-            local screenName = worldToScreen(playerHeadOffset)
+    --coordinate stuff
+    local targetped = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)
+    local ppos = ENTITY.GET_ENTITY_COORDS(targetped)
+    local mypos = players.get_cam_pos(players.user())
+    local vdist = SYSTEM.VDIST(mypos.x, mypos.y, mypos.z, ppos.x, ppos.y, ppos.z)
+    local show_distance = 0
+    if not PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) then
+        show_distance = 420
+    else
+        show_distance = 666
+    end
+    if vdist <= show_distance then
+        local playerHeadOffset = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(targetped, 0, 0, 1.0)
+        local screenName = worldToScreen(playerHeadOffset)
 
-            if screenName.success then
-                local blipColor = getOrgColor(pid)
-                local colText
-                if blipColor == -1 then
-                    colText = { r = 1.0, g = 1.0, b = 1.0, a = 1.0 }
-                else
-                    colText = {
-                        r = blipColor.r,
-                        g = blipColor.g,
-                        b = blipColor.b,
-                        a = blipColor.a
-                    }
-                end
-                local txtscale = 0.42
-                local detectionCOLOR
-                local rank = players.get_rank(pid)
-                local playerName = players.get_name(pid)
-                local classificationESP = ""
-                if isFriend(pid) then
-                    classificationESP = "(Friendly)"
-                    detectionCOLOR = { r = 34.0/255, g = 139.0/255, b = 34.0/255, a = 1.0 }
-                elseif players.is_marked_as_attacker(pid) then
-                    classificationESP = "(ATK)"
-                    detectionCOLOR = { r = 255.0/255, g = 13.0/255, b = 13.0/255, a = 1.0 }
-                elseif isModder(pid) then
-                    classificationESP = "(MOD)"
-                    detectionCOLOR = { r = 255.0/255, g = 13.0/255, b = 13.0/255, a = 1.0 }
-                elseif players.is_in_interior(pid) then
-                    classificationESP = "(INN)"
-                    detectionCOLOR = { r = 255.0/255, g = 255.0/255, b = 213.0/255, a = 1.0 }
-                elseif players.is_using_rc_vehicle(pid) then
-                    classificationESP = "(RC)"
-                    detectionCOLOR = { r = 13.0/255, g = 13.0/255, b = 113.0/255, a = 1.0 }
-                elseif players.is_godmode(pid) then
-                    classificationESP = "(GOD)"
-                    detectionCOLOR = { r = 255.0/255, g = 13.0/255, b = 13.0/255, a = 1.0 }
-                elseif players.is_otr(pid) then
-                    classificationESP = "(OTR)"
-                    detectionCOLOR = { r = 255.0/255, g = 255.0/255, b = 166.0/255, a = 1.0 }
-                elseif not players.is_visible(pid) then
-                    classificationESP = "(Ghost)"
-                    detectionCOLOR = { r = 255.0/255, g = 250.0/255, b = 205.0/255, a = 1.0 }
-                else
-                    detectionCOLOR = colText
-                end
-                drawESPText(screenName, -0.10, "("..rank..") "..playerName, txtscale, colText)                
-                local health = ENTITY.GET_ENTITY_HEALTH(targetped) - 100
-                local armor = PED.GET_PED_ARMOUR(targetped)
-                local textSegments = {}
-                if health > 0 then
-                    local maxhealth = ENTITY.GET_ENTITY_MAX_HEALTH(targetped) - 100
-                    table.insert(textSegments, "(" .. health .. " / " .. maxhealth .. ")HP")
-                else
-                    classificationESP = classificationESP .. "(DEAD)"
-                end
-                if armor > 0 then
-                    local maxarmor = PLAYER.GET_PLAYER_MAX_ARMOUR(pid)
-                    table.insert(textSegments, "(" .. armor .. " / " .. maxarmor .. ")AP")
-                end
-                if classificationESP ~= "" then
-                    table.insert(textSegments, classificationESP)
-                end
-                local infoText = table.concat(textSegments, " | ")
-                drawESPText(screenName, -0.10 * 1.2, infoText, txtscale, detectionCOLOR)                  
+        if screenName.success then
+            local blipColor = getOrgColor(pid)
+            local colText
+            if blipColor == -1 then
+                colText = { r = 1.0, g = 1.0, b = 1.0, a = 1.0 }
+            else
+                colText = {
+                    r = blipColor.r,
+                    g = blipColor.g,
+                    b = blipColor.b,
+                    a = blipColor.a
+                }
             end
+            local txtscale = 0.42
+            local detectionCOLOR
+            local rank = players.get_rank(pid)
+            local playerName = players.get_name(pid)
+            local classificationESP = ""
+            if isFriend(pid) then
+                classificationESP = "(Friendly)"
+                detectionCOLOR = { r = 34.0/255, g = 139.0/255, b = 34.0/255, a = 1.0 }
+            elseif players.is_marked_as_attacker(pid) then
+                classificationESP = "(ATK)"
+                detectionCOLOR = { r = 255.0/255, g = 13.0/255, b = 13.0/255, a = 1.0 }
+            elseif isModder(pid) then
+                classificationESP = "(MOD)"
+                detectionCOLOR = { r = 255.0/255, g = 13.0/255, b = 13.0/255, a = 1.0 }
+            elseif players.is_in_interior(pid) then
+                classificationESP = "(INN)"
+                detectionCOLOR = { r = 255.0/255, g = 255.0/255, b = 213.0/255, a = 1.0 }
+            elseif players.is_using_rc_vehicle(pid) then
+                classificationESP = "(RC)"
+                detectionCOLOR = { r = 13.0/255, g = 13.0/255, b = 113.0/255, a = 1.0 }
+            elseif players.is_godmode(pid) then
+                classificationESP = "(GOD)"
+                detectionCOLOR = { r = 255.0/255, g = 13.0/255, b = 13.0/255, a = 1.0 }
+            elseif players.is_otr(pid) then
+                classificationESP = "(OTR)"
+                detectionCOLOR = { r = 255.0/255, g = 255.0/255, b = 166.0/255, a = 1.0 }
+            elseif not players.is_visible(pid) then
+                classificationESP = "(Ghost)"
+                detectionCOLOR = { r = 255.0/255, g = 250.0/255, b = 205.0/255, a = 1.0 }
+            else
+                detectionCOLOR = colText
+            end
+            drawESPText(screenName, -0.10, "("..rank..") "..playerName, txtscale, colText)                
+            local health = ENTITY.GET_ENTITY_HEALTH(targetped) - 100
+            local armor = PED.GET_PED_ARMOUR(targetped)
+            local textSegments = {}
+            if health > 0 then
+                local maxhealth = ENTITY.GET_ENTITY_MAX_HEALTH(targetped) - 100
+                table.insert(textSegments, "(" .. health .. " / " .. maxhealth .. ")HP")
+            else
+                classificationESP = classificationESP .. "(DEAD)"
+            end
+            if armor > 0 then
+                local maxarmor = PLAYER.GET_PLAYER_MAX_ARMOUR(pid)
+                table.insert(textSegments, "(" .. armor .. " / " .. maxarmor .. ")AP")
+            end
+            if classificationESP ~= "" then
+                table.insert(textSegments, classificationESP)
+            end
+            local infoText = table.concat(textSegments, " | ")
+            drawESPText(screenName, -0.10 * 1.2, infoText, txtscale, detectionCOLOR)
         end
     end
 end
