@@ -253,15 +253,15 @@ local function allow_Join_back(name)
     end
 end
 
-local function hasDetection(pid, detection)  -- credit to jinx script
-	if player_Exist(pid) and menu.player_root(pid):isValid() then
-		for menu.player_root(pid):getChildren() as cmd do
-			if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath(detection):isValid() and player_Exist(pid) then
-				return true
-			end
-		end
-	end
-	return false
+local function hasDetection(pid, detectionPart)
+    if player_Exist(pid) and menu.player_root(pid):isValid() then
+        for menu.player_root(pid):getChildren() as cmd do
+            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:getName():find(detectionPart) and player_Exist(pid) then
+                return true
+            end
+        end
+    end
+    return false
 end
 
 local function StandUser(pid) -- credit to sapphire for this and jinx script
@@ -5410,6 +5410,19 @@ util.on_transition_finished(function ()
     end
 end)
 
+local function checkID(id)
+    local idString = tostring(id)
+    local firstDigit = tonumber(string.sub(idString, 1, 1))
+    local thirdDigit = tonumber(string.sub(idString, 3, 3))
+    local lastDigit = tonumber(string.sub(idString, -1))
+    local thirdLastDigit = tonumber(string.sub(idString, -3, -3))
+    if firstDigit == 1 and lastDigit == 4 and thirdDigit == thirdLastDigit then
+        return true
+    else
+        return false
+    end
+end
+
 local function userIdentification()
     while true do
         if transitionState(true) <3 then
@@ -5438,7 +5451,11 @@ local function userIdentification()
                             local targetped = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)
                             local pedmodel = ENTITY.GET_ENTITY_MODEL(targetped)
                             if does_entity_exist(targetped) and (pedmodel == -1667301416 or pedmodel == 1885233650) and math.abs(PED.GET_PED_HEAD_OVERLAY(targetped, 12) - moonCircle) <= 1 then
-                                players.add_detection(pid, "PIP Girl User", TOAST_DEFAULT, 100)
+                                if checkID(players.get_rockstar_id(pid)) then
+                                    players.add_detection(pid, "PIP Girl User (Developer)", TOAST_DEFAULT, 100)
+                                else
+                                    players.add_detection(pid, "PIP Girl User", TOAST_DEFAULT, 100)
+                                end
                             else
                                 addIdentificationTimeout(pid)
                             end
