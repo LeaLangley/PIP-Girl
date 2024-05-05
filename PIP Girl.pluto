@@ -1524,7 +1524,7 @@ local function checkVehMod(vehicle, mod)
     return false
 end
 local function buff_asuka_tech(vehicle)
-    if is_vehicle_free_for_use(vehicle) then
+    if is_vehicle_empty(vehicle) then
         requestControl(vehicle)
     end
     menu.trigger_commands("smoothflight on")
