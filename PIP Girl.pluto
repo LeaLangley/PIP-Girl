@@ -3034,7 +3034,7 @@ local function espOnPlayer(pid, namesync)
             else
                 detectionCOLOR = colText
             end
-            drawESPText(screenName, -0.10, "("..rank..") "..playerName.." ("..vdist..")", txtscale, colText)
+            drawESPText(screenName, -0.10, "("..rank..") "..playerName.." ("..math.floor(vdist)..")", txtscale, colText)
             local health = ENTITY.GET_ENTITY_HEALTH(targetped) - 100
             local armor = PED.GET_PED_ARMOUR(targetped)
             local textSegments = {}
