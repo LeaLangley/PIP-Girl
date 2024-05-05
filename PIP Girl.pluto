@@ -4323,7 +4323,7 @@ path_clear_traffic = menu.toggle_loop(Session, "Clear Traffic", {"antitraffic"},
         end
         if not pop_multiplier_free then
             pop_multiplier_free = create_pop_multiplier(pop_multiplier_free, 1.13, 0.0)
-            MISC.CLEAR_AREA_OF_VEHICLES(0.0, 0.0, 0.0, 19999.99, false, false, false, false, false, false, 0)
+            --MISC.CLEAR_AREA_OF_VEHICLES(0.0, 0.0, 0.0, 19999.99, false, false, false, false, false, false, 0)
             VEHICLE.SET_DISTANT_CARS_ENABLED(false)
             STREAMING.SET_VEHICLE_POPULATION_BUDGET(0)
             STREAMING.SET_REDUCE_VEHICLE_MODEL_BUDGET(true)
