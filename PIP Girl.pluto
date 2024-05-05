@@ -256,7 +256,7 @@ end
 local function hasDetection(pid, detectionPart)
     if player_Exist(pid) and menu.player_root(pid):isValid() then
         for menu.player_root(pid):getChildren() as cmd do
-            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:getName():find(detectionPart) and player_Exist(pid) then
+            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd.menu_name:find(detectionPart) and player_Exist(pid) then
                 return true
             end
         end
@@ -5189,16 +5189,6 @@ menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
     notify(startupmsg)
 end)
 
-local function addIdentificationTimeout(pid)
-    if isFriend(pid) and isModder(pid) then
-        IdentificationTimeout[pid] = 3
-    elseif isFriend(pid) or isModder(pid) then
-        IdentificationTimeout[pid] = 6
-    else
-        IdentificationTimeout[pid] = 13
-    end
-end
-
 local function load_and_apply_config()
     local data_cfg = {
         --PIP Girl
@@ -5457,7 +5447,13 @@ local function userIdentification()
                                     players.add_detection(pid, "PIP Girl User", TOAST_DEFAULT, 100)
                                 end
                             else
-                                addIdentificationTimeout(pid)
+                                if isFriend(pid) and isModder(pid) then
+                                    IdentificationTimeout[pid] = 3
+                                elseif isFriend(pid) or isModder(pid) then
+                                    IdentificationTimeout[pid] = 6
+                                else
+                                    IdentificationTimeout[pid] = 13
+                                end
                             end
                         else
                             if IdentificationTimeout[pid] ~= 1 then
