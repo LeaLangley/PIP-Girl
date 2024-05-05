@@ -5282,11 +5282,13 @@ local function load_and_apply_config()
     end
 end
 
-local function save_config()
+local function save_config(bool)
     local config_data = {}
     for store, path in pairs(data_cfg) do
         config_data[store] = menu.get_value(path)
-        util.yield()
+        if bool then
+            util.yield()
+        end
     end
 
     local encode_status, json_data = pcall(soup.json.encode, config_data)
@@ -5305,7 +5307,7 @@ end)
 
 util.on_pre_stop(function()
     if pipBooty then
-        save_config()
+        save_config(false)
     end
 end)
 
@@ -5330,7 +5332,7 @@ util.on_transition_finished(function ()
         PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 3, 255, 0.0) --Remove any aging processes.
         PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
     end
-    save_config()
+    save_config(true)
     while transitionState(true) ~= 1 do
         util.yield(666)
     end
@@ -5406,7 +5408,7 @@ local function userIdentification()
                 end
                 util.yield(3666)
             end
-            --save_config()
+            save_config(true)
         end
         util.yield(25666)
     end
