@@ -4217,7 +4217,7 @@ path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"
     util.yield(666)
 end)
 
-path_smart_script_host_mode = menu.list_select(Session, "Smart Script Host Help", {""}, "uses in the option above", {
+path_smart_script_host_mode = menu.list_select(Session, "Smart Script Host Help", {""}, "uses in the option above, currently not functional", {
     {1, "Myself"},
     {2, "Friendly"},
     {3, "Everyone"},
