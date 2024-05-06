@@ -2662,7 +2662,7 @@ local function SuperClean(fix, ignoreMission)
     notify("Done " .. ct .. "+ entities removed!")
     if fix then
         menu.set_state(menu.ref_by_path("Game>Rendering>Potato Mode"), "On")
-        util.yield(213)
+        util.yield(420)
         menu.set_state(menu.ref_by_path("Game>Rendering>Potato Mode"), "Off")
     end
 end
