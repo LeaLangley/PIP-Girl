@@ -3089,10 +3089,10 @@ local thermal_command = menu.ref_by_path('Game>Rendering>Thermal Vision')
 menu.toggle(Game, "Better Thermal Scope",{},"",function(on)
     if on then
         menu.trigger_command(thermal_command,"on")
-        GRAPHICS.SEETHROUGH_SET_MAX_THICKNESS(50)
+        GRAPHICS.SEETHROUGH_SET_MAX_THICKNESS(10000.0)
     else
         menu.trigger_command(thermal_command,"off")
-        GRAPHICS.SEETHROUGH_SET_MAX_THICKNESS(1)
+        GRAPHICS.SEETHROUGH_SET_MAX_THICKNESS(1.0)
     end
 end)
 
