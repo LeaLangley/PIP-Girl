@@ -256,8 +256,12 @@ end
 local function hasDetection(pid, detectionPart)
     if player_Exist(pid) and menu.player_root(pid):isValid() then
         for menu.player_root(pid):getChildren() as cmd do
-            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd.menu_name:find(detectionPart) and player_Exist(pid) then
-                return true
+            if player_Exist(pid) and cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING then
+                for cmd:getChildren() as detection do
+                    if player_Exist(pid) and string.contains(detection.menu_name, detectionPart) then
+                        return true
+                    end
+                end
             end
         end
     end
