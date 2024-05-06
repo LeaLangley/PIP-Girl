@@ -3085,24 +3085,24 @@ if menu.get_edition() > 1 then
     end)
 end
 
---local thermal_command = menu.ref_by_path('Game>Rendering>Thermal Vision')
---menu.toggle_loop(Game, "Thermal Scope",{},"Press E while aiming to activate.",function() -- From mehScript <3 /but respects if u use another hotkey for thermal.
---local aiming = PLAYER.IS_PLAYER_FREE_AIMING(players.user())
---    if GRAPHICS.GET_USINGSEETHROUGH() and not aiming then
---        if not menu.get_value(thermal_command) then
---            menu.trigger_command(thermal_command,'off')
---            GRAPHICS.SEETHROUGH_SET_MAX_THICKNESS(1)
---        end
---    elseif PAD.IS_CONTROL_JUST_PRESSED(38,38) then
---        if menu.get_value(thermal_command) or not aiming then
---            menu.trigger_command(thermal_command,"off")
---            GRAPHICS.SEETHROUGH_SET_MAX_THICKNESS(1)
---        else
---            menu.trigger_command(thermal_command,"on")
---            GRAPHICS.SEETHROUGH_SET_MAX_THICKNESS(50)
---        end
---    end
---end)
+local thermal_command = menu.ref_by_path('Game>Rendering>Thermal Vision')
+menu.toggle_loop(Game, "Thermal Scope",{},"Press E while aiming to activate.",function() -- From mehScript <3 /but respects if u use another hotkey for thermal.
+    local aiming = PLAYER.IS_PLAYER_FREE_AIMING(players.user())
+    if GRAPHICS.GET_USINGSEETHROUGH() and not aiming then
+        if not menu.get_value(thermal_command) then
+            menu.trigger_command(thermal_command,'off')
+            GRAPHICS.SEETHROUGH_SET_MAX_THICKNESS(1)
+        end
+    elseif PAD.IS_CONTROL_JUST_PRESSED(38,38) then
+        if menu.get_value(thermal_command) or not aiming then
+            menu.trigger_command(thermal_command,"off")
+            GRAPHICS.SEETHROUGH_SET_MAX_THICKNESS(1)
+        else
+            menu.trigger_command(thermal_command,"on")
+            GRAPHICS.SEETHROUGH_SET_MAX_THICKNESS(50)
+        end
+    end
+end)
 
 local function ReportSessionKD(numPlayers)
     local topPlayers = {}
