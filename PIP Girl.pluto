@@ -6,9 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.162"
+local script_version = "1.163"
 
-local lust_upDate = {year = 2024, month = 5, day = 8, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 5, day = 13, hour = 6, min = 6, sec = 6}
 
 local startupmsg = "PIP Girl remembers your settings! :D\nSettings changed in Script will never be lost!\n\nAsuka Tech on top!"
 
@@ -2364,7 +2364,6 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     local fullfixed = 0
     local couldbefixed = 0
     local indistance = 0
-    local auto_light_path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Vehicle>Set vehicle light color automatically"
     local temp_auto_light = false
     local temp_door_lock = false
     
@@ -2372,7 +2371,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
         HUD.DELETE_WAYPOINTS_FROM_THIS_PLAYER()
     end
 
-    if menu.get_state(menu.ref_by_path(auto_light_path)) == "On" then
+    if menu.get_state(menu.ref_by_path(path_auto_vehicle_light_color)) == "On" then
         menu.trigger_commands("autocarlights off")
         temp_auto_light = true
     end
@@ -3580,12 +3579,12 @@ local shrineElements = {
     {var = "cdflag", conditions = {1627828183, v3.new(-1809.17, -135.1, 89.63), 0, 0, -13, nil, 13, false}},
     {var = "pc1", conditions = {2809166081, v3.new(-1801.90, -128.70, 77.99), 0, 0, 0, nil, 13, false}},
     {var = "pc2", conditions = {4151318791, v3.new(-1801.91, -128.70, 78.00), 0, 0, -13, nil, 13, false}},
-    {var = "neonbg1", conditions = {2488440396, v3.new(-1811.4531, -122.53303, 79.13), 0, 0, 223, nil, 0, false}},
-    {var = "neon1", conditions = {3289598046, v3.new(-1811.4531, -122.53303, 79.13), 0, 0, 223, nil, 0, false}},
-    {var = "neonbg2", conditions = {4247336133, v3.new(-1807.5847, -120.3335, 79.13), 0, 0, 145, nil, 0, false}},
-    {var = "neon2", conditions = {1086909509, v3.new(-1807.5847, -120.3335, 79.13), 0, 0, 145, nil, 0, false}},
-    {var = "neonbg3", conditions = {3927826330, v3.new(-1803.0785, -121.25219, 79.66), 90, 0, -28, nil, 0, false}},
-    {var = "neon3", conditions = {711334609, v3.new(-1803.0785, -121.25219, 79.66), 90, 0, -28, nil, 0, false}},
+    --{var = "neonbg1", conditions = {2488440396, v3.new(-1811.4531, -122.53303, 79.13), 0, 0, 223, nil, 0, false}},
+    --{var = "neon1", conditions = {3289598046, v3.new(-1811.4531, -122.53303, 79.13), 0, 0, 223, nil, 0, false}},
+    --{var = "neonbg2", conditions = {4247336133, v3.new(-1807.5847, -120.3335, 79.13), 0, 0, 145, nil, 0, false}},
+    --{var = "neon2", conditions = {1086909509, v3.new(-1807.5847, -120.3335, 79.13), 0, 0, 145, nil, 0, false}},
+    --{var = "neonbg3", conditions = {3927826330, v3.new(-1803.0785, -121.25219, 79.66), 90, 0, -28, nil, 0, false}},
+    --{var = "neon3", conditions = {711334609, v3.new(-1803.0785, -121.25219, 79.66), 90, 0, -28, nil, 0, false}},
 }
 local entityVars = {}
 for ipairs(shrineElements) as element do
@@ -5433,20 +5432,20 @@ if stored_pip_version == nil or stored_pip_version == "" or tonumber(stored_pip_
     stored_pip_version = os.time()
     writeToFilePIP(os.time(), store_dir..'version.txt')
 end
---if os.time() - tonumber(stored_pip_version) > 13 then
---    pipBooty = false
---    writeToFilePIP(os.time(), store_dir..'version.txt')
---    util.yield(1666)
---    util.restart_script()
---else
-pipBooty = true
-load_and_apply_config()
-util.create_thread(startupCheck)
-util.create_thread(startupConfig)
-util.create_thread(crashlistConfig)
-util.create_thread(userIdentification)
-menu.trigger_commands("antiadmin on")
-menu.set_state(menu.ref_by_path("Online>Session>Stand User Identification>For Strangers"), "Off")
---end
+if os.time() - tonumber(stored_pip_version) > 13 then
+    pipBooty = false
+    writeToFilePIP(os.time(), store_dir..'version.txt')
+    util.yield(1666)
+    util.restart_script()
+else
+    pipBooty = true
+    load_and_apply_config()
+    util.create_thread(startupCheck)
+    util.create_thread(startupConfig)
+    util.create_thread(crashlistConfig)
+    util.create_thread(userIdentification)
+    menu.trigger_commands("antiadmin on")
+    menu.set_state(menu.ref_by_path("Online>Session>Stand User Identification>For Strangers"), "Off")
+end
 
 util.keep_running()
