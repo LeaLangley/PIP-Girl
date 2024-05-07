@@ -4081,7 +4081,7 @@ local smartScriptHostMode = 1
 path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
     if transitionState(true) == 1 then
         if not CUTSCENE.IS_CUTSCENE_PLAYING() then
-            --[[if players.user() == players.get_host() or (players.user() == players.get_script_host() and (not isFriend(players.get_host()) and not isModder(players.get_host()))) then
+            if (players.user() == players.get_host() or (players.user() == players.get_script_host() and (not isFriend(players.get_host()) and not isModder(players.get_host())))) and smartScriptHostMode ~= 1 then
                 local playerList = {players.user()}
                 if smartScriptHostMode == 2 then
                     playerList = players.list_only(true, true, false, true)
@@ -4158,7 +4158,7 @@ path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"
                     end
                 end
                 if not isFriend(players.get_script_host()) then
-                    if not players.are_stats_ready(players.get_script_host()) then
+                    if not players.are_stats_ready(players.get_script_host()) and isModder(players.get_script_host()) then
                         get_ScriptHost()
                     end
                     if timeoutIgnore[players.get_script_host()] then
@@ -4168,21 +4168,17 @@ path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"
                     end
                 end
                 ::skipSSH::
-            else]]--
-            if not isFriend(players.get_script_host()) and players.get_host() == players.user() then
-                if not players.are_stats_ready(players.get_script_host()) and isModder(players.get_script_host()) then
-                    get_ScriptHost()
-                end
-            end
-            if isStuck(players.user()) then
-                util.yield(20666)
+            else
                 if isStuck(players.user()) then
-                    if players.user() ~= players.get_script_host() then
-                        get_ScriptHost()
-                        notify("You are loading too long.")
+                    util.yield(20666)
+                    if isStuck(players.user()) then
+                        if players.user() ~= players.get_script_host() then
+                            get_ScriptHost()
+                            notify("You are loading too long.")
+                        end
+                    else
+                        util.yield(13666)
                     end
-                else
-                    util.yield(13666)
                 end
             end
         else
