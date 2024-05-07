@@ -4566,6 +4566,7 @@ local function startupConfig()
                 rat_target:refByRelPath("Player Join Reactions>Block Incoming Syncs").value = noexceptions
                 rat_target:refByRelPath("Player Join Reactions>Block Outgoing Syncs").value = noexceptions
             end
+            util.yield()
         end
     end
 end
