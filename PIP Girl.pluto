@@ -1655,8 +1655,8 @@ local function getTrailer(vehicle)
     local trailer = memory.read_int(trailerPtr)
     return trailer
 end
-local asuka_tech_repair_amount = 0.6
-local asuka_tech_mission_repair_amount = 1.13
+local asuka_tech_repair_amount = 0060
+local asuka_tech_mission_repair_amount = 0113
 local asukaTechBlip = nil
 local asuka_tech_dirt = 1
 local asuka_tech_dirt_amount = 0.06
@@ -1859,11 +1859,11 @@ end)
 
 local Asuka_Tech = menu.list(Vehicle, 'Asuka Tech Settings', {}, 'Settings for Asuka Tech.', function(); end)
 
-path_asuka_tech_repair = menu.slider_float(Asuka_Tech, "Asuka Tech Repair Amount", {"asukatechrepairamount"}, "The amount that should be repaired per second, default 1.", 0, 13, asuka_tech_repair_amount, 1, function (new_value)
+path_asuka_tech_repair = menu.slider_float(Asuka_Tech, "Asuka Tech Repair Amount", {"asukatechrepairamount"}, "The amount that should be repaired per second, default 1.", 0, 1300, asuka_tech_repair_amount, 1, function (new_value)
     asuka_tech_repair_amount = new_value
 end)
 
-path_asuka_tech_mission_repair = menu.slider_float(Asuka_Tech, "Asuka Tech Mission Repair Amount", {"asukatechmissionrepairamount"}, "The amount that should be repaired per second if the vehicle is a mission entity, default 3.", 0, 13, asuka_tech_mission_repair_amount, 1, function (new_value)
+path_asuka_tech_mission_repair = menu.slider_float(Asuka_Tech, "Asuka Tech Mission Repair Amount", {"asukatechmissionrepairamount"}, "The amount that should be repaired per second if the vehicle is a mission entity, default 3.", 0, 1300, asuka_tech_mission_repair_amount, 1, function (new_value)
     asuka_tech_mission_repair_amount = new_value
 end)
 
