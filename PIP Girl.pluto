@@ -3810,13 +3810,7 @@ menu.action(SessionMisc, "Create \"Admin\" Group", {""}, "Create a group called 
 end)
 
 menu.action(SessionMisc, "Notify Highest K/D", {"notifykd"}, "Notify's u with the Hightest K/D Players.", function()
-    local numPlayers
-    if session_claimer_kd_target_players < 3 then
-        numPlayers = 3
-    else
-        numPlayers = session_claimer_kd_target_players
-    end
-    ReportSessionKD(numPlayers)
+    ReportSessionKD(3)
 end)
 
 local SessionInvite = menu.list(Session, 'Session invite', {}, 'Copy session invite, invite all friends or A Discord session invite hook.', function(); end)
@@ -4596,8 +4590,8 @@ local function crashlistConfig()
     end
 end
 
-local function sc_block(rid)
-    if not util.sc_is_blocked(rid) then
+local function sc_block(rid, pid)
+    if not util.sc_is_blocked(rid) or NETWORK.NETWORK_IS_PLAYER_BLOCKED_BY_ME(pid) then
         util.sc_block(rid)
     end
 end
@@ -4609,7 +4603,7 @@ local function add_in_blocking(pid)
             local rid = players.get_rockstar_id(pid)
             if rid ~= players.get_rockstar_id(players.user()) then
                 if session_type() == "Public" then
-                    sc_block(rid)
+                    sc_block(rid, pid)
                 end
             end
             if name ~= players.get_name(players.user()) then
