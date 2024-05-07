@@ -5164,8 +5164,6 @@ menu.action(menu.my_root(), "Activate Everyday Goodies", {"pggoodies"}, "Activat
         menu.trigger_commands("pgascut on")
         menu.trigger_commands("pgaaw on")
         menu.trigger_commands("antiadmin on")
-        menu.trigger_commands("antitraffic on")
-        menu.trigger_commands("softantitrafic on")
         menu.trigger_commands("pgssh on")
         menu.trigger_commands("ghostgod on")
         menu.trigger_commands("blockorb on")
