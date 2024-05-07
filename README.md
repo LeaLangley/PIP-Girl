@@ -4,7 +4,13 @@ But it's Public and everyone can use it, but ill leave here not much explanation
 Yet u can already enjoy all the features included , with many of them being quality of life improvments and more!
 (no toxic features , 100% improvements for you and others :3 )
 
-# [Download!](https://github.com/LeaLangley/PIP-Girl/releases/download/Stable/PIP_Girl.pluto)
+# Download via powershell!
+open powershell , paste in the code , it will download into stands scripts folder if everything went good. credits to Maddy
+```powershell
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/PIP%20Girl.pluto" -OutFile "$env:APPDATA\Stand\Lua Scripts\PIP Girl.pluto"; If ([System.IO.File]::Exists("$env:APPDATA\Stand\Lua Scripts\PIP Girl.pluto")) {"`r`nInstalled Successfully`r`n"} Else {"`r`nInstall Failed, Try Installing Manually`r`n"}
+```
+
+# [Download!](https://github.com/LeaLangley/PIP-Girl/releases/download/LatestAutoInstall/PIP-Girl.pluto)
 
 ## Licensing
 
