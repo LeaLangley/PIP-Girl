@@ -676,7 +676,6 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
         if not does_entity_exist(entity) then
             requestModel(hash, timeout)
             entity = entities.create_object(hash, locationV3)
-            util.yield(timeout)
             local startTime = os.time()
             while not does_entity_exist(entity) do
                 if os.time() - startTime > timeout or timeout == 0 then
@@ -687,6 +686,8 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
             requestControl(entity)
             entities.set_can_migrate(entity, false)
             ENTITY.FREEZE_ENTITY_POSITION(entity, true)
+            ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3, true, true, true)
+            ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
         end
         objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
         return entity
