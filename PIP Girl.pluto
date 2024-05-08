@@ -3584,12 +3584,12 @@ local shrineElements = {
     {var = "cdflag", conditions = {1627828183, v3.new(-1809.17, -135.1, 89.63), 0, 0, -13, nil, 13, false}},
     --{var = "pc1", conditions = {2809166081, v3.new(-1801.90, -128.70, 77.99), 0, 0, 0, nil, 13, false}},
     --{var = "pc2", conditions = {4151318791, v3.new(-1801.91, -128.70, 78.00), 0, 0, -13, nil, 13, false}},
-    --{var = "neonbg1", conditions = {2488440396, v3.new(-1811.4531, -122.53303, 79.13), 0, 0, 223, nil, 0, false}},
-    --{var = "neon1", conditions = {3289598046, v3.new(-1811.4531, -122.53303, 79.13), 0, 0, 223, nil, 0, false}},
-    --{var = "neonbg2", conditions = {4247336133, v3.new(-1807.5847, -120.3335, 79.13), 0, 0, 145, nil, 0, false}},
-    --{var = "neon2", conditions = {1086909509, v3.new(-1807.5847, -120.3335, 79.13), 0, 0, 145, nil, 0, false}},
-    --{var = "neonbg3", conditions = {3927826330, v3.new(-1803.0785, -121.25219, 79.66), 90, 0, -28, nil, 0, false}},
-    --{var = "neon3", conditions = {711334609, v3.new(-1803.0785, -121.25219, 79.66), 90, 0, -28, nil, 0, false}},
+    {var = "neonbg1", conditions = {2488440396, v3.new(-1811.4531, -122.53303, 79.13), 0, 0, 223, nil, 0, false}},
+    {var = "neon1", conditions = {3289598046, v3.new(-1811.4531, -122.53303, 79.13), 0, 0, 223, nil, 0, false}},
+    {var = "neonbg2", conditions = {4247336133, v3.new(-1807.5847, -120.3335, 79.13), 0, 0, 145, nil, 0, false}},
+    {var = "neon2", conditions = {1086909509, v3.new(-1807.5847, -120.3335, 79.13), 0, 0, 145, nil, 0, false}},
+    {var = "neonbg3", conditions = {3927826330, v3.new(-1803.0785, -121.25219, 79.66), 90, 0, -28, nil, 0, false}},
+    {var = "neon3", conditions = {711334609, v3.new(-1803.0785, -121.25219, 79.66), 90, 0, -28, nil, 0, false}},
 }
 local entityVars = {}
 for ipairs(shrineElements) as element do
