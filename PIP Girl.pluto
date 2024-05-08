@@ -633,6 +633,9 @@ local function allowSpawnCheck()
     if INTERIOR.GET_INTERIOR_FROM_ENTITY(players.user_ped()) ~= 0 and is_user_driving_vehicle(true) then
         return false
     end
+    if not NETWORK.NETWORK_IS_PLAYER_ACTIVE(players.user()) then
+        return false
+    end
     return true
 end
 
@@ -642,8 +645,6 @@ local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, ti
         local closestPlayer = players.user()
         local coordinatesCorrect = false
         local anglesCorrect = false
-        ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3, true, true, true)
-        ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
         ENTITY.FREEZE_ENTITY_POSITION(entity, true)
         if anti_collision then
             for players.list_only(true, true, false, true) as pid do
@@ -660,6 +661,8 @@ local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, ti
                     entities.set_can_migrate(entity, false)
                 else
                     entities.set_can_migrate(entity, true)
+                    ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3, true, true, true)
+                    ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
                 end
                 ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(closestPlayer), false)
             end
@@ -3548,8 +3551,8 @@ end, function()
 end)
 
 local shrineElements = {
-    {var = "vamp_candle_1", conditions = {199039671, v3.new(-1811.891, -128.114, 77.788), 0, 0, 0, nil, 13, false}},
-    {var = "vamp_candle_2", conditions = {199039671, v3.new(-1812.547, -126.255, 77.788), 0, 0, 0, nil, 13, false}},
+    --{var = "vamp_candle_1", conditions = {199039671, v3.new(-1811.891, -128.114, 77.788), 0, 0, 0, nil, 13, false}},
+    --{var = "vamp_candle_2", conditions = {199039671, v3.new(-1812.547, -126.255, 77.788), 0, 0, 0, nil, 13, false}},
     {var = "gravestone", conditions = {1667673456, v3.new(-1812.212, -127.127, 80.265), 0, 180, -70, nil, 13, false}},
     {var = "skull", conditions = {1925085104, v3.new(-1812.212, -127.127, 79.0), 0, 0, 110, nil, 13, false}},
     {var = "flowers_1", conditions = {2543019639, v3.new(-1813.49, -131.37, 77.86), 0, 0, 0, nil, 13, false}},
@@ -3563,8 +3566,8 @@ local shrineElements = {
     {var = "small_candle_8", conditions = {540021153, v3.new(-1801.09, -126.17, 78.01), 0, 0, 420, nil, 13, false}},
     {var = "small_candle_9", conditions = {540021153, v3.new(-1791.51, -139.59, 74.20), 0, 0, 666, nil, 13, false}},
     {var = "small_candle_10", conditions = {540021153, v3.new(-1794.39, -139.90, 74.20), 0, 0, 13, nil, 13, false}},
-    {var = "roses_1", conditions = {4241635085, v3.new(-1812.52, -125.81, 77.79), 0, 0, 420, nil, 13, false}},
-    {var = "roses_2", conditions = {4241635085, v3.new(-1811.66, -128.39, 77.79), 0, 0, 666, nil, 13, false}},
+    --{var = "roses_1", conditions = {4241635085, v3.new(-1812.52, -125.81, 77.79), 0, 0, 420, nil, 13, false}},
+    --{var = "roses_2", conditions = {4241635085, v3.new(-1811.66, -128.39, 77.79), 0, 0, 666, nil, 13, false}},
     {var = "firepit", conditions = {1125395611, v3.new(-1806.11, -130.02, 77.79), 0, 0, 0, nil, 13, false}},
     {var = "fire1", conditions = {3229200997, v3.new(-1806.1933, -130.1367, 77.90), 0, 0, 13, nil, 13, false}},
     {var = "flagpole1", conditions = {3539805879, v3.new(-1799.96, -126.12, 76.18), 0, 0, 0, nil, 13, false}},
@@ -3578,8 +3581,8 @@ local shrineElements = {
     {var = "flagpole8", conditions = {3539805879, v3.new(-1809.21, -134.90, 83.13), 0, 0, 0, nil, 13, false}},
     {var = "jpflag", conditions = {4116151441, v3.new(-1799.95, -126.3, 89.63), 0, 0, 13, nil, 13, false}},
     {var = "cdflag", conditions = {1627828183, v3.new(-1809.17, -135.1, 89.63), 0, 0, -13, nil, 13, false}},
-    {var = "pc1", conditions = {2809166081, v3.new(-1801.90, -128.70, 77.99), 0, 0, 0, nil, 13, false}},
-    {var = "pc2", conditions = {4151318791, v3.new(-1801.91, -128.70, 78.00), 0, 0, -13, nil, 13, false}},
+    --{var = "pc1", conditions = {2809166081, v3.new(-1801.90, -128.70, 77.99), 0, 0, 0, nil, 13, false}},
+    --{var = "pc2", conditions = {4151318791, v3.new(-1801.91, -128.70, 78.00), 0, 0, -13, nil, 13, false}},
     --{var = "neonbg1", conditions = {2488440396, v3.new(-1811.4531, -122.53303, 79.13), 0, 0, 223, nil, 0, false}},
     --{var = "neon1", conditions = {3289598046, v3.new(-1811.4531, -122.53303, 79.13), 0, 0, 223, nil, 0, false}},
     --{var = "neonbg2", conditions = {4247336133, v3.new(-1807.5847, -120.3335, 79.13), 0, 0, 145, nil, 0, false}},
