@@ -4591,8 +4591,8 @@ local function crashlistConfig()
     end
 end
 
-local function sc_block(rid, pid)
-    if not util.sc_is_blocked(rid) or NETWORK.NETWORK_IS_PLAYER_BLOCKED_BY_ME(pid) then
+local function sc_block(rid)
+    if not util.sc_is_blocked(rid) then
         util.sc_block(rid)
     end
 end
@@ -4604,7 +4604,7 @@ local function add_in_blocking(pid)
             local rid = players.get_rockstar_id(pid)
             if rid ~= players.get_rockstar_id(players.user()) then
                 if session_type() == "Public" then
-                    sc_block(rid, pid)
+                    sc_block(rid)
                 end
             end
             if name ~= players.get_name(players.user()) then
