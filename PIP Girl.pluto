@@ -5167,7 +5167,7 @@ menu.action(menu.my_root(), "Activate Everyday Goodies", {"pggoodies"}, "Activat
         menu.trigger_commands("blockorb on")
         menu.trigger_commands("blockkosatka on")
         menu.trigger_commands("blockterror on")
-        menu.trigger_commands("asukasshrine on")
+        --menu.trigger_commands("asukasshrine on")
     end)
 end)
 
