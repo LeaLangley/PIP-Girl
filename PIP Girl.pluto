@@ -3556,7 +3556,7 @@ local shrineElements = {
     --{var = "vamp_candle_2", conditions = {199039671, v3.new(-1812.547, -126.255, 77.788), 0, 0, 0, nil, 13, false}},
     --{var = "gravestone", conditions = {1667673456, v3.new(-1812.212, -127.127, 80.265), 0, 180, -70, nil, 13, false}},
     --{var = "skull", conditions = {1925085104, v3.new(-1812.212, -127.127, 79.0), 0, 0, 110, nil, 13, false}},
-    {var = "flowers_1", conditions = {2543019639, v3.new(-1813.49, -131.37, 77.86), 0, 0, 0, nil, 13, false}},
+    --{var = "flowers_1", conditions = {2543019639, v3.new(-1813.49, -131.37, 77.86), 0, 0, 0, nil, 13, false}},
     {var = "small_candle_1", conditions = {540021153, v3.new(-1811.97, -127.64, 77.81), 0, 0, 13, nil, 13, false}},
     {var = "small_candle_2", conditions = {540021153, v3.new(-1812.29, -126.63, 77.81), 0, 0, 420, nil, 13, false}},
     {var = "small_candle_3", conditions = {540021153, v3.new(-1811.35, -125.05, 77.81), 0, 0, 666, nil, 13, false}},
@@ -3592,9 +3592,6 @@ local shrineElements = {
     --{var = "neon3", conditions = {711334609, v3.new(-1803.0785, -121.25219, 79.66), 90, 0, -28, nil, 0, false}},
 }
 local entityVars = {}
-for ipairs(shrineElements) as element do
-    entityVars[element.var] = nil
-end
 local Asuka_shrine_blip = nil
 path_asukas_shrine = menu.toggle_loop(SessionWorld, "Asuka's Shrine", {"asukasshrine"}, "Shows Asuka's Shrine, Perfect for a hangout spot or Deep thinking.\nNormal its a calm and mystical place only lit by fire and candles , once entering a arcade u unlock the bright neon lights of the city~", function()
     util.yield(1666)
