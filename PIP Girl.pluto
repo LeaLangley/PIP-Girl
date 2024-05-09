@@ -3614,13 +3614,13 @@ path_asukas_shrine = menu.toggle_loop(SessionWorld, "Asuka's Shrine", {"asukassh
         else
             Asuka_shrine_blip = nil
         end
-        for ipairs(shrineElements) as element do
-            if allowSpawnCheck() then
-                local entityVar, conditions = element.var, element.conditions
-                entityVars[entityVar] = SpawnCheck(entityVars[entityVar], table.unpack(conditions))
-            end
-            util.yield(113)
-        end
+        --for ipairs(shrineElements) as element do
+        --    if allowSpawnCheck() then
+        --        local entityVar, conditions = element.var, element.conditions
+        --        entityVars[entityVar] = SpawnCheck(entityVars[entityVar], table.unpack(conditions))
+        --    end
+        --    util.yield(113)
+        --end
     else
         util.yield(6666)
     end
