@@ -5254,7 +5254,7 @@ local function load_and_apply_config()
         if decode_status then
             for store, path in pairs(data_cfg) do
                 local value = decoded_data[store]
-                if value ~= nil and value ~= false then
+                if value ~= nil then
                     menu.set_value(path, value)
                 end
                 util.yield()
