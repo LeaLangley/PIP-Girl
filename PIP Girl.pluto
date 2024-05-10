@@ -641,12 +641,9 @@ end
 
 local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
     if allowSpawnCheck() then
-        local closestDistance = nil
-        local closestPlayer = players.user()
-        local coordinatesCorrect = false
-        local anglesCorrect = false
-        ENTITY.FREEZE_ENTITY_POSITION(entity, true)
         if anti_collision then
+            local closestDistance = nil
+            local closestPlayer = players.user()
             for players.list_only(true, true, false, true) as pid do
                 local distance = SYSTEM.VDIST(locationV3, players.get_position(pid))
                 if not closestDistance or distance < closestDistance then
@@ -665,6 +662,7 @@ local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, ti
                     ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
                 end
                 ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(closestPlayer), false)
+                ENTITY.FREEZE_ENTITY_POSITION(entity, true)
             end
         end
     end
@@ -3573,11 +3571,11 @@ local shrineElements = {
     {var = "fire1", conditions = {3229200997, v3.new(-1806.1933, -130.1367, 77.90), 0, 0, 13, nil, 13, false}},
     {var = "flagpole1", conditions = {3539805879, v3.new(-1799.96, -126.12, 76.18), 0, 0, 0, nil, 13, false}},
     {var = "flagpole2", conditions = {3539805879, v3.new(-1809.21, -134.90, 76.72), 0, 0, 0, nil, 13, false}},
-    {var = "flagpole3", conditions = {3539805879, v3.new(-1805.41, -118.65, 76.31), 0, 0, 0, nil, 13, false}},
-    {var = "flagpole4", conditions = {3539805879, v3.new(-1804.57, -118.48, 75.96), 0, 0, 0, nil, 13, false}},
-    {var = "flagpole5", conditions = {3539805879, v3.new(-1815.91, -123.55, 75.82), 0, 0, 0, nil, 13, false}},
-    {var = "flagpole6", conditions = {3539805879, v3.new(-1815.41, -123.35, 76.11), 0, 0, 0, nil, 13, false}},
-    {var = "canopy", conditions = {1559093072, v3.new(-1808.43, -125.63, 83.41), 0, 0, 141, nil, 13, false}},
+    --{var = "flagpole3", conditions = {3539805879, v3.new(-1805.41, -118.65, 76.31), 0, 0, 0, nil, 13, false}},
+    --{var = "flagpole4", conditions = {3539805879, v3.new(-1804.57, -118.48, 75.96), 0, 0, 0, nil, 13, false}},
+    --{var = "flagpole5", conditions = {3539805879, v3.new(-1815.91, -123.55, 75.82), 0, 0, 0, nil, 13, false}},
+    --{var = "flagpole6", conditions = {3539805879, v3.new(-1815.41, -123.35, 76.11), 0, 0, 0, nil, 13, false}},
+    --{var = "canopy", conditions = {1559093072, v3.new(-1808.43, -125.63, 83.41), 0, 0, 141, nil, 13, false}},
     {var = "flagpole7", conditions = {3539805879, v3.new(-1799.96, -126.12, 83.13), 0, 0, 0, nil, 13, false}},
     {var = "flagpole8", conditions = {3539805879, v3.new(-1809.21, -134.90, 83.13), 0, 0, 0, nil, 13, false}},
     {var = "jpflag", conditions = {4116151441, v3.new(-1799.95, -126.3, 89.63), 0, 0, 13, nil, 13, false}},
