@@ -560,10 +560,8 @@ local function requestModel(hash, timeout)
             end
             util.yield(13)
         end
-        if STREAMING.HAS_MODEL_LOADED(hash) then
-            return
-        end
     end
+    return
 end
 
 local requestControl = entities.request_control
@@ -639,8 +637,17 @@ local function allowSpawnCheck()
     return true
 end
 
-local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
+local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
     if allowSpawnCheck() then
+        if order == nil then order = 2 end
+        if not does_entity_exist(entity) then
+            requestModel(hash, timeout)
+            entity = entities.create_object(hash, locationV3)
+            ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3, true, true, true)
+            ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
+            ENTITY.FREEZE_ENTITY_POSITION(entity, true)
+            entities.set_can_migrate(entity, false)
+        end
         if anti_collision then
             local closestDistance = nil
             local closestPlayer = players.user()
@@ -665,29 +672,6 @@ local function objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, ti
                 ENTITY.FREEZE_ENTITY_POSITION(entity, true)
             end
         end
-    end
-end
-
-local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
-    if allowSpawnCheck() then
-        if order == nil then order = 2 end
-        if not does_entity_exist(entity) then
-            requestModel(hash, timeout)
-            entity = entities.create_object(hash, locationV3)
-            local startTime = os.time()
-            while not does_entity_exist(entity) do
-                if os.time() - startTime > timeout or timeout == 0 then
-                    break
-                end
-                util.yield(timeout)
-            end
-            requestControl(entity)
-            entities.set_can_migrate(entity, false)
-            ENTITY.FREEZE_ENTITY_POSITION(entity, true)
-            ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3, true, true, true)
-            ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
-        end
-        objectCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
         return entity
     end
 end
