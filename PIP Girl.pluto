@@ -2752,7 +2752,7 @@ path_auto_skip_cutscene = menu.toggle_loop(Game, "Auto Skip Cutscene", {"pgascut
         local skipCutscene = true
 
         for i, position in pairs(avoidCutsceneSkipHere) do
-            local distance = playerPosition:distance(position)
+            local distance = SYSTEM.VDIST(playerPosition.x, playerPosition.y, playerPosition.z, position.x, position.y, position.z)
             local radiusSkip = 25
             distance = math.floor(distance + 0.5)
         
