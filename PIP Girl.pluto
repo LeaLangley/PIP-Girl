@@ -653,7 +653,7 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
             local closestDistance = nil
             local closestPlayer = players.user()
             for players.list_only(true, true, false, true) as pid do
-                local distance = SYSTEM.VDIST(locationV3, players.get_position(pid))
+                local distance = locationV3:distance(players.get_position(pid))
                 if not closestDistance or distance < closestDistance then
                     closestDistance = distance
                     closestPlayer = pid
@@ -2383,7 +2383,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
             goto continue_loop
         end
         local vehiclePosition = ENTITY.GET_ENTITY_COORDS(vehicle)
-        local distance = SYSTEM.VDIST(playerPosition.x, playerPosition.y, playerPosition.z, vehiclePosition.x, vehiclePosition.y, vehiclePosition.z)
+        local distance = playerPosition:distance(vehiclePosition)
 
         if distance <= 100.0 then
             indistance = indistance + 1
@@ -2752,7 +2752,7 @@ path_auto_skip_cutscene = menu.toggle_loop(Game, "Auto Skip Cutscene", {"pgascut
         local skipCutscene = true
 
         for i, position in pairs(avoidCutsceneSkipHere) do
-            local distance = SYSTEM.VDIST(playerPosition.x, playerPosition.y, playerPosition.z, position.x, position.y, position.z)
+            local distance = playerPosition:distance(position)
             local radiusSkip = 25
             distance = math.floor(distance + 0.5)
         
@@ -2839,7 +2839,7 @@ path_auto_accept_warning = menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw
             local skipWarning = true
             local playerPosition = players.get_position(players.user())
             for i, position in pairs(avoidWarningSkipHere) do
-                local distance = SYSTEM.VDIST(playerPosition.x, playerPosition.y, playerPosition.z, position.x, position.y, position.z)
+                local distance = playerPosition:distance(position)
                 local radiusWarning = 25
                 distance = math.floor(distance + 0.5)
             
@@ -2969,7 +2969,7 @@ local function espOnPlayer(pid, namesync)
     local targetped = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)
     local ppos = ENTITY.GET_ENTITY_COORDS(targetped)
     local mypos = players.get_cam_pos(players.user())
-    local vdist = SYSTEM.VDIST(mypos.x, mypos.y, mypos.z, ppos.x, ppos.y, ppos.z)
+    local vdist = mypos:distance(ppos)
     local show_distance = 0
     if not PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) then
         show_distance = 420
