@@ -556,21 +556,19 @@ local function requestModel(hash, timeout)
         local startTime = os.time()
         while not STREAMING.HAS_MODEL_LOADED(hash) do
             if os.time() - startTime > timeout or timeout == 0 then
-                break
+                return false
             end
-            util.yield(13)
+            util.yield(timeout)
         end
     end
-    return
+    return true
 end
 
 local requestControl = entities.request_control
 
 local function does_entity_exist(entity)
-    if entity then
-        if ENTITY.DOES_ENTITY_EXIST(entity) then
-            return true
-        end
+    if entity and entity ~= INVALID_GUID and ENTITY.DOES_ENTITY_EXIST(entity)then
+        return true
     end
     return false
 end
@@ -641,14 +639,17 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
     if allowSpawnCheck() then
         if order == nil then order = 2 end
         if not does_entity_exist(entity) then
-            requestModel(hash, timeout)
-            entity = entities.create_object(hash, locationV3)
-            ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3, true, true, true)
-            ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
-            ENTITY.FREEZE_ENTITY_POSITION(entity, true)
-            entities.set_can_migrate(entity, false)
+            if requestModel(hash, timeout) then
+                entity = entities.create_object(hash, locationV3)
+                if entity ~= INVALID_GUID then
+                    entities.set_can_migrate(entity, false)
+                    ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3, true, true, true)
+                    ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
+                    ENTITY.FREEZE_ENTITY_POSITION(entity, true)
+                end
+            end
         end
-        if anti_collision then
+        if anti_collision and does_entity_exist(entity) then
             local closestDistance = nil
             local closestPlayer = players.user()
             for players.list_only(true, true, false, true) as pid do
@@ -660,16 +661,16 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
                 util.yield(timeout)
             end
             if closestPlayer then
-                requestControl(entity)
                 if closestPlayer == players.user() then
+                    requestControl(entity)
                     entities.set_can_migrate(entity, false)
-                else
-                    entities.set_can_migrate(entity, true)
                     ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3, true, true, true)
                     ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
+                    ENTITY.FREEZE_ENTITY_POSITION(entity, true)
+                else
+                    entities.set_can_migrate(entity, true)
                 end
                 ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(closestPlayer), false)
-                ENTITY.FREEZE_ENTITY_POSITION(entity, true)
             end
         end
         return entity
