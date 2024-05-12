@@ -3579,7 +3579,7 @@ local Asuka_shrine_blip = nil
 path_asukas_shrine = menu.toggle_loop(SessionWorld, "Asuka's Shrine", {"asukasshrine"}, "Shows Asuka's Shrine, Perfect for a hangout spot or Deep thinking.\nNormal its a calm and mystical place only lit by fire and candles , once entering a arcade u unlock the bright neon lights of the city~", function()
     util.yield(1666)
     if allowSpawnCheck() then
-        if transitionState(true) <3 then
+        if transitionState(true) == 1 then
             if not Asuka_shrine_blip or not HUD.DOES_BLIP_EXIST(Asuka_shrine_blip) then
                 Asuka_shrine_blip = HUD.ADD_BLIP_FOR_COORD(-1812.212, -127.127, 80.265)
                 HUD.SET_BLIP_SPRITE(Asuka_shrine_blip, "617")
