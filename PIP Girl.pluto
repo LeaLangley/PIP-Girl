@@ -2839,7 +2839,7 @@ path_auto_accept_warning = menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw
             local skipWarning = true
             local playerPosition = players.get_position(players.user())
             for i, position in pairs(avoidWarningSkipHere) do
-                local distance = playerPosition:distance(position)
+                local distance = SYSTEM.VDIST(playerPosition.x, playerPosition.y, playerPosition.z, position.x, position.y, position.z)
                 local radiusWarning = 25
                 distance = math.floor(distance + 0.5)
             
