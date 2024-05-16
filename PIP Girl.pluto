@@ -8,7 +8,7 @@ __________._____________    ________.__       .__
 
 local script_version = "1.166"
 
-local lust_upDate = {year = 2024, month = 5, day = 13, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 5, day = 18, hour = 6, min = 6, sec = 6}
 
 local startupmsg = "PIP Girl remembers your settings! :D\nSettings changed in Script will never be lost!\n\nAsuka Tech on top!"
 
