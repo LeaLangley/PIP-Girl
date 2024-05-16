@@ -643,7 +643,7 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
                 if networked then
                     entity = entities.create_object(hash, locationV3)
                 else
-                    entity = ENTITY.CREATE_OBJECT_NO_OFFSET(hash, locationV3.x, locationV3.y, locationV3.z, false, true, false)
+                    entity = OBJECT.CREATE_OBJECT_NO_OFFSET(hash, locationV3, false, true, false)
                 end
                 if does_entity_exist(entity) then
                     if networked then
