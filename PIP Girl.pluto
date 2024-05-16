@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.166"
+local script_version = "1.167"
 
 local lust_upDate = {year = 2024, month = 5, day = 18, hour = 6, min = 6, sec = 6}
 
@@ -635,14 +635,20 @@ local function allowSpawnCheck()
     return true
 end
 
-local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision)
+local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision, networked)
     if allowSpawnCheck() then
         if order == nil then order = 2 end
         if not does_entity_exist(entity) then
             if requestModel(hash, timeout) then
-                entity = entities.create_object(hash, locationV3)
-                if entity ~= INVALID_GUID then
-                    entities.set_can_migrate(entity, false)
+                if networked then
+                    entity = entities.create_object(hash, locationV3)
+                else
+                    entity = ENTITY.CREATE_OBJECT_NO_OFFSET(hash, locationV3, false, true, false)
+                end
+                if does_entity_exist(entity) then
+                    if networked then
+                        entities.set_can_migrate(entity, false)
+                    end
                     ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3, true, true, true)
                     ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
                     ENTITY.FREEZE_ENTITY_POSITION(entity, true)
@@ -650,27 +656,31 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
             end
         end
         if anti_collision and does_entity_exist(entity) then
-            local closestDistance = nil
-            local closestPlayer = players.user()
-            for players.list_only(true, true, false, true) as pid do
-                local distance = locationV3:distance(players.get_position(pid))
-                if not closestDistance or distance < closestDistance then
-                    closestDistance = distance
-                    closestPlayer = pid
+            if not networked then
+                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, players.user_ped(), false)
+            else
+                local closestDistance = nil
+                local closestPlayer = players.user()
+                for players.list_only(true, true, false, true) as pid do
+                    local distance = locationV3:distance(players.get_position(pid))
+                    if not closestDistance or distance < closestDistance then
+                        closestDistance = distance
+                        closestPlayer = pid
+                    end
+                    util.yield(timeout)
                 end
-                util.yield(timeout)
-            end
-            if closestPlayer then
-                if closestPlayer == players.user() then
-                    requestControl(entity)
-                    entities.set_can_migrate(entity, false)
-                    ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3, true, true, true)
-                    ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
-                    ENTITY.FREEZE_ENTITY_POSITION(entity, true)
-                else
-                    entities.set_can_migrate(entity, true)
+                if closestPlayer then
+                    if closestPlayer == players.user() then
+                        requestControl(entity)
+                        entities.set_can_migrate(entity, false)
+                        ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3, true, true, true)
+                        ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
+                        ENTITY.FREEZE_ENTITY_POSITION(entity, true)
+                    else
+                        entities.set_can_migrate(entity, true)
+                    end
+                    ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(closestPlayer), false)
                 end
-                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(closestPlayer), false)
             end
         end
         return entity
@@ -3465,10 +3475,10 @@ local orbRoomDoorDMG = nil
 
 path_block_orb_room = menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockorb"}, "Blocks the Entrance for the Orb Room", function()
     if allowSpawnCheck() then
-        orbRoomGlass = SpawnCheck(orbRoomGlass, 2465657597, v3.new(335.882996, 4833.833008, -59.023998), 0, 0, 125, nil, 13, true)
-        orbRoomTable = SpawnCheck(orbRoomTable, 81317377, v3.new(328.2, 4829, -58.9), 0, 0, 0, nil, 13, true)
-        orbRoomTable2 = SpawnCheck(orbRoomTable2, 81317377, v3.new(328.2, 4829, -59.4), 0, 0, 0, nil, 13, true)
-        orbRoomDoorDMG = SpawnCheck(orbRoomDoorDMG, 3109994857, v3.new(337.611, 4832.954, -58.595), 10, 0, 125, nil, 13, false)
+        orbRoomGlass = SpawnCheck(orbRoomGlass, 2465657597, v3.new(335.882996, 4833.833008, -59.023998), 0, 0, 125, nil, 13, true, true)
+        orbRoomTable = SpawnCheck(orbRoomTable, 81317377, v3.new(328.2, 4829, -58.9), 0, 0, 0, nil, 13, true, true)
+        orbRoomTable2 = SpawnCheck(orbRoomTable2, 81317377, v3.new(328.2, 4829, -59.4), 0, 0, 0, nil, 13, true, true)
+        orbRoomDoorDMG = SpawnCheck(orbRoomDoorDMG, 3109994857, v3.new(337.611, 4832.954, -58.595), 10, 0, 125, nil, 13, false, true)
         if transitionState(true) <3 then
             for players.list_except(true) as pid do
                 local players_position = players.get_position(pid)
@@ -3511,8 +3521,8 @@ local kosatkaMissile1 = nil
 local kosatkaMissile2 = nil
 path_block_kosatka_missile_terminal = menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {"blockkosatka"}, "Blocks the Missile terminal", function()
     if allowSpawnCheck() then
-        kosatkaMissile1 = SpawnCheck(kosatkaMissile1, 1228076166, v3.new(1558.9, 387.111, -50.666), 0, 0, 0, nil, 13, true)
-        kosatkaMissile2 = SpawnCheck(kosatkaMissile2, 1228076166, v3.new(1558.9, 388.777, -50.666), 0, 0, 0, nil, 13, true)
+        kosatkaMissile1 = SpawnCheck(kosatkaMissile1, 1228076166, v3.new(1558.9, 387.111, -50.666), 0, 0, 0, nil, 13, true, true)
+        kosatkaMissile2 = SpawnCheck(kosatkaMissile2, 1228076166, v3.new(1558.9, 388.777, -50.666), 0, 0, 0, nil, 13, true, true)
     else
         util.yield(6666)
     end
@@ -3525,7 +3535,7 @@ end)
 local antiTerrorGlass = nil
 path_anit_terrorbyte = menu.toggle_loop(SessionWorld, "Anti Terrorbyte", {"blockterror"}, "Blocks the MK2 acces", function()
     if allowSpawnCheck() then
-        antiTerrorGlass = SpawnCheck(antiTerrorGlass, 2465657597, v3.new(-1420.666, -3014.579, -79.0), 0, 0, -20, nil, 13, true)
+        antiTerrorGlass = SpawnCheck(antiTerrorGlass, 2465657597, v3.new(-1420.666, -3014.579, -79.0), 0, 0, -20, nil, 13, true, true)
     else
         util.yield(6666)
     end
@@ -3535,44 +3545,44 @@ end, function()
 end)
 
 local shrineElements = {
-    --{var = "vamp_candle_1", conditions = {199039671, v3.new(-1811.891, -128.114, 77.788), 0, 0, 0, nil, 13, false}},
-    --{var = "vamp_candle_2", conditions = {199039671, v3.new(-1812.547, -126.255, 77.788), 0, 0, 0, nil, 13, false}},
-    --{var = "gravestone", conditions = {1667673456, v3.new(-1812.212, -127.127, 80.265), 0, 180, -70, nil, 13, false}},
-    --{var = "skull", conditions = {1925085104, v3.new(-1812.212, -127.127, 79.0), 0, 0, 110, nil, 13, false}},
-    --{var = "flowers_1", conditions = {2543019639, v3.new(-1813.49, -131.37, 77.86), 0, 0, 0, nil, 13, false}},
-    --{var = "small_candle_1", conditions = {540021153, v3.new(-1811.97, -127.64, 77.81), 0, 0, 13, nil, 13, false}},
-    --{var = "small_candle_2", conditions = {540021153, v3.new(-1812.29, -126.63, 77.81), 0, 0, 420, nil, 13, false}},
-    --{var = "small_candle_3", conditions = {540021153, v3.new(-1811.35, -125.05, 77.81), 0, 0, 666, nil, 13, false}},
-    --{var = "small_candle_4", conditions = {540021153, v3.new(-1808.91, -122.75, 77.81), 0, 0, 13, nil, 13, false}},
-    --{var = "small_candle_5", conditions = {540021153, v3.new(-1805.61, -122.23, 77.81), 0, 0, 420, nil, 13, false}},
-    --{var = "small_candle_6", conditions = {540021153, v3.new(-1802.71, -123.86, 77.81), 0, 0, 666, nil, 13, false}},
-    --{var = "small_candle_7", conditions = {540021153, v3.new(-1802.16, -128.65, 78.01), 0, 0, 13, nil, 13, false}},
-    --{var = "small_candle_8", conditions = {540021153, v3.new(-1801.09, -126.17, 78.01), 0, 0, 420, nil, 13, false}},
-    --{var = "small_candle_9", conditions = {540021153, v3.new(-1791.51, -139.59, 74.20), 0, 0, 666, nil, 13, false}},
-    --{var = "small_candle_10", conditions = {540021153, v3.new(-1794.39, -139.90, 74.20), 0, 0, 13, nil, 13, false}},
-    --{var = "roses_1", conditions = {4241635085, v3.new(-1812.52, -125.81, 77.79), 0, 0, 420, nil, 13, false}},
-    --{var = "roses_2", conditions = {4241635085, v3.new(-1811.66, -128.39, 77.79), 0, 0, 666, nil, 13, false}},
-    {var = "firepit", conditions = {1125395611, v3.new(-1806.11, -130.02, 77.79), 0, 0, 0, nil, 13, false}},
-    {var = "fire1", conditions = {3229200997, v3.new(-1806.1933, -130.1367, 77.90), 0, 0, 13, nil, 13, false}},
-    {var = "flagpole1", conditions = {3539805879, v3.new(-1799.96, -126.12, 76.18), 0, 0, 0, nil, 13, false}},
-    {var = "flagpole2", conditions = {3539805879, v3.new(-1809.21, -134.90, 76.72), 0, 0, 0, nil, 13, false}},
-    --{var = "flagpole3", conditions = {3539805879, v3.new(-1805.41, -118.65, 76.31), 0, 0, 0, nil, 13, false}},
-    --{var = "flagpole4", conditions = {3539805879, v3.new(-1804.57, -118.48, 75.96), 0, 0, 0, nil, 13, false}},
-    --{var = "flagpole5", conditions = {3539805879, v3.new(-1815.91, -123.55, 75.82), 0, 0, 0, nil, 13, false}},
-    --{var = "flagpole6", conditions = {3539805879, v3.new(-1815.41, -123.35, 76.11), 0, 0, 0, nil, 13, false}},
-    --{var = "canopy", conditions = {1559093072, v3.new(-1808.43, -125.63, 83.41), 0, 0, 141, nil, 13, false}},
-    {var = "flagpole7", conditions = {3539805879, v3.new(-1799.96, -126.12, 83.13), 0, 0, 0, nil, 13, false}},
-    {var = "flagpole8", conditions = {3539805879, v3.new(-1809.21, -134.90, 83.13), 0, 0, 0, nil, 13, false}},
-    {var = "jpflag", conditions = {4116151441, v3.new(-1799.95, -126.3, 89.63), 0, 0, 13, nil, 13, false}},
-    {var = "cdflag", conditions = {1627828183, v3.new(-1809.17, -135.1, 89.63), 0, 0, -13, nil, 13, false}},
-    --{var = "pc1", conditions = {2809166081, v3.new(-1801.90, -128.70, 77.99), 0, 0, 0, nil, 13, false}},
-    --{var = "pc2", conditions = {4151318791, v3.new(-1801.91, -128.70, 78.00), 0, 0, -13, nil, 13, false}},
-    --{var = "neonbg1", conditions = {2488440396, v3.new(-1811.4531, -122.53303, 79.13), 0, 0, 223, nil, 0, false}},
-    --{var = "neon1", conditions = {3289598046, v3.new(-1811.4531, -122.53303, 79.13), 0, 0, 223, nil, 0, false}},
-    --{var = "neonbg2", conditions = {4247336133, v3.new(-1807.5847, -120.3335, 79.13), 0, 0, 145, nil, 0, false}},
-    --{var = "neon2", conditions = {1086909509, v3.new(-1807.5847, -120.3335, 79.13), 0, 0, 145, nil, 0, false}},
-    --{var = "neonbg3", conditions = {3927826330, v3.new(-1803.0785, -121.25219, 79.66), 90, 0, -28, nil, 0, false}},
-    --{var = "neon3", conditions = {711334609, v3.new(-1803.0785, -121.25219, 79.66), 90, 0, -28, nil, 0, false}},
+    {var = "vamp_candle_1", conditions = {199039671, v3.new(-1811.891, -128.114, 77.788), 0, 0, 0, nil, 13, false, false}},
+    {var = "vamp_candle_2", conditions = {199039671, v3.new(-1812.547, -126.255, 77.788), 0, 0, 0, nil, 13, false, false}},
+    {var = "gravestone", conditions = {1667673456, v3.new(-1812.212, -127.127, 80.265), 0, 180, -70, nil, 13, false, false}},
+    {var = "skull", conditions = {1925085104, v3.new(-1812.212, -127.127, 79.0), 0, 0, 110, nil, 13, false, false}},
+    {var = "flowers_1", conditions = {2543019639, v3.new(-1813.49, -131.37, 77.86), 0, 0, 0, nil, 13, false, false}},
+    {var = "small_candle_1", conditions = {540021153, v3.new(-1811.97, -127.64, 77.81), 0, 0, 13, nil, 13, false, false}},
+    {var = "small_candle_2", conditions = {540021153, v3.new(-1812.29, -126.63, 77.81), 0, 0, 420, nil, 13, false, false}},
+    {var = "small_candle_3", conditions = {540021153, v3.new(-1811.35, -125.05, 77.81), 0, 0, 666, nil, 13, false, false}},
+    {var = "small_candle_4", conditions = {540021153, v3.new(-1808.91, -122.75, 77.81), 0, 0, 13, nil, 13, false, false}},
+    {var = "small_candle_5", conditions = {540021153, v3.new(-1805.61, -122.23, 77.81), 0, 0, 420, nil, 13, false, false}},
+    {var = "small_candle_6", conditions = {540021153, v3.new(-1802.71, -123.86, 77.81), 0, 0, 666, nil, 13, false, false}},
+    {var = "small_candle_7", conditions = {540021153, v3.new(-1802.16, -128.65, 78.01), 0, 0, 13, nil, 13, false, false}},
+    {var = "small_candle_8", conditions = {540021153, v3.new(-1801.09, -126.17, 78.01), 0, 0, 420, nil, 13, false, false}},
+    {var = "small_candle_9", conditions = {540021153, v3.new(-1791.51, -139.59, 74.20), 0, 0, 666, nil, 13, false, false}},
+    {var = "small_candle_10", conditions = {540021153, v3.new(-1794.39, -139.90, 74.20), 0, 0, 13, nil, 13, false, false}},
+    {var = "roses_1", conditions = {4241635085, v3.new(-1812.52, -125.81, 77.79), 0, 0, 420, nil, 13, false, false}},
+    {var = "roses_2", conditions = {4241635085, v3.new(-1811.66, -128.39, 77.79), 0, 0, 666, nil, 13, false, false}},
+    {var = "firepit", conditions = {1125395611, v3.new(-1806.11, -130.02, 77.79), 0, 0, 0, nil, 13, false, false}},
+    {var = "fire1", conditions = {3229200997, v3.new(-1806.1933, -130.1367, 77.90), 0, 0, 13, nil, 13, false, false}},
+    {var = "flagpole1", conditions = {3539805879, v3.new(-1799.96, -126.12, 76.18), 0, 0, 0, nil, 13, false, true}},
+    {var = "flagpole2", conditions = {3539805879, v3.new(-1809.21, -134.90, 76.72), 0, 0, 0, nil, 13, false, true}},
+    {var = "flagpole3", conditions = {3539805879, v3.new(-1805.41, -118.65, 76.31), 0, 0, 0, nil, 13, false, false}},
+    {var = "flagpole4", conditions = {3539805879, v3.new(-1804.57, -118.48, 75.96), 0, 0, 0, nil, 13, false, false}},
+    {var = "flagpole5", conditions = {3539805879, v3.new(-1815.91, -123.55, 75.82), 0, 0, 0, nil, 13, false, false}},
+    {var = "flagpole6", conditions = {3539805879, v3.new(-1815.41, -123.35, 76.11), 0, 0, 0, nil, 13, false, false}},
+    {var = "canopy", conditions = {1559093072, v3.new(-1808.43, -125.63, 83.41), 0, 0, 141, nil, 13, false, false}},
+    {var = "flagpole7", conditions = {3539805879, v3.new(-1799.96, -126.12, 83.13), 0, 0, 0, nil, 13, false, true}},
+    {var = "flagpole8", conditions = {3539805879, v3.new(-1809.21, -134.90, 83.13), 0, 0, 0, nil, 13, false, true}},
+    {var = "jpflag", conditions = {4116151441, v3.new(-1799.95, -126.3, 89.63), 0, 0, 13, nil, 13, false, true}},
+    {var = "cdflag", conditions = {1627828183, v3.new(-1809.17, -135.1, 89.63), 0, 0, -13, nil, 13, false, true}},
+    {var = "pc1", conditions = {2809166081, v3.new(-1801.90, -128.70, 77.99), 0, 0, 0, nil, 13, false, false}},
+    {var = "pc2", conditions = {4151318791, v3.new(-1801.91, -128.70, 78.00), 0, 0, -13, nil, 13, false, false}},
+    {var = "neonbg1", conditions = {2488440396, v3.new(-1811.4531, -122.53303, 79.13), 0, 0, 223, nil, 0, false, false}},
+    {var = "neon1", conditions = {3289598046, v3.new(-1811.4531, -122.53303, 79.13), 0, 0, 223, nil, 0, false, false}},
+    {var = "neonbg2", conditions = {4247336133, v3.new(-1807.5847, -120.3335, 79.13), 0, 0, 145, nil, 0, false, false}},
+    {var = "neon2", conditions = {1086909509, v3.new(-1807.5847, -120.3335, 79.13), 0, 0, 145, nil, 0, false, false}},
+    {var = "neonbg3", conditions = {3927826330, v3.new(-1803.0785, -121.25219, 79.66), 90, 0, -28, nil, 0, false, false}},
+    {var = "neon3", conditions = {711334609, v3.new(-1803.0785, -121.25219, 79.66), 90, 0, -28, nil, 0, false, false}},
 }
 local entityVars = {}
 local Asuka_shrine_blip = nil
