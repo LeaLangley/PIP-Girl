@@ -2094,7 +2094,7 @@ path_vehicle_light_rhythm_rapid_slowdown = menu.toggle_loop(Vehicle_Light, "Flas
     if is_user_driving_vehicle(true) then
         local speedVector = GET_ENTITY_SPEED_VECTOR(vehicle, true)
         local forwardSpeedKmh = math.abs(speedVector.y) * 3.6
-        if PAD.GET_CONTROL_VALUE(2, 72) > 213 or PAD.IS_CONTROL_PRESSED(2, 76) then
+        if GET_CONTROL_VALUE(2, 72) > 213 or IS_CONTROL_PRESSED(2, 76) then
             if speedVector.y > 0 and forwardSpeedKmh > 13 then
                 for _ = 1, 3 do
                     SET_VEHICLE_LIGHTS(vehicle, 1)
@@ -2713,7 +2713,7 @@ path_auto_interact = menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'},
         }
         for ipairs(interactionsE) as label do
             if IS_HELP_MSG_DISPLAYED(label) then
-                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 51, 1)
+                SET_CONTROL_VALUE_NEXT_FRAME(2, 51, 1)
                 break
             end
         end
@@ -2722,7 +2722,7 @@ path_auto_interact = menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'},
         }
         for ipairs(interactionsX) as label do
             if IS_HELP_MSG_DISPLAYED(label) then
-                PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 51, 1)
+                SET_CONTROL_VALUE_NEXT_FRAME(2, 51, 1)
                 break
             end
         end
@@ -2870,7 +2870,7 @@ path_auto_accept_warning = menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw
                         warnify(warning)
                         lastWarnifyTime[mess_hash] = currentTime
                     end
-                    PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
+                    SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
                     util.yield(13)
                 else
                     local warnifyCooldown = 3
@@ -2894,7 +2894,7 @@ end)
 --menu.toggle_loop(Game, "Auto Spin Slots", {''}, "Tiered of manually spinning slots? , thats no more! (does not rig slots , just auto click spin)", function ()
 --    if IS_HELP_MESSAGE_BEING_DISPLAYED() then
 --        if IS_HELP_MSG_DISPLAYED("SLOTS_HELPB") then
---            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
+--            SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
 --        end
 --    else
 --        util.yield(66)
@@ -4397,34 +4397,34 @@ menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisi
         warnify_ses("T-5 sec. Start on \"GO!\"")
         FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 3, 1, true, false, 0, true)
         for i=1, 13 do
-            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
         end
         util.yield(859)
         FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 3, 1, true, false, 0, true)
         for i=1, 13 do
-            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
         end
         util.yield(859)
         warnify_ses("3")
         FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 3, 1, true, false, 0, true)
         for i=1, 13 do
-            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
         end
         util.yield(859)
         warnify_ses("2")
         FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 3, 1, true, false, 0, true)
         for i=1, 13 do
-            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
         end
         util.yield(859)
         warnify_ses("1")
         FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 3, 1, true, false, 0, true)
         for i=1, 13 do
-            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
         end
         util.yield(859)
@@ -4439,7 +4439,7 @@ menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisi
             menu.trigger_commands("deployboth")
         end
         for i=1, 222 do
-            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
+            SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(6)
         end
         util.yield(666)
