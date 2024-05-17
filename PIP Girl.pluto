@@ -6,11 +6,11 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.167"
+local script_version = "1.168"
 
 local lust_upDate = {year = 2024, month = 5, day = 18, hour = 6, min = 6, sec = 6}
 
-local startupmsg = "PIP Girl remembers your settings! :D\nSettings changed in Script will never be lost!\n\nAsuka Tech on top!"
+local startupmsg = "PIP Girl remembers your settings! :D\nSettings changed in Script will never be lost!\nReport bugs in the discord.\n\nAsuka Tech on top!"
 
 -- Auto Updater from https://github.com/hexarobi/stand-lua-auto-updater
 local status, auto_updater = pcall(require, "auto-updater")
@@ -78,10 +78,10 @@ for _, dependency in pairs(auto_update_config.dependencies) do
     end
 end
 
-util.require_natives("3095a")
+util.require_natives("3095a", "g")
 local json = require("json")
 
-local current_gta_version = tonumber(NETWORK.GET_ONLINE_VERSION())
+local current_gta_version = tonumber(GET_ONLINE_VERSION())
 local supported_gta_version = 1.68
 
 resources_dir = filesystem.resources_dir() .. '/1 PIP Girl/'
@@ -152,22 +152,22 @@ local function ADD_MP_INDEX(stat)
     return stat
 end
 
-local function STAT_SET_INT(Stat, value)
-    STATS.STAT_SET_INT(util.joaat(ADD_MP_INDEX(Stat)), value, true)
+local function PIP_STAT_SET_INT(Stat, value)
+    STAT_SET_INT(util.joaat(ADD_MP_INDEX(Stat)), value, true)
 end
 
 local function session_type()
     if util.is_session_started() or util.is_session_transition_active() then
-        if NETWORK.NETWORK_SESSION_IS_PRIVATE() then
+        if NETWORK_SESSION_IS_PRIVATE() then
             return "Privat"
         end
-        if NETWORK.NETWORK_SESSION_IS_CLOSED_FRIENDS() then
+        if NETWORK_SESSION_IS_CLOSED_FRIENDS() then
             return "Friends"
         end
-        if NETWORK.NETWORK_SESSION_IS_CLOSED_CREW() then
+        if NETWORK_SESSION_IS_CLOSED_CREW() then
             return "Crew"
         end
-        if NETWORK.NETWORK_SESSION_IS_SOLO() then
+        if NETWORK_SESSION_IS_SOLO() then
             return "Solo"
         end
         return "Public"
@@ -362,7 +362,7 @@ end
 
 local urceoname = ""
 local function organization_control(org)
-    if not NETWORK.NETWORK_IS_ACTIVITY_SESSION() then
+    if not NETWORK_IS_ACTIVITY_SESSION() then
         if players.get_boss(players.user()) ~= -1 then
             if players.get_org_type(players.user()) == 0 then
                 if org == "MC" then
@@ -423,31 +423,31 @@ end
 
 local function start_script(name)
     if transitionState(true) == 1 then
-        if HUD.IS_PAUSE_MENU_ACTIVE() then
+        if IS_PAUSE_MENU_ACTIVE() then
             notify("Close any open Game Menu first!")
             return
         end
-        SCRIPT.REQUEST_SCRIPT(name)
-        repeat util.yield_once() until SCRIPT.HAS_SCRIPT_LOADED(name)
-        SYSTEM.START_NEW_SCRIPT(name, 5000)
-        SCRIPT.SET_SCRIPT_AS_NO_LONGER_NEEDED(name)
+        REQUEST_SCRIPT(name)
+        repeat util.yield_once() until HAS_SCRIPT_LOADED(name)
+        START_NEW_SCRIPT(name, 5000)
+        SET_SCRIPT_AS_NO_LONGER_NEEDED(name)
     end
 end
 
 local function IS_HELP_MSG_DISPLAYED(label)
-    HUD.BEGIN_TEXT_COMMAND_IS_THIS_HELP_MESSAGE_BEING_DISPLAYED(label)
-    return HUD.END_TEXT_COMMAND_IS_THIS_HELP_MESSAGE_BEING_DISPLAYED(0)
+    BEGIN_TEXT_COMMAND_IS_THIS_HELP_MESSAGE_BEING_DISPLAYED(label)
+    return END_TEXT_COMMAND_IS_THIS_HELP_MESSAGE_BEING_DISPLAYED(0)
 end
 
 local function IS_TEXT_DISPLAYED(text) -- trying to be good :sob:
-    HUD.BEGIN_TEXT_COMMAND_IS_MESSAGE_DISPLAYED(text)
-    return HUD.END_TEXT_COMMAND_IS_MESSAGE_DISPLAYED()
+    BEGIN_TEXT_COMMAND_IS_MESSAGE_DISPLAYED(text)
+    return END_TEXT_COMMAND_IS_MESSAGE_DISPLAYED()
 end
 
 --local handle_ptr = memory.alloc(13*8)
 --local function pid_to_handle(pid)
 --    if pid then
---        NETWORK.NETWORK_HANDLE_FROM_PLAYER(pid, handle_ptr, 13)
+--        NETWORK_HANDLE_FROM_PLAYER(pid, handle_ptr, 13)
 --        return handle_ptr
 --    end
 --    return nil
@@ -484,11 +484,11 @@ local function isStuck(pid)
         return false
     end
     --if pid == players.user() then
-    --    if ENTITY.GET_ENTITY_SPEED(players.user_ped()) < 1 and HUD.BUSYSPINNER_IS_DISPLAYING() then
+    --    if GET_ENTITY_SPEED(players.user_ped()) < 1 and BUSYSPINNER_IS_DISPLAYING() then
     --        return true
     --    end
     --end
-    if not players.is_visible(pid) and ENTITY.GET_ENTITY_SPEED(PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)) < 1 and not NETWORK.IS_PLAYER_IN_CUTSCENE(pid) then
+    if not players.is_visible(pid) and GET_ENTITY_SPEED(GET_PLAYER_PED_SCRIPT_INDEX(pid)) < 1 and not IS_PLAYER_IN_CUTSCENE(pid) then
         if players.are_stats_ready(pid) then
             return true
         end
@@ -505,7 +505,7 @@ local function isLoading(pid)
         end
     end
     if pid == players.user() then
-        if ENTITY.GET_ENTITY_SPEED(players.user_ped()) < 1 and HUD.BUSYSPINNER_IS_DISPLAYING() then
+        if GET_ENTITY_SPEED(players.user_ped()) < 1 and BUSYSPINNER_IS_DISPLAYING() then
             return true
         end
     end
@@ -513,7 +513,7 @@ local function isLoading(pid)
     if pPos.x == 0 and pPos.y == 0 and pPos.z == 0 then
         return true
     end
-    if ENTITY.GET_ENTITY_SPEED(PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)) < 1 then
+    if GET_ENTITY_SPEED(GET_PLAYER_PED_SCRIPT_INDEX(pid)) < 1 then
         if not players.are_stats_ready(pid) then
             return true
         end
@@ -551,10 +551,10 @@ local function get_session_code()
 end
 
 local function requestModel(hash, timeout)
-    if not STREAMING.HAS_MODEL_LOADED(hash) then
-        STREAMING.REQUEST_MODEL(hash)
+    if not HAS_MODEL_LOADED(hash) then
+        REQUEST_MODEL(hash)
         local startTime = os.time()
-        while not STREAMING.HAS_MODEL_LOADED(hash) do
+        while not HAS_MODEL_LOADED(hash) do
             if os.time() - startTime > timeout or timeout == 0 then
                 return false
             end
@@ -566,8 +566,8 @@ end
 
 local requestControl = entities.request_control
 
-local function does_entity_exist(entity)
-    if entity and entity ~= INVALID_GUID and ENTITY.DOES_ENTITY_EXIST(entity)then
+local function PIP_does_entity_exist(entity)
+    if entity and entity ~= INVALID_GUID and DOES_ENTITY_EXIST(entity)then
         return true
     end
     return false
@@ -584,12 +584,12 @@ end
 
 local function is_user_driving_vehicle(bool)
     if bool == nil then bool = true end
-    return (PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), bool))
+    return (IS_PED_IN_ANY_VEHICLE(players.user_ped(), bool))
 end
 
 local function is_vehicle_free_for_use(vehicle)
-    local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
-    local driver = PED.IS_PED_A_PLAYER(driverPed)
+    local driverPed = GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
+    local driver = IS_PED_A_PLAYER(driverPed)
     if not driver or driver == 0 or driverPed == players.user_ped() then
         return true
     end
@@ -597,9 +597,9 @@ local function is_vehicle_free_for_use(vehicle)
 end
 
 local function is_vehicle_empty(vehicle)
-    local setsINT = VEHICLE.GET_VEHICLE_MODEL_NUMBER_OF_SEATS(entities.get_model_hash(vehicle))
+    local setsINT = GET_VEHICLE_MODEL_NUMBER_OF_SEATS(entities.get_model_hash(vehicle))
     for seat = -1, setsINT do
-        local seater = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, seat, true)
+        local seater = GET_PED_IN_VEHICLE_SEAT(vehicle, seat, true)
         if seater and seater ~= 0 then
             return false
         end
@@ -608,10 +608,10 @@ local function is_vehicle_empty(vehicle)
 end
 
 local function get_number_of_passengers(vehicle)
-    local setsINT = VEHICLE.GET_VEHICLE_MODEL_NUMBER_OF_SEATS(entities.get_model_hash(vehicle))
+    local setsINT = GET_VEHICLE_MODEL_NUMBER_OF_SEATS(entities.get_model_hash(vehicle))
     local passengerCount = 0
     for seat = -1, setsINT do
-        local seater = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, seat, true)
+        local seater = GET_PED_IN_VEHICLE_SEAT(vehicle, seat, true)
         if seater and seater ~= 0 then
             passengerCount = passengerCount + 1
         end
@@ -620,16 +620,16 @@ local function get_number_of_passengers(vehicle)
 end
 
 local function allowSpawnCheck()
-    if NETWORK.NETWORK_IS_ACTIVITY_SESSION() then
+    if NETWORK_IS_ACTIVITY_SESSION() then
         return false
     end
     if not players.is_visible(players.user()) then
         return false
     end
-    if INTERIOR.GET_INTERIOR_FROM_ENTITY(players.user_ped()) ~= 0 and is_user_driving_vehicle(true) then
+    if GET_INTERIOR_FROM_ENTITY(players.user_ped()) ~= 0 and is_user_driving_vehicle(true) then
         return false
     end
-    if not NETWORK.NETWORK_IS_PLAYER_ACTIVE(players.user()) then
+    if not NETWORK_IS_PLAYER_ACTIVE(players.user()) then
         return false
     end
     return true
@@ -638,26 +638,26 @@ end
 local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision, networked)
     if allowSpawnCheck() then
         if order == nil then order = 2 end
-        if not does_entity_exist(entity) then
+        if not PIP_does_entity_exist(entity) then
             if requestModel(hash, timeout) then
                 if networked then
                     entity = entities.create_object(hash, locationV3)
                 else
-                    entity = OBJECT.CREATE_OBJECT_NO_OFFSET(hash, locationV3, false, true, false)
+                    entity = CREATE_OBJECT_NO_OFFSET(hash, locationV3, false, true, false)
                 end
-                if does_entity_exist(entity) then
+                if PIP_does_entity_exist(entity) then
                     if networked then
                         entities.set_can_migrate(entity, false)
                     end
-                    ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3, true, true, true)
-                    ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
-                    ENTITY.FREEZE_ENTITY_POSITION(entity, true)
+                    SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3, true, true, true)
+                    SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
+                    FREEZE_ENTITY_POSITION(entity, true)
                 end
             end
         end
-        if anti_collision and does_entity_exist(entity) then
+        if anti_collision and PIP_does_entity_exist(entity) then
             if not networked then
-                ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, players.user_ped(), false)
+                SET_ENTITY_NO_COLLISION_ENTITY(entity, players.user_ped(), false)
             else
                 local closestDistance = nil
                 local closestPlayer = players.user()
@@ -673,13 +673,13 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
                     if closestPlayer == players.user() then
                         requestControl(entity)
                         entities.set_can_migrate(entity, false)
-                        ENTITY.SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3, true, true, true)
-                        ENTITY.SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
-                        ENTITY.FREEZE_ENTITY_POSITION(entity, true)
+                        SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3, true, true, true)
+                        SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
+                        FREEZE_ENTITY_POSITION(entity, true)
                     else
                         entities.set_can_migrate(entity, true)
                     end
-                    ENTITY.SET_ENTITY_NO_COLLISION_ENTITY(entity, PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(closestPlayer), false)
+                    SET_ENTITY_NO_COLLISION_ENTITY(entity, GET_PLAYER_PED_SCRIPT_INDEX(closestPlayer), false)
                 end
             end
         end
@@ -688,7 +688,7 @@ local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, tim
 end
 
 local function delete_ent(ent)
-    if does_entity_exist(ent) then
+    if PIP_does_entity_exist(ent) then
         entities.delete(ent)
     end
 end
@@ -731,8 +731,8 @@ local function get_Street_Names(x, y, z)
     local streetNamePtr = memory.alloc_int()
     local crossingRoadPtr = memory.alloc_int()
 
-    PATHFIND.GET_STREET_NAME_AT_COORD(playerPosition.x, playerPosition.y, playerPosition.z, streetNamePtr, crossingRoadPtr)
-    local zoneNameRaw = ZONE.GET_NAME_OF_ZONE(playerPosition.x, playerPosition.y, playerPosition.z)
+    GET_STREET_NAME_AT_COORD(playerPosition.x, playerPosition.y, playerPosition.z, streetNamePtr, crossingRoadPtr)
+    local zoneNameRaw = GET_NAME_OF_ZONE(playerPosition.x, playerPosition.y, playerPosition.z)
 
     local streetNameInt = memory.read_int(streetNamePtr)
     local crossingRoadInt = memory.read_int(crossingRoadPtr)
@@ -773,11 +773,11 @@ local function set_as_illusion(pid, tbl, state)
         in_orb_room[pid] = nil
         sussy_god[pid] = nil
         set_passive[pid] = nil
-        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+        SET_REMOTE_PLAYER_AS_GHOST(pid, false)
     else
         if state then
             if not tbl[pid] then
-                NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, true)
+                SET_REMOTE_PLAYER_AS_GHOST(pid, true)
                 tbl[pid] = true
             end
         else
@@ -792,7 +792,7 @@ local function set_as_illusion(pid, tbl, state)
                 end
             end
             if not playerInOtherTables then
-                NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+                SET_REMOTE_PLAYER_AS_GHOST(pid, false)
             end
         end
     end
@@ -976,7 +976,7 @@ local invitefriendsinceo = false
 local ceo_ses_code = nil
 local lastCeoName = nil
 path_auto_org = menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yourself as CEO and auto switches you to MC/CEO in most situations needed.", function()
-    if not NETWORK.NETWORK_IS_ACTIVITY_SESSION() and transitionState(true) == 1 then
+    if not NETWORK_IS_ACTIVITY_SESSION() and transitionState(true) == 1 then
         if joinfriendsceo ~= 3 then
             local uniqueColors = {}
             for players.list() as pid do
@@ -1178,21 +1178,21 @@ local vehicle_money_hashish = {
     -1249748547, --Smugler money
 }
 path_collect_money = menu.toggle_loop(PIP_Girl, "Collect all NPC money", {}, "Collect all NPC money.", function()
-    if transitionState(true) == 1 and ENTITY.GET_ENTITY_HEALTH(players.user_ped()) ~= 0 then
+    if transitionState(true) == 1 and GET_ENTITY_HEALTH(players.user_ped()) ~= 0 then
         local pos = players.get_position(players.user())
         if is_user_driving_vehicle(true) then
             for entities.get_all_pickups_as_handles() as pickup do
-                if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) and not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
+                if not HAS_PICKUP_BEEN_COLLECTED(pickup) and not IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
                     local pickupHash = entities.get_model_hash(pickup)
                     if contains(vehicle_money_hashish, pickupHash) then
                         requestControl(pickup)
-                        OBJECT.SET_PICKUP_OBJECT_COLLECTABLE_IN_VEHICLE(pickup)
-                        ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
+                        SET_PICKUP_OBJECT_COLLECTABLE_IN_VEHICLE(pickup)
+                        SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
                     end
                     util.yield(113)
                     if contains(money_hashish, pickupHash) then
-                        OBJECT.SET_PICKUP_OBJECT_COLLECTABLE_IN_VEHICLE(pickup)
-                        ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z - 66, false, false, false, false)
+                        SET_PICKUP_OBJECT_COLLECTABLE_IN_VEHICLE(pickup)
+                        SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z - 66, false, false, false, false)
                     end
                 end
                 util.yield(113)
@@ -1200,11 +1200,11 @@ path_collect_money = menu.toggle_loop(PIP_Girl, "Collect all NPC money", {}, "Co
             util.yield(1313)
         else
             for entities.get_all_pickups_as_handles() as pickup do
-                if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) and not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
+                if not HAS_PICKUP_BEEN_COLLECTED(pickup) and not IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
                     local pickupHash = entities.get_model_hash(pickup)
                     if contains(money_hashish, pickupHash) then
                         requestControl(pickup)
-                        ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
+                        SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
                     end
                 end
                 util.yield(13)
@@ -1222,10 +1222,10 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all pickups on yo
         local counter = 0
         local playerPed = players.user_ped()
         for entities.get_all_pickups_as_handles() as pickup do
-            if not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) and not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
+            if not IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) and not HAS_PICKUP_BEEN_COLLECTED(pickup) then
                 requestControl(pickup)
-                --ENTITY.ATTACH_ENTITY_TO_ENTITY(pickup, playerPed, PED.GET_PED_BONE_INDEX(playerPed, 24818), 0.0, -0.3, 0.0, 0.0, 90, 0.0, false, true, true, false, 0, true, 1)
-                ENTITY.ATTACH_ENTITY_TO_ENTITY(pickup, playerPed, PED.GET_PED_BONE_INDEX(playerPed, 24818), 0, -0.3, 0, 0, 90, 0, false, true, true, false, 0, true, 1)
+                --ATTACH_ENTITY_TO_ENTITY(pickup, playerPed, GET_PED_BONE_INDEX(playerPed, 24818), 0.0, -0.3, 0.0, 0.0, 90, 0.0, false, true, true, false, 0, true, 1)
+                ATTACH_ENTITY_TO_ENTITY(pickup, playerPed, GET_PED_BONE_INDEX(playerPed, 24818), 0, -0.3, 0, 0, 90, 0, false, true, true, false, 0, true, 1)
                 table.insert(carryingPickups, pickup)
                 counter = counter + 1
                 util.yield(111)
@@ -1237,13 +1237,13 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all pickups on yo
         local playerPed = players.user_ped()
         local pos = players.get_position(players.user())
         for ipairs(carryingPickups) as pickup do
-            if not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) and ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
+            if not HAS_PICKUP_BEEN_COLLECTED(pickup) and IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
                 requestControl(pickup)
-                ENTITY.DETACH_ENTITY(pickup, true, true)
+                DETACH_ENTITY(pickup, true, true)
                 util.yield(13)
-                ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z-0.8, false, false, false, false)
+                SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z-0.8, false, false, false, false)
                 util.yield(13)
-                --ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
+                --FREEZE_ENTITY_POSITION(pickup, false)
                 counter = counter + 1
             end
         end
@@ -1257,17 +1257,17 @@ menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a shower in all existing p
         local pos = players.get_position(players.user())
         local in_vehicle = is_user_driving_vehicle(true)
         for entities.get_all_pickups_as_handles() as pickup do
-            if not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) and not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
+            if not IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) and not HAS_PICKUP_BEEN_COLLECTED(pickup) then
                 if in_vehicle then
-                    OBJECT.SET_PICKUP_OBJECT_COLLECTABLE_IN_VEHICLE(pickup)
+                    SET_PICKUP_OBJECT_COLLECTABLE_IN_VEHICLE(pickup)
                     util.yield(13)
-                    ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z , false, false, false, false)
+                    SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z , false, false, false, false)
                     util.yield(13)
-                    --ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
+                    --FREEZE_ENTITY_POSITION(pickup, false)
                 else
-                    ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z + 1.0, false, false, false, false)
+                    SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z + 1.0, false, false, false, false)
                     util.yield(13)
-                    --ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
+                    --FREEZE_ENTITY_POSITION(pickup, false)
                 end
             end
             util.yield(13)
@@ -1282,11 +1282,11 @@ menu.action(PIP_Girl, "Teleport Pickups To Me", {"tppickups"}, "Teleports all pi
         local counter = 0
         local pos = players.get_position(players.user())
         for entities.get_all_pickups_as_handles() as pickup do
-            if not ENTITY.IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) and not OBJECT.HAS_PICKUP_BEEN_COLLECTED(pickup) then
+            if not IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) and not HAS_PICKUP_BEEN_COLLECTED(pickup) then
                 util.yield(13)
-                ENTITY.SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z-0.8, false, false, false, false)
+                SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z-0.8, false, false, false, false)
                 util.yield(13)
-                --ENTITY.FREEZE_ENTITY_POSITION(pickup, false)
+                --FREEZE_ENTITY_POSITION(pickup, false)
                 counter = counter + 1
             end
         end
@@ -1319,10 +1319,10 @@ end)
 local dead = 0
 path_auto_armor = menu.toggle_loop(Stimpak, "Auto Armor after Death",{"pgblessing"},"A body armor will be applied automatically when respawning.", function()
     if transitionState(true) <3 then
-        local health = ENTITY.GET_ENTITY_HEALTH(players.user_ped())
+        local health = GET_ENTITY_HEALTH(players.user_ped())
         if health == 0 and dead == 0 then
             dead = 1
-        elseif health == ENTITY.GET_ENTITY_MAX_HEALTH(players.user_ped()) and dead == 1 then
+        elseif health == GET_ENTITY_MAX_HEALTH(players.user_ped()) and dead == 1 then
             menu.trigger_commands("newborn")
             dead = 0
         end
@@ -1336,21 +1336,21 @@ path_recharge_health = menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehic
     if transitionState(true) <3 then
         local in_vehicle = is_user_driving_vehicle(true)
         local playerPed = players.user_ped()
-        local isPlayerInCover = PED.IS_PED_IN_COVER(playerPed, false)
+        local isPlayerInCover = IS_PED_IN_COVER(playerPed, false)
         if isPlayerInCover or in_vehicle then
-            PLAYER.SET_PLAYER_HEALTH_RECHARGE_MAX_PERCENT(players.user(), 1.0)
-            PLAYER.SET_PLAYER_HEALTH_RECHARGE_MULTIPLIER(players.user(), 4.0)
+            SET_PLAYER_HEALTH_RECHARGE_MAX_PERCENT(players.user(), 1.0)
+            SET_PLAYER_HEALTH_RECHARGE_MULTIPLIER(players.user(), 4.0)
         else
-            PLAYER.SET_PLAYER_HEALTH_RECHARGE_MAX_PERCENT(players.user(), 1.0)
-            PLAYER.SET_PLAYER_HEALTH_RECHARGE_MULTIPLIER(players.user(), 0.420)
+            SET_PLAYER_HEALTH_RECHARGE_MAX_PERCENT(players.user(), 1.0)
+            SET_PLAYER_HEALTH_RECHARGE_MULTIPLIER(players.user(), 0.420)
         end
         util.yield(666)
     else
         util.yield(13666)
     end
 end, function()
-    PLAYER.SET_PLAYER_HEALTH_RECHARGE_MAX_PERCENT(players.user(), 1.0)
-    PLAYER.SET_PLAYER_HEALTH_RECHARGE_MULTIPLIER(players.user(), 0.1)
+    SET_PLAYER_HEALTH_RECHARGE_MAX_PERCENT(players.user(), 1.0)
+    SET_PLAYER_HEALTH_RECHARGE_MULTIPLIER(players.user(), 0.1)
 end)
 
 path_recharge_armor = menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle", {"pgarmor"}, "Will Recharge Armor when in Cover or Vehicle quickly.\nBUT also slowly otherwise to 100%.", function()
@@ -1358,8 +1358,8 @@ path_recharge_armor = menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle
     if transitionState(true) <3 then
         local in_vehicle = is_user_driving_vehicle(true)
         local playerPed = players.user_ped()
-        local isPlayerInCover = PED.IS_PED_IN_COVER(playerPed, false)
-        if PED.GET_PED_ARMOUR(players.user_ped()) == PLAYER.GET_PLAYER_MAX_ARMOUR(players.user()) then
+        local isPlayerInCover = IS_PED_IN_COVER(playerPed, false)
+        if GET_PED_ARMOUR(players.user_ped()) == GET_PLAYER_MAX_ARMOUR(players.user()) then
             if menu.get_state(menu.ref_by_path(cmd_path)) ~= "0.00" then
                 menu.trigger_commands("armourrate 0.00")
                 util.yield(666)
@@ -1390,10 +1390,10 @@ end, function()
 end)
 
 local was_user_in_vehicle = false
-path_first_aid_kit = menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {"pgvaid"}, "Using your First Aid kit provided in your vehicle.", function()
+path_first_aid_kit = menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {"pgvaid"}, "Using your First Aid kit provided in your ", function()
     if transitionState(true) <3 then
         local in_vehicle = is_user_driving_vehicle(false)
-        local health = ENTITY.GET_ENTITY_HEALTH(players.user_ped())
+        local health = GET_ENTITY_HEALTH(players.user_ped())
         if health ~= 0 then
             if in_vehicle and not was_user_in_vehicle then
                 was_user_in_vehicle = true
@@ -1409,19 +1409,19 @@ path_first_aid_kit = menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle
     end
 end)
 
-path_oxygen = menu.toggle_loop(Stimpak, "Oxygen", {"pgbreath"}, "Just breath.\nAlso gives u Movement and light from Scuba gear without having one equiped.", function()
+path_oxygen = menu.toggle_loop(Stimpak, "Oxygen", {"pgbreath"}, "Just breath.\nAlso gives u Movement and light from Scuba gear without having one equi", function()
     if transitionState(true) <3 then
-        if ENTITY.IS_ENTITY_IN_WATER(players.user_ped()) then
-            PED.SET_ENABLE_SCUBA(players.user_ped(), true)
-            PED.ENABLE_MP_LIGHT(players.user_ped(), true)
+        if IS_ENTITY_IN_WATER(players.user_ped()) then
+            SET_ENABLE_SCUBA(players.user_ped(), true)
+            ENABLE_MP_LIGHT(players.user_ped(), true)
             util.yield(1666)
         else
-            PED.SET_ENABLE_SCUBA(players.user_ped(), false)
-            PED.ENABLE_MP_LIGHT(players.user_ped(), false)
+            SET_ENABLE_SCUBA(players.user_ped(), false)
+            ENABLE_MP_LIGHT(players.user_ped(), false)
             util.yield(3666)
         end
-        if PED.GET_PED_DIES_IN_WATER(players.user_ped()) then
-            PED.SET_PED_DIES_IN_WATER(players.user_ped(), false)
+        if GET_PED_DIES_IN_WATER(players.user_ped()) then
+            SET_PED_DIES_IN_WATER(players.user_ped(), false)
             util.yield(3666)
         end
     else
@@ -1485,20 +1485,20 @@ local blips = {}
 local checkpoints = {}
 local function CreateBlips(repairStops)
     for pairs(repairStops) as position do
-        local blip = HUD.ADD_BLIP_FOR_COORD(position.x, position.y, position.z)
-        HUD.SET_BLIP_SPRITE(blip, "402")
-        HUD.SET_BLIP_COLOUR(blip, 48)
-        HUD.SET_BLIP_AS_MINIMAL_ON_EDGE(blip, true)
-        HUD.SET_RADIUS_BLIP_EDGE(blip, true)
-        HUD.SET_BLIP_AS_SHORT_RANGE(blip, true)
-        HUD.SET_BLIP_DISPLAY(blip, 2)
+        local blip = ADD_BLIP_FOR_COORD(position.x, position.y, position.z)
+     SET_BLIP_SPRITE(blip, "402")
+     SET_BLIP_COLOUR(blip, 48)
+     SET_BLIP_AS_MINIMAL_ON_EDGE(blip, true)
+     SET_RADIUS_BLIP_EDGE(blip, true)
+     SET_BLIP_AS_SHORT_RANGE(blip, true)
+     SET_BLIP_DISPLAY(blip, 2)
         table.insert(blips, blip)
     end
     blipsCreated = true
 end
 local function CreateCheckpoints(repairStops)
     for pairs(repairStops) as position do
-        local checkpoint = GRAPHICS.CREATE_CHECKPOINT(11, position.x, position.y, position.z + 1, position.x, position.y, position.z, 6, 255, 0, 128, 66, 0)
+        local checkpoint = CREATE_CHECKPOINT(11, position.x, position.y, position.z + 1, position.x, position.y, position.z, 6, 255, 0, 128, 66, 0)
         table.insert(checkpoints, checkpoint)
     end
 end
@@ -1508,7 +1508,7 @@ local function remove_blips()
         blips = {}
     end
     for checkpoints as check do
-        GRAPHICS.DELETE_CHECKPOINT(check)
+        DELETE_CHECKPOINT(check)
         checkpoints = {}
     end
 end
@@ -1519,7 +1519,7 @@ local closestDistance = math.huge
 local wasInZone = false
 local protectMissionVehicles = false
 local function checkVehMod(vehicle, mod)
-    if VEHICLE.DOES_EXTRA_EXIST(vehicle, mod) and not VEHICLE.IS_VEHICLE_EXTRA_TURNED_ON(vehicle, mod) then
+    if DOES_EXTRA_EXIST(vehicle, mod) and not IS_VEHICLE_EXTRA_TURNED_ON(vehicle, mod) then
         return true
     end
     return false
@@ -1530,116 +1530,116 @@ local function buff_asuka_tech(vehicle)
     end
     menu.trigger_commands("smoothflight on")
     if protectMissionVehicles and not players.is_in_interior(players.user()) and not players.is_using_rc_vehicle(players.user()) then
-        if ENTITY.IS_ENTITY_A_MISSION_ENTITY(vehicle) and DECORATOR.DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 then
-            if VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1) == players.user_ped() then
+        if IS_ENTITY_A_MISSION_ENTITY(vehicle) and DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 then
+            if GET_PED_IN_VEHICLE_SEAT(vehicle, -1) == players.user_ped() then
                 notify("Installed Lockon Jammer on: "..util.reverse_joaat(entities.get_model_hash(vehicle)))
-                VEHICLE.SET_VEHICLE_ALLOW_HOMING_MISSLE_LOCKON(vehicle, false, false)
-                VEHICLE.SET_VEHICLE_ALLOW_HOMING_MISSLE_LOCKON_SYNCED(vehicle, false, false)
+                SET_VEHICLE_ALLOW_HOMING_MISSLE_LOCKON(vehicle, false, false)
+                SET_VEHICLE_ALLOW_HOMING_MISSLE_LOCKON_SYNCED(vehicle, false, false)
             end
         end
     end
-    ----the_bone = ENTITY.GET_ENTITY_BONE_INDEX_BY_NAME(vehicle, "dashglow")
-    --the_bone = ENTITY.GET_ENTITY_BONE_INDEX_BY_NAME(vehicle, "bonnet")
+    ----the_bone = GET_ENTITY_BONE_INDEX_BY_NAME(vehicle, "dashglow")
+    --the_bone = GET_ENTITY_BONE_INDEX_BY_NAME(vehicle, "bonnet")
     --if the_bone ~= -1 then
     --    usb_asuka_tech = entities.create_object(1112175411, players.get_position(players.user()))
-    --    --ENTITY.ATTACH_ENTITY_TO_ENTITY(usb_asuka_tech, vehicle, the_bone, -0.007, 0.03, -0.06, 0, 0, 90, false, false, false, false, 0, true, 1)
-    --    ENTITY.ATTACH_ENTITY_TO_ENTITY(usb_asuka_tech, vehicle, the_bone, 0, 0, 0, 90, 90, 0, false, false, false, false, 0, true, 1)
+    --    --ATTACH_ENTITY_TO_ENTITY(usb_asuka_tech, vehicle, the_bone, -0.007, 0.03, -0.06, 0, 0, 90, false, false, false, false, 0, true, 1)
+    --    ATTACH_ENTITY_TO_ENTITY(usb_asuka_tech, vehicle, the_bone, 0, 0, 0, 90, 90, 0, false, false, false, false, 0, true, 1)
     --end
-    if not VEHICLE.GET_IS_VEHICLE_PRIMARY_COLOUR_CUSTOM(vehicle) and not VEHICLE.GET_IS_VEHICLE_SECONDARY_COLOUR_CUSTOM(vehicle) then
-        VEHICLE.SET_VEHICLE_MOD_KIT(vehicle, 0)
-        if DECORATOR.DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 then
-            local engine = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 11) - 1
+    if not GET_IS_VEHICLE_PRIMARY_COLOUR_CUSTOM(vehicle) and not GET_IS_VEHICLE_SECONDARY_COLOUR_CUSTOM(vehicle) then
+        SET_VEHICLE_MOD_KIT(vehicle, 0)
+        if DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 then
+            local engine = GET_NUM_VEHICLE_MODS(vehicle, 11) - 1
             if engine > -1 then
-                if VEHICLE.GET_VEHICLE_MOD(vehicle, 11) ~= engine then
-                    VEHICLE.SET_VEHICLE_MOD(vehicle, 11, engine)
+                if GET_VEHICLE_MOD(vehicle, 11) ~= engine then
+                    SET_VEHICLE_MOD(vehicle, 11, engine)
                 end
             end
-            local breaks = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 12) - 1
+            local breaks = GET_NUM_VEHICLE_MODS(vehicle, 12) - 1
             if breaks > -1 then
-                if VEHICLE.GET_VEHICLE_MOD(vehicle, 12) ~= breaks then
-                    VEHICLE.SET_VEHICLE_MOD(vehicle, 12, breaks)
+                if GET_VEHICLE_MOD(vehicle, 12) ~= breaks then
+                    SET_VEHICLE_MOD(vehicle, 12, breaks)
                 end
             end
-            local gearbox = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 13) - 1
+            local gearbox = GET_NUM_VEHICLE_MODS(vehicle, 13) - 1
             if gearbox > -1 then
-                if VEHICLE.GET_VEHICLE_MOD(vehicle, 13) ~= gearbox then
-                    VEHICLE.SET_VEHICLE_MOD(vehicle, 13, gearbox)
+                if GET_VEHICLE_MOD(vehicle, 13) ~= gearbox then
+                    SET_VEHICLE_MOD(vehicle, 13, gearbox)
                 end
             end
-            local suspension = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 15) - 1
+            local suspension = GET_NUM_VEHICLE_MODS(vehicle, 15) - 1
             if suspension > -1 then
-                if VEHICLE.GET_VEHICLE_MOD(vehicle, 15) ~= suspension then
-                    VEHICLE.SET_VEHICLE_MOD(vehicle, 15, suspension)
+                if GET_VEHICLE_MOD(vehicle, 15) ~= suspension then
+                    SET_VEHICLE_MOD(vehicle, 15, suspension)
                 end
             end
-            local armor = VEHICLE.GET_NUM_VEHICLE_MODS(vehicle, 16) - 1
+            local armor = GET_NUM_VEHICLE_MODS(vehicle, 16) - 1
             if armor > -1 then
-                if VEHICLE.GET_VEHICLE_MOD(vehicle, 16) ~= armor then
-                    VEHICLE.SET_VEHICLE_MOD(vehicle, 16, armor)
+                if GET_VEHICLE_MOD(vehicle, 16) ~= armor then
+                    SET_VEHICLE_MOD(vehicle, 16, armor)
                 end
             end
-            VEHICLE.TOGGLE_VEHICLE_MOD(vehicle, 18, true)
+            TOGGLE_VEHICLE_MOD(vehicle, 18, true)
         end
-        if VEHICLE.DOES_VEHICLE_HAVE_SEARCHLIGHT(vehicle) then
-            VEHICLE.SET_VEHICLE_SEARCHLIGHT(vehicle, true, true)
+        if DOES_VEHICLE_HAVE_SEARCHLIGHT(vehicle) then
+            SET_VEHICLE_SEARCHLIGHT(vehicle, true, true)
         end
-        local buffVehModel = ENTITY.GET_ENTITY_MODEL(vehicle)
+        local buffVehModel = GET_ENTITY_MODEL(vehicle)
         if buffVehModel == 167522317 then
-            if VEHICLE.GET_VEHICLE_MOD(vehicle, 10) == 1 and checkVehMod(vehicle, 1) then
-                VEHICLE.SET_VEHICLE_EXTRA(vehicle, 1, 0)
+            if GET_VEHICLE_MOD(vehicle, 10) == 1 and checkVehMod(vehicle, 1) then
+                SET_VEHICLE_EXTRA(vehicle, 1, 0)
             end
         end
         if buffVehModel == 1770332643 then
             if checkVehMod(vehicle, 1) then
-                VEHICLE.SET_VEHICLE_EXTRA(vehicle, 1, 0)
+                SET_VEHICLE_EXTRA(vehicle, 1, 0)
             end
             if checkVehMod(vehicle, 10) then
-                VEHICLE.SET_VEHICLE_EXTRA(vehicle, 10, 0)
+                SET_VEHICLE_EXTRA(vehicle, 10, 0)
             end
             if checkVehMod(vehicle, 11) then
-                VEHICLE.SET_VEHICLE_EXTRA(vehicle, 11, 0)
+                SET_VEHICLE_EXTRA(vehicle, 11, 0)
             end
         end
     end
 
-    VEHICLE.SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
-    VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
-    VEHICLE.SET_VEHICLE_INTERIORLIGHT(vehicle, false)
-    VEHICLE.SET_HELI_TAIL_BOOM_CAN_BREAK_OFF(vehicle, false)
-    VEHICLE.SET_VEHICLE_CAN_ENGINE_MISSFIRE(vehicle, false)
-    VEHICLE.SET_VEHICLE_CAN_LEAK_PETROL(vehicle, false)
-    VEHICLE.SET_VEHICLE_CAN_LEAK_OIL(vehicle, false)
-    VEHICLE.SET_DISABLE_VEHICLE_PETROL_TANK_FIRES(vehicle, true)
-    VEHICLE.SET_DISABLE_VEHICLE_PETROL_TANK_DAMAGE(vehicle, true)
-    VEHICLE.SET_DISABLE_VEHICLE_ENGINE_FIRES(vehicle, true)
-    VEHICLE.SET_VEHICLE_ENGINE_CAN_DEGRADE(vehicle, false)
-    VEHICLE.SET_VEHICLE_STRONG(vehicle, true)
-    VEHICLE.SET_TRAILER_LEGS_RAISED(vehicle)
-    VEHICLE.SET_INCREASE_WHEEL_CRUSH_DAMAGE(vehicle, true)
-    VEHICLE.ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(vehicle)
-    VEHICLE.SET_VEHICLE_ACT_AS_IF_HAS_SIREN_ON(vehicle, true)
-    VEHICLE.SET_VEHICLE_TYRES_CAN_BURST(vehicle, false)
-    VEHICLE.SET_VEHICLE_NEEDS_TO_BE_HOTWIRED(vehicle, false)
-    VEHICLE.SET_VEHICLE_HAS_BEEN_OWNED_BY_PLAYER(vehicle, true)
-    --VEHICLE.SET_VEHICLE_FORCE_AFTERBURNER(vehicle, true)
-    AUDIO.ENABLE_VEHICLE_EXHAUST_POPS(vehicle, true)
-    NETWORK.NETWORK_SET_NO_LONGER_NEEDED(vehicle, false)
-    VEHICLE.SET_VEHICLE_BROKEN_PARTS_DONT_AFFECT_AI_HANDLING(vehicle, true)
+    SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
+    SET_VEHICLE_LIGHTS(vehicle, 2)
+    SET_VEHICLE_INTERIORLIGHT(vehicle, false)
+    SET_HELI_TAIL_BOOM_CAN_BREAK_OFF(vehicle, false)
+    SET_VEHICLE_CAN_ENGINE_MISSFIRE(vehicle, false)
+    SET_VEHICLE_CAN_LEAK_PETROL(vehicle, false)
+    SET_VEHICLE_CAN_LEAK_OIL(vehicle, false)
+    SET_DISABLE_VEHICLE_PETROL_TANK_FIRES(vehicle, true)
+    SET_DISABLE_VEHICLE_PETROL_TANK_DAMAGE(vehicle, true)
+    SET_DISABLE_VEHICLE_ENGINE_FIRES(vehicle, true)
+    SET_VEHICLE_ENGINE_CAN_DEGRADE(vehicle, false)
+    SET_VEHICLE_STRONG(vehicle, true)
+    SET_TRAILER_LEGS_RAISED(vehicle)
+    SET_INCREASE_WHEEL_CRUSH_DAMAGE(vehicle, true)
+    ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(vehicle)
+    SET_VEHICLE_ACT_AS_IF_HAS_SIREN_ON(vehicle, true)
+    SET_VEHICLE_TYRES_CAN_BURST(vehicle, false)
+    SET_VEHICLE_NEEDS_TO_BE_HOTWIRED(vehicle, false)
+    SET_VEHICLE_HAS_BEEN_OWNED_BY_PLAYER(vehicle, true)
+    --SET_VEHICLE_FORCE_AFTERBURNER(vehicle, true)
+    ENABLE_VEHICLE_EXHAUST_POPS(vehicle, true)
+    NETWORK_SET_NO_LONGER_NEEDED(vehicle, false)
+    SET_VEHICLE_BROKEN_PARTS_DONT_AFFECT_AI_HANDLING(vehicle, true)
 end
 local function SetInZoneTimer()
     wasInZone = true
     for blips as blip do
-        HUD.SET_BLIP_COLOUR(blip, 1)
+     SET_BLIP_COLOUR(blip, 1)
     end
     for checkpoints as check do
-        GRAPHICS.SET_CHECKPOINT_RGBA2(check, 255, 13, 13, 10)
+        SET_CHECKPOINT_RGBA2(check, 255, 13, 13, 10)
     end
     util.yield(369666)
     for blips as blip do
-        HUD.SET_BLIP_COLOUR(blip, 48)
+     SET_BLIP_COLOUR(blip, 48)
     end
     for checkpoints as check do
-        GRAPHICS.SET_CHECKPOINT_RGBA2(check, 255, 0, 128, 66)
+        SET_CHECKPOINT_RGBA2(check, 255, 0, 128, 66)
     end
     wasInZone = false
 end
@@ -1648,7 +1648,7 @@ menu.divider(Vehicle, "Asuka Tech")
 
 local function getTrailer(vehicle)
     local trailerPtr = memory.alloc_int()
-    VEHICLE.GET_VEHICLE_TRAILER_VEHICLE(vehicle, trailerPtr)
+    GET_VEHICLE_TRAILER_VEHICLE(vehicle, trailerPtr)
     local trailer = memory.read_int(trailerPtr)
     return trailer
 end
@@ -1659,55 +1659,55 @@ local asuka_tech_dirt = 1
 local asuka_tech_dirt_amount = 0.06
 local function repair_asuka_tech(vehicle)
     local repair_amount = 0
-    if ENTITY.IS_ENTITY_A_MISSION_ENTITY(vehicle) and vehicle ~= entities.get_user_personal_vehicle_as_handle() then
+    if IS_ENTITY_A_MISSION_ENTITY(vehicle) and vehicle ~= entities.get_user_personal_vehicle_as_handle() then
         repair_amount = asuka_tech_mission_repair_amount
     else
         repair_amount = asuka_tech_repair_amount
     end
-    local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(vehicle)
-    local petrolTankHealth = VEHICLE.GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
-    local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(vehicle)
-    local heliTailHealth = VEHICLE.GET_HELI_TAIL_BOOM_HEALTH(vehicle)
-    local heliRotorHealth = VEHICLE.GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
+    local engineHealth = GET_VEHICLE_ENGINE_HEALTH(vehicle)
+    local petrolTankHealth = GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
+    local bodyHealth = GET_VEHICLE_BODY_HEALTH(vehicle)
+    local heliTailHealth = GET_HELI_TAIL_BOOM_HEALTH(vehicle)
+    local heliRotorHealth = GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
 
-    if VEHICLE.IS_VEHICLE_DRIVEABLE(vehicle) then
+    if IS_VEHICLE_DRIVEABLE(vehicle) then
         if engineHealth > 0 and engineHealth < 1000 then
-            VEHICLE.SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + repair_amount)
+            SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + repair_amount)
         end
         if petrolTankHealth > 0 and petrolTankHealth < 1000 then
-            VEHICLE.SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + repair_amount)
+            SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + repair_amount)
         end
         if bodyHealth > 0 and bodyHealth < 1000 then
-            VEHICLE.SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + repair_amount)
+            SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + repair_amount)
         end
         if heliTailHealth > 0 and heliTailHealth < 1000 then
-            VEHICLE.SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + repair_amount)
+            SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + repair_amount)
         end
         if heliRotorHealth > 0 and heliRotorHealth < 1000 then
-            VEHICLE.SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + repair_amount)
+            SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + repair_amount)
         end
 
         if petrolTankHealth >= 1000 and engineHealth >= 1000 and bodyHealth >= 1000 then
-            VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, false)
-            VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, false)
+            SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, false)
+            SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, false)
         else
             if asuka_tech_dirt ~= 1 then
-                local currentDirtLevel = VEHICLE.GET_VEHICLE_DIRT_LEVEL(vehicle)
+                local currentDirtLevel = GET_VEHICLE_DIRT_LEVEL(vehicle)
                 local theDirtyHoe = asuka_tech_dirt_amount * repair_amount
                 if asuka_tech_dirt == 2 then
                     currentDirtLevel = math.min(currentDirtLevel + theDirtyHoe, 15.0)
                 elseif asuka_tech_dirt == 3 then
                     currentDirtLevel = math.max(currentDirtLevel - theDirtyHoe, 0.0)
                 end
-                VEHICLE.SET_VEHICLE_DIRT_LEVEL(vehicle, currentDirtLevel)
+                SET_VEHICLE_DIRT_LEVEL(vehicle, currentDirtLevel)
             end
-            VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, true)
-            VEHICLE.SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, true)
+            SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, true)
+            SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, true)
         end
     end
 
-    if (engineHealth <= 0 and bodyHealth <= 0) or VEHICLE.IS_VEHICLE_DRIVEABLE(vehicle) then
-        NETWORK.NETWORK_SET_NO_LONGER_NEEDED(vehicle, true)
+    if (engineHealth <= 0 and bodyHealth <= 0) or IS_VEHICLE_DRIVEABLE(vehicle) then
+        NETWORK_SET_NO_LONGER_NEEDED(vehicle, true)
     end
 end
 local current_asuka_tech_vehicle = nil
@@ -1725,11 +1725,11 @@ path_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly
 
         local vehicle = get_user_vehicle()
         if vehicle then
-            if not is_vehicle_free_for_use(vehicle) and current_asuka_tech_vehicle and does_entity_exist(current_asuka_tech_vehicle) then
+            if not is_vehicle_free_for_use(vehicle) and current_asuka_tech_vehicle and PIP_does_entity_exist(current_asuka_tech_vehicle) then
                 vehicle = current_asuka_tech_vehicle
             end
             if is_vehicle_free_for_use(vehicle) then
-                if VEHICLE.IS_VEHICLE_DRIVEABLE(vehicle) then
+                if IS_VEHICLE_DRIVEABLE(vehicle) then
                     if current_asuka_tech_vehicle == nil or current_asuka_tech_vehicle ~= vehicle then
                         current_asuka_tech_vehicle = vehicle
                         buff_asuka_tech(vehicle)
@@ -1745,11 +1745,11 @@ path_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly
                     end
 
                     --if not vehicleProtected and is_vehicle_empty(vehicle) then
-                    --    ENTITY.FREEZE_ENTITY_POSITION(vehicle, true)
+                    --    FREEZE_ENTITY_POSITION(vehicle, true)
                     --    vehicleProtected = true
                     --end
                     --if vehicleProtected and not is_vehicle_empty(vehicle) then
-                    --    ENTITY.FREEZE_ENTITY_POSITION(vehicle, false)
+                    --    FREEZE_ENTITY_POSITION(vehicle, false)
                     --    vehicleProtected = false
                     --end
 
@@ -1757,21 +1757,21 @@ path_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly
                         repair_asuka_tech(vehicle)
                     end
 
-                    if VEHICLE.GET_ARE_BOMB_BAY_DOORS_OPEN(vehicle) then
-                        if VEHICLE.GET_VEHICLE_BOMB_AMMO(vehicle) < 13 then
-                            VEHICLE.SET_VEHICLE_BOMB_AMMO(vehicle, 13)
+                    if GET_ARE_BOMB_BAY_DOORS_OPEN(vehicle) then
+                        if GET_VEHICLE_BOMB_AMMO(vehicle) < 13 then
+                            SET_VEHICLE_BOMB_AMMO(vehicle, 13)
                         end
                     end
                     
-                    local counterAmmo = VEHICLE.GET_VEHICLE_COUNTERMEASURE_AMMO(vehicle)
+                    local counterAmmo = GET_VEHICLE_COUNTERMEASURE_AMMO(vehicle)
                     if counterAmmo ~= 0 and counterAmmo < 13 then
-                        VEHICLE.SET_VEHICLE_COUNTERMEASURE_AMMO(vehicle, 13)
+                        SET_VEHICLE_COUNTERMEASURE_AMMO(vehicle, 13)
                     end
 
-                    if VEHICLE.IS_VEHICLE_ATTACHED_TO_TRAILER(vehicle) then
+                    if IS_VEHICLE_ATTACHED_TO_TRAILER(vehicle) then
                         local vehicle_mm = nil
                         if saved_trailer_id then
-                            vehicle_mm = VEHICLE._GET_VEHICLE_TRAILER_PARENT_VEHICLE(saved_trailer_id)
+                            vehicle_mm = _GET_VEHICLE_TRAILER_PARENT_VEHICLE(saved_trailer_id)
                         end
                         local trailer = nil
                         if vehicle_mm == vehicle then
@@ -1789,25 +1789,25 @@ path_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly
                     else
                         saved_trailer_id = nil
                     end
-                    if asukaTechBlipVeh ~= current_asuka_tech_vehicle or (asukaTechBlip and not HUD.DOES_BLIP_EXIST(asukaTechBlip)) then
+                    if asukaTechBlipVeh ~= current_asuka_tech_vehicle or (asukaTechBlip and not DOES_BLIP_EXIST(asukaTechBlip)) then
                         asukaTechBlipVeh = current_asuka_tech_vehicle
                         if asukaTechBlip then
                             util.remove_blip(asukaTechBlip)
                         end
                         util.yield(113)
-                        asukaTechBlip = HUD.ADD_BLIP_FOR_ENTITY(current_asuka_tech_vehicle)
-                        HUD.SET_BLIP_DISPLAY(asukaTechBlip, 2)
-                        HUD.SET_BLIP_SCALE(asukaTechBlip, 0.8)
-                        HUD.BEGIN_TEXT_COMMAND_SET_BLIP_NAME("STRING")
-                        HUD.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Asuka Tech Vehicle')
-                        HUD.END_TEXT_COMMAND_SET_BLIP_NAME(asukaTechBlip)
-                        HUD.SET_BLIP_PRIORITY(asukaTechBlip, 13)
+                        asukaTechBlip = ADD_BLIP_FOR_ENTITY(current_asuka_tech_vehicle)
+                     SET_BLIP_DISPLAY(asukaTechBlip, 2)
+                     SET_BLIP_SCALE(asukaTechBlip, 0.8)
+                     BEGIN_TEXT_COMMAND_SET_BLIP_NAME("STRING")
+                     ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Asuka Tech Vehicle')
+                     END_TEXT_COMMAND_SET_BLIP_NAME(asukaTechBlip)
+                     SET_BLIP_PRIORITY(asukaTechBlip, 13)
                     end
-                    if HUD.GET_BLIP_SPRITE(asukaTechBlip) ~= 641 then
-                        HUD.SET_BLIP_SPRITE(asukaTechBlip, 641)
+                    if GET_BLIP_SPRITE(asukaTechBlip) ~= 641 then
+                     SET_BLIP_SPRITE(asukaTechBlip, 641)
                     end
-                    if HUD.GET_BLIP_COLOUR(asukaTechBlip) ~= 76 then
-                        HUD.SET_BLIP_COLOUR(asukaTechBlip, 76)
+                    if GET_BLIP_COLOUR(asukaTechBlip) ~= 76 then
+                     SET_BLIP_COLOUR(asukaTechBlip, 76)
                     end
                     local isDriving = nil
                     if isInVehicleAT then
@@ -1816,28 +1816,28 @@ path_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly
                         isDriving = is_user_driving_vehicle(false)
                     end
                     if isDriving and not isInVehicleAT then
-                        VEHICLE.SET_VEHICLE_ENGINE_ON(vehicle, true, true, false)
+                        SET_VEHICLE_ENGINE_ON(vehicle, true, true, false)
                         isInVehicleAT = true
                         util.yield(666)
-                        --VEHICLE.SET_VEHICLE_DOORS_SHUT(vehicle, false)
-                        if VEHICLE.DOES_VEHICLE_HAVE_SEARCHLIGHT(vehicle) then
-                            VEHICLE.SET_VEHICLE_SEARCHLIGHT(vehicle, true, true)
+                        --SET_VEHICLE_DOORS_SHUT(vehicle, false)
+                        if DOES_VEHICLE_HAVE_SEARCHLIGHT(vehicle) then
+                            SET_VEHICLE_SEARCHLIGHT(vehicle, true, true)
                         end
-                        if asukaTechBlip and HUD.DOES_BLIP_EXIST(asukaTechBlip) then
-                            HUD.SET_BLIP_PRIORITY(asukaTechBlip, 25)
-                            HUD.SET_BLIP_SCALE(asukaTechBlip, 0.5)
+                        if asukaTechBlip and DOES_BLIP_EXIST(asukaTechBlip) then
+                         SET_BLIP_PRIORITY(asukaTechBlip, 25)
+                         SET_BLIP_SCALE(asukaTechBlip, 0.5)
                         end
                     elseif not isDriving and isInVehicleAT then
                         isInVehicleAT = false
                         util.yield(666)
-                        --VEHICLE.SET_VEHICLE_DOORS_SHUT(vehicle, false)
-                        if asukaTechBlip and HUD.DOES_BLIP_EXIST(asukaTechBlip) then
-                            HUD.SET_BLIP_PRIORITY(asukaTechBlip, 13)
-                            HUD.SET_BLIP_SCALE(asukaTechBlip, 0.7)
+                        --SET_VEHICLE_DOORS_SHUT(vehicle, false)
+                        if asukaTechBlip and DOES_BLIP_EXIST(asukaTechBlip) then
+                         SET_BLIP_PRIORITY(asukaTechBlip, 13)
+                         SET_BLIP_SCALE(asukaTechBlip, 0.7)
                         end
                     end
                 else
-                    NETWORK.NETWORK_SET_NO_LONGER_NEEDED(vehicle, true)
+                    NETWORK_SET_NO_LONGER_NEEDED(vehicle, true)
                 end
             end
             util.yield(1000)
@@ -1881,18 +1881,18 @@ end
 path_asuka_tech_hp_bar = menu.toggle_loop(Asuka_Tech, "Asuka Tech HP Bar", {""}, "", function()
     if transitionState(true) <3 then
         local target_vehicle = get_user_vehicle()
-        if does_entity_exist(current_asuka_tech_vehicle) then
+        if PIP_does_entity_exist(current_asuka_tech_vehicle) then
             target_vehicle = current_asuka_tech_vehicle
         end
-        if does_entity_exist(target_vehicle) then
+        if PIP_does_entity_exist(target_vehicle) then
             local screenWidth, screenHeight = directx.get_client_size()
             local x = 0.0
             local y = 1.0
             local width = 0.228
             local height = 0.003
             local maxHealth = 1000
-            local engineHealth = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(target_vehicle)
-            local bodyHealth = VEHICLE.GET_VEHICLE_BODY_HEALTH(target_vehicle)
+            local engineHealth = GET_VEHICLE_ENGINE_HEALTH(target_vehicle)
+            local bodyHealth = GET_VEHICLE_BODY_HEALTH(target_vehicle)
             local yEngine = y
             local yBody = yEngine - height
             draw_bar(engineHealth, maxHealth, x, yEngine, width, height, { r = 34.0/255, g = 139.0/255, b = 34.0/255, a = 1.0 }, { r = 255.0/255, g = 255.0/255, b = 255.0/255, a = 0.0 })
@@ -1906,12 +1906,12 @@ end)
 path_asuka_tech_info_overlay = menu.toggle_loop(Asuka_Tech, "Asuka Tech Info Overlay", {""}, "", function()
     if transitionState(true) < 3 then
         local target_vehicle = get_user_vehicle()
-        if does_entity_exist(current_asuka_tech_vehicle) then
+        if PIP_does_entity_exist(current_asuka_tech_vehicle) then
             target_vehicle = current_asuka_tech_vehicle
         end
-        if does_entity_exist(target_vehicle) then
-            local enginePercent = VEHICLE.GET_VEHICLE_ENGINE_HEALTH(target_vehicle) / 10
-            local bodyPercent = VEHICLE.GET_VEHICLE_BODY_HEALTH(target_vehicle) / 10
+        if PIP_does_entity_exist(target_vehicle) then
+            local enginePercent = GET_VEHICLE_ENGINE_HEALTH(target_vehicle) / 10
+            local bodyPercent = GET_VEHICLE_BODY_HEALTH(target_vehicle) / 10
             util.draw_debug_text(util.reverse_joaat(entities.get_model_hash(target_vehicle)).."\nEngine Health: "..string.format("%.1f%%", enginePercent).."\nBody Health: "..string.format("%.1f%%", bodyPercent))
         end
     else
@@ -1930,34 +1930,34 @@ end)
 
 menu.action(Vehicle, "Enter Asuka Tech Vehicle", {"enterasuka"}, "Enter the current Asuka Tech Vehicle", function()
     local target_vehicle = get_user_vehicle()
-    if does_entity_exist(current_asuka_tech_vehicle) then
+    if PIP_does_entity_exist(current_asuka_tech_vehicle) then
         target_vehicle = current_asuka_tech_vehicle
     end
-    if does_entity_exist(target_vehicle) then
-        local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(target_vehicle, -1)
+    if PIP_does_entity_exist(target_vehicle) then
+        local driver = GET_PED_IN_VEHICLE_SEAT(target_vehicle, -1)
         local my_ped = players.user_ped()
         if is_vehicle_free_for_use(target_vehicle) then
             requestControl(target_vehicle)
-            PED.SET_PED_INTO_VEHICLE(my_ped, target_vehicle, -1)
+            SET_PED_INTO_VEHICLE(my_ped, target_vehicle, -1)
         else
-            PED.SET_PED_INTO_VEHICLE(my_ped, target_vehicle, -2)
+            SET_PED_INTO_VEHICLE(my_ped, target_vehicle, -2)
         end
         util.yield(666)
         buff_asuka_tech(target_vehicle)
     else
-        notify("Could not find a Asuka Tech Vehicle. :C")
+        notify("Could not find a Asuka Tech  :C")
     end
 end)
 
 menu.action(Vehicle, "Teleport and Enter Asuka Tech Vehicle", {"tpenterasuka"}, "Enter the current Asuka Tech Vehicle", function()
     local target_vehicle = get_user_vehicle()
-    if does_entity_exist(current_asuka_tech_vehicle) then
+    if PIP_does_entity_exist(current_asuka_tech_vehicle) then
         target_vehicle = current_asuka_tech_vehicle
     end
-    if does_entity_exist(target_vehicle) then
+    if PIP_does_entity_exist(target_vehicle) then
         if not is_vehicle_free_for_use(target_vehicle) then
             requestControl(target_vehicle)
-            ENTITY.SET_ENTITY_COORDS_NO_OFFSET(target_vehicle, 1057.81, -3200.08, -39.57, true, true, true)
+            SET_ENTITY_COORDS_NO_OFFSET(target_vehicle, 1057.81, -3200.08, -39.57, true, true, true)
             local TEATV_Timeout = os.time()
             while not is_vehicle_free_for_use(target_vehicle) do
                 util.yield(666)
@@ -1971,49 +1971,49 @@ menu.action(Vehicle, "Teleport and Enter Asuka Tech Vehicle", {"tpenterasuka"}, 
         end
         local pos = players.get_position(players.user())
         local currentRotation = players.get_cam_rot(players.user())
-        ENTITY.SET_ENTITY_COORDS_NO_OFFSET(target_vehicle, pos.x, pos.y, pos.z, true, true, true)
-        ENTITY.SET_ENTITY_ROTATION(target_vehicle, 0.0, 0.0, currentRotation.z, 2, true)
+        SET_ENTITY_COORDS_NO_OFFSET(target_vehicle, pos.x, pos.y, pos.z, true, true, true)
+        SET_ENTITY_ROTATION(target_vehicle, 0.0, 0.0, currentRotation.z, 2, true)
         if is_vehicle_free_for_use(target_vehicle) then
             requestControl(target_vehicle)
-            PED.SET_PED_INTO_VEHICLE(players.user_ped(), target_vehicle, -1)
+            SET_PED_INTO_VEHICLE(players.user_ped(), target_vehicle, -1)
         else
-            PED.SET_PED_INTO_VEHICLE(players.user_ped(), target_vehicle, -2)
+            SET_PED_INTO_VEHICLE(players.user_ped(), target_vehicle, -2)
         end
         util.yield(666)
         buff_asuka_tech(target_vehicle)
     else
-        notify("Could not find a Asuka Tech Vehicle. :C")
+        notify("Could not find a Asuka Tech  :C")
     end
 end)
 
 menu.action(Vehicle, "Detonate Asuka Tech Vehicle", {"boomasuka"}, "", function()
     local target_vehicle = get_user_vehicle()
-    if does_entity_exist(current_asuka_tech_vehicle) then
+    if PIP_does_entity_exist(current_asuka_tech_vehicle) then
         target_vehicle = current_asuka_tech_vehicle
     end
     requestControl(target_vehicle)
     entities.set_can_migrate(target_vehicle, false)
-    VEHICLE.ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(target_vehicle)
-    VEHICLE.LOCK_DOORS_WHEN_NO_LONGER_NEEDED(target_vehicle)
-    local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(target_vehicle, -1)
+    ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(target_vehicle)
+    LOCK_DOORS_WHEN_NO_LONGER_NEEDED(target_vehicle)
+    local driverPed = GET_PED_IN_VEHICLE_SEAT(target_vehicle, -1)
     if driverPed ~= players.user_ped() then
-        VEHICLE.SET_VEHICLE_ALARM(target_vehicle, true)
-        VEHICLE.START_VEHICLE_ALARM(target_vehicle)
-        VEHICLE.SET_VEHICLE_IS_STOLEN(target_vehicle, true)
-        VEHICLE.SET_VEHICLE_DOORS_LOCKED(target_vehicle, 5)
-        VEHICLE.SET_VEHICLE_UNDRIVEABLE(target_vehicle, true)
-        VEHICLE.SET_VEHICLE_IS_WANTED(target_vehicle, true)
-        VEHICLE.SET_VEHICLE_OUT_OF_CONTROL(target_vehicle, false, true)
-        VEHICLE.SET_VEHICLE_NEON_COLOUR(target_vehicle, 255, 13, 13)
-        VEHICLE.SET_VEHICLE_NEON_ENABLED(target_vehicle, 0, true)
-        VEHICLE.SET_VEHICLE_NEON_ENABLED(target_vehicle, 1, true)
-        VEHICLE.SET_VEHICLE_NEON_ENABLED(target_vehicle, 2, true)
-        VEHICLE.SET_VEHICLE_NEON_ENABLED(target_vehicle, 3, true)
-        VEHICLE.SET_VEHICLE_XENON_LIGHT_COLOR_INDEX(target_vehicle, 8)
+        SET_VEHICLE_ALARM(target_vehicle, true)
+        START_VEHICLE_ALARM(target_vehicle)
+        SET_VEHICLE_IS_STOLEN(target_vehicle, true)
+        SET_VEHICLE_DOORS_LOCKED(target_vehicle, 5)
+        SET_VEHICLE_UNDRIVEABLE(target_vehicle, true)
+        SET_VEHICLE_IS_WANTED(target_vehicle, true)
+        SET_VEHICLE_OUT_OF_CONTROL(target_vehicle, false, true)
+        SET_VEHICLE_NEON_COLOUR(target_vehicle, 255, 13, 13)
+        SET_VEHICLE_NEON_ENABLED(target_vehicle, 0, true)
+        SET_VEHICLE_NEON_ENABLED(target_vehicle, 1, true)
+        SET_VEHICLE_NEON_ENABLED(target_vehicle, 2, true)
+        SET_VEHICLE_NEON_ENABLED(target_vehicle, 3, true)
+        SET_VEHICLE_XENON_LIGHT_COLOR_INDEX(target_vehicle, 8)
         util.yield(3666)
     end
-    VEHICLE.DETONATE_VEHICLE_PHONE_EXPLOSIVE_DEVICE(target_vehicle)
-    NETWORK.NETWORK_SET_NO_LONGER_NEEDED(target_vehicle, true)
+    DETONATE_VEHICLE_PHONE_EXPLOSIVE_DEVICE(target_vehicle)
+    NETWORK_SET_NO_LONGER_NEEDED(target_vehicle, true)
 end)
 
 menu.divider(Vehicle, "Lights")
@@ -2023,61 +2023,61 @@ local Vehicle_Light = menu.list(Vehicle, 'Vehicle Light Modes', {}, 'Flash the l
 path_vehicle_light_rhythm_sos = menu.toggle_loop(Vehicle_Light, "S.O.S. Morse",{"sosmorse"},"",function()
     local vehicle = get_user_vehicle()
     if vehicle then
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        SET_VEHICLE_LIGHTS(vehicle, 1)
         util.yield(100)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+        SET_VEHICLE_LIGHTS(vehicle, 2)
         util.yield(100)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        SET_VEHICLE_LIGHTS(vehicle, 1)
         util.yield(50)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        SET_VEHICLE_LIGHTS(vehicle, 1)
         util.yield(100)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+        SET_VEHICLE_LIGHTS(vehicle, 2)
         util.yield(100)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        SET_VEHICLE_LIGHTS(vehicle, 1)
         util.yield(50)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        SET_VEHICLE_LIGHTS(vehicle, 1)
         util.yield(100)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+        SET_VEHICLE_LIGHTS(vehicle, 2)
         util.yield(100)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        SET_VEHICLE_LIGHTS(vehicle, 1)
 
         util.yield(300)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        SET_VEHICLE_LIGHTS(vehicle, 1)
         util.yield(100)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+        SET_VEHICLE_LIGHTS(vehicle, 2)
         util.yield(300)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        SET_VEHICLE_LIGHTS(vehicle, 1)
         util.yield(50)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        SET_VEHICLE_LIGHTS(vehicle, 1)
         util.yield(100)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+        SET_VEHICLE_LIGHTS(vehicle, 2)
         util.yield(300)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        SET_VEHICLE_LIGHTS(vehicle, 1)
         util.yield(50)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        SET_VEHICLE_LIGHTS(vehicle, 1)
         util.yield(100)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+        SET_VEHICLE_LIGHTS(vehicle, 2)
         util.yield(300)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        SET_VEHICLE_LIGHTS(vehicle, 1)
 
         util.yield(300)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        SET_VEHICLE_LIGHTS(vehicle, 1)
         util.yield(100)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+        SET_VEHICLE_LIGHTS(vehicle, 2)
         util.yield(100)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        SET_VEHICLE_LIGHTS(vehicle, 1)
         util.yield(50)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        SET_VEHICLE_LIGHTS(vehicle, 1)
         util.yield(100)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+        SET_VEHICLE_LIGHTS(vehicle, 2)
         util.yield(100)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        SET_VEHICLE_LIGHTS(vehicle, 1)
         util.yield(50)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        SET_VEHICLE_LIGHTS(vehicle, 1)
         util.yield(100)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+        SET_VEHICLE_LIGHTS(vehicle, 2)
         util.yield(100)
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+        SET_VEHICLE_LIGHTS(vehicle, 1)
         util.yield(1666)
     end
 end, function()
@@ -2085,21 +2085,21 @@ end, function()
     isOutVehicle = false
     local vehicle = get_user_vehicle()
     if vehicle then
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 0)
+        SET_VEHICLE_LIGHTS(vehicle, 0)
     end
 end)
 
 path_vehicle_light_rhythm_rapid_slowdown = menu.toggle_loop(Vehicle_Light, "Flash on Rapid slowdown",{"rapidslowdownwarn"},"",function()
     local vehicle = get_user_vehicle()
     if is_user_driving_vehicle(true) then
-        local speedVector = ENTITY.GET_ENTITY_SPEED_VECTOR(vehicle, true)
+        local speedVector = GET_ENTITY_SPEED_VECTOR(vehicle, true)
         local forwardSpeedKmh = math.abs(speedVector.y) * 3.6
         if PAD.GET_CONTROL_VALUE(2, 72) > 213 or PAD.IS_CONTROL_PRESSED(2, 76) then
             if speedVector.y > 0 and forwardSpeedKmh > 13 then
                 for _ = 1, 3 do
-                    VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 1)
+                    SET_VEHICLE_LIGHTS(vehicle, 1)
                     util.yield(66)
-                    VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 2)
+                    SET_VEHICLE_LIGHTS(vehicle, 2)
                     util.yield(66)
                 end
             else
@@ -2116,7 +2116,7 @@ end, function()
     isOutVehicle = false
     local vehicle = get_user_vehicle()
     if vehicle then
-        VEHICLE.SET_VEHICLE_LIGHTS(vehicle, 0)
+        SET_VEHICLE_LIGHTS(vehicle, 0)
     end
 end)
 
@@ -2131,8 +2131,8 @@ path_auto_vehicle_light_color = menu.toggle_loop(Vehicle, "Auto Vehicle Light Co
     if vehicleFavColor ~= 0 then
         if transitionState(true) <3 then
             local vehicle = get_user_vehicle()
-            if vehicle and is_user_driving_vehicle(false) and VEHICLE.GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 then
-                if DECORATOR.DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 or vehicle == entities.get_user_personal_vehicle_as_handle() then
+            if vehicle and is_user_driving_vehicle(false) and GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 then
+                if DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 or vehicle == entities.get_user_personal_vehicle_as_handle() then
                     vehicleLightsSet = vehicle
                     menu.trigger_commands("headlights "..vehicleFavColor)
                 end
@@ -2210,8 +2210,8 @@ path_heli_sparrow_handling = menu.toggle_loop(Vehicle, "Heli Sparrow Handling",{
     if not players.is_in_interior(players.user()) and transitionState(true) <3 then
         local vehicle = get_user_vehicle()
         if vehicle then
-            if VEHICLE.GET_VEHICLE_CLASS(vehicle) == 15 then
-                if VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1) == players.user_ped() then
+            if GET_VEHICLE_CLASS(vehicle) == 15 then
+                if GET_PED_IN_VEHICLE_SEAT(vehicle, -1) == players.user_ped() then
                     if sparrowHandeling == nil or sparrowHandeling ~= vehicle then
                         sparrowHandeling = vehicle
                         menu.trigger_commands("vhacceleration 1.00000")
@@ -2334,7 +2334,7 @@ path_easy_opmk2ud_handling = menu.toggle_loop(Vehicle, "Easier Oppressor MK2 UD 
         local vehicle = get_user_vehicle()
         if vehicle then
             if entities.get_model_hash(vehicle) == 2069146067 then
-                if VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1) == players.user_ped() then
+                if GET_PED_IN_VEHICLE_SEAT(vehicle, -1) == players.user_ped() then
                     if oppressorHandeling == nil or oppressorHandeling ~= vehicle then
                         oppressorHandeling = vehicle
                         menu.trigger_commands("vhselflevelingpitchtorquescale 0.0000")
@@ -2365,7 +2365,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     local temp_door_lock = false
     
     if playerWaypoint then
-        HUD.DELETE_WAYPOINTS_FROM_THIS_PLAYER()
+     DELETE_WAYPOINTS_FROM_THIS_PLAYER()
     end
 
     if menu.get_state(path_auto_vehicle_light_color) == "On" then
@@ -2379,20 +2379,20 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     end
 
     for ipairs(nearbyVehicles) as vehicle do
-        if ENTITY.GET_ENTITY_HEALTH(vehicle) == 0 then
+        if GET_ENTITY_HEALTH(vehicle) == 0 then
             goto continue_loop
         end
-        if ENTITY.IS_ENTITY_ATTACHED_TO_ANY_VEHICLE(vehicle) then
+        if IS_ENTITY_ATTACHED_TO_ANY_VEHICLE(vehicle) then
             goto continue_loop
         end
-        if not does_entity_exist(vehicle) then
+        if not PIP_does_entity_exist(vehicle) then
             goto continue_loop
         end
-        local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
-        if not PED.IS_PED_A_PLAYER(driver) and driver ~= 0 then
+        local driver = GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
+        if not IS_PED_A_PLAYER(driver) and driver ~= 0 then
             goto continue_loop
         end
-        local vehiclePosition = ENTITY.GET_ENTITY_COORDS(vehicle)
+        local vehiclePosition = GET_ENTITY_COORDS(vehicle)
         local distance = playerPosition:distance(vehiclePosition)
 
         if distance <= 100.0 then
@@ -2400,11 +2400,11 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
             requestControl(vehicle)
             util.yield(213)
             if driver == 0 or driver == players.user() then
-                PED.SET_PED_INTO_VEHICLE(my_ped, vehicle, -1)
+                SET_PED_INTO_VEHICLE(my_ped, vehicle, -1)
                 -- Full fix
                 fullfixed = fullfixed + 1
             else
-                PED.SET_PED_INTO_VEHICLE(my_ped, vehicle, -2)
+                SET_PED_INTO_VEHICLE(my_ped, vehicle, -2)
                 -- Possible fix
                 couldbefixed = couldbefixed + 1
             end
@@ -2412,10 +2412,10 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
             menu.trigger_commands("fixvehicle")
             buff_asuka_tech(vehicle)
             util.yield(213)
-            TASK.TASK_LEAVE_VEHICLE(my_ped, vehicle, 16)
+            TASK_LEAVE_VEHICLE(my_ped, vehicle, 16)
             util.yield(213)
-            if HUD.IS_WAYPOINT_ACTIVE() then
-                HUD.DELETE_WAYPOINTS_FROM_THIS_PLAYER()
+            if IS_WAYPOINT_ACTIVE() then
+             DELETE_WAYPOINTS_FROM_THIS_PLAYER()
                 util.yield(213)
             end
         end
@@ -2446,8 +2446,8 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     if temp_door_lock then
         menu.set_state(menu.ref_by_path("Vehicle>Lock Doors>Lock Doors"), "On")
     end
-    if HUD.IS_WAYPOINT_ACTIVE() then
-        HUD.DELETE_WAYPOINTS_FROM_THIS_PLAYER()
+    if IS_WAYPOINT_ACTIVE() then
+     DELETE_WAYPOINTS_FROM_THIS_PLAYER()
         util.yield(111)
     end
     if playerWaypoint then
@@ -2474,13 +2474,13 @@ local moonCircle = 255
 path_vampire_young = menu.toggle(Outfit, "Forever young", {"foreveryoung"}, "Prevents you Char from getting old, destroyed and infected Skin.", function(on)
     if on then
         foreverYoung = true
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 9, 255, 0.0) --Remove Moles/Freckles. (face)
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 7, 255, 0.0) --Remove Sun Damage.
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 6, 11, 100.0) --Pale Face. (later making it optional)
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 3, 255, 0.0) --Remove any aging processes.
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
+        SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
+        SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
+        SET_PED_HEAD_OVERLAY(players.user_ped(), 9, 255, 0.0) --Remove Moles/Freckles. (face)
+        SET_PED_HEAD_OVERLAY(players.user_ped(), 7, 255, 0.0) --Remove Sun Damage.
+        SET_PED_HEAD_OVERLAY(players.user_ped(), 6, 11, 100.0) --Pale Face. (later making it optional)
+        SET_PED_HEAD_OVERLAY(players.user_ped(), 3, 255, 0.0) --Remove any aging processes.
+        SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
     else
         foreverYoung = false
     end
@@ -2501,7 +2501,7 @@ path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLo
         end
         menu.trigger_commands("lockoutfit off")
     else
-        if NETWORK.NETWORK_IS_ACTIVITY_SESSION() and 4 >= PLAYER.GET_NUMBER_OF_PLAYERS() then
+        if NETWORK_IS_ACTIVITY_SESSION() and 4 >= GET_NUMBER_OF_PLAYERS() then
             if ChangedHelmet then
                 menu.trigger_commands("hat -1")
                 ChangedHelmet = false
@@ -2518,8 +2518,8 @@ path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLo
                 temp_holding_outfit = false
             end
             if OutfitLockHelmet ~= -1 then
-                local vehicleClass = VEHICLE.GET_VEHICLE_CLASS(PED.GET_VEHICLE_PED_IS_IN(players.user_ped(), true))
-                if PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) and vehicleClass then
+                local vehicleClass = GET_VEHICLE_CLASS(GET_VEHICLE_PED_IS_IN(players.user_ped(), true))
+                if IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) and vehicleClass then
                     if menu.get_state(menu.ref_by_path("Self>Appearance>Outfit>Hat")) == "-1" and focused ~= "Profiles" then
                         if vehicleClass == 8 or vehicleClass == 13 then
                             menu.trigger_commands("hat "..OutfitLockHelmet)
@@ -2532,9 +2532,9 @@ path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLo
                     end
                 else
                     if ChangedHelmet then
-                        while ENTITY.GET_ENTITY_SPEED(players.user_ped()) ~=0 do
+                        while GET_ENTITY_SPEED(players.user_ped()) ~=0 do
                             util.yield(666)
-                            if ENTITY.GET_ENTITY_SPEED(players.user_ped()) ==0 then
+                            if GET_ENTITY_SPEED(players.user_ped()) ==0 then
                                 break
                             end
                             if lang.get_string(menu.get_current_menu_list():getParent().menu_name) == "Profiles" then
@@ -2558,13 +2558,13 @@ path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLo
         util.yield(666)
     end
     if foreverYoung and transitionState(true) <3 then
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 9, 255, 0.0) --Remove Moles/Freckles. (face)
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 7, 255, 0.0) --Remove Sun Damage.
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 6, 11, 100.0) --Pale Face. (later making it optional)
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 3, 255, 0.0) --Remove any aging processes.
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
+        SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
+        SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
+        SET_PED_HEAD_OVERLAY(players.user_ped(), 9, 255, 0.0) --Remove Moles/Freckles. (face)
+        SET_PED_HEAD_OVERLAY(players.user_ped(), 7, 255, 0.0) --Remove Sun Damage.
+        SET_PED_HEAD_OVERLAY(players.user_ped(), 6, 11, 100.0) --Pale Face. (later making it optional)
+        SET_PED_HEAD_OVERLAY(players.user_ped(), 3, 255, 0.0) --Remove any aging processes.
+        SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
     end
 end, function()
     menu.trigger_commands("lockoutfit off")
@@ -2591,13 +2591,13 @@ local function SuperClean(fix, ignoreMission)
     menu.trigger_commands("deleterope")
     util.yield(13)
     for pairs(entities.get_all_peds_as_handles()) as ent do
-        if not PED.IS_PED_A_PLAYER(ent) then
-            if does_entity_exist(ent) then
+        if not IS_PED_A_PLAYER(ent) then
+            if PIP_does_entity_exist(ent) then
                 if not ignoreMission then
                     entities.delete(ent)
                     ct += 1
                 else
-                    if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
+                    if not IS_ENTITY_A_MISSION_ENTITY(ent) then
                         entities.delete(ent)
                         ct += 1
                     end
@@ -2608,14 +2608,14 @@ local function SuperClean(fix, ignoreMission)
     end
     util.yield(13)
     for pairs(entities.get_all_vehicles_as_handles()) as ent do
-        local driver = VEHICLE.GET_PED_IN_VEHICLE_SEAT(ent, -1)
-        if not PED.IS_PED_A_PLAYER(driver) then
-            if does_entity_exist(ent) then
+        local driver = GET_PED_IN_VEHICLE_SEAT(ent, -1)
+        if not IS_PED_A_PLAYER(driver) then
+            if PIP_does_entity_exist(ent) then
                 if not ignoreMission then
                     entities.delete(ent)
                     ct += 1
                 else
-                    if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
+                    if not IS_ENTITY_A_MISSION_ENTITY(ent) then
                         entities.delete(ent)
                         ct += 1
                     end
@@ -2626,12 +2626,12 @@ local function SuperClean(fix, ignoreMission)
     end
     util.yield(13)
     for pairs(entities.get_all_objects_as_handles()) as ent do
-        if does_entity_exist(ent) then
+        if PIP_does_entity_exist(ent) then
             if not ignoreMission then
                 entities.delete(ent)
                 ct += 1
             else
-                if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
+                if not IS_ENTITY_A_MISSION_ENTITY(ent) then
                     entities.delete(ent)
                     ct += 1
                 end
@@ -2641,12 +2641,12 @@ local function SuperClean(fix, ignoreMission)
     end
     util.yield(13)
     for pairs(entities.get_all_pickups_as_handles()) as ent do
-        if does_entity_exist(ent) then
+        if PIP_does_entity_exist(ent) then
             if not ignoreMission then
                 entities.delete(ent)
                 ct += 1
             else
-                if not ENTITY.IS_ENTITY_A_MISSION_ENTITY(ent) then
+                if not IS_ENTITY_A_MISSION_ENTITY(ent) then
                     entities.delete(ent)
                     ct += 1
                 end
@@ -2685,7 +2685,7 @@ end)
 menu.divider(Game, "<3")
 
 path_auto_interact = menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'}, "Auto Interact with E in some situations and time warp the animation.", function ()
-    if HUD.IS_HELP_MESSAGE_BEING_DISPLAYED() then
+    if IS_HELP_MESSAGE_BEING_DISPLAYED() then
         local interactionsE = {
             "FXR_INTER_C",
             "ACID_BOOST_P",
@@ -2733,7 +2733,7 @@ path_auto_interact = menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'},
         }
         for ipairs(interactionsRemove) as label do
             if IS_HELP_MSG_DISPLAYED(label) then
-                HUD.CLEAR_ALL_HELP_MESSAGES()
+             CLEAR_ALL_HELP_MESSAGES()
                 break
             end
         end
@@ -2743,8 +2743,8 @@ path_auto_interact = menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'},
 end)
 
 path_auto_skip_conversation = menu.toggle_loop(Game, "Auto Skip Conversation",{"pgascon"},"Automatically skip all conversations.",function()
-    if AUDIO.IS_SCRIPTED_CONVERSATION_ONGOING() then
-        AUDIO.SKIP_TO_NEXT_SCRIPTED_CONVERSATION_LINE()
+    if IS_SCRIPTED_CONVERSATION_ONGOING() then
+        SKIP_TO_NEXT_SCRIPTED_CONVERSATION_LINE()
     end
 end)
 
@@ -2757,12 +2757,12 @@ local avoidCutsceneSkipHere = {
     { x = 819.66, y = -2206.27, z = 30.95 }, -- Cassino Hatch
 }
 path_auto_skip_cutscene = menu.toggle_loop(Game, "Auto Skip Cutscene", {"pgascut"}, "Automatically skip all cutscenes.", function()
-    if transitionState(true) <3 and CUTSCENE.IS_CUTSCENE_PLAYING() then
+    if transitionState(true) <3 and IS_CUTSCENE_PLAYING() then
         local playerPosition = players.get_position(players.user())
         local skipCutscene = true
 
         for i, position in pairs(avoidCutsceneSkipHere) do
-            local distance = SYSTEM.VDIST(playerPosition.x, playerPosition.y, playerPosition.z, position.x, position.y, position.z)
+            local distance = VDIST(playerPosition.x, playerPosition.y, playerPosition.z, position.x, position.y, position.z)
             local radiusSkip = 25
             distance = math.floor(distance + 0.5)
         
@@ -2773,7 +2773,7 @@ path_auto_skip_cutscene = menu.toggle_loop(Game, "Auto Skip Cutscene", {"pgascut
         end
         
         if skipCutscene then
-            CUTSCENE.STOP_CUTSCENE_IMMEDIATELY()
+            STOP_CUTSCENE_IMMEDIATELY()
             notify("If this cutscene skip broke a mission!\nUse \"pgcopypos\" and send it to the PIP Girl Developer.")
             util.yield(6666)
         end
@@ -2842,14 +2842,14 @@ local avoidWarningSkipHere = {
 }
 local lastWarnifyTime = {}
 path_auto_accept_warning = menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warnings in the game.", function()
-    local mess_hash = math.abs(HUD.GET_WARNING_SCREEN_MESSAGE_HASH())
+    local mess_hash = math.abs(GET_WARNING_SCREEN_MESSAGE_HASH())
 
     if mess_hash ~= 0 and (mess_hash ~= 976109292 and mess_hash ~= 1642168465) then
-        if not HUD.IS_PAUSE_MENU_ACTIVE() then
+        if not IS_PAUSE_MENU_ACTIVE() then
             local skipWarning = true
             local playerPosition = players.get_position(players.user())
             for i, position in pairs(avoidWarningSkipHere) do
-                local distance = SYSTEM.VDIST(playerPosition.x, playerPosition.y, playerPosition.z, position.x, position.y, position.z)
+                local distance = VDIST(playerPosition.x, playerPosition.y, playerPosition.z, position.x, position.y, position.z)
                 local radiusWarning = 25
                 distance = math.floor(distance + 0.5)
             
@@ -2892,7 +2892,7 @@ path_auto_accept_warning = menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw
 end)
 
 --menu.toggle_loop(Game, "Auto Spin Slots", {''}, "Tiered of manually spinning slots? , thats no more! (does not rig slots , just auto click spin)", function ()
---    if HUD.IS_HELP_MESSAGE_BEING_DISPLAYED() then
+--    if IS_HELP_MESSAGE_BEING_DISPLAYED() then
 --        if IS_HELP_MSG_DISPLAYED("SLOTS_HELPB") then
 --            PAD.SET_CONTROL_VALUE_NEXT_FRAME(2, 201, 1)
 --        end
@@ -2916,31 +2916,31 @@ path_enhanced_name_tags = menu.toggle_loop(Game, "Enhanced Name Tag's", {""}, "h
                     break
                 end
             end
-            local targetped = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)
+            local targetped = GET_PLAYER_PED_SCRIPT_INDEX(pid)
             if not entryIndex then
-                playerthing = HUD.CREATE_FAKE_MP_GAMER_TAG(targetped, players.get_name(pid), false, false, 0, 0)
+                playerthing = CREATE_FAKE_MP_GAMER_TAG(targetped, players.get_name(pid), false, false, 0, 0)
                 table.insert(playerthingy, {pid = pid, playerthing = playerthing})
             else
                 if players.get_boss(pid) ~= -1 then
-                    HUD.SET_MP_GAMER_TAG_COLOUR(playerthing, 0, players.get_org_colour(pid) + 192)
+                 SET_MP_GAMER_TAG_COLOUR(playerthing, 0, players.get_org_colour(pid) + 192)
                 else
-                    HUD.SET_MP_GAMER_TAG_COLOUR(playerthing, 0, 0)
+                 SET_MP_GAMER_TAG_COLOUR(playerthing, 0, 0)
                 end
             end
-            if not HUD.IS_MP_GAMER_TAG_ACTIVE(playerthing) then
+            if not IS_MP_GAMER_TAG_ACTIVE(playerthing) then
                 table.remove(playerthingy, entryIndex)
             end
         end
     else
         for pairs(playerthingy) as entry do
-            HUD.REMOVE_MP_GAMER_TAG(entry.playerthing)
+         REMOVE_MP_GAMER_TAG(entry.playerthing)
         end
         playerthingy = {}
     end
     util.yield(113)
 end, function()
     for pairs(playerthingy) as entry do
-        HUD.REMOVE_MP_GAMER_TAG(entry.playerthing)
+     REMOVE_MP_GAMER_TAG(entry.playerthing)
     end
     playerthingy = {}
 end)
@@ -2952,19 +2952,19 @@ end
 local function worldToScreen(coords)
     local sx = memory.alloc()
     local sy = memory.alloc()
-    local success = GRAPHICS.GET_SCREEN_COORD_FROM_WORLD_COORD(coords.x, coords.y, coords.z, sx, sy)
+    local success = GET_SCREEN_COORD_FROM_WORLD_COORD(coords.x, coords.y, coords.z, sx, sy)
     local screenx = memory.read_float(sx) local screeny = memory.read_float(sy) --memory.free(sx) memory.free(sy)
     return {x = screenx, y = screeny, success = success}
 end
 
 local r, g, b, a = memory.alloc(1), memory.alloc(1), memory.alloc(1), memory.alloc(1)
 function getOrgColor(pid)
-    pid = pid or Player.getUserPlayer()
+    pid = pid or getUserPlayer()
     local orgColorIdx = players.get_org_colour(pid)
     if orgColorIdx == -1 then
         return -1
     end
-    HUD.GET_HUD_COLOUR(orgColorIdx + 192, r, g, b, a)
+ GET_HUD_COLOUR(orgColorIdx + 192, r, g, b, a)
     local color = {
         r = memory.read_ubyte(r) / 255,
         g = memory.read_ubyte(g) / 255,
@@ -2976,18 +2976,18 @@ end
 
 local function espOnPlayer(pid, namesync)
     --coordinate stuff
-    local targetped = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)
-    local ppos = ENTITY.GET_ENTITY_COORDS(targetped)
+    local targetped = GET_PLAYER_PED_SCRIPT_INDEX(pid)
+    local ppos = GET_ENTITY_COORDS(targetped)
     local mypos = players.get_cam_pos(players.user())
     local vdist = mypos:distance(ppos)
     local show_distance = 0
-    if not PED.IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) then
+    if not IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) then
         show_distance = 420
     else
         show_distance = 666
     end
     if vdist <= show_distance then
-        local playerHeadOffset = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(targetped, 0, 0, 1.0)
+        local playerHeadOffset = GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(targetped, 0, 0, 1.0)
         local screenName = worldToScreen(playerHeadOffset)
 
         if screenName.success then
@@ -3036,17 +3036,17 @@ local function espOnPlayer(pid, namesync)
                 detectionCOLOR = colText
             end
             drawESPText(screenName, -0.10, "("..rank..") "..playerName.." ("..math.floor(vdist).."m)", txtscale, colText)
-            local health = ENTITY.GET_ENTITY_HEALTH(targetped) - 100
-            local armor = PED.GET_PED_ARMOUR(targetped)
+            local health = GET_ENTITY_HEALTH(targetped) - 100
+            local armor = GET_PED_ARMOUR(targetped)
             local textSegments = {}
             if health > 0 then
-                local maxhealth = ENTITY.GET_ENTITY_MAX_HEALTH(targetped) - 100
+                local maxhealth = GET_ENTITY_MAX_HEALTH(targetped) - 100
                 table.insert(textSegments, "(" .. health .. " / " .. maxhealth .. ")HP")
             else
                 classificationESP = classificationESP .. "(DEAD)"
             end
             if armor > 0 then
-                local maxarmor = PLAYER.GET_PLAYER_MAX_ARMOUR(pid)
+                local maxarmor = GET_PLAYER_MAX_ARMOUR(pid)
                 table.insert(textSegments, "(" .. armor .. " / " .. maxarmor .. ")AP")
             end
             if classificationESP ~= "" then
@@ -3071,7 +3071,7 @@ end)
 
 if menu.get_edition() > 1 then
     path_bone_esp_while_armed = menu.toggle_loop(Game,"Bone ESP While Armed", {"aimboneesp"}, "Also counts for armed vehicles.", function()
-        local weapon = math.abs(WEAPON.GET_SELECTED_PED_WEAPON(players.user_ped()))
+        local weapon = math.abs(GET_SELECTED_PED_WEAPON(players.user_ped()))
         if not menu.is_in_screenshot_mode() and weapon ~= 1122011548 and weapon ~= 1569615261 then
             menu.trigger_command(menu.ref_by_path("World>Inhabitants>Player ESP>Bone ESP>Low Latency Rendering"))
         else
@@ -3086,10 +3086,10 @@ local thermal_command = menu.ref_by_path('Game>Rendering>Thermal Vision')
 menu.toggle(Game, "Better Thermal Scope",{},"",function(on)
     if on then
         menu.trigger_command(thermal_command,"on")
-        GRAPHICS.SEETHROUGH_SET_MAX_THICKNESS(10000.0)
+        SEETHROUGH_SET_MAX_THICKNESS(10000.0)
     else
         menu.trigger_command(thermal_command,"off")
-        GRAPHICS.SEETHROUGH_SET_MAX_THICKNESS(1.0)
+        SEETHROUGH_SET_MAX_THICKNESS(1.0)
     end
 end)
 
@@ -3115,9 +3115,9 @@ local function ReportSessionKD(numPlayers)
     table.sort(topPlayers, function(a, b) return a.kd > b.kd end) -- Sort the table one last time
     local report = "Top " .. numPlayers .. " players with highest K/D:\n"
     for i, player in pairs(topPlayers) do
-        local playerName = PLAYER.GET_PLAYER_NAME(player.pid)
-        local formattedKD = string.format("%.2f", player.kd) -- Format K/D to two decimal places
-        report = report .. i .. ". (" .. player.rank .. ") " .. playerName .. " - K/D: " .. formattedKD .. "\n"
+        local playerName = GET_PLAYER_NAME(pid)
+        local formattedKD = string.format("%.2f", kd) -- Format K/D to two decimal places
+        report = report .. i .. ". (" .. rank .. ") " .. playerName .. " - K/D: " .. formattedKD .. "\n"
     end
     warnify(report)
 end
@@ -3142,7 +3142,7 @@ path_claim_current_session = menu.toggle(SessionClaimer, "Claim current session,
 end)
 
 local function sessionWorthy()
-    if PLAYER.GET_NUMBER_OF_PLAYERS() >= session_claimer_players then
+    if GET_NUMBER_OF_PLAYERS() >= session_claimer_players then
         if (not isModder(players.get_host()) or isFriend(players.get_host())) and players.get_host_queue_position(players.user()) <= 1 then
             return true
         end
@@ -3160,10 +3160,10 @@ local sessionClaimer_firstRun = true
 local function findAnewHome()
     local findAnewHomeMSG
     if session_type() ~= "Singleplayer" then
-        if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 then
+        if GET_NUMBER_OF_PLAYERS() == 1 then
             findAnewHomeMSG = "You are alone."
-        elseif PLAYER.GET_NUMBER_OF_PLAYERS() <= session_claimer_players then
-            findAnewHomeMSG = "Not Enoght Player."
+        elseif GET_NUMBER_OF_PLAYERS() <= session_claimer_players then
+            findAnewHomeMSG = "Not Enoght "
         elseif isModder(players.get_host()) then
             findAnewHomeMSG = "Host is a Modder."
         else
@@ -3261,7 +3261,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             end
             if transitionState(true) < 3 then
                 util.yield(3666)
-                if PLAYER.GET_NUMBER_OF_PLAYERS() == 1 then
+                if GET_NUMBER_OF_PLAYERS() == 1 then
                     findAnewHome()
                     goto sessionclaimerShortcut
                 else
@@ -3303,7 +3303,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     end
                 end
                 local startTime = os.clock()
-                while (os.clock() - startTime) * 1000 < 31666 and PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 do
+                while (os.clock() - startTime) * 1000 < 31666 and GET_NUMBER_OF_PLAYERS() ~= 1 do
                     if players.get_host() == players.user() then
                         break
                     end
@@ -3315,7 +3315,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 --  <3
                 --  Is session under controll?
                 --  <3
-                if PLAYER.GET_NUMBER_OF_PLAYERS() ~= 1 and (players.get_host() == players.user() or isFriend(players.get_host())) then
+                if GET_NUMBER_OF_PLAYERS() ~= 1 and (players.get_host() == players.user() or isFriend(players.get_host())) then
                     warnify("Found u a new Home <3")
                     menu.trigger_commands("helibackup")
                     session_claimer_players_range = session_claimer_players
@@ -3431,7 +3431,7 @@ end)
 path_use_custom_spawn = menu.toggle(SessionJoin, "Use Custom Spawn", {""}, "", function(on)
     if on then
         customspawned = true
-        --STAT_SET_INT("SPAWN_LOCATION_SETTING", 4)
+        --PIP_STAT_SET_INT("SPAWN_LOCATION_SETTING", 4)
     else
         customspawned = false
     end
@@ -3443,7 +3443,7 @@ path_quick_session_join = menu.toggle(Session, "Quick Session Join", {"quickjoin
         menu.trigger_commands("speedupfmmc on")
         menu.trigger_commands("speedupspawn on")
         menu.trigger_commands("skipswoopdown on")
-        --STAT_SET_INT("SPAWN_LOCATION_SETTING", 4)
+        --PIP_STAT_SET_INT("SPAWN_LOCATION_SETTING", 4)
     else
         menu.ref_by_path("Online>Transitions>Speed Up>Don't Wait For Data Broadcast"):applyDefaultState()
         menu.ref_by_path("Online>Transitions>Speed Up>Don't Wait For Mission Launcher"):applyDefaultState()
@@ -3482,7 +3482,7 @@ path_block_orb_room = menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockor
         if transitionState(true) <3 then
             for players.list_except(true) as pid do
                 local players_position = players.get_position(pid)
-                local distance = SYSTEM.VDIST(players_position.x, players_position.y, players_position.z, 328.47, 4828.87, -58.54)
+                local distance = VDIST(players_position.x, players_position.y, players_position.z, 328.47, 4828.87, -58.54)
                 if distance <= 9 then
                     set_as_illusion(pid, in_orb_room, true)
                     if not isFriend(pid) then
@@ -3590,19 +3590,19 @@ path_asukas_shrine = menu.toggle_loop(SessionWorld, "Asuka's Shrine", {"asukassh
     util.yield(1666)
     if allowSpawnCheck() then
         if transitionState(true) == 1 then
-            if not Asuka_shrine_blip or not HUD.DOES_BLIP_EXIST(Asuka_shrine_blip) then
-                Asuka_shrine_blip = HUD.ADD_BLIP_FOR_COORD(-1812.212, -127.127, 80.265)
-                HUD.SET_BLIP_SPRITE(Asuka_shrine_blip, "617")
-                HUD.SET_BLIP_COLOUR(Asuka_shrine_blip, 76)
-                HUD.SET_BLIP_AS_MINIMAL_ON_EDGE(Asuka_shrine_blip, true)
-                HUD.SET_RADIUS_BLIP_EDGE(Asuka_shrine_blip, true)
-                HUD.SET_BLIP_AS_SHORT_RANGE(Asuka_shrine_blip, true)
-                HUD.SET_BLIP_DISPLAY(Asuka_shrine_blip, 2)
-                HUD.SET_BLIP_SCALE(Asuka_shrine_blip, 0.8)
-                HUD.BEGIN_TEXT_COMMAND_SET_BLIP_NAME("STRING")
-                HUD.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Asuka\'s Shrine')
-                HUD.END_TEXT_COMMAND_SET_BLIP_NAME(Asuka_shrine_blip)
-                HUD.SET_BLIP_PRIORITY(Asuka_shrine_blip, 66)
+            if not Asuka_shrine_blip or not DOES_BLIP_EXIST(Asuka_shrine_blip) then
+                Asuka_shrine_blip = ADD_BLIP_FOR_COORD(-1812.212, -127.127, 80.265)
+             SET_BLIP_SPRITE(Asuka_shrine_blip, "617")
+             SET_BLIP_COLOUR(Asuka_shrine_blip, 76)
+             SET_BLIP_AS_MINIMAL_ON_EDGE(Asuka_shrine_blip, true)
+             SET_RADIUS_BLIP_EDGE(Asuka_shrine_blip, true)
+             SET_BLIP_AS_SHORT_RANGE(Asuka_shrine_blip, true)
+             SET_BLIP_DISPLAY(Asuka_shrine_blip, 2)
+             SET_BLIP_SCALE(Asuka_shrine_blip, 0.8)
+             BEGIN_TEXT_COMMAND_SET_BLIP_NAME("STRING")
+             ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Asuka\'s Shrine')
+             END_TEXT_COMMAND_SET_BLIP_NAME(Asuka_shrine_blip)
+             SET_BLIP_PRIORITY(Asuka_shrine_blip, 66)
             end
         else
             Asuka_shrine_blip = nil
@@ -3631,29 +3631,29 @@ end, function()
 end)
 --local save_zone = nil
 --menu.toggle_loop(SessionWorld, "LSC Save Zone", {""}, "", function()
---    if not WEAPON.DOES_AIR_DEFENCE_SPHERE_EXIST(save_zone) then
---        save_zone = WEAPON.CREATE_AIR_DEFENCE_SPHERE(-348.33, -110.81, 39.43, 66.6, 0, 0, 0, 4026734011)
+--    if not DOES_AIR_DEFENCE_SPHERE_EXIST(save_zone) then
+--        save_zone = CREATE_AIR_DEFENCE_SPHERE(-348.33, -110.81, 39.43, 66.6, 0, 0, 0, 4026734011)
 --    else
 --        for players.list() as pid do
 --            if isFriend(pid) then
---                WEAPON.SET_PLAYER_TARGETTABLE_FOR_AIR_DEFENCE_SPHERE(pid, save_zone, false)
+--                SET_PLAYER_TARGETTABLE_FOR_AIR_DEFENCE_SPHERE(pid, save_zone, false)
 --            else
---                WEAPON.SET_PLAYER_TARGETTABLE_FOR_AIR_DEFENCE_SPHERE(pid, save_zone, true)
+--                SET_PLAYER_TARGETTABLE_FOR_AIR_DEFENCE_SPHERE(pid, save_zone, true)
 --            end
 --        end
 --    end
 --    util.yield(6666)
 --end, function()
---    WEAPON.REMOVE_AIR_DEFENCE_SPHERE(save_zone)
+--    REMOVE_AIR_DEFENCE_SPHERE(save_zone)
 --end)
 
 path_nerf_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Nerf Oppressor MK2s", {""}, "Nerf Oppressor mk2 weapons, except Modder and Friend's", function()
     for players.list_except(true) as pid do
         if players.get_vehicle_model(pid) == 2069146067 and not isFriend(pid) and not isModder(pid) then
-            local vehicle = PED.GET_VEHICLE_PED_IS_IN(PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid))
-            if VEHICLE.GET_VEHICLE_MOD(vehicle, 10) ~= -1 then
+            local vehicle = GET_VEHICLE_PED_IS_IN(GET_PLAYER_PED_SCRIPT_INDEX(pid))
+            if GET_VEHICLE_MOD(vehicle, 10) ~= -1 then
                 requestControl(vehicle)
-                VEHICLE.SET_VEHICLE_MOD(vehicle, 10, -1)
+                SET_VEHICLE_MOD(vehicle, 10, -1)
             end
         end
     end
@@ -3663,11 +3663,11 @@ end)
 path_downgrade_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Downgrade Oppressor MK2s", {""}, "Downgrade Oppressor mk2, except Modder and Friend's", function()
     for players.list_except(true) as pid do
         if players.get_vehicle_model(pid) == 2069146067 and not isFriend(pid) and not isModder(pid) then
-            local vehicle = PED.GET_VEHICLE_PED_IS_IN(PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid))
+            local vehicle = GET_VEHICLE_PED_IS_IN(GET_PLAYER_PED_SCRIPT_INDEX(pid))
             for vehModNum = 0, 100 do
-                if VEHICLE.GET_VEHICLE_MOD(vehicle, vehModNum) ~= -1 then
+                if GET_VEHICLE_MOD(vehicle, vehModNum) ~= -1 then
                     requestControl(vehicle)
-                    VEHICLE.SET_VEHICLE_MOD(vehicle, vehModNum, -1)
+                    SET_VEHICLE_MOD(vehicle, vehModNum, -1)
                 end
             end
         end
@@ -3791,7 +3791,7 @@ end)
 --menu.action(SessionMisc, "de-Ghost entire Session", {""}, "", function()
 --    if transitionState(true) == 1 then
 --        for players.list() as pid do
---            NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+--            SET_REMOTE_PLAYER_AS_GHOST(pid, false)
 --        end
 --        sussy_god = {}
 --    end
@@ -3871,7 +3871,7 @@ path_post_session_code_via_webhook = menu.toggle_loop(SessionInvite, "Post Sessi
                 if code ~= posted_session_code then
                     posted_session_code = code
                     writeToFilePIP(code, store_dir..'/session_code.txt')
-                    if onlyPostasFriendlyHost and (not isFriend(players.get_host()) or PLAYER.GET_NUMBER_OF_PLAYERS() == 1) then
+                    if onlyPostasFriendlyHost and (not isFriend(players.get_host()) or GET_NUMBER_OF_PLAYERS() == 1) then
                         goto webhookSkip
                     end
                     local sortedPlayers = {}
@@ -3897,7 +3897,7 @@ path_post_session_code_via_webhook = menu.toggle_loop(SessionInvite, "Post Sessi
                         end
                         sessionPlayers = sessionPlayers .. playerInfo
                     end
-                    local description = "# ***🌐 [Join GTA:O " .. session_type() .. " Session.🡭](https://stand.gg/join#" .. code .. ")***\nOr Copy Command: ```codejoin " .. code .. "```\n\nPlayers: "..PLAYER.GET_NUMBER_OF_PLAYERS().."/30(32)\nCurrent Host: "..players.get_name(players.get_host()).."\n"..sessionPlayers
+                    local description = "# ***🌐 [Join GTA:O " .. session_type() .. " Session.🡭](https://stand.gg/join#" .. code .. ")***\nOr Copy Command: ```codejoin " .. code .. "```\n\nPlayers: "..GET_NUMBER_OF_PLAYERS().."/30(32)\nCurrent Host: "..players.get_name(players.get_host()).."\n"..sessionPlayers
                     local embed = {
                         description = description,
                         timestamp = os.date("!%Y-%m-%dT%XZ"),
@@ -3915,13 +3915,13 @@ path_post_session_code_via_webhook = menu.toggle_loop(SessionInvite, "Post Sessi
                     local encode_status, body_json = pcall(soup.json.encode, body)                
                     local function on_success(body, header_fields, status_code)
                         notify_cmd("Webhook sent successfully!")
-                        if inviteAllFriendsOnWebhook and not NETWORK.NETWORK_IS_ACTIVITY_SESSION() and session_type() == "Public" then
-                            while ENTITY.GET_ENTITY_SPEED(players.user_ped()) ~= 0 do
+                        if inviteAllFriendsOnWebhook and not NETWORK_IS_ACTIVITY_SESSION() and session_type() == "Public" then
+                            while GET_ENTITY_SPEED(players.user_ped()) ~= 0 do
                                 util.yield(666)
                                 if isStuck(players.user()) then
                                     break
                                 end
-                                if ENTITY.GET_ENTITY_SPEED(players.user_ped()) == 0 then
+                                if GET_ENTITY_SPEED(players.user_ped()) == 0 then
                                     break
                                 end
                             end
@@ -4040,7 +4040,7 @@ local function isFriendStuck()
 end
 
 local function healthyInternet(pid)
-    if NETWORK.NETWORK_GET_AVERAGE_PACKET_LOSS(pid) < 6 and NETWORK.NETWORK_GET_AVERAGE_LATENCY(pid) < 125 then
+    if NETWORK_GET_AVERAGE_PACKET_LOSS(pid) < 6 and NETWORK_GET_AVERAGE_LATENCY(pid) < 125 then
         return true
     else
         return false
@@ -4075,7 +4075,7 @@ local smartScriptHostMode = 1
 
 path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
     if transitionState(true) == 1 then
-        if not CUTSCENE.IS_CUTSCENE_PLAYING() then
+        if not IS_CUTSCENE_PLAYING() then
             if (players.user() == players.get_host() or (players.user() == players.get_script_host() and (not isFriend(players.get_host()) and not isModder(players.get_host())))) and smartScriptHostMode ~= 1 then
                 local playerList = {players.user()}
                 if smartScriptHostMode == 2 then
@@ -4177,9 +4177,9 @@ path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"
                 end
             end
         else
-            if NETWORK.NETWORK_IS_ACTIVITY_SESSION() and players.user() == players.get_host() then
+            if NETWORK_IS_ACTIVITY_SESSION() and players.user() == players.get_host() then
                 util.yield(666)
-                while CUTSCENE.IS_CUTSCENE_PLAYING() do
+                while IS_CUTSCENE_PLAYING() do
                     util.yield(666)
                 end
                 util.yield(666)
@@ -4209,7 +4209,7 @@ local function selfSafe()
         return true
     end
     if players.get_vehicle_model(players.user()) == -32878452 or players.get_vehicle_model(players.user()) == -42959138 then
-        if get_number_of_passengers(PED.GET_VEHICLE_PED_IS_IN(players.user_ped(), true)) > 1 then
+        if get_number_of_passengers(GET_VEHICLE_PED_IS_IN(players.user_ped(), true)) > 1 then
             return true
         end
     end
@@ -4226,8 +4226,8 @@ path_ghost_god_mode = menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"},
                     if players.is_godmode(pid) then
                         set_as_illusion(pid, sussy_god, true)
                     else
-                        local pidPed = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)
-                        if PED.IS_PED_IN_ANY_VEHICLE(pidPed, true) and not ENTITY.GET_ENTITY_CAN_BE_DAMAGED(PED.GET_VEHICLE_PED_IS_IN(pidPed, true)) then
+                        local pidPed = GET_PLAYER_PED_SCRIPT_INDEX(pid)
+                        if IS_PED_IN_ANY_VEHICLE(pidPed, true) and not GET_ENTITY_CAN_BE_DAMAGED(GET_VEHICLE_PED_IS_IN(pidPed, true)) then
                             set_as_illusion(pid, sussy_god, true)
                         else
                             set_as_illusion(pid, sussy_god, false)
@@ -4271,8 +4271,8 @@ local pop_multiplier_free = nil
 local pop_multiplier_repair = nil
 
 local function remove_pop_multiplier(sphereID)
-    if sphereID and MISC.DOES_POP_MULTIPLIER_AREA_EXIST(sphereID) then
-        MISC.REMOVE_POP_MULTIPLIER_AREA(sphereID, true)
+    if sphereID and DOES_POP_MULTIPLIER_AREA_EXIST(sphereID) then
+        REMOVE_POP_MULTIPLIER_AREA(sphereID, true)
     end
     return nil
 end
@@ -4280,11 +4280,11 @@ end
 local function create_pop_multiplier(sphereID, pedPOP, vehPOP)
     if not sphereID then
         remove_pop_multiplier(13)
-        sphereID = MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19666, pedPOP, vehPOP, false, true)
+        sphereID = ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19666, pedPOP, vehPOP, false, true)
     end
-    if not MISC.DOES_POP_MULTIPLIER_AREA_EXIST(sphereID) then
+    if not DOES_POP_MULTIPLIER_AREA_EXIST(sphereID) then
         remove_pop_multiplier(13)
-        sphereID = MISC.ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19666, pedPOP, vehPOP, false, true)
+        sphereID = ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19666, pedPOP, vehPOP, false, true)
     end
     return sphereID
 end
@@ -4303,10 +4303,10 @@ path_clear_traffic = menu.toggle_loop(Session, "Clear Traffic", {"antitraffic"},
         end
         if not pop_multiplier_free then
             pop_multiplier_free = create_pop_multiplier(pop_multiplier_free, 1.13, 0.0)
-            --MISC.CLEAR_AREA_OF_VEHICLES(0.0, 0.0, 0.0, 19999.99, false, false, false, false, false, false, 0)
-            VEHICLE.SET_DISTANT_CARS_ENABLED(false)
-            STREAMING.SET_VEHICLE_POPULATION_BUDGET(0)
-            STREAMING.SET_REDUCE_VEHICLE_MODEL_BUDGET(true)
+            --CLEAR_AREA_OF_VEHICLES(0.0, 0.0, 0.0, 19999.99, false, false, false, false, false, false, 0)
+            SET_DISTANT_CARS_ENABLED(false)
+            SET_VEHICLE_POPULATION_BUDGET(0)
+            SET_REDUCE_VEHICLE_MODEL_BUDGET(true)
         else
             pop_multiplier_free = create_pop_multiplier(pop_multiplier_free, 1.13, 0.0)
             util.yield(6666)
@@ -4327,9 +4327,9 @@ end, function()
         menu.trigger_command(menu.ref_by_path("World>Inhabitants>Traffic>Disable>Disabled"))
     end
     menu.apply_default_state(menu.ref_by_path("World>Inhabitants>Pedestrians>Disable"))
-    VEHICLE.SET_DISTANT_CARS_ENABLED(true)
-    STREAMING.SET_VEHICLE_POPULATION_BUDGET(3)
-    STREAMING.SET_REDUCE_VEHICLE_MODEL_BUDGET(false)
+    SET_DISTANT_CARS_ENABLED(true)
+    SET_VEHICLE_POPULATION_BUDGET(3)
+    SET_REDUCE_VEHICLE_MODEL_BUDGET(false)
     pop_multiplier_free = remove_pop_multiplier(pop_multiplier_free)
     if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "On" then
         menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "Off")
@@ -4339,11 +4339,11 @@ end)
 
 path_soft_clear_traffic = menu.toggle_loop(Session, "Soft Clear Traffic", {"softantitrafic"}, "Clears the traffic around you localy in close range.\nDosnt work with many players in close range.", function()
     if is_user_driving_vehicle(false) and transitionState(true) == 1 then
-        if ENTITY.GET_ENTITY_HEIGHT_ABOVE_GROUND(players.user_ped()) < 13 then
-            local driverPed = VEHICLE.GET_PED_IN_VEHICLE_SEAT(PED.GET_VEHICLE_PED_IS_IN(players.user_ped()), -1)
+        if GET_ENTITY_HEIGHT_ABOVE_GROUND(players.user_ped()) < 13 then
+            local driverPed = GET_PED_IN_VEHICLE_SEAT(GET_VEHICLE_PED_IS_IN(players.user_ped()), -1)
             if driverPed == players.user_ped() then
                 local pos = players.get_position(players.user())
-                MISC.CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, SYSTEM.ROUND(ENTITY.GET_ENTITY_SPEED(players.user_ped()) * 6, 1), false, false, false, false, false, false, 0)
+                CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, ROUND(GET_ENTITY_SPEED(players.user_ped()) * 6, 1), false, false, false, false, false, false, 0)
                 util.yield(113)
             end
         else
@@ -4383,7 +4383,7 @@ menu.action(Session, "De-Ghost all Debug", {""}, "", function()
         in_orb_room[pid] = nil
         sussy_god[pid] = nil
         set_passive[pid] = nil
-        NETWORK.SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+        SET_REMOTE_PLAYER_AS_GHOST(pid, false)
     end
     in_orb_room = {}
     sussy_god = {}
@@ -4392,7 +4392,7 @@ end)
 
 menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisible for the whole session, but with a nice effect for ppl close by.", function()
     if transitionState(true) == 1 then
-        playerPosition = ENTITY.GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(players.user_ped(), 0, -23.0, 2)
+        playerPosition = GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(players.user_ped(), 0, -23.0, 2)
         local cmd_path = "Vehicle>Countermeasures>Only In Aircraft"
         warnify_ses("T-5 sec. Start on \"GO!\"")
         FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 3, 1, true, false, 0, true)
@@ -4862,7 +4862,7 @@ player_menu = function(pid)
         end
         util.yield(13)
     end)
-    menu.toggle(menu.player_root(pid), "Ghost Player", {"ghostplayer"}, "Ghost the selected player.", function(on)
+    menu.toggle(menu.player_root(pid), "Ghost Player", {"ghostplayer"}, "Ghost the selected ", function(on)
         if on then
             set_as_illusion(pid, set_passive, true)
         else
@@ -5077,13 +5077,13 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
         local playerPosition = players.get_position(players.user())
         local streetInfo = get_Street_Names(playerPosition.x, playerPosition.y, playerPosition.z)
         local vehicleInfo = is_user_driving_vehicle(true) and util.reverse_joaat(entities.get_model_hash(get_user_vehicle())) or "On Foot"
-        local entSpeed = math.floor(ENTITY.GET_ENTITY_SPEED(players.user_ped()) * 3.6).." km/h"
+        local entSpeed = math.floor(GET_ENTITY_SPEED(players.user_ped()) * 3.6).." km/h"
         local sesType = session_type()
-        local sesPlayers = PLAYER.GET_NUMBER_OF_PLAYERS()
+        local sesPlayers = GET_NUMBER_OF_PLAYERS()
         local myMommy = players.get_money(players.user())
         local transitionState = transitionState(false)
-        local interior_hashish = INTERIOR.GET_INTERIOR_FROM_ENTITY(players.user_ped())
-        --local interior_Room_hashish = INTERIOR.GET_ROOM_KEY_FROM_ENTITY(players.user_ped())
+        local interior_hashish = GET_INTERIOR_FROM_ENTITY(players.user_ped())
+        --local interior_Room_hashish = GET_ROOM_KEY_FROM_ENTITY(players.user_ped())
         local interior_Name = findInteriorNameByID(interior_hashish, interior_Names)
         local interior_Room_Name = ""--findInteriorNameByID(interior_Room_hashish, interior_Room_Names)
         local sessionCode = get_session_code()
@@ -5292,8 +5292,8 @@ end)
 
 util.on_transition_finished(function ()
 	if customspawned then
-        --STAT_SET_INT("SPAWN_LOCATION_SETTING", 4)
-        if not NETWORK.NETWORK_IS_ACTIVITY_SESSION() then
+        --PIP_STAT_SET_INT("SPAWN_LOCATION_SETTING", 4)
+        if not NETWORK_IS_ACTIVITY_SESSION() then
             players.teleport_3d(players.user(), customspawn.x, customspawn.y, customspawn.z)
         end
         if get_user_vehicle() then
@@ -5303,13 +5303,13 @@ util.on_transition_finished(function ()
         menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
     end
     if foreverYoung then
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 9, 255, 0.0) --Remove Moles/Freckles. (face)
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 7, 255, 0.0) --Remove Sun Damage.
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 6, 11, 100.0) --Pale Face. (later making it optional)
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 3, 255, 0.0) --Remove any aging processes.
-        PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
+        SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
+        SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
+        SET_PED_HEAD_OVERLAY(players.user_ped(), 9, 255, 0.0) --Remove Moles/Freckles. (face)
+        SET_PED_HEAD_OVERLAY(players.user_ped(), 7, 255, 0.0) --Remove Sun Damage.
+        SET_PED_HEAD_OVERLAY(players.user_ped(), 6, 11, 100.0) --Pale Face. (later making it optional)
+        SET_PED_HEAD_OVERLAY(players.user_ped(), 3, 255, 0.0) --Remove any aging processes.
+        SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
     end
     save_config(true)
     while transitionState(true) ~= 1 do
@@ -5341,27 +5341,27 @@ local function userIdentification()
             local solCirlce = tonumber(os.date("%d", tictac_tictac_tictac)) + 213
             moonCircle = tonumber(os.date("%m", tictac_tictac_tictac)) + solCirlce
             if foreverYoung then
-                if PED.GET_PED_HEAD_OVERLAY(players.user_ped(), 12) ~= moonCircle then
-                    PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
+                if GET_PED_HEAD_OVERLAY(players.user_ped(), 12) ~= moonCircle then
+                    SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
                 end
-                PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
-                PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 9, 255, 0.0) --Remove Moles/Freckles. (face)
-                PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 7, 255, 0.0) --Remove Sun Damage.
-                PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 6, 11, 100.0) --Pale Face. (later making it optional)
-                PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 3, 255, 0.0) --Remove any aging processes.
-                PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
+                SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
+                SET_PED_HEAD_OVERLAY(players.user_ped(), 9, 255, 0.0) --Remove Moles/Freckles. (face)
+                SET_PED_HEAD_OVERLAY(players.user_ped(), 7, 255, 0.0) --Remove Sun Damage.
+                SET_PED_HEAD_OVERLAY(players.user_ped(), 6, 11, 100.0) --Pale Face. (later making it optional)
+                SET_PED_HEAD_OVERLAY(players.user_ped(), 3, 255, 0.0) --Remove any aging processes.
+                SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
             else
-                if PED.GET_PED_HEAD_OVERLAY(players.user_ped(), 12) ~= moonCircle then
-                    PED.SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
+                if GET_PED_HEAD_OVERLAY(players.user_ped(), 12) ~= moonCircle then
+                    SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
                 end
             end
             for players.list_except(true) as pid do
                 if not hasDetection(pid, "PIP Girl User") then
                     if players.are_stats_ready(pid) then
                         if IdentificationTimeout[pid] == nil then
-                            local targetped = PLAYER.GET_PLAYER_PED_SCRIPT_INDEX(pid)
-                            local pedmodel = ENTITY.GET_ENTITY_MODEL(targetped)
-                            if does_entity_exist(targetped) and (pedmodel == -1667301416 or pedmodel == 1885233650) and math.abs(PED.GET_PED_HEAD_OVERLAY(targetped, 12) - moonCircle) <= 1 then
+                            local targetped = GET_PLAYER_PED_SCRIPT_INDEX(pid)
+                            local pedmodel = GET_ENTITY_MODEL(targetped)
+                            if PIP_does_entity_exist(targetped) and (pedmodel == -1667301416 or pedmodel == 1885233650) and math.abs(GET_PED_HEAD_OVERLAY(targetped, 12) - moonCircle) <= 1 then
                                 if checkID(players.get_rockstar_id(pid)) then
                                     players.add_detection(pid, "PIP Girl User (Developer)", TOAST_DEFAULT, 100)
                                 else
