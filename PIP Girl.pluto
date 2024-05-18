@@ -4595,7 +4595,7 @@ local function add_in_blocking(pid)
                     sc_block(rid)
                 end
             end
-            if name ~= players.get_name(players.user()) then
+            if name ~= players.get_name(players.user()) and not hasDetection(pid, "Blacklist") then
                 players.add_detection(pid, "Blacklist", TOAST_DEFAULT, 100)
                 menu.trigger_commands("historynote ".. name .." Blacklist")
                 util.yield(420)
@@ -4684,7 +4684,7 @@ local function SessionCheck(pid)
                                 menu.trigger_commands("ghostplayer " .. name .. " on")
                             end
                         end
-                        if session_type() == "Public" then
+                        if session_type() == "Public" and not hasDetection(pid, "Blacklist") then
                             local finalNotification = "Detected Blacklisted Player: \n" .. name .. " - " .. rid
                             if notification ~= "" then
                                 finalNotification = finalNotification .. "\n" .. notification
