@@ -1653,8 +1653,10 @@ local asuka_tech_dirt = 1
 local asuka_tech_dirt_amount = 0.06
 local function repair_asuka_tech(vehicle)
     local repair_amount = 0
+    local max_repair_limit = 1000
     if IS_ENTITY_A_MISSION_ENTITY(vehicle) and vehicle ~= entities.get_user_personal_vehicle_as_handle() then
         repair_amount = asuka_tech_mission_repair_amount
+        max_repair_limit = max_repair_limit * asuka_tech_mission_repair_amount
     else
         repair_amount = asuka_tech_repair_amount
     end
@@ -1665,19 +1667,19 @@ local function repair_asuka_tech(vehicle)
     local heliRotorHealth = GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
 
     if IS_VEHICLE_DRIVEABLE(vehicle) then
-        if engineHealth > 0 and engineHealth < 1000 then
+        if engineHealth > 0 and engineHealth < max_repair_limit then
             SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + repair_amount)
         end
-        if petrolTankHealth > 0 and petrolTankHealth < 1000 then
+        if petrolTankHealth > 0 and petrolTankHealth < max_repair_limit then
             SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + repair_amount)
         end
-        if bodyHealth > 0 and bodyHealth < 1000 then
+        if bodyHealth > 0 and bodyHealth < max_repair_limit then
             SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + repair_amount)
         end
-        if heliTailHealth > 0 and heliTailHealth < 1000 then
+        if heliTailHealth > 0 and heliTailHealth < max_repair_limit then
             SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + repair_amount)
         end
-        if heliRotorHealth > 0 and heliRotorHealth < 1000 then
+        if heliRotorHealth > 0 and heliRotorHealth < max_repair_limit then
             SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + repair_amount)
         end
 
@@ -1700,7 +1702,7 @@ local function repair_asuka_tech(vehicle)
         end
     end
 
-    if (engineHealth <= 0 and bodyHealth <= 0) or IS_VEHICLE_DRIVEABLE(vehicle) then
+    if (engineHealth <= 0 and bodyHealth <= 0) or not IS_VEHICLE_DRIVEABLE(vehicle) then
         NETWORK_SET_NO_LONGER_NEEDED(vehicle, true)
     end
 end
