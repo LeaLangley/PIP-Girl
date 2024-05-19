@@ -2724,10 +2724,20 @@ path_auto_interact = menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'},
                 break
             end
         end
+        local interactionsRight = {
+            "SBIKER_DROP",
+        }
+        for ipairs(interactionsRight) as label do
+            if IS_HELP_MSG_DISPLAYED(label) then
+                SET_CONTROL_VALUE_NEXT_FRAME(2, 190, 1)
+                break
+            end
+        end
         local interactionsRemove = {
             "SMH_SEDPADSRT",
             "SMH_STDPADDEL",
             "ARCADE_PAY_ENTER_M",
+            "SBIKERT_HREAR",
         }
         for ipairs(interactionsRemove) as label do
             if IS_HELP_MSG_DISPLAYED(label) then
