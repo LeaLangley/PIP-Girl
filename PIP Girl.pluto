@@ -3438,7 +3438,7 @@ end)
 
 path_quick_session_join = menu.toggle(Session, "Quick Session Join", {"quickjoin"}, " Please Set you're Spawn to \"Last Location\" or \"Random\".\nQuick Session Joining.", function(on)
     if on then
-        menu.trigger_commands("skipbroadcast on")
+        menu.trigger_commands("skipbroadcast off")
         menu.trigger_commands("speedupfmmc on")
         menu.trigger_commands("speedupspawn on")
         menu.trigger_commands("skipswoopdown on")
