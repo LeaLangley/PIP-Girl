@@ -4213,7 +4213,7 @@ local function selfSafe()
     if players.is_godmode(players.user()) then
         return true
     end
-    if players.get_vehicle_model(players.user()) == -32878452 or players.get_vehicle_model(players.user()) == -42959138 then
+    if players.get_vehicle_model(players.user()) == -32878452 or players.get_vehicle_model(players.user()) == -42959138 or players.get_vehicle_model(players.user()) == -1600252419 then
         if get_number_of_passengers(GET_VEHICLE_PED_IS_IN(players.user_ped(), true)) > 1 then
             return true
         end
