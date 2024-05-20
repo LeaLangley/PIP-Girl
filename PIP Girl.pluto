@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.168"
+local script_version = "1.169"
 
 local lust_upDate = {year = 2024, month = 5, day = 18, hour = 6, min = 6, sec = 6}
 
@@ -360,6 +360,42 @@ local function isModder(pid, bool)
     return false
 end
 
+local function isFriend(pid)
+    for players.list_only(true, true, false, true) as plid do
+        if plid == pid then
+            return true
+        end
+    end
+    return false
+end
+
+local function orgColor(pid)
+    return memory.script_global(2648918 + 818 + 44 + 1 + memory.read_int(memory.script_global(2648918 + 818 + 11 + 1 + (memory.read_int(memory.script_global(1886967 + 1 + (pid * 609) + 10))))) * 2 + 1)
+end --thanks to galactys
+local ceo_color = -1
+local function check_CEO_Color()
+    if ceo_color ~= -1 then
+        if transitionState(true) == 1 then
+            local fallback_color = 14
+            for players.list() as pid do
+                if players.get_boss(pid) ~= -1 then
+                    if pid ~= players.user() then
+                        local orgColor = players.get_org_colour(pid)
+                        if orgColor == ceo_color and not isModder(pid) and not isFriend(pid) then
+                            if fallback_color == ceo_color then
+                                fallback_color = fallback_color - 1
+                            end
+                            memory.write_int(orgColor(players.user()), fallback_color)
+                        end
+                    else
+                        memory.write_int(orgColor(players.user()), ceo_color)
+                    end
+                end
+            end
+        end
+    end
+end
+
 local urceoname = ""
 local function organization_control(org)
     if not NETWORK_IS_ACTIVITY_SESSION() then
@@ -372,6 +408,7 @@ local function organization_control(org)
                         if urceoname ~= "" then
                             menu.trigger_commands("ceoname " .. urceoname)
                         end
+                        check_CEO_Color()
                         notify("Turned you into MC President!")
                     else
                         notify("Failed to turn you into MC President.")
@@ -385,6 +422,7 @@ local function organization_control(org)
                         if urceoname ~= "" then
                             menu.trigger_commands("ceoname " .. urceoname)
                         end
+                        check_CEO_Color()
                         notify("Turned you into CEO!")
                     else
                         notify("Failed to turn you into CEO.")
@@ -399,6 +437,7 @@ local function organization_control(org)
                     if urceoname ~= "" then
                         menu.trigger_commands("ceoname " .. urceoname)
                     end
+                    check_CEO_Color()
                     notify("Turned you into CEO!")
                 else
                     notify("Failed to turn you into CEO.")
@@ -410,6 +449,7 @@ local function organization_control(org)
                     if urceoname ~= "" then
                         menu.trigger_commands("ceoname " .. urceoname)
                     end
+                    check_CEO_Color()
                     notify("Turned you into MC President!")
                 else
                     notify("Failed to turn you into MC President.")
@@ -524,15 +564,6 @@ local function isLoading(pid)
             return true
         end
         if not players.is_visible(pid) then
-            return true
-        end
-    end
-    return false
-end
-
-local function isFriend(pid)
-    for players.list_only(true, true, false, true) as plid do
-        if plid == pid then
             return true
         end
     end
@@ -918,48 +949,6 @@ path_nc_pop = menu.toggle_loop(PIP_Girl, "Nightclub Party Never Stops!", {'ncpop
 end)
 
 menu.divider(PIP_Girl, "Org Options")
---local ceo_color = -1
---local ceo_color_slot_found = nil
---local first_ceo_color_check = true
---local function check_CEO_Color(ceo_color)
---    if transitionState() then
---        local user_org_color = players.get_org_colour(players.user())
---        if user_org_color ~= ceo_color then
---            if first_ceo_color_check then
---                local current = menu.get_current_menu_list()
---                menu.trigger_commands("ceocolours")
---                util.yield(111)
---                menu.focus(current)
---                first_ceo_color_check = false
---            end
---            if ceo_color_slot_found then
---                menu.trigger_commands("ceocolour" .. ceo_color_slot_found .. " " .. ceo_color)
---                util.yield(666)
---            end
---            local ceo_color_slot = ceo_color_slot_found or 0
---            local fallback_color = 14
---            if players.get_org_colour(players.user()) ~= ceo_color then
---                while ceo_color_slot <= 9 do
---                    menu.trigger_commands("ceocolour" .. ceo_color_slot .. " " .. ceo_color)
---                    util.yield(666)
---                    if players.get_org_colour(players.user()) == ceo_color then
---                        ceo_color_slot_found = ceo_color_slot
---                        break
---                    else
---                        menu.trigger_commands("ceocolour" .. ceo_color_slot .. " " .. fallback_color)
---                        ceo_color_slot = ceo_color_slot + 1
---                        fallback_color = fallback_color - 1
---                    end
---                end
---            end
---            if players.get_org_colour(players.user()) ~= ceo_color and not first_ceo_color_check then
---                ceo_color_slot_found = true
---            end
---        end
---    else
---        ceo_color_slot_found = true
---    end
---end
 
 path_org_name = menu.text_input(PIP_Girl, "CEO Name", {"pgceoname"}, "(Also works for MC) You can press Ctrl+U and select colors, but no special GTA icons, sadly.", function(input_str, click_type)
     urceoname = input_str
@@ -1089,18 +1078,18 @@ path_auto_org = menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "
     util.yield(666)
 end)
 
---menu.slider(PIP_Girl, 'Auto CEO/MC Color', {'favceocolor'}, "Enter the Color ID of your CEO.", -1, 14, ceo_color, 1, function (new_value)
---    ceo_color = new_value
---end)
---
---menu.toggle_loop(PIP_Girl, "Additional CEO/MC Color Checks.", {""}, "If u use \"Auto Become a CEO/MC\" it will check for u color on register.\nIf u dont use \"Auto Become a CEO/MC\" u can use Additinal Checks.", function(on)
---    if transitionState() and players.get_boss(players.user()) ~= -1 and players.user() == players.get_script_host() then
---        if ceo_color ~= -1 then
---            check_CEO_Color(ceo_color)
---        end
---    end
---    util.yield(13666)
---end)
+path_auto_org_color = menu.slider(PIP_Girl, 'Auto Org Color', {'favorgcolor'}, "Enter the Color ID of your CEO.", -1, 14, ceo_color, 1, function (new_value)
+    ceo_color = new_value
+end)
+
+path_auto_org_color_check = menu.toggle_loop(PIP_Girl, "Additional Org Color Checks.", {""}, "If u use \"Auto Become a CEO/MC\" it will check for u color on register.\nIf u dont use \"Auto Become a CEO/MC\" u can use Additinal Checks.", function(on)
+    if transitionState(true) == 1 and players.get_boss(players.user()) ~= -1 and players.user() == players.get_script_host() then
+        if ceo_color ~= -1 then
+            check_CEO_Color(ceo_color)
+        end
+    end
+    util.yield(13666)
+end)
 
 path_join_friends_org = menu.list_select(PIP_Girl, "Auto Join Friends Org (!)", {""}, "Uses \"Auto Become a CEO/MC\"", {
     {1, "Don't"},
@@ -5172,6 +5161,8 @@ local data_cfg = {
     store_org_name = path_org_name,
     store_org_type = path_org_type,
     store_auto_org = path_auto_org,
+    store_auto_org_color = path_auto_org_color,
+    store_auto_org_color_check = path_auto_org_color_check,
     store_join_friends_org = path_join_friends_org,
     store_collect_money = path_collect_money,
     --Stimpak
