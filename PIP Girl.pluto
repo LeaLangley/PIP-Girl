@@ -1654,7 +1654,7 @@ local asuka_tech_dirt_amount = 0.06
 local function repair_asuka_tech(vehicle)
     local repair_amount = 0
     local max_repair_limit = 1000
-    if IS_ENTITY_A_MISSION_ENTITY(vehicle) and vehicle ~= entities.get_user_personal_vehicle_as_handle() then
+    if IS_ENTITY_A_MISSION_ENTITY(vehicle) and DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 then
         repair_amount = asuka_tech_mission_repair_amount
         max_repair_limit = max_repair_limit * asuka_tech_mission_repair_amount
     else
@@ -4089,7 +4089,7 @@ path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"
                     playerList = players.list_only(true, true, false, true)
                 end
                 if smartScriptHostMode == 3 then
-                    playerList = players.list()
+                    playerList = players.list_only(true, true, false, true)
                 end
                 for playerList as pid do
                     if worthToUnstuck(pid) then
@@ -4402,42 +4402,42 @@ menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisi
         playerPosition = GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(players.user_ped(), 0, -23.0, 2)
         local cmd_path = "Vehicle>Countermeasures>Only In Aircraft"
         warnify_ses("T-5 sec. Start on \"GO!\"")
-        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 3, 1, true, false, 0, true)
+        ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 3, 1, true, false, 0, true)
         for i=1, 13 do
             SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
         end
         util.yield(859)
-        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 3, 1, true, false, 0, true)
+        ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 3, 1, true, false, 0, true)
         for i=1, 13 do
             SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
         end
         util.yield(859)
         warnify_ses("3")
-        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 3, 1, true, false, 0, true)
+        ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 3, 1, true, false, 0, true)
         for i=1, 13 do
             SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
         end
         util.yield(859)
         warnify_ses("2")
-        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 3, 1, true, false, 0, true)
+        ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 3, 1, true, false, 0, true)
         for i=1, 13 do
             SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
         end
         util.yield(859)
         warnify_ses("1")
-        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 3, 1, true, false, 0, true)
+        ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 3, 1, true, false, 0, true)
         for i=1, 13 do
             SET_CONTROL_VALUE_NEXT_FRAME(2, 86, 3)
             util.yield(1)
         end
         util.yield(859)
         warnify_ses("GO!")
-        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 38, 1, true, false, 0, true)
-        FIRE.ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 49, 1, true, false, 0, true)
+        ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 38, 1, true, false, 0, true)
+        ADD_EXPLOSION(playerPosition.x, playerPosition.y, playerPosition.z, 49, 1, true, false, 0, true)
         if menu.get_state(menu.ref_by_path(cmd_path)) == "On" then
             menu.trigger_commands("onlyaircraft off")
             menu.trigger_commands("deployboth")
