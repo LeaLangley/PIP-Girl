@@ -2647,6 +2647,11 @@ local function SuperClean(fix, ignoreMission)
     end
     util.yield(13)
     notify("Done " .. ct .. "+ entities removed!")
+    if fix then
+        menu.trigger_commands("lockstreamingfocus on")
+        util.yield(420)
+        menu.trigger_commands("lockstreamingfocus off")
+    end
 end
 menu.divider(Game, "Exclude Mission.")
 
