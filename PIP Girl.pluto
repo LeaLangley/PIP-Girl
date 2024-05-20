@@ -385,7 +385,7 @@ local function check_CEO_Color()
                             if fallback_color == ceo_color then
                                 fallback_color = fallback_color - 1
                             end
-                            memory.write_int(orgColor(players.user()), fallback_color)
+                            memory.write_int(orgColor(pid), fallback_color)
                         end
                     else
                         memory.write_int(orgColor(players.user()), ceo_color)
