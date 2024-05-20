@@ -582,15 +582,22 @@ local function get_user_vehicle()
     end
 end
 
-local function is_user_driving_vehicle(bool)
+local function is_user_inside_vehicle(bool)
     if bool == nil then bool = true end
     return (IS_PED_IN_ANY_VEHICLE(players.user_ped(), bool))
+end
+
+local function is_user_driving_vehicle(vehicle)
+    if GET_PED_IN_VEHICLE_SEAT(vehicle, -1) == players.user_ped() then
+        return true
+    end
+    return false 
 end
 
 local function is_vehicle_free_for_use(vehicle)
     local driverPed = GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
     local driver = IS_PED_A_PLAYER(driverPed)
-    if not driver or driver == 0 or driverPed == players.user_ped() then
+    if not driver or driverPed == players.user_ped() then
         return true
     end
     return false
@@ -626,7 +633,7 @@ local function allowSpawnCheck()
     if not players.is_visible(players.user()) then
         return false
     end
-    if GET_INTERIOR_FROM_ENTITY(players.user_ped()) ~= 0 and is_user_driving_vehicle(true) then
+    if GET_INTERIOR_FROM_ENTITY(players.user_ped()) ~= 0 and is_user_inside_vehicle(true) then
         return false
     end
     if not NETWORK_IS_PLAYER_ACTIVE(players.user()) then
@@ -1174,7 +1181,7 @@ local vehicle_money_hashish = {
 path_collect_money = menu.toggle_loop(PIP_Girl, "Collect all NPC money", {}, "Collect all NPC money.", function()
     if transitionState(true) == 1 and GET_ENTITY_HEALTH(players.user_ped()) ~= 0 then
         local pos = players.get_position(players.user())
-        if is_user_driving_vehicle(true) then
+        if is_user_inside_vehicle(true) then
             for entities.get_all_pickups_as_handles() as pickup do
                 if not HAS_PICKUP_BEEN_COLLECTED(pickup) and not IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
                     local pickupHash = entities.get_model_hash(pickup)
@@ -1249,7 +1256,7 @@ end)
 menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a shower in all existing pickups.", function()
     if transitionState(true) == 1 then
         local pos = players.get_position(players.user())
-        local in_vehicle = is_user_driving_vehicle(true)
+        local in_vehicle = is_user_inside_vehicle(true)
         for entities.get_all_pickups_as_handles() as pickup do
             if not IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) and not HAS_PICKUP_BEEN_COLLECTED(pickup) then
                 if in_vehicle then
@@ -1328,7 +1335,7 @@ end)
 
 path_recharge_health = menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehicle", {"pghealth"}, "Will recharge health when in cover or vehicle quickly.\nBUT also slowly, almost legit-like, otherwise to 100%.", function()
     if transitionState(true) <3 then
-        local in_vehicle = is_user_driving_vehicle(true)
+        local in_vehicle = is_user_inside_vehicle(true)
         local playerPed = players.user_ped()
         local isPlayerInCover = IS_PED_IN_COVER(playerPed, false)
         if isPlayerInCover or in_vehicle then
@@ -1350,7 +1357,7 @@ end)
 path_recharge_armor = menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle", {"pgarmor"}, "Will Recharge Armor when in Cover or Vehicle quickly.\nBUT also slowly otherwise to 100%.", function()
     local cmd_path = "Self>Regeneration Rate>Armour"
     if transitionState(true) <3 then
-        local in_vehicle = is_user_driving_vehicle(true)
+        local in_vehicle = is_user_inside_vehicle(true)
         local playerPed = players.user_ped()
         local isPlayerInCover = IS_PED_IN_COVER(playerPed, false)
         if GET_PED_ARMOUR(players.user_ped()) == GET_PLAYER_MAX_ARMOUR(players.user()) then
@@ -1386,7 +1393,7 @@ end)
 local was_user_in_vehicle = false
 path_first_aid_kit = menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {"pgvaid"}, "Using your First Aid kit provided in your ", function()
     if transitionState(true) <3 then
-        local in_vehicle = is_user_driving_vehicle(false)
+        local in_vehicle = is_user_inside_vehicle(false)
         local health = GET_ENTITY_HEALTH(players.user_ped())
         if health ~= 0 then
             if in_vehicle and not was_user_in_vehicle then
@@ -1807,9 +1814,9 @@ path_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly
                     end
                     local isDriving = nil
                     if isInVehicleAT then
-                        isDriving = is_user_driving_vehicle(true)
+                        isDriving = is_user_inside_vehicle(true)
                     else
-                        isDriving = is_user_driving_vehicle(false)
+                        isDriving = is_user_inside_vehicle(false)
                     end
                     if isDriving and not isInVehicleAT then
                         SET_VEHICLE_ENGINE_ON(vehicle, true, true, false)
@@ -2087,7 +2094,7 @@ end)
 
 path_vehicle_light_rhythm_rapid_slowdown = menu.toggle_loop(Vehicle_Light, "Flash on Rapid slowdown",{"rapidslowdownwarn"},"",function()
     local vehicle = get_user_vehicle()
-    if is_user_driving_vehicle(true) then
+    if is_user_inside_vehicle(true) then
         local speedVector = GET_ENTITY_SPEED_VECTOR(vehicle, true)
         local forwardSpeedKmh = math.abs(speedVector.y) * 3.6
         if GET_CONTROL_VALUE(2, 72) > 213 or IS_CONTROL_PRESSED(2, 76) then
@@ -2127,7 +2134,7 @@ path_auto_vehicle_light_color = menu.toggle_loop(Vehicle, "Auto Vehicle Light Co
     if vehicleFavColor ~= 0 then
         if transitionState(true) <3 then
             local vehicle = get_user_vehicle()
-            if vehicle and is_user_driving_vehicle(false) and GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 then
+            if vehicle and is_user_driving_vehicle(vehicle) and GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 then
                 if DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 or vehicle == entities.get_user_personal_vehicle_as_handle() then
                     vehicleLightsSet = vehicle
                     menu.trigger_commands("headlights "..vehicleFavColor)
@@ -4345,7 +4352,7 @@ end, function()
 end)
 
 path_soft_clear_traffic = menu.toggle_loop(Session, "Soft Clear Traffic", {"softantitrafic"}, "Clears the traffic around you localy in close range.\nDosnt work with many players in close range.", function()
-    if is_user_driving_vehicle(false) and transitionState(true) == 1 then
+    if is_user_inside_vehicle(false) and transitionState(true) == 1 then
         if GET_ENTITY_HEIGHT_ABOVE_GROUND(players.user_ped()) < 13 then
             local driverPed = GET_PED_IN_VEHICLE_SEAT(GET_VEHICLE_PED_IS_IN(players.user_ped()), -1)
             if driverPed == players.user_ped() then
@@ -5079,7 +5086,7 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
     menu.toggle_loop(Settings, "GTA RPC", {""}, "", function()
         local playerPosition = players.get_position(players.user())
         local streetInfo = get_Street_Names(playerPosition.x, playerPosition.y, playerPosition.z)
-        local vehicleInfo = is_user_driving_vehicle(true) and util.reverse_joaat(entities.get_model_hash(get_user_vehicle())) or "On Foot"
+        local vehicleInfo = is_user_inside_vehicle(true) and util.reverse_joaat(entities.get_model_hash(get_user_vehicle())) or "On Foot"
         local entSpeed = math.floor(GET_ENTITY_SPEED(players.user_ped()) * 3.6).." km/h"
         local sesType = session_type()
         local sesPlayers = GET_NUMBER_OF_PLAYERS()
