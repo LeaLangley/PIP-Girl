@@ -2596,11 +2596,8 @@ local function SuperClean(fix, ignoreMission)
     for pairs(entities.get_all_peds_as_handles()) as ent do
         if not IS_PED_A_PLAYER(ent) then
             if PIP_does_entity_exist(ent) then
-                if not ignoreMission then
-                    entities.delete(ent)
-                    ct += 1
-                else
-                    if not IS_ENTITY_A_MISSION_ENTITY(ent) then
+                if not fix or (fix and GET_ENTITY_TYPE(ent)) then
+                    if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
                         entities.delete(ent)
                         ct += 1
                     end
@@ -2614,11 +2611,8 @@ local function SuperClean(fix, ignoreMission)
         local driver = GET_PED_IN_VEHICLE_SEAT(ent, -1)
         if not IS_PED_A_PLAYER(driver) then
             if PIP_does_entity_exist(ent) then
-                if not ignoreMission then
-                    entities.delete(ent)
-                    ct += 1
-                else
-                    if not IS_ENTITY_A_MISSION_ENTITY(ent) then
+                if not fix or (fix and GET_ENTITY_TYPE(ent)) then
+                    if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
                         entities.delete(ent)
                         ct += 1
                     end
@@ -2630,11 +2624,8 @@ local function SuperClean(fix, ignoreMission)
     util.yield(13)
     for pairs(entities.get_all_objects_as_handles()) as ent do
         if PIP_does_entity_exist(ent) then
-            if not ignoreMission then
-                entities.delete(ent)
-                ct += 1
-            else
-                if not IS_ENTITY_A_MISSION_ENTITY(ent) then
+            if not fix or (fix and GET_ENTITY_TYPE(ent)) then
+                if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
                     entities.delete(ent)
                     ct += 1
                 end
@@ -2645,11 +2636,8 @@ local function SuperClean(fix, ignoreMission)
     util.yield(13)
     for pairs(entities.get_all_pickups_as_handles()) as ent do
         if PIP_does_entity_exist(ent) then
-            if not ignoreMission then
-                entities.delete(ent)
-                ct += 1
-            else
-                if not IS_ENTITY_A_MISSION_ENTITY(ent) then
+            if not fix or (fix and GET_ENTITY_TYPE(ent)) then
+                if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
                     entities.delete(ent)
                     ct += 1
                 end
@@ -2659,11 +2647,6 @@ local function SuperClean(fix, ignoreMission)
     end
     util.yield(13)
     notify("Done " .. ct .. "+ entities removed!")
-    if fix then
-        menu.set_state(menu.ref_by_path("Game>Rendering>Potato Mode"), "On")
-        util.yield(420)
-        menu.set_state(menu.ref_by_path("Game>Rendering>Potato Mode"), "Off")
-    end
 end
 menu.divider(Game, "Exclude Mission.")
 
