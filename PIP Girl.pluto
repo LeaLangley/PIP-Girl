@@ -2629,7 +2629,7 @@ local function SuperClean(fix, ignoreMission)
     util.yield(13)
     for pairs(entities.get_all_objects_as_handles()) as ent do
         if PIP_does_entity_exist(ent) then
-            if not fix or (fix and GET_ENTITY_TYPE(ent)) then
+            if not fix or (fix and GET_ENTITY_TYPE(ent) and not string.contains(util.reverse_joaat(entities.get_model_hash(ent)), "yacht")) then
                 if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
                     entities.delete(ent)
                     ct += 1
@@ -2652,11 +2652,6 @@ local function SuperClean(fix, ignoreMission)
     end
     util.yield(13)
     notify("Done " .. ct .. "+ entities removed!")
-    if fix then
-        menu.trigger_commands("lockstreamingfocus on")
-        util.yield(420)
-        menu.trigger_commands("lockstreamingfocus off")
-    end
 end
 menu.divider(Game, "Exclude Mission.")
 
