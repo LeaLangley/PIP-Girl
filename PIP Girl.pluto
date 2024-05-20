@@ -2488,8 +2488,6 @@ path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLo
     local focused = lang.get_string(menu.get_current_menu_list():getParent().menu_name)
     if util.is_interaction_menu_open() then
         if ChangedHelmet then
-            REMOVE_PED_HELMET(players.user_ped(), false)
-            util.yield(113)
             menu.trigger_commands("hat -1")
             ChangedHelmet = false
         end
@@ -2497,8 +2495,6 @@ path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLo
     else
         if NETWORK_IS_ACTIVITY_SESSION() and 4 >= GET_NUMBER_OF_PLAYERS() then
             if ChangedHelmet then
-                REMOVE_PED_HELMET(players.user_ped(), false)
-                util.yield(113)
                 menu.trigger_commands("hat -1")
                 ChangedHelmet = false
             end
@@ -2519,6 +2515,8 @@ path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLo
                     if menu.get_state(menu.ref_by_path("Self>Appearance>Outfit>Hat")) == "-1" and focused ~= "Profiles" then
                         if vehicleClass == 8 or vehicleClass == 13 then
                             menu.trigger_commands("hat "..OutfitLockHelmet)
+                            SET_PED_CONFIG_FLAG(players.user_ped(), 36, true)
+                            SET_PED_CONFIG_FLAG(players.user_ped(), 438, false)
                             util.yield(13)
                             if OutfitLockHelmetColor ~= -1 then
                                 menu.trigger_commands("hatvar "..OutfitLockHelmetColor)
@@ -2530,13 +2528,14 @@ path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLo
                     if ChangedHelmet then
                         while GET_ENTITY_SPEED(players.user_ped()) ~=0 do
                             util.yield(666)
-                            REMOVE_PED_HELMET(players.user_ped(), false)
                             if GET_ENTITY_SPEED(players.user_ped()) ==0 then
                                 break
                             end
                             if lang.get_string(menu.get_current_menu_list():getParent().menu_name) == "Profiles" then
                                 break
                             end
+                            SET_PED_CONFIG_FLAG(players.user_ped(), 36, true)
+                            SET_PED_CONFIG_FLAG(players.user_ped(), 438, false)
                         end
                         menu.trigger_commands("hat -1")
                         ChangedHelmet = false
