@@ -380,8 +380,8 @@ local function check_CEO_Color()
             for players.list() as pid do
                 if players.get_boss(pid) ~= -1 then
                     if pid ~= players.user() then
-                        local orgColor = players.get_org_colour(pid)
-                        if orgColor == ceo_color and not isModder(pid) and not isFriend(pid) then
+                        local pidorgColor = players.get_org_colour(pid)
+                        if pidorgColor == ceo_color and not isModder(pid) and not isFriend(pid) then
                             if fallback_color == ceo_color then
                                 fallback_color = fallback_color - 1
                             end
