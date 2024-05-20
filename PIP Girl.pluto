@@ -2499,6 +2499,8 @@ path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLo
     local focused = lang.get_string(menu.get_current_menu_list():getParent().menu_name)
     if util.is_interaction_menu_open() then
         if ChangedHelmet then
+            REMOVE_PED_HELMET(players.user_ped(), false)
+            util.yield(113)
             menu.trigger_commands("hat -1")
             ChangedHelmet = false
         end
@@ -2506,6 +2508,8 @@ path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLo
     else
         if NETWORK_IS_ACTIVITY_SESSION() and 4 >= GET_NUMBER_OF_PLAYERS() then
             if ChangedHelmet then
+                REMOVE_PED_HELMET(players.user_ped(), false)
+                util.yield(113)
                 menu.trigger_commands("hat -1")
                 ChangedHelmet = false
             end
@@ -2537,6 +2541,7 @@ path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLo
                     if ChangedHelmet then
                         while GET_ENTITY_SPEED(players.user_ped()) ~=0 do
                             util.yield(666)
+                            REMOVE_PED_HELMET(players.user_ped(), false)
                             if GET_ENTITY_SPEED(players.user_ped()) ==0 then
                                 break
                             end
