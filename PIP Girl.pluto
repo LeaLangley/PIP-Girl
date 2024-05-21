@@ -3534,7 +3534,7 @@ path_anit_terrorbyte = menu.toggle_loop(SessionWorld, "Anti Terrorbyte", {"block
     if allowSpawnCheck() and transitionState(true) < 3 then
         antiTerrorGlass = SpawnCheck(antiTerrorGlass, 2465657597, v3.new(-1420.666, -3014.579, -79.0), 0, 0, -20, nil, 13, true, true)
         antiTerrorShocker = SpawnCheck(antiTerrorShocker, 1870961552, v3.new(-1420.8349609375, -3016.2561035156, -76.113542541504), 180, 0, 90, nil, 13, true, true)
-        antiTerrorShocker2 = SpawnCheck(antiTerrorShocker2, 3229200997, v3.new(-1420.8349609375, -3016.2561035156, -80.066642541504), 0, 0, 90, nil, 13, false, true)
+        antiTerrorShocker2 = SpawnCheck(antiTerrorShocker2, 3229200997, v3.new(-1420.8349609375, -3016.2561035156, -80.066642541504), 0, 0, 90, nil, 13, false, false)
     else
         util.yield(6666)
     end
@@ -3563,8 +3563,8 @@ local shrineElements = {
     {var = "small_candle_10", conditions = {540021153, v3.new(-1794.39, -139.90, 74.20), 0, 0, 13, nil, 13, false, false}},
     {var = "roses_1", conditions = {4241635085, v3.new(-1812.52, -125.81, 77.79), 0, 0, 420, nil, 13, false, false}},
     {var = "roses_2", conditions = {4241635085, v3.new(-1811.66, -128.39, 77.79), 0, 0, 666, nil, 13, false, false}},
-    {var = "firepit", conditions = {1125395611, v3.new(-1806.11, -130.02, 77.79), 0, 0, 0, nil, 13, false, true}},
-    {var = "fire1", conditions = {3229200997, v3.new(-1806.1933, -130.1367, 77.90), 0, 0, 13, nil, 13, false, true}},
+    {var = "firepit", conditions = {1125395611, v3.new(-1806.11, -130.02, 77.79), 0, 0, 0, nil, 13, false, false}},
+    {var = "fire1", conditions = {3229200997, v3.new(-1806.1933, -130.1367, 77.90), 0, 0, 13, nil, 13, false, false}},
     {var = "flagpole1", conditions = {3539805879, v3.new(-1799.96, -126.12, 76.18), 0, 0, 0, nil, 13, false, false}},
     {var = "flagpole2", conditions = {3539805879, v3.new(-1809.21, -134.90, 76.72), 0, 0, 0, nil, 13, false, false}},
     {var = "flagpole3", conditions = {3539805879, v3.new(-1805.41, -118.65, 76.31), 0, 0, 0, nil, 13, false, false}},
