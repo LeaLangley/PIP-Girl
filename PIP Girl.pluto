@@ -431,7 +431,6 @@ local function organization_control(org)
                     end
                 end
             end
-            if ceo_color ~=
         else
             if org == "CEO" then
                 menu.trigger_commands("ceostart")
