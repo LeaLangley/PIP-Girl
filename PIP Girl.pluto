@@ -376,19 +376,21 @@ local ceo_color = -1
 local function check_CEO_Color()
     if ceo_color ~= -1 then
         if transitionState(true) == 1 then
-            local fallback_color = 14
-            for players.list() as pid do
-                if players.get_boss(pid) ~= -1 then
-                    if pid ~= players.user() then
-                        local pidorgColor = players.get_org_colour(pid)
-                        if pidorgColor == ceo_color and not isModder(pid) and not isFriend(pid) then
-                            if fallback_color == ceo_color then
-                                fallback_color = fallback_color - 1
+            if ceo_color ~= players.get_org_colour(players.user()) then
+                local fallback_color = 14
+                for players.list() as pid do
+                    if players.get_boss(pid) ~= -1 then
+                        if pid ~= players.user() then
+                            local pidorgColor = players.get_org_colour(pid)
+                            if pidorgColor == ceo_color and not isModder(pid) and not isFriend(pid) then
+                                if fallback_color == ceo_color then
+                                    fallback_color = fallback_color - 1
+                                end
+                                memory.write_int(orgColor(pid), fallback_color)
                             end
-                            memory.write_int(orgColor(pid), fallback_color)
+                        else
+                            memory.write_int(orgColor(players.user()), ceo_color)
                         end
-                    else
-                        memory.write_int(orgColor(players.user()), ceo_color)
                     end
                 end
             end
@@ -429,6 +431,7 @@ local function organization_control(org)
                     end
                 end
             end
+            if ceo_color ~=
         else
             if org == "CEO" then
                 menu.trigger_commands("ceostart")
@@ -968,40 +971,40 @@ local lastCeoName = nil
 path_auto_org = menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yourself as CEO and auto switches you to MC/CEO in most situations needed.", function()
     if not NETWORK_IS_ACTIVITY_SESSION() and transitionState(true) == 1 then
         if joinfriendsceo ~= 3 then
-            local uniqueColors = {}
-            for players.list() as pid do
-                if players.get_boss(pid) ~= -1 then
-                    local orgColor = players.get_org_colour(pid)
-                    if orgColor and not uniqueColors[orgColor] then
-                        uniqueColors[orgColor] = true
+            if players.get_boss(players.user()) == -1 then
+                local uniqueColors = {}
+                for players.list() as pid do
+                    if players.get_boss(pid) ~= -1 then
+                        local orgColor = players.get_org_colour(pid)
+                        if orgColor and not uniqueColors[orgColor] then
+                            uniqueColors[orgColor] = true
+                        end
+                        util.yield(1)
                     end
+                end
+                local ceoInSession = 0
+                for _ in pairs(uniqueColors) do
+                    ceoInSession = ceoInSession + 1
                     util.yield(1)
                 end
-            end
-            local ceoInSession = 0
-            for _ in pairs(uniqueColors) do
-                ceoInSession = ceoInSession + 1
-                util.yield(1)
-            end
-            if ceoInSession < 10 then
-                if players.get_boss(players.user()) == -1 then
-                    organization_control(organization_type)
-                    util.yield(13666)
-                end
-            else
-                if joinfriendsceo ~= 1 and players.get_boss(players.user()) == -1 then
-                    for players.list() as pid do
-                        if isFriend(pid) then
-                            if players.get_boss(pid) ~= -1 and players.get_boss(players.user()) == -1 then
-                                menu.trigger_commands("ceojoin " .. players.get_name(pid))
-                                util.yield(213666)
+                if ceoInSession < 10 then
+                    if players.get_boss(players.user()) == -1 then
+                        organization_control(organization_type)
+                        util.yield(13666)
+                    end
+                else
+                    if joinfriendsceo ~= 1 and players.get_boss(players.user()) == -1 then
+                        for players.list() as pid do
+                            if isFriend(pid) then
+                                if players.get_boss(pid) ~= -1 and players.get_boss(players.user()) == -1 then
+                                    menu.trigger_commands("ceojoin " .. players.get_name(pid))
+                                    util.yield(213666)
+                                end
                             end
                         end
                     end
+                    util.yield(6666)
                 end
-                util.yield(6666)
-            end
-            if players.get_boss(players.user()) ~= -1 then
                 local CEOLabels = {
                     "HIP_HELP_BBOSS",
                     "HIP_HELP_BBOSS2",
@@ -1049,13 +1052,11 @@ path_auto_org = menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "
                         util.yield(1666)
                     end
                 end
-                if players.get_boss(players.user()) ~= -1 then
-                    local currentCeoName = menu.get_value(menu.ref_by_path("Online>CEO/MC>Name"))
-                    if currentCeoName ~= urceoname and currentCeoName ~= lastCeoName then
-                        menu.trigger_commands("ceoname " .. urceoname)
-                        util.yield(13)
-                        lastCeoName = menu.get_value(menu.ref_by_path("Online>CEO/MC>Name"))
-                    end
+                local currentCeoName = menu.get_value(menu.ref_by_path("Online>CEO/MC>Name"))
+                if currentCeoName ~= urceoname and currentCeoName ~= lastCeoName then
+                    menu.trigger_commands("ceoname " .. urceoname)
+                    util.yield(13)
+                    lastCeoName = menu.get_value(menu.ref_by_path("Online>CEO/MC>Name"))
                 end
             end
         else
