@@ -4653,6 +4653,9 @@ end
 
 local current_session_type = nil
 local function SessionCheck(pid)
+    while player_Exist(pid) and not menu.player_root(pid):isValid() do
+        util.yield(666)
+    end
     if session_type() ~= current_session_type then
         current_session_type = session_type()
         startupConfig()
