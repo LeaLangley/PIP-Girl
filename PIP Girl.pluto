@@ -1057,6 +1057,11 @@ path_auto_org = menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "
                     util.yield(13)
                     lastCeoName = menu.get_value(menu.ref_by_path("Online>CEO/MC>Name"))
                 end
+                if players.user() == players.get_script_host() then
+                    if ceo_color ~= -1 then
+                        check_CEO_Color(ceo_color)
+                    end
+                end
             end
         else
             if joinfriendsceo ~= 1 and players.get_boss(players.user()) == -1 then
