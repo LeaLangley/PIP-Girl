@@ -4666,8 +4666,10 @@ local function SessionCheck(pid)
                     if name == players.get_name(players.user()) then
                         name = "N/A"
                     end
-                    add_in_blocking(pid)
                     local notification = ""
+                    if session_type() == "Public" and not hasDetection(pid, "Blacklist") then
+                        add_in_blocking(pid)
+                    end
                     if isModder(pid) and pid == players.get_host() then
                         notification = "This Blacklist is Host, we don't kick them until they attack."
                         menu.trigger_commands("hellaa " .. name .. " on")
@@ -4690,7 +4692,7 @@ local function SessionCheck(pid)
                             finalNotification = finalNotification .. "\n" .. notification
                         end
                         notify(finalNotification)
-                    end                        
+                    end             
                 end
             end
         end
