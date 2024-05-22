@@ -372,7 +372,7 @@ end --thanks to galactys
 local ceo_color = -1
 local function check_CEO_Color()
     if ceo_color ~= -1 then
-        if transitionState(true) == 1 then
+        if transitionState(true) == 1 and players.user() == players.get_script_host() then
             if ceo_color ~= players.get_org_colour(players.user()) then
                 local fallback_color = 14
                 for players.list() as pid do
@@ -415,7 +415,7 @@ local function organization_control(org)
                 end
             else
                 if org == "CEO" then
-                    menu.trigger_commands("ceotomc")
+                    menu.trigger_commands("mctoceo")
                     util.yield(666)
                     if players.get_org_type(players.user()) == 0 then
                         if urceoname ~= "" then
@@ -1056,7 +1056,7 @@ path_auto_org = menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "
                 end
                 if players.user() == players.get_script_host() then
                     if ceo_color ~= -1 then
-                        check_CEO_Color(ceo_color)
+                        check_CEO_Color()
                     end
                 end
             end
