@@ -1952,8 +1952,8 @@ menu.action(Vehicle, "Teleport and Enter Asuka Tech Vehicle", {"tpenterasuka"}, 
         target_vehicle = current_asuka_tech_vehicle
     end
     if PIP_does_entity_exist(target_vehicle) then
+        requestControl(target_vehicle)
         if not is_vehicle_free_for_use(target_vehicle) then
-            requestControl(target_vehicle)
             SET_ENTITY_COORDS_NO_OFFSET(target_vehicle, 1057.81, -3200.08, -39.57, true, true, true)
             local TEATV_Timeout = os.time()
             while not is_vehicle_free_for_use(target_vehicle) do
