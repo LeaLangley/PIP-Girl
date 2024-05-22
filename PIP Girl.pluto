@@ -3195,8 +3195,6 @@ local SessionClaimerPaths = {
     {path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Session>Admin Bail", desired_state = "On"},
     {path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Game>Auto Accept Warning", desired_state = "On"},
     {path = "Stand>Lua Scripts>"..SCRIPT_NAME..">Session>Session invite>Post Session Code via Webhook", desired_state = "Off"},
-    {path = "Online>Transitions>Speed Up>Don't Wait For Data Broadcast", desired_state = "On"},
-    {path = "Online>Transitions>Speed Up>Don't Wait For Mission Launcher", desired_state = "On"},
     {path = "Online>Transitions>Speed Up>Don't Ask For Permission To Spawn", desired_state = "On"},
     {path = "Online>Transitions>Transition Helper", desired_state = "On"},
     {path = "Online>Transitions>Show Transition State", desired_state = "On"},
