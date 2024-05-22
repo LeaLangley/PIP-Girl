@@ -120,9 +120,6 @@ if SCRIPT_MANUAL_START or SCRIPT_SILENT_START then
     end)
 end
 
-local max_int = 2147483647
-local min_int = -2147483647
-
 local function getMPX()
     return 'MP'.. util.get_char_slot() ..'_'
 end
@@ -175,10 +172,10 @@ local function session_type()
     return "Singleplayer"
 end
 
-local pipBooty = false
+local pipBooty = true
 
 local function transitionState(state)
-    if not pipBooty then
+    if pipBooty then
         return state and 666 or "UwU"
     end
     if not util.is_session_transition_active() and util.is_session_started() and players.are_stats_ready(players.user()) then
@@ -5287,7 +5284,7 @@ util.on_stop(function()
 end)
 
 util.on_pre_stop(function()
-    if pipBooty then
+    if not pipBooty then
         save_config(false)
     end
 end)
@@ -5427,12 +5424,12 @@ if stored_pip_version == nil or stored_pip_version == "" or tonumber(stored_pip_
     writeToFilePIP(os.time(), store_dir..'version.txt')
 end
 if os.time() - tonumber(stored_pip_version) > 13 then
-    pipBooty = false
+    pipBooty = true
     writeToFilePIP(os.time(), store_dir..'version.txt')
     util.yield(1666)
     util.restart_script()
 else
-    pipBooty = true
+    pipBooty = false
     load_and_apply_config()
     util.create_thread(startupCheck)
     util.create_thread(startupConfig)
