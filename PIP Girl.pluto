@@ -3523,21 +3523,21 @@ end, function()
 end)
 
 local antiTerrorGlass = nil
-local antiTerrorShocker = nil
-local antiTerrorFire = nil
+--local antiTerrorShocker = nil
+--local antiTerrorFire = nil
 path_anit_terrorbyte = menu.toggle_loop(SessionWorld, "Anti Terrorbyte", {"blockterror"}, "Blocks the MK2 acces", function()
     if allowSpawnCheck() and transitionState(true) < 3 then
         antiTerrorGlass = SpawnCheck(antiTerrorGlass, 2465657597, v3.new(-1420.666, -3014.579, -79.0), 0, 0, -20, nil, 13, true, true)
-        antiTerrorShocker = SpawnCheck(antiTerrorShocker, 1870961552, v3.new(-1420.8349609375, -3016.2561035156, -76.113542541504), 180, 0, 90, nil, 13, true, false)
-        antiTerrorFire = SpawnCheck(antiTerrorFire, 3229200997, v3.new(-1420.8349609375, -3016.2561035156, -80.066642541504), 0, 0, 90, nil, 13, true, true)
+        --antiTerrorShocker = SpawnCheck(antiTerrorShocker, 1870961552, v3.new(-1420.8349609375, -3016.2561035156, -76.113542541504), 180, 0, 90, nil, 13, true, false)
+        --antiTerrorFire = SpawnCheck(antiTerrorFire, 3229200997, v3.new(-1420.8349609375, -3016.2561035156, -80.066642541504), 0, 0, 90, nil, 13, true, true)
     else
         util.yield(6666)
     end
     util.yield(3666)
 end, function()
     delete_ent(antiTerrorGlass)
-    delete_ent(antiTerrorShocker)
-    delete_ent(antiTerrorFire)
+    --delete_ent(antiTerrorShocker)
+    --delete_ent(antiTerrorFire)
 end)
 
 local shrineElements = {
@@ -3741,7 +3741,7 @@ menu.action(SessionMisc, "Cleanup \"Friend's\" Group", {"cleanupfriends"}, "remo
                     end
                 end
             end
-            util.yield(13)
+            util.yield(66)
         end
         util.yield(666)
         menu.trigger_commands("createfriendsgroup")
