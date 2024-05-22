@@ -372,7 +372,7 @@ end --thanks to galactys
 local ceo_color = -1
 local function check_CEO_Color()
     if ceo_color ~= -1 then
-        if transitionState(true) == 1 and players.user() == players.get_script_host() then
+        if transitionState(true) == 1 and players.user() == players.get_script_host() and NETWORK_IS_PLAYER_ACTIVE(players.user()) then
             if ceo_color ~= players.get_org_colour(players.user()) then
                 local fallback_color = 14
                 for players.list() as pid do
