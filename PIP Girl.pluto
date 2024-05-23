@@ -1415,6 +1415,7 @@ path_oxygen = menu.toggle_loop(Stimpak, "Oxygen", {"pgbreath"}, "Just breath.\nA
         if GET_PED_DIES_IN_WATER(players.user_ped()) then
             SET_PED_DIES_IN_WATER(players.user_ped(), false)
             SET_PED_DIES_IN_SINKING_VEHICLE(players.user_ped(), false)
+            SET_PED_MAX_TIME_UNDERWATER(players.user_ped(), 666666)
             util.yield(3666)
         end
     else
