@@ -829,6 +829,163 @@ local function StrategicKick(pid)
     end
 end
 
+local function readFromFilePIP(the_path)
+    local file = io.open(the_path, "r")
+    if file then
+        local webhook = file:read("*all")
+        file:close()
+        return webhook
+    else
+        return nil
+    end
+end
+
+local function writeToFilePIP(payload, the_path)
+    local file = io.open(the_path, "w")
+    if file then
+        file:write(payload)
+        file:close()
+    end
+end
+
+local function healthyInternet(pid)
+    if NETWORK_GET_AVERAGE_PACKET_LOSS(pid) < 6 and NETWORK_GET_AVERAGE_LATENCY(pid) < 125 then
+        return true
+    else
+        return false
+    end
+end
+
+local function worthToUnstuck(pid)
+    if player_Exist(pid) and isStuck(pid) and healthyInternet(pid) and discoveredSince(pid) > 113 then
+        return true
+    else
+        return false
+    end
+end
+
+local function get_ScriptHost()
+    local requesting_SH = os.time() + 6
+    menu.trigger_commands("scripthost")
+    while players.get_script_host() ~= players.user() do
+        util.yield(13)
+        if players.get_script_host() == players.user() then
+            break
+        end
+        if os.time() > requesting_SH then
+            break
+        end
+    end
+end
+
+
+local function sc_block(rid)
+    if not util.sc_is_blocked(rid) then
+        util.sc_block(rid)
+    end
+end
+
+local function remove_pop_multiplier(sphereID)
+    if sphereID and DOES_POP_MULTIPLIER_AREA_EXIST(sphereID) then
+        REMOVE_POP_MULTIPLIER_AREA(sphereID, true)
+    end
+    return nil
+end
+
+local function create_pop_multiplier(sphereID, pedPOP, vehPOP)
+    if not sphereID then
+        remove_pop_multiplier(13)
+        sphereID = ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19666, pedPOP, vehPOP, false, true)
+    end
+    if not DOES_POP_MULTIPLIER_AREA_EXIST(sphereID) then
+        remove_pop_multiplier(13)
+        sphereID = ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19666, pedPOP, vehPOP, false, true)
+    end
+    return sphereID
+end
+
+local function selfSafe()
+    if menu.get_state(menu.ref_by_path("Self>Immortality")) == "On" then
+        return true
+    end
+    if players.is_godmode(players.user()) then
+        return true
+    end
+    if players.get_vehicle_model(players.user()) == -32878452 or players.get_vehicle_model(players.user()) == -42959138 or players.get_vehicle_model(players.user()) == -1600252419 then
+        if get_number_of_passengers(GET_VEHICLE_PED_IS_IN(players.user_ped(), true)) > 1 then
+            return true
+        end
+    end
+    return false
+end
+
+local function SuperClean(fix, ignoreMission)
+    local ct = 0
+    menu.trigger_commands("deleterope")
+    util.yield(13)
+    for pairs(entities.get_all_peds_as_handles()) as ent do
+        if not IS_PED_A_PLAYER(ent) then
+            if PIP_does_entity_exist(ent) then
+                if not fix or (fix and GET_ENTITY_TYPE(ent)) then
+                    if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
+                        entities.delete(ent)
+                        ct += 1
+                    end
+                end
+            end
+            util.yield(13)
+        end
+    end
+    util.yield(13)
+    for pairs(entities.get_all_vehicles_as_handles()) as ent do
+        local driver = GET_PED_IN_VEHICLE_SEAT(ent, -1)
+        if not IS_PED_A_PLAYER(driver) then
+            if PIP_does_entity_exist(ent) then
+                if not fix or (fix and GET_ENTITY_TYPE(ent)) then
+                    if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
+                        entities.delete(ent)
+                        ct += 1
+                    end
+                end
+            end
+            util.yield(13)
+        end
+    end
+    util.yield(13)
+    for pairs(entities.get_all_objects_as_handles()) as ent do
+        if PIP_does_entity_exist(ent) then
+            if not fix or (fix and GET_ENTITY_TYPE(ent) and not string.contains(util.reverse_joaat(entities.get_model_hash(ent)), "yacht")) then
+                if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
+                    entities.delete(ent)
+                    ct += 1
+                end
+            end
+        end
+        util.yield(13)
+    end
+    util.yield(13)
+    for pairs(entities.get_all_pickups_as_handles()) as ent do
+        if PIP_does_entity_exist(ent) then
+            if not fix or (fix and GET_ENTITY_TYPE(ent)) then
+                if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
+                    entities.delete(ent)
+                    ct += 1
+                end
+            end
+        end
+        util.yield(13)
+    end
+    util.yield(13)
+    notify("Done " .. ct .. "+ entities removed!")
+end
+
+local function getTrailer(vehicle)
+    local trailerPtr = memory.alloc_int()
+    GET_VEHICLE_TRAILER_VEHICLE(vehicle, trailerPtr)
+    local trailer = memory.read_int(trailerPtr)
+    return trailer
+end
+
 menu.divider(menu.my_root(), script_version)
 local PIP_Girl = menu.list(menu.my_root(), 'PIP Girl', {}, 'Personal Information Processor Girl.', function(); end)
 menu.focus(menu.ref_by_path("Stand>Lua Scripts>"..SCRIPT_NAME..">PIP Girl"))
@@ -1607,12 +1764,6 @@ end
 
 menu.divider(Vehicle, "Asuka Tech")
 
-local function getTrailer(vehicle)
-    local trailerPtr = memory.alloc_int()
-    GET_VEHICLE_TRAILER_VEHICLE(vehicle, trailerPtr)
-    local trailer = memory.read_int(trailerPtr)
-    return trailer
-end
 local asuka_tech_repair_amount = 1
 local asuka_tech_mission_repair_amount = 3
 local asukaTechBlip = nil
@@ -2553,65 +2704,6 @@ path_bike_helmet_color = menu.slider(Outfit, 'Smart Outfit Lock Helmet Color', {
     OutfitLockHelmetColor = new_value
 end)
 
-local function SuperClean(fix, ignoreMission)
-    local ct = 0
-    menu.trigger_commands("deleterope")
-    util.yield(13)
-    for pairs(entities.get_all_peds_as_handles()) as ent do
-        if not IS_PED_A_PLAYER(ent) then
-            if PIP_does_entity_exist(ent) then
-                if not fix or (fix and GET_ENTITY_TYPE(ent)) then
-                    if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
-                        entities.delete(ent)
-                        ct += 1
-                    end
-                end
-            end
-            util.yield(13)
-        end
-    end
-    util.yield(13)
-    for pairs(entities.get_all_vehicles_as_handles()) as ent do
-        local driver = GET_PED_IN_VEHICLE_SEAT(ent, -1)
-        if not IS_PED_A_PLAYER(driver) then
-            if PIP_does_entity_exist(ent) then
-                if not fix or (fix and GET_ENTITY_TYPE(ent)) then
-                    if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
-                        entities.delete(ent)
-                        ct += 1
-                    end
-                end
-            end
-            util.yield(13)
-        end
-    end
-    util.yield(13)
-    for pairs(entities.get_all_objects_as_handles()) as ent do
-        if PIP_does_entity_exist(ent) then
-            if not fix or (fix and GET_ENTITY_TYPE(ent) and not string.contains(util.reverse_joaat(entities.get_model_hash(ent)), "yacht")) then
-                if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
-                    entities.delete(ent)
-                    ct += 1
-                end
-            end
-        end
-        util.yield(13)
-    end
-    util.yield(13)
-    for pairs(entities.get_all_pickups_as_handles()) as ent do
-        if PIP_does_entity_exist(ent) then
-            if not fix or (fix and GET_ENTITY_TYPE(ent)) then
-                if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
-                    entities.delete(ent)
-                    ct += 1
-                end
-            end
-        end
-        util.yield(13)
-    end
-    util.yield(13)
-    notify("Done " .. ct .. "+ entities removed!")
-end
 menu.divider(Game, "Exclude Mission.")
 
 menu.action(Game, 'Super Cleanse No yacht fix', {"scleannysave"}, 'BCS R* is a mess.', function()
@@ -3788,25 +3880,6 @@ if not filesystem.exists(store_dir..'/session_code.txt') then
     file:close()
 end
 
-local function readFromFilePIP(the_path)
-    local file = io.open(the_path, "r")
-    if file then
-        local webhook = file:read("*all")
-        file:close()
-        return webhook
-    else
-        return nil
-    end
-end
-
-local function writeToFilePIP(payload, the_path)
-    local file = io.open(the_path, "w")
-    if file then
-        file:write(payload)
-        file:close()
-    end
-end
-
 local discord_webhook = nil
 
 menu.divider(SessionInvite, "Discord Invite Web-hook.")
@@ -3995,45 +4068,6 @@ menu.action(SessionInvite, "Copy Discord Session invite link.", {"invitelink"}, 
     end
 end)
 
-local function isFriendStuck()
-    for players.list() as pid do
-        if isFriend(pid) and isStuck(pid) and discoveredSince(pid) >= 113 then
-            return pid
-        end
-    end
-    return nil
-end
-
-local function healthyInternet(pid)
-    if NETWORK_GET_AVERAGE_PACKET_LOSS(pid) < 6 and NETWORK_GET_AVERAGE_LATENCY(pid) < 125 then
-        return true
-    else
-        return false
-    end
-end
-
-local function worthToUnstuck(pid)
-    if player_Exist(pid) and isStuck(pid) and healthyInternet(pid) and discoveredSince(pid) > 113 then
-        return true
-    else
-        return false
-    end
-end
-
-local function get_ScriptHost()
-    local requesting_SH = os.time() + 6
-    menu.trigger_commands("scripthost")
-    while players.get_script_host() ~= players.user() do
-        util.yield(13)
-        if players.get_script_host() == players.user() then
-            break
-        end
-        if os.time() > requesting_SH then
-            break
-        end
-    end
-end
-
 local stuckPlayers = {}
 local timeoutIgnore = {}
 local smartScriptHostMode = 1
@@ -4166,21 +4200,6 @@ path_smart_script_host_mode = menu.list_select(Session, "Smart Script Host Help"
     smartScriptHostMode = value
 end)
 
-local function selfSafe()
-    if menu.get_state(menu.ref_by_path("Self>Immortality")) == "On" then
-        return true
-    end
-    if players.is_godmode(players.user()) then
-        return true
-    end
-    if players.get_vehicle_model(players.user()) == -32878452 or players.get_vehicle_model(players.user()) == -42959138 or players.get_vehicle_model(players.user()) == -1600252419 then
-        if get_number_of_passengers(GET_VEHICLE_PED_IS_IN(players.user_ped(), true)) > 1 then
-            return true
-        end
-    end
-    return false
-end
-
 local in_self_god = false
 path_ghost_god_mode = menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"}, "Ghost everyone who is a god mode except Friends.\nIf they are not god anymore , it will de-ghost", function()
     if transitionState(true) <3 then
@@ -4234,25 +4253,6 @@ end)
 
 local pop_multiplier_free = nil
 local pop_multiplier_repair = nil
-
-local function remove_pop_multiplier(sphereID)
-    if sphereID and DOES_POP_MULTIPLIER_AREA_EXIST(sphereID) then
-        REMOVE_POP_MULTIPLIER_AREA(sphereID, true)
-    end
-    return nil
-end
-
-local function create_pop_multiplier(sphereID, pedPOP, vehPOP)
-    if not sphereID then
-        remove_pop_multiplier(13)
-        sphereID = ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19666, pedPOP, vehPOP, false, true)
-    end
-    if not DOES_POP_MULTIPLIER_AREA_EXIST(sphereID) then
-        remove_pop_multiplier(13)
-        sphereID = ADD_POP_MULTIPLIER_SPHERE(0.0, 0.0, 0.0, 19666, pedPOP, vehPOP, false, true)
-    end
-    return sphereID
-end
 
 path_clear_traffic = menu.toggle_loop(Session, "Clear Traffic", {"antitraffic"}, "Clears the traffic on the session for everyone.", function()
     pop_multiplier_repair = remove_pop_multiplier(pop_multiplier_repair)
@@ -4546,12 +4546,6 @@ local function crashlistConfig()
     end
 end
 
-local function sc_block(rid)
-    if not util.sc_is_blocked(rid) then
-        util.sc_block(rid)
-    end
-end
-
 local function add_in_blocking(pid)
     if not isFriend(pid) then
         local name = players.get_name(pid)
@@ -4703,14 +4697,6 @@ local function removeFromTable(pid)
 end
 
 players.on_leave(removeFromTable)
-
-local function get_prostitutes_solicited(pid)
-    return memory.read_int(memory.script_global(1845263 + 1 + (pid * 877) + 205 + 54))
-end
-
-local function get_lapdances_amount(pid) 
-    return memory.read_int(memory.script_global(1845263 + 1 + (pid * 877) + 205 + 55))
-end
 
 player_menu = function(pid)
     util.yield(113)
