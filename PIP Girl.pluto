@@ -3433,24 +3433,31 @@ menu.action(SessionMisc, "Create \"Friend's\" Group", {"createfriendsgroup"}, "C
     menu.trigger_commands("friendswhitelist")
 end)
 
-menu.action(SessionMisc, "Cleanup \"Friend's\" Group", {"cleanupfriends"}, "remove non friends from this group.", function()
+menu.action(menu.my_root(), "Cleanup \"Friend's\" Group", {"cleanupfriends"}, "remove non friends from this group.", function()
     if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Friend's")) then
         menu.trigger_commands("findplayer Friend's")
-        for menu.ref_by_path("Online>Player History>Noted Players>Friend's"):getChildren() as friend do
+        local friends = menu.ref_by_path("Online>Player History>Noted Players>Friend's"):getChildren()
+        local num_friends = #friends
+        local total_time_ms = (66 * num_friends) + 666
+        local total_time_s = total_time_ms / 1000
+        notify(string.format("The process will take approximately %.2f seconds.", total_time_s))
+        for _, friend in ipairs(friends) do
             local friend_target = friend.target
-            if friend_target then
+            if friend_target and friend_target:isValid() then
                 local name = friend_target.menu_name:gsub("%s?%[.*%]", "")
-                menu.trigger_commands("findplayer "..name)
-                if friend_target:isValid() then
-                    if friend_target:refByRelPath("Whitelist Join"):isValid() then
-                        friend_target:refByRelPath("Whitelist Join").value = false
-                    end
-                    if friend_target:refByRelPath("Tracking>Disabled"):isValid() then
-                        menu.trigger_command(friend_target:refByRelPath("Tracking>Disabled"))
-                    end
-                    if friend_target:refByRelPath("Note"):isValid() then
-                        menu.apply_default_state(friend_target:refByRelPath("Note"))
-                    end
+                local children = menu.get_children(friend_target)
+                for i = 1, math.min(3, #children) do
+                    local child = children[i]
+                    menu.focus(child)
+                end
+                if friend_target:refByRelPath("Whitelist Join"):isValid() then
+                    friend_target:refByRelPath("Whitelist Join").value = false
+                end
+                if friend_target:refByRelPath("Tracking>Disabled"):isValid() then
+                    menu.trigger_command(friend_target:refByRelPath("Tracking>Disabled"))
+                end
+                if friend_target:refByRelPath("Note"):isValid() then
+                    menu.apply_default_state(friend_target:refByRelPath("Note"))
                 end
             end
             util.yield(66)
