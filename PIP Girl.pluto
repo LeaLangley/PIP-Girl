@@ -8,7 +8,7 @@ __________._____________    ________.__       .__
 
 local script_version = "1.170"
 
-local lust_upDate = {year = 2024, month = 5, day = 18, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 5, day = 28, hour = 6, min = 6, sec = 6}
 
 local startupmsg = "PIP Girl remembers your settings! :D\nSettings changed in Script will never be lost!\nReport bugs in the discord.\n\nAsuka Tech on top!"
 
@@ -51,8 +51,6 @@ local auto_update_config = {
 }
 auto_updater.run_auto_update(auto_update_config)
 
-util.require_natives("3095a", "g")
-local json = require("json")
 if not filesystem.exists(filesystem.scripts_dir().."/lib/Asuka_Library/asuka_lib.pluto") then
     util.toast("If the script dosnt restart working, there might be a issue downloading resources to make this script work.")
 end
@@ -60,6 +58,9 @@ while not filesystem.exists(filesystem.scripts_dir().."/lib/Asuka_Library/asuka_
     util.yield()
 end
 local asuka_lib = require("Asuka_Library/asuka_lib")
+
+local json = require("json")
+util.require_natives("3095a", "g")
 
 local current_gta_version = tonumber(GET_ONLINE_VERSION())
 local supported_gta_version = 1.68
