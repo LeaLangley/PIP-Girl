@@ -2411,7 +2411,7 @@ path_auto_interact = menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'},
             end
         end
         local interactionsX = {
-            "MBS_DPAD_DROPB",
+            "MBS_DPAD_DROPb",
         }
         for ipairs(interactionsX) as label do
             if IS_HELP_MSG_DISPLAYED(label) then
