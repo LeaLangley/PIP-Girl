@@ -3295,22 +3295,21 @@ local shrineElements = {
 local entityVars = {}
 local Asuka_shrine_blip = nil
 path_asukas_shrine = menu.toggle_loop(SessionWorld, "Asuka's Shrine", {"asukasshrine"}, "Shows Asuka's Shrine, Perfect for a hangout spot or Deep thinking.\nNormal its a calm and mystical place only lit by fire and candles , once entering a arcade u unlock the bright neon lights of the city~", function()
-    util.yield(1666)
     if asuka_lib.allow_spawn_check() then
         if asuka_lib.transition_state(true) == 1 then
             if not Asuka_shrine_blip or not DOES_BLIP_EXIST(Asuka_shrine_blip) then
                 Asuka_shrine_blip = ADD_BLIP_FOR_COORD(-1812.212, -127.127, 80.265)
-             SET_BLIP_SPRITE(Asuka_shrine_blip, "617")
-             SET_BLIP_COLOUR(Asuka_shrine_blip, 76)
-             SET_BLIP_AS_MINIMAL_ON_EDGE(Asuka_shrine_blip, true)
-             SET_RADIUS_BLIP_EDGE(Asuka_shrine_blip, true)
-             SET_BLIP_AS_SHORT_RANGE(Asuka_shrine_blip, true)
-             SET_BLIP_DISPLAY(Asuka_shrine_blip, 2)
-             SET_BLIP_SCALE(Asuka_shrine_blip, 0.8)
-             BEGIN_TEXT_COMMAND_SET_BLIP_NAME("STRING")
-             ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Asuka\'s Shrine')
-             END_TEXT_COMMAND_SET_BLIP_NAME(Asuka_shrine_blip)
-             SET_BLIP_PRIORITY(Asuka_shrine_blip, 66)
+                SET_BLIP_SPRITE(Asuka_shrine_blip, "617")
+                SET_BLIP_COLOUR(Asuka_shrine_blip, 76)
+                SET_BLIP_AS_MINIMAL_ON_EDGE(Asuka_shrine_blip, true)
+                SET_RADIUS_BLIP_EDGE(Asuka_shrine_blip, true)
+                SET_BLIP_AS_SHORT_RANGE(Asuka_shrine_blip, true)
+                SET_BLIP_DISPLAY(Asuka_shrine_blip, 2)
+                SET_BLIP_SCALE(Asuka_shrine_blip, 0.8)
+                BEGIN_TEXT_COMMAND_SET_BLIP_NAME("STRING")
+                ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Asuka\'s Shrine')
+                END_TEXT_COMMAND_SET_BLIP_NAME(Asuka_shrine_blip)
+                SET_BLIP_PRIORITY(Asuka_shrine_blip, 66)
             end
         else
             Asuka_shrine_blip = nil
@@ -3320,12 +3319,12 @@ path_asukas_shrine = menu.toggle_loop(SessionWorld, "Asuka's Shrine", {"asukassh
                 local entityVar, conditions = element.var, element.conditions
                 entityVars[entityVar] = asuka_lib.spawn_and_check_object(entityVars[entityVar], table.unpack(conditions))
             end
-            util.yield(420)
+            util.yield(13)
         end
     else
         util.yield(6666)
     end
-    util.yield(3666)
+    util.yield(6666)
 end, function()
     if Asuka_shrine_blip then
         util.remove_blip(Asuka_shrine_blip)
