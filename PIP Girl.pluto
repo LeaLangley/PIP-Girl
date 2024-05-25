@@ -14,7 +14,7 @@ local startupmsg = "PIP Girl remembers your settings! :D\nSettings changed in Sc
 
 util.ensure_package_is_installed("lua/auto-updater")
 local auto_updater = require("auto-updater")
-
+if not async_http.have_access() then util.toast("U need to allow internet access to download all resources the script needs to work and receive cutting edge updates. <3"); return end
 local auto_update_config = {
     source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/PIP%20Girl.pluto",
     script_relpath=SCRIPT_RELPATH,
