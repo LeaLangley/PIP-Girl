@@ -4350,7 +4350,7 @@ end
 players.on_leave(removeFromTable)
 
 player_menu = function(pid)
-    while asuka_lib.player_exist(pid) and not menu.player_root(pid):isValid() then 
+    while asuka_lib.player_exist(pid) and not menu.player_root(pid):isValid() do
         util.yield()
     end
     if not asuka_lib.player_exist(pid) then
