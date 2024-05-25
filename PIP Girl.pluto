@@ -4350,9 +4350,8 @@ end
 players.on_leave(removeFromTable)
 
 player_menu = function(pid)
-    util.yield(113)
-    if asuka_lib.player_exist(pid) and players.get_name(pid) == "UndiscoveredPlayer" then 
-        util.yield(13)
+    while asuka_lib.player_exist(pid) and not menu.player_root(pid):isValid() then 
+        util.yield()
     end
     if not asuka_lib.player_exist(pid) then
         return
