@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.169"
+local script_version = "1.170"
 
 local lust_upDate = {year = 2024, month = 5, day = 18, hour = 6, min = 6, sec = 6}
 
@@ -23,6 +23,12 @@ local auto_update_config = {
     check_interval=0,
     restart_delay=666,
     dependencies={
+        {
+            name="Asuka_Libiary",
+            source_url="https://raw.githubusercontent.com/LeaLangley/Asuka_Library/main/Asuka_Lib.pluto",
+            script_relpath="lib/Asuka_Library/Asuka_Lib.pluto",
+            check_interval=0,
+        },
         {
             name="logo",
             source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/logo.png",
@@ -47,6 +53,13 @@ auto_updater.run_auto_update(auto_update_config)
 
 util.require_natives("3095a", "g")
 local json = require("json")
+if not filesystem.exists(filesystem.scripts_dir().."/lib/Asuka_Library/asuka_lib.pluto") then
+    util.toast("If the script dosnt restart working, there might be a issue downloading resources to make this script work.")
+end
+while not filesystem.exists(filesystem.scripts_dir().."/lib/Asuka_Library/asuka_lib.pluto") do
+    util.yield()
+end
+local asuka_lib = require("Asuka_Library/asuka_lib")
 
 local current_gta_version = tonumber(GET_ONLINE_VERSION())
 local supported_gta_version = 1.68
@@ -120,42 +133,7 @@ local function PIP_STAT_SET_INT(Stat, value)
     STAT_SET_INT(util.joaat(ADD_MP_INDEX(Stat)), value, true)
 end
 
-local function session_type()
-    if util.is_session_started() or util.is_session_transition_active() then
-        if NETWORK_SESSION_IS_PRIVATE() then
-            return "Privat"
-        end
-        if NETWORK_SESSION_IS_CLOSED_FRIENDS() then
-            return "Friends"
-        end
-        if NETWORK_SESSION_IS_CLOSED_CREW() then
-            return "Crew"
-        end
-        if NETWORK_SESSION_IS_SOLO() then
-            return "Solo"
-        end
-        return "Public"
-    end
-    return "Singleplayer"
-end
-
-local pipBooty = true
-
-local function transitionState(state)
-    if pipBooty then
-        return state and 666 or "UwU"
-    end
-    if not util.is_session_transition_active() and util.is_session_started() and players.are_stats_ready(players.user()) then
-        return state and 1 or "Docked"
-    end
-    if not util.is_session_transition_active() and util.is_session_started() and not players.are_stats_ready(players.user()) then
-        return state and 2 or "Pressurization"
-    end
-    if util.is_session_transition_active() then
-        return state and 3 or "Orbit"
-    end
-    return state and 404 or "404"
-end
+asuka_lib.asuka_booty = true
 
 local function notify(msg)
     util.toast("<[Pip Girl]>: " .. msg, TOAST_CONSOLE)
@@ -191,15 +169,6 @@ local function warnify_ses(msg)
     util.toast(msg)
 end
 
-local function player_Exist(pid)
-    if pid then
-        if players.exists(pid) then
-            return true
-        end
-    end
-    return false
-end
-
 local function allow_Join_back(name)
     for i = 1, 3 do
         util.yield(666)
@@ -217,91 +186,9 @@ local function allow_Join_back(name)
     end
 end
 
-local function hasDetection(pid, detectionPart)
-    if player_Exist(pid) and menu.player_root(pid):isValid() then
-        for menu.player_root(pid):getChildren() as cmd do
-            if player_Exist(pid) and cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING then
-                for cmd:getChildren() as detection do
-                    if player_Exist(pid) and string.contains(detection.menu_name, detectionPart) then
-                        return true
-                    end
-                end
-            end
-        end
-    end
-    return false
-end
-
-local function StandUser(pid) -- credit to sapphire for this and jinx script
-    util.yield(13)
-    if player_Exist(pid) and pid ~= players.user() and menu.player_root(pid):isValid() then
-        for menu.player_root(pid):getChildren() as cmd do
-            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Stand User"):isValid() then
-                return true
-            end
-        end
-    end
-    return false
-end
-
-local function discoveredSince(pid)
-    util.yield(13)
-    if player_Exist(pid) and menu.player_root(pid):isValid() then
-        local playerPath = menu.player_root(pid)
-        local timeString = playerPath:refByRelPath("Information>Discovered").value
-        if timeString and type(timeString) == "string" then
-            local minutes, seconds = timeString:match("(%d+) minutes, (%d+) seconds ago")
-            if minutes and seconds then
-                local timeInSeconds = tonumber(minutes) * 60 + tonumber(seconds)
-                return timeInSeconds
-            end
-        end
-    end
-    return 0
-end
-
-local function wannabeGod(pid)
-    util.yield(13)
-    if player_Exist(pid) and pid ~= players.user() and menu.player_root(pid):isValid() then
-        for menu.player_root(pid):getChildren() as cmd do
-            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Attacking While Invulnerable"):isValid() then
-                return true
-            end
-            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Dead For Too Long"):isValid() then
-                return true
-            end
-        end
-    end
-    return false
-end
-
-local function aggressive(pid)
-    util.yield(13)
-    if player_Exist(pid) and pid ~= players.user() and menu.player_root(pid):isValid() then
-        for menu.player_root(pid):getChildren() as cmd do
-            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Spoofed Host Token (Aggressive)"):isValid() then
-                return true
-            end
-        end
-    end
-    return false
-end
-
-local function orbroomdetection(pid)
-    util.yield(13)
-    if player_Exist(pid) and pid ~= players.user() and menu.player_root(pid):isValid() then
-        for menu.player_root(pid):getChildren() as cmd do
-            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING and cmd:refByRelPath("Glitched Orb Room Access"):isValid() then
-                return true
-            end
-        end
-    end
-    return false
-end
-
 local function hasAnyDetection(pid)
     util.yield(13)
-    if player_Exist(pid) and menu.player_root(pid):isValid() then
+    if asuka_lib.player_exist(pid) and menu.player_root(pid):isValid() then
         for menu.player_root(pid):getChildren() as cmd do
             if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING then
                 return true
@@ -310,7 +197,6 @@ local function hasAnyDetection(pid)
     end
     return false
 end
-
 
 local function isModder(pid, bool)
     if players.is_marked_as_modder(pid) or players.is_marked_as_modder_or_admin(pid) then
@@ -339,7 +225,7 @@ end --thanks to galactys
 local ceo_color = -1
 local function check_CEO_Color()
     if ceo_color ~= -1 then
-        if transitionState(true) == 1 and players.user() == players.get_script_host() and NETWORK_IS_PLAYER_ACTIVE(players.user()) then
+        if asuka_lib.transition_state(true) == 1 and players.user() == players.get_script_host() and NETWORK_IS_PLAYER_ACTIVE(players.user()) then
             if ceo_color ~= players.get_org_colour(players.user()) then
                 local fallback_color = 14
                 for players.list() as pid do
@@ -428,7 +314,7 @@ local function organization_control(org)
 end
 
 local function start_script(name)
-    if transitionState(true) == 1 then
+    if asuka_lib.transition_state(true) == 1 then
         if IS_PAUSE_MENU_ACTIVE() then
             notify("Close any open Game Menu first!")
             return
@@ -485,220 +371,10 @@ local function getEntryByValue(tbl, value)
     end
 end
 
-local function isStuck(pid)
-    if transitionState(true) ~= 1 then
-        return false
-    end
-    --if pid == players.user() then
-    --    if GET_ENTITY_SPEED(players.user_ped()) < 1 and BUSYSPINNER_IS_DISPLAYING() then
-    --        return true
-    --    end
-    --end
-    if not players.is_visible(pid) and GET_ENTITY_SPEED(GET_PLAYER_PED_SCRIPT_INDEX(pid)) < 1 and not IS_PLAYER_IN_CUTSCENE(pid) then
-        if players.are_stats_ready(pid) then
-            return true
-        end
-    end
-    return false
-end
-
-local function isLoading(pid)
-    if transitionState(true) ~= 1 then
-        if pid == players.user() then
-            return true
-        else
-            return false
-        end
-    end
-    if pid == players.user() then
-        if GET_ENTITY_SPEED(players.user_ped()) < 1 and BUSYSPINNER_IS_DISPLAYING() then
-            return true
-        end
-    end
-    local pPos = players.get_position(pid)
-    if pPos.x == 0 and pPos.y == 0 and pPos.z == 0 then
-        return true
-    end
-    if GET_ENTITY_SPEED(GET_PLAYER_PED_SCRIPT_INDEX(pid)) < 1 then
-        if not players.are_stats_ready(pid) then
-            return true
-        end
-        if players.get_money(pid) == 0 then
-            return true
-        end
-        if players.get_rank(pid) == 0 then
-            return true
-        end
-        if not players.is_visible(pid) then
-            return true
-        end
-    end
-    return false
-end
-
-local function get_session_code()
-    local applicable, code = util.get_session_code()
-    if applicable then
-        if code then
-            return code
-        end
-        return "Please wait..."
-    end
-    return "N/A"
-end
-
-local function requestModel(hash, timeout)
-    if not HAS_MODEL_LOADED(hash) then
-        REQUEST_MODEL(hash)
-        local startTime = os.time()
-        while not HAS_MODEL_LOADED(hash) do
-            if os.time() - startTime > timeout or timeout == 0 then
-                return false
-            end
-            util.yield(timeout)
-        end
-    end
-    return true
-end
-
 local requestControl = entities.request_control
 
-local function PIP_does_entity_exist(entity)
-    if entity and entity ~= INVALID_GUID and DOES_ENTITY_EXIST(entity)then
-        return true
-    end
-    return false
-end
-
-local function get_user_vehicle()
-    local userVehicleHandle = entities.get_user_vehicle_as_handle(true)
-    if userVehicleHandle == INVALID_GUID then
-        return entities.get_user_personal_vehicle_as_handle()
-    else
-        return userVehicleHandle
-    end
-end
-
-local function is_user_inside_vehicle(bool)
-    if bool == nil then bool = true end
-    return (IS_PED_IN_ANY_VEHICLE(players.user_ped(), bool))
-end
-
-local function is_user_driving_vehicle(vehicle)
-    if GET_PED_IN_VEHICLE_SEAT(vehicle, -1) == players.user_ped() then
-        return true
-    end
-    return false 
-end
-
-local function is_vehicle_free_for_use(vehicle)
-    local driverPed = GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
-    local driver = IS_PED_A_PLAYER(driverPed)
-    if not driver or driverPed == players.user_ped() then
-        return true
-    end
-    return false
-end
-
-local function is_vehicle_empty(vehicle)
-    local setsINT = GET_VEHICLE_MODEL_NUMBER_OF_SEATS(entities.get_model_hash(vehicle))
-    for seat = -1, setsINT do
-        local seater = GET_PED_IN_VEHICLE_SEAT(vehicle, seat, true)
-        if seater and seater ~= 0 then
-            return false
-        end
-    end
-    return true
-end
-
-local function get_number_of_passengers(vehicle)
-    local setsINT = GET_VEHICLE_MODEL_NUMBER_OF_SEATS(entities.get_model_hash(vehicle))
-    local passengerCount = 0
-    for seat = -1, setsINT do
-        local seater = GET_PED_IN_VEHICLE_SEAT(vehicle, seat, true)
-        if seater and seater ~= 0 then
-            passengerCount = passengerCount + 1
-        end
-    end
-    return passengerCount
-end
-
-local function allowSpawnCheck()
-    if NETWORK_IS_ACTIVITY_SESSION() then
-        return false
-    end
-    if not players.is_visible(players.user()) then
-        return false
-    end
-    if GET_INTERIOR_FROM_ENTITY(players.user_ped()) ~= 0 and is_user_inside_vehicle(true) then
-        return false
-    end
-    if not NETWORK_IS_PLAYER_ACTIVE(players.user()) then
-        return false
-    end
-    return true
-end
-
-local function SpawnCheck(entity, hash, locationV3, pitch, roll, yaw, order, timeout, anti_collision, networked)
-    if allowSpawnCheck() then
-        if order == nil then order = 2 end
-        if not PIP_does_entity_exist(entity) then
-            if requestModel(hash, timeout) then
-                if networked then
-                    entity = entities.create_object(hash, locationV3)
-                else
-                    entity = CREATE_OBJECT_NO_OFFSET(hash, locationV3, false, true, false)
-                end
-                if PIP_does_entity_exist(entity) then
-                    if networked then
-                        entities.set_can_migrate(entity, false)
-                    end
-                    SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3, true, true, true)
-                    SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
-                    FREEZE_ENTITY_POSITION(entity, true)
-                end
-            end
-        end
-        if anti_collision and PIP_does_entity_exist(entity) then
-            if not networked then
-                SET_ENTITY_NO_COLLISION_ENTITY(entity, players.user_ped(), false)
-            else
-                local closestDistance = nil
-                local closestPlayer = players.user()
-                for players.list_only(true, true, false, true) as pid do
-                    local distance = locationV3:distance(players.get_position(pid))
-                    if not closestDistance or distance < closestDistance then
-                        closestDistance = distance
-                        closestPlayer = pid
-                    end
-                    util.yield(timeout)
-                end
-                if closestPlayer then
-                    if closestPlayer == players.user() then
-                        requestControl(entity)
-                        entities.set_can_migrate(entity, false)
-                        SET_ENTITY_COORDS_NO_OFFSET(entity, locationV3, true, true, true)
-                        SET_ENTITY_ROTATION(entity, pitch, roll, yaw, order, true)
-                        FREEZE_ENTITY_POSITION(entity, true)
-                    else
-                        entities.set_can_migrate(entity, true)
-                    end
-                    SET_ENTITY_NO_COLLISION_ENTITY(entity, GET_PLAYER_PED_SCRIPT_INDEX(closestPlayer), false)
-                end
-            end
-        end
-        return entity
-    end
-end
-
-local function delete_ent(ent)
-    if PIP_does_entity_exist(ent) then
-        entities.delete(ent)
-    end
-end
-
 local function thunderForMin(min)
-    if transitionState(true) == 1 then
+    if asuka_lib.transition_state(true) == 1 then
         menu.trigger_commands("thunderon")
         local tempNotifyThunder = true
         if menu.get_state(menu.ref_by_path("Online>Session>Thunder Weather>Notify On Request")) == "On" then
@@ -761,8 +437,8 @@ local function get_Street_Names(x, y, z)
 end
 
 local function Wait_for_transitionState()
-    local ses_cod = get_session_code()
-    while transitionState(true) ~= 1 and ses_cod == get_session_code() do
+    local ses_cod = asuka_lib.get_session_code()
+    while asuka_lib.transition_state(true) ~= 1 and ses_cod == asuka_lib.get_session_code() do
         util.yield(666)
     end
     players.dispatch_on_join()
@@ -803,14 +479,14 @@ local function set_as_illusion(pid, tbl, state)
 end
 
 local function StrategicKick(pid)
-    if player_Exist(pid) and pid ~= players.user() then
+    if asuka_lib.player_exist(pid) and pid ~= players.user() then
         local name = players.get_name(pid)
         if name ~= players.get_name(players.user()) then
             menu.trigger_commands("ghostplayer " .. name)
             menu.trigger_commands("ignore " .. name .. " on")
             menu.trigger_commands("blocksync " .. name .. " on")
             if players.is_marked_as_attacker(pid) or isFriend(players.get_host()) or not isModder(players.get_host()) then
-                if transitionState(true) ~= 1 then
+                if asuka_lib.transition_state(true) ~= 1 then
                     menu.trigger_commands("kick " .. name)
                     Wait_for_transitionState()
                 else
@@ -829,25 +505,6 @@ local function StrategicKick(pid)
     end
 end
 
-local function readFromFilePIP(the_path)
-    local file = io.open(the_path, "r")
-    if file then
-        local webhook = file:read("*all")
-        file:close()
-        return webhook
-    else
-        return nil
-    end
-end
-
-local function writeToFilePIP(payload, the_path)
-    local file = io.open(the_path, "w")
-    if file then
-        file:write(payload)
-        file:close()
-    end
-end
-
 local function healthyInternet(pid)
     if NETWORK_GET_AVERAGE_PACKET_LOSS(pid) < 6 and NETWORK_GET_AVERAGE_LATENCY(pid) < 125 then
         return true
@@ -857,7 +514,7 @@ local function healthyInternet(pid)
 end
 
 local function worthToUnstuck(pid)
-    if player_Exist(pid) and isStuck(pid) and healthyInternet(pid) and discoveredSince(pid) > 113 then
+    if asuka_lib.player_exist(pid) and asuka_lib.is_loading(pid) and healthyInternet(pid) and asuka_lib.discovered_since(pid) > 113 then
         return true
     else
         return false
@@ -912,7 +569,7 @@ local function selfSafe()
         return true
     end
     if players.get_vehicle_model(players.user()) == -32878452 or players.get_vehicle_model(players.user()) == -42959138 or players.get_vehicle_model(players.user()) == -1600252419 then
-        if get_number_of_passengers(GET_VEHICLE_PED_IS_IN(players.user_ped(), true)) > 1 then
+        if asuka_lib.get_number_of_passengers(GET_VEHICLE_PED_IS_IN(players.user_ped(), true)) > 1 then
             return true
         end
     end
@@ -925,7 +582,7 @@ local function SuperClean(fix, ignoreMission)
     util.yield(13)
     for pairs(entities.get_all_peds_as_handles()) as ent do
         if not IS_PED_A_PLAYER(ent) then
-            if PIP_does_entity_exist(ent) then
+            if asuka_lib.does_entity_exist(ent) then
                 if not fix or (fix and GET_ENTITY_TYPE(ent)) then
                     if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
                         entities.delete(ent)
@@ -940,7 +597,7 @@ local function SuperClean(fix, ignoreMission)
     for pairs(entities.get_all_vehicles_as_handles()) as ent do
         local driver = GET_PED_IN_VEHICLE_SEAT(ent, -1)
         if not IS_PED_A_PLAYER(driver) then
-            if PIP_does_entity_exist(ent) then
+            if asuka_lib.does_entity_exist(ent) then
                 if not fix or (fix and GET_ENTITY_TYPE(ent)) then
                     if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
                         entities.delete(ent)
@@ -953,7 +610,7 @@ local function SuperClean(fix, ignoreMission)
     end
     util.yield(13)
     for pairs(entities.get_all_objects_as_handles()) as ent do
-        if PIP_does_entity_exist(ent) then
+        if asuka_lib.does_entity_exist(ent) then
             if not fix or (fix and GET_ENTITY_TYPE(ent) and not string.contains(util.reverse_joaat(entities.get_model_hash(ent)), "yacht")) then
                 if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
                     entities.delete(ent)
@@ -965,7 +622,7 @@ local function SuperClean(fix, ignoreMission)
     end
     util.yield(13)
     for pairs(entities.get_all_pickups_as_handles()) as ent do
-        if PIP_does_entity_exist(ent) then
+        if asuka_lib.does_entity_exist(ent) then
             if not fix or (fix and GET_ENTITY_TYPE(ent)) then
                 if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
                     entities.delete(ent)
@@ -977,13 +634,6 @@ local function SuperClean(fix, ignoreMission)
     end
     util.yield(13)
     notify("Done " .. ct .. "+ entities removed!")
-end
-
-local function getTrailer(vehicle)
-    local trailerPtr = memory.alloc_int()
-    GET_VEHICLE_TRAILER_VEHICLE(vehicle, trailerPtr)
-    local trailer = memory.read_int(trailerPtr)
-    return trailer
 end
 
 menu.divider(menu.my_root(), script_version)
@@ -1058,7 +708,7 @@ local function fillUpEverything()
 end
 
 path_nc_pop = menu.toggle_loop(PIP_Girl, "Nightclub Party Never Stops!", {'ncpop'}, "The hottest NC in whole LS.\nKeeps you pop at 90-100%", function ()
-    if transitionState(true) == 1 then
+    if asuka_lib.transition_state(true) == 1 then
         local ncpop = math.floor(STAT_GET_INT('CLUB_POPULARITY') / 10)
         if ncpop < 88 then
             local random_pop = math.random(88, 100)
@@ -1089,7 +739,7 @@ local invitefriendsinceo = false
 local ceo_ses_code = nil
 local lastCeoName = nil
 path_auto_org = menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yourself as CEO and auto switches you to MC/CEO in most situations needed.", function()
-    if not NETWORK_IS_ACTIVITY_SESSION() and transitionState(true) == 1 then
+    if not NETWORK_IS_ACTIVITY_SESSION() and asuka_lib.transition_state(true) == 1 then
         if joinfriendsceo ~= 3 then
             if players.get_boss(players.user()) == -1 then
                 local uniqueColors = {}
@@ -1209,7 +859,7 @@ path_auto_org_color = menu.slider(PIP_Girl, 'Auto Org Color', {'favorgcolor'}, "
 end)
 
 path_auto_org_color_check = menu.toggle_loop(PIP_Girl, "Additional Org Color Checks.", {""}, "If u use \"Auto Become a CEO/MC\" it will check for u color on register.\nIf u dont use \"Auto Become a CEO/MC\" u can use Additinal Checks.", function(on)
-    --if transitionState(true) == 1 and players.get_boss(players.user()) ~= -1 and players.user() == players.get_script_host() then
+    --if asuka_lib.transition_state(true) == 1 and players.get_boss(players.user()) ~= -1 and players.user() == players.get_script_host() then
     --    if ceo_color ~= -1 then
     --        check_CEO_Color(ceo_color)
     --    end
@@ -1264,7 +914,7 @@ local function inviteAllToCEO()
 end
 
 menu.action(PIP_Girl, "Invite All Friends in Org", {"invorg"}, "Invites all your friends into your Org.", function()
-    if transitionState(true) == 1 then
+    if asuka_lib.transition_state(true) == 1 then
         if players.get_boss(players.user()) ~= -1 then
             inviteAllToCEO()
         else
@@ -1294,9 +944,9 @@ local vehicle_money_hashish = {
     -1249748547, --Smugler money
 }
 path_collect_money = menu.toggle_loop(PIP_Girl, "Collect all NPC money", {}, "Collect all NPC money.", function()
-    if transitionState(true) == 1 and GET_ENTITY_HEALTH(players.user_ped()) ~= 0 then
+    if asuka_lib.transition_state(true) == 1 and GET_ENTITY_HEALTH(players.user_ped()) ~= 0 then
         local pos = players.get_position(players.user())
-        if is_user_inside_vehicle(true) then
+        if asuka_lib.is_user_inside_vehicle(true) then
             for entities.get_all_pickups_as_handles() as pickup do
                 if not HAS_PICKUP_BEEN_COLLECTED(pickup) and not IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
                     local pickupHash = entities.get_model_hash(pickup)
@@ -1369,9 +1019,9 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all pickups on yo
 end)
 
 menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a shower in all existing pickups.", function()
-    if transitionState(true) == 1 then
+    if asuka_lib.transition_state(true) == 1 then
         local pos = players.get_position(players.user())
-        local in_vehicle = is_user_inside_vehicle(true)
+        local in_vehicle = asuka_lib.is_user_inside_vehicle(true)
         for entities.get_all_pickups_as_handles() as pickup do
             if not IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) and not HAS_PICKUP_BEEN_COLLECTED(pickup) then
                 if in_vehicle then
@@ -1394,7 +1044,7 @@ menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a shower in all existing p
 end)
 
 menu.action(PIP_Girl, "Teleport Pickups To Me", {"tppickups"}, "Teleports all pickups to you.\nNote this doesn't work in all situations.", function(click_type)
-    if transitionState(true) == 1 then
+    if asuka_lib.transition_state(true) == 1 then
         local counter = 0
         local pos = players.get_position(players.user())
         for entities.get_all_pickups_as_handles() as pickup do
@@ -1417,7 +1067,7 @@ end)
 menu.divider(Stimpak, "Player Related Health")
 
 menu.action(Stimpak, "Refill Health & Armour",{"newborn"},"Regenerate to max your health and armour.",function()
-    if transitionState(true) <3  then
+    if asuka_lib.transition_state(true) <3  then
         menu.trigger_commands("refillhealth")
         menu.trigger_commands("refillarmour")
     end
@@ -1434,7 +1084,7 @@ end)
 
 local dead = 0
 path_auto_armor = menu.toggle_loop(Stimpak, "Auto Armor after Death",{"pgblessing"},"A body armor will be applied automatically when respawning.", function()
-    if transitionState(true) <3 then
+    if asuka_lib.transition_state(true) <3 then
         local health = GET_ENTITY_HEALTH(players.user_ped())
         if health == 0 and dead == 0 then
             dead = 1
@@ -1449,8 +1099,8 @@ path_auto_armor = menu.toggle_loop(Stimpak, "Auto Armor after Death",{"pgblessin
 end)
 
 path_recharge_health = menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehicle", {"pghealth"}, "Will recharge health when in cover or vehicle quickly.\nBUT also slowly, almost legit-like, otherwise to 100%.", function()
-    if transitionState(true) <3 then
-        local in_vehicle = is_user_inside_vehicle(true)
+    if asuka_lib.transition_state(true) <3 then
+        local in_vehicle = asuka_lib.is_user_inside_vehicle(true)
         local playerPed = players.user_ped()
         local isPlayerInCover = IS_PED_IN_COVER(playerPed, false)
         if isPlayerInCover or in_vehicle then
@@ -1471,8 +1121,8 @@ end)
 
 path_recharge_armor = menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle", {"pgarmor"}, "Will Recharge Armor when in Cover or Vehicle quickly.\nBUT also slowly otherwise to 100%.", function()
     local cmd_path = "Self>Regeneration Rate>Armour"
-    if transitionState(true) <3 then
-        local in_vehicle = is_user_inside_vehicle(true)
+    if asuka_lib.transition_state(true) <3 then
+        local in_vehicle = asuka_lib.is_user_inside_vehicle(true)
         local playerPed = players.user_ped()
         local isPlayerInCover = IS_PED_IN_COVER(playerPed, false)
         if GET_PED_ARMOUR(players.user_ped()) == GET_PLAYER_MAX_ARMOUR(players.user()) then
@@ -1507,8 +1157,8 @@ end)
 
 local was_user_in_vehicle = false
 path_first_aid_kit = menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {"pgvaid"}, "Using your First Aid kit provided in your ", function()
-    if transitionState(true) <3 then
-        local in_vehicle = is_user_inside_vehicle(false)
+    if asuka_lib.transition_state(true) <3 then
+        local in_vehicle = asuka_lib.is_user_inside_vehicle(false)
         local health = GET_ENTITY_HEALTH(players.user_ped())
         if health ~= 0 then
             if in_vehicle and not was_user_in_vehicle then
@@ -1526,7 +1176,7 @@ path_first_aid_kit = menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle
 end)
 
 path_oxygen = menu.toggle_loop(Stimpak, "Oxygen", {"pgbreath"}, "Just breath.\nAlso gives u Movement and light from Scuba gear without having one equi", function()
-    if transitionState(true) <3 then
+    if asuka_lib.transition_state(true) <3 then
         if IS_ENTITY_IN_WATER(players.user_ped()) then
             SET_ENABLE_SCUBA(players.user_ped(), true)
             ENABLE_MP_LIGHT(players.user_ped(), true)
@@ -1643,7 +1293,7 @@ local function checkVehMod(vehicle, mod)
     return false
 end
 local function buff_asuka_tech(vehicle)
-    if is_vehicle_empty(vehicle) then
+    if asuka_lib.is_vehicle_empty(vehicle) then
         requestControl(vehicle)
     end
     menu.trigger_commands("smoothflight on")
@@ -1832,17 +1482,17 @@ local vehicleProtected = false
 local asukaTechBlipVeh = nil
 path_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly repairs your vehicle, and gives it some modern enhancements.", function()
     local cmd_path = "Vehicle>Light Signals>Use Brake Lights When Stopped"
-    if transitionState(true) == 1 and players.is_visible(players.user()) then
+    if asuka_lib.transition_state(true) == 1 and players.is_visible(players.user()) then
         if menu.get_state(menu.ref_by_path(cmd_path)) ~= "On" then
             menu.trigger_commands("brakelights on")
         end
 
-        local vehicle = get_user_vehicle()
+        local vehicle = asuka_lib.get_user_vehicle()
         if vehicle then
-            if not is_vehicle_free_for_use(vehicle) and current_asuka_tech_vehicle and PIP_does_entity_exist(current_asuka_tech_vehicle) then
+            if not asuka_lib.is_vehicle_free_for_use(vehicle) and current_asuka_tech_vehicle and asuka_lib.does_entity_exist(current_asuka_tech_vehicle) then
                 vehicle = current_asuka_tech_vehicle
             end
-            if is_vehicle_free_for_use(vehicle) then
+            if asuka_lib.is_vehicle_free_for_use(vehicle) then
                 if IS_VEHICLE_DRIVEABLE(vehicle) then
                     if current_asuka_tech_vehicle == nil or current_asuka_tech_vehicle ~= vehicle then
                         current_asuka_tech_vehicle = vehicle
@@ -1858,11 +1508,11 @@ path_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly
                         end
                     end
 
-                    --if not vehicleProtected and is_vehicle_empty(vehicle) then
+                    --if not vehicleProtected and asuka_lib.is_vehicle_empty(vehicle) then
                     --    FREEZE_ENTITY_POSITION(vehicle, true)
                     --    vehicleProtected = true
                     --end
-                    --if vehicleProtected and not is_vehicle_empty(vehicle) then
+                    --if vehicleProtected and not asuka_lib.is_vehicle_empty(vehicle) then
                     --    FREEZE_ENTITY_POSITION(vehicle, false)
                     --    vehicleProtected = false
                     --end
@@ -1891,7 +1541,7 @@ path_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly
                         if vehicle_mm == vehicle then
                             trailer = saved_trailer_id
                         else
-                            trailer = getTrailer(vehicle)
+                            trailer = asuka_lib.get_trailer(vehicle)
                         end
                         if asuka_tech_repair_amount > 0 then
                             repair_asuka_tech(trailer)
@@ -1925,9 +1575,9 @@ path_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly
                     end
                     local isDriving = nil
                     if isInVehicleAT then
-                        isDriving = is_user_inside_vehicle(true)
+                        isDriving = asuka_lib.is_user_inside_vehicle(true)
                     else
-                        isDriving = is_user_inside_vehicle(false)
+                        isDriving = asuka_lib.is_user_inside_vehicle(false)
                     end
                     if isDriving and not isInVehicleAT then
                         SET_VEHICLE_ENGINE_ON(vehicle, true, true, false)
@@ -1993,12 +1643,12 @@ function draw_bar(value, maxValue, x, y, width, height, barColor, backColor)
 end
 
 path_asuka_tech_hp_bar = menu.toggle_loop(Asuka_Tech, "Asuka Tech HP Bar", {""}, "", function()
-    if transitionState(true) <3 then
-        local target_vehicle = get_user_vehicle()
-        if PIP_does_entity_exist(current_asuka_tech_vehicle) then
+    if asuka_lib.transition_state(true) <3 then
+        local target_vehicle = asuka_lib.get_user_vehicle()
+        if asuka_lib.does_entity_exist(current_asuka_tech_vehicle) then
             target_vehicle = current_asuka_tech_vehicle
         end
-        if PIP_does_entity_exist(target_vehicle) then
+        if asuka_lib.does_entity_exist(target_vehicle) then
             local screenWidth, screenHeight = directx.get_client_size()
             local x = 0.0
             local y = 1.0
@@ -2018,12 +1668,12 @@ path_asuka_tech_hp_bar = menu.toggle_loop(Asuka_Tech, "Asuka Tech HP Bar", {""},
 end)
 
 path_asuka_tech_info_overlay = menu.toggle_loop(Asuka_Tech, "Asuka Tech Info Overlay", {""}, "", function()
-    if transitionState(true) < 3 then
-        local target_vehicle = get_user_vehicle()
-        if PIP_does_entity_exist(current_asuka_tech_vehicle) then
+    if asuka_lib.transition_state(true) < 3 then
+        local target_vehicle = asuka_lib.get_user_vehicle()
+        if asuka_lib.does_entity_exist(current_asuka_tech_vehicle) then
             target_vehicle = current_asuka_tech_vehicle
         end
-        if PIP_does_entity_exist(target_vehicle) then
+        if asuka_lib.does_entity_exist(target_vehicle) then
             local enginePercent = GET_VEHICLE_ENGINE_HEALTH(target_vehicle) / 10
             local bodyPercent = GET_VEHICLE_BODY_HEALTH(target_vehicle) / 10
             util.draw_debug_text(util.reverse_joaat(entities.get_model_hash(target_vehicle)).."\nEngine Health: "..string.format("%.1f%%", enginePercent).."\nBody Health: "..string.format("%.1f%%", bodyPercent))
@@ -2043,14 +1693,14 @@ path_asuka_tech_dirt = menu.list_select(Asuka_Tech, "Asuka Tech Vehicle Dirt", {
 end)
 
 menu.action(Vehicle, "Enter Asuka Tech Vehicle", {"enterasuka"}, "Enter the current Asuka Tech Vehicle", function()
-    local target_vehicle = get_user_vehicle()
-    if PIP_does_entity_exist(current_asuka_tech_vehicle) then
+    local target_vehicle = asuka_lib.get_user_vehicle()
+    if asuka_lib.does_entity_exist(current_asuka_tech_vehicle) then
         target_vehicle = current_asuka_tech_vehicle
     end
-    if PIP_does_entity_exist(target_vehicle) then
+    if asuka_lib.does_entity_exist(target_vehicle) then
         local driver = GET_PED_IN_VEHICLE_SEAT(target_vehicle, -1)
         local my_ped = players.user_ped()
-        if is_vehicle_free_for_use(target_vehicle) then
+        if asuka_lib.is_vehicle_free_for_use(target_vehicle) then
             requestControl(target_vehicle)
             SET_PED_INTO_VEHICLE(my_ped, target_vehicle, -1)
         else
@@ -2064,21 +1714,21 @@ menu.action(Vehicle, "Enter Asuka Tech Vehicle", {"enterasuka"}, "Enter the curr
 end)
 
 menu.action(Vehicle, "Teleport and Enter Asuka Tech Vehicle", {"tpenterasuka"}, "Enter the current Asuka Tech Vehicle", function()
-    local target_vehicle = get_user_vehicle()
-    if PIP_does_entity_exist(current_asuka_tech_vehicle) then
+    local target_vehicle = asuka_lib.get_user_vehicle()
+    if asuka_lib.does_entity_exist(current_asuka_tech_vehicle) then
         target_vehicle = current_asuka_tech_vehicle
     end
-    if PIP_does_entity_exist(target_vehicle) then
+    if asuka_lib.does_entity_exist(target_vehicle) then
         requestControl(target_vehicle)
-        if not is_vehicle_free_for_use(target_vehicle) then
+        if not asuka_lib.is_vehicle_free_for_use(target_vehicle) then
             SET_ENTITY_COORDS_NO_OFFSET(target_vehicle, 1057.81, -3200.08, -39.57, true, true, true)
             local TEATV_Timeout = os.time()
-            while not is_vehicle_free_for_use(target_vehicle) do
+            while not asuka_lib.is_vehicle_free_for_use(target_vehicle) do
                 util.yield(666)
                 if os.time() - TEATV_Timeout > 13 then
                     break
                 end
-                if is_vehicle_free_for_use(target_vehicle) then
+                if asuka_lib.is_vehicle_free_for_use(target_vehicle) then
                     break
                 end
             end
@@ -2087,7 +1737,7 @@ menu.action(Vehicle, "Teleport and Enter Asuka Tech Vehicle", {"tpenterasuka"}, 
         local currentRotation = players.get_cam_rot(players.user())
         SET_ENTITY_COORDS_NO_OFFSET(target_vehicle, pos.x, pos.y, pos.z, true, true, true)
         SET_ENTITY_ROTATION(target_vehicle, 0.0, 0.0, currentRotation.z, 2, true)
-        if is_vehicle_free_for_use(target_vehicle) then
+        if asuka_lib.is_vehicle_free_for_use(target_vehicle) then
             requestControl(target_vehicle)
             SET_PED_INTO_VEHICLE(players.user_ped(), target_vehicle, -1)
         else
@@ -2101,8 +1751,8 @@ menu.action(Vehicle, "Teleport and Enter Asuka Tech Vehicle", {"tpenterasuka"}, 
 end)
 
 menu.action(Vehicle, "Detonate Asuka Tech Vehicle", {"boomasuka"}, "", function()
-    local target_vehicle = get_user_vehicle()
-    if PIP_does_entity_exist(current_asuka_tech_vehicle) then
+    local target_vehicle = asuka_lib.get_user_vehicle()
+    if asuka_lib.does_entity_exist(current_asuka_tech_vehicle) then
         target_vehicle = current_asuka_tech_vehicle
     end
     requestControl(target_vehicle)
@@ -2135,7 +1785,7 @@ menu.divider(Vehicle, "Lights")
 local Vehicle_Light = menu.list(Vehicle, 'Vehicle Light Modes', {}, 'Flash the lights pretty and nice.', function(); end)
 
 path_vehicle_light_rhythm_sos = menu.toggle_loop(Vehicle_Light, "S.O.S. Morse",{"sosmorse"},"",function()
-    local vehicle = get_user_vehicle()
+    local vehicle = asuka_lib.get_user_vehicle()
     if vehicle then
         SET_VEHICLE_LIGHTS(vehicle, 1)
         util.yield(100)
@@ -2197,15 +1847,15 @@ path_vehicle_light_rhythm_sos = menu.toggle_loop(Vehicle_Light, "S.O.S. Morse",{
 end, function()
     current_asuka_tech_vehicle = nil
     isOutVehicle = false
-    local vehicle = get_user_vehicle()
+    local vehicle = asuka_lib.get_user_vehicle()
     if vehicle then
         SET_VEHICLE_LIGHTS(vehicle, 0)
     end
 end)
 
 path_vehicle_light_rhythm_rapid_slowdown = menu.toggle_loop(Vehicle_Light, "Flash on Rapid slowdown",{"rapidslowdownwarn"},"",function()
-    local vehicle = get_user_vehicle()
-    if is_user_inside_vehicle(true) then
+    local vehicle = asuka_lib.get_user_vehicle()
+    if asuka_lib.is_user_inside_vehicle(true) then
         local speedVector = GET_ENTITY_SPEED_VECTOR(vehicle, true)
         local forwardSpeedKmh = math.abs(speedVector.y) * 3.6
         if GET_CONTROL_VALUE(2, 72) > 213 or IS_CONTROL_PRESSED(2, 76) then
@@ -2228,7 +1878,7 @@ path_vehicle_light_rhythm_rapid_slowdown = menu.toggle_loop(Vehicle_Light, "Flas
 end, function()
     current_asuka_tech_vehicle = nil
     isOutVehicle = false
-    local vehicle = get_user_vehicle()
+    local vehicle = asuka_lib.get_user_vehicle()
     if vehicle then
         SET_VEHICLE_LIGHTS(vehicle, 0)
     end
@@ -2243,9 +1893,9 @@ end)
 path_auto_vehicle_light_color = menu.toggle_loop(Vehicle, "Auto Vehicle Light Color",{"autocarlights"},"Automatically set your favorite vehicle color for vehicles with default lights that u drive and are mission ent.\nDefault lights: 0 & 1 | Color lights: 2-14",function()
     util.yield(420)
     if vehicleFavColor ~= 0 then
-        if transitionState(true) <3 then
-            local vehicle = get_user_vehicle()
-            if vehicle and is_user_driving_vehicle(vehicle) and GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 then
+        if asuka_lib.transition_state(true) <3 then
+            local vehicle = asuka_lib.get_user_vehicle()
+            if vehicle and asuka_lib.is_user_driving_vehicle(vehicle) and GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 then
                 if DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 or vehicle == entities.get_user_personal_vehicle_as_handle() then
                     vehicleLightsSet = vehicle
                     menu.trigger_commands("headlights "..vehicleFavColor)
@@ -2264,7 +1914,7 @@ end)
 menu.divider(Vehicle, "Else")
 
 path_asukas_repair_stops = menu.toggle_loop(Vehicle, "Asuka's Repair Stop's", {"asukars"}, "", function()
-    if transitionState(true) == 1 then
+    if asuka_lib.transition_state(true) == 1 then
         local playerPosition = players.get_position(players.user())
         if not blipsCreated then
             remove_blips()
@@ -2285,9 +1935,9 @@ path_asukas_repair_stops = menu.toggle_loop(Vehicle, "Asuka's Repair Stop's", {"
             local markerPosition = closestMarker
             if closestDistance <= repairRadius then
                 if not wasInZone then
-                    local vehicle = get_user_vehicle()
+                    local vehicle = asuka_lib.get_user_vehicle()
                     wasInZone = true
-                    if is_vehicle_free_for_use(vehicle) then
+                    if asuka_lib.is_vehicle_free_for_use(vehicle) then
                         requestControl(vehicle)
                         menu.trigger_commands("performance")
                         menu.trigger_commands("fixvehicle")
@@ -2321,8 +1971,8 @@ end)
 
 local sparrowHandeling = nil
 path_heli_sparrow_handling = menu.toggle_loop(Vehicle, "Heli Sparrow Handling",{""},"All helicopters you enter fly like a sparrow.",function()
-    if not players.is_in_interior(players.user()) and transitionState(true) <3 then
-        local vehicle = get_user_vehicle()
+    if not players.is_in_interior(players.user()) and asuka_lib.transition_state(true) <3 then
+        local vehicle = asuka_lib.get_user_vehicle()
         if vehicle then
             if GET_VEHICLE_CLASS(vehicle) == 15 then
                 if GET_PED_IN_VEHICLE_SEAT(vehicle, -1) == players.user_ped() then
@@ -2444,8 +2094,8 @@ end)
 
 local oppressorHandeling = nil
 path_easy_opmk2ud_handling = menu.toggle_loop(Vehicle, "Easier Oppressor MK2 UD Handling",{""},"Makes Upside down little easier, good for lea(-rning).",function()
-    if transitionState(true) <3 then
-        local vehicle = get_user_vehicle()
+    if asuka_lib.transition_state(true) <3 then
+        local vehicle = asuka_lib.get_user_vehicle()
         if vehicle then
             if entities.get_model_hash(vehicle) == 2069146067 then
                 if GET_PED_IN_VEHICLE_SEAT(vehicle, -1) == players.user_ped() then
@@ -2499,7 +2149,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
         if IS_ENTITY_ATTACHED_TO_ANY_VEHICLE(vehicle) then
             goto continue_loop
         end
-        if not PIP_does_entity_exist(vehicle) then
+        if not asuka_lib.does_entity_exist(vehicle) then
             goto continue_loop
         end
         local driver = GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
@@ -2548,7 +2198,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
         message = message .. "Out of " .. indistance .. " Vehicles in 100m Distance."
     end
     if message ~= "" then
-        if session_type() == "Public" then
+        if asuka_lib.session_type() == "Public" then
             warnify_net(message)
         else
             warnify_ses(message)
@@ -2675,7 +2325,7 @@ path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLo
     else
         util.yield(666)
     end
-    if foreverYoung and transitionState(true) <3 then
+    if foreverYoung and asuka_lib.transition_state(true) <3 then
         SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
         SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
         SET_PED_HEAD_OVERLAY(players.user_ped(), 9, 255, 0.0) --Remove Moles/Freckles. (face)
@@ -2809,7 +2459,7 @@ local avoidCutsceneSkipHere = {
     { x = 819.66, y = -2206.27, z = 30.95 }, -- Cassino Hatch
 }
 path_auto_skip_cutscene = menu.toggle_loop(Game, "Auto Skip Cutscene", {"pgascut"}, "Automatically skip all cutscenes.", function()
-    if transitionState(true) <3 and IS_CUTSCENE_PLAYING() then
+    if asuka_lib.transition_state(true) <3 and IS_CUTSCENE_PLAYING() then
         local playerPosition = players.get_position(players.user())
         local skipCutscene = true
 
@@ -3112,7 +2762,7 @@ local function espOnPlayer(pid, namesync)
 end
 
 path_name_esp = menu.toggle_loop(Game, "Name ESP", {"pgesp"}, "ESP", function ()
-    if transitionState(true) == 1 and not menu.is_in_screenshot_mode() then
+    if asuka_lib.transition_state(true) == 1 and not menu.is_in_screenshot_mode() then
         local playerlist = players.list(false, true, true)
         for i = 1, #playerlist do
             espOnPlayer(playerlist[i])
@@ -3212,7 +2862,7 @@ local sessionClaimer_firstRun = true
 
 local function findAnewHome()
     local findAnewHomeMSG
-    if session_type() ~= "Singleplayer" then
+    if asuka_lib.session_type() ~= "Singleplayer" then
         if GET_NUMBER_OF_PLAYERS() == 1 then
             findAnewHomeMSG = "You are alone."
         elseif GET_NUMBER_OF_PLAYERS() <= session_claimer_players then
@@ -3229,10 +2879,10 @@ local function findAnewHome()
         end
         findAnewHomeMSG = "You are in story mode, Getting you online."
     end
-    if transitionState(true) > 2 and session_type() ~= "Singleplayer" then
+    if asuka_lib.transition_state(true) > 2 and asuka_lib.session_type() ~= "Singleplayer" then
         menu.trigger_commands("unstuck")
         local findAnewHomeTimeOut = os.time()
-        while transitionState(true) > 2 do
+        while asuka_lib.transition_state(true) > 2 do
             if os.time() - findAnewHomeTimeOut > 13 then
                 break
             end
@@ -3246,7 +2896,7 @@ local function findAnewHome()
     end
     util.yield(1666)
     menu.trigger_commands("go public")
-    while transitionState(true) ~= 3 or session_type() == "Singleplayer" do
+    while asuka_lib.transition_state(true) ~= 3 or asuka_lib.session_type() == "Singleplayer" do
         util.yield(13)
     end
     util.yield(666)
@@ -3294,14 +2944,14 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         --  <3
         local join_timeout_start = os.time()
         local join_timeout_time = 13
-        if sessionClaimer_firstRun or session_type() == "Singleplayer" then
+        if sessionClaimer_firstRun or asuka_lib.session_type() == "Singleplayer" then
             join_timeout_time = 25
         end
-        while transitionState(true) > 2 do
+        while asuka_lib.transition_state(true) > 2 do
             if os.time() - join_timeout_start > join_timeout_time then
                 break
             end
-            if session_type() == "Singleplayer" then
+            if asuka_lib.session_type() == "Singleplayer" then
                 util.yield(1666)
                 findAnewHome()
                 goto sessionclaimerShortcut
@@ -3310,7 +2960,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     sessionClaimer_firstRun = false
                 end
             end
-            if transitionState(true) < 3 then
+            if asuka_lib.transition_state(true) < 3 then
                 util.yield(3666)
                 if GET_NUMBER_OF_PLAYERS() == 1 then
                     findAnewHome()
@@ -3332,8 +2982,8 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             --  If Session remains in a Claim-able state.
             --  <3
             if sessionWorthy() then
-                while transitionState(true) ~= 1 do
-                    if session_type() == "Singleplayer" or not sessionWorthy() then
+                while asuka_lib.transition_state(true) ~= 1 do
+                    if asuka_lib.session_type() == "Singleplayer" or not sessionWorthy() then
                         findAnewHome()
                         goto sessionclaimerShortcut
                     end
@@ -3376,7 +3026,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     SessionClaimerOriginal_states = {}
                     menu.trigger_commands("resetheadshots")
                     fillUpEverything()
-                    buff_asuka_tech(get_user_vehicle())
+                    buff_asuka_tech(asuka_lib.get_user_vehicle())
                     menu.trigger_commands("claimsession off")
                     allow_Join_back(host_name)
                     if thunderMin ~= 0 then
@@ -3525,12 +3175,12 @@ local orbRoomTable2 = nil
 local orbRoomDoorDMG = nil
 
 path_block_orb_room = menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockorb"}, "Blocks the Entrance for the Orb Room", function()
-    if allowSpawnCheck() then
-        orbRoomGlass = SpawnCheck(orbRoomGlass, 2465657597, v3.new(335.882996, 4833.833008, -59.023998), 0, 0, 125, nil, 13, true, true)
-        orbRoomTable = SpawnCheck(orbRoomTable, 81317377, v3.new(328.2, 4829, -58.9), 0, 0, 0, nil, 13, true, true)
-        orbRoomTable2 = SpawnCheck(orbRoomTable2, 81317377, v3.new(328.2, 4829, -59.4), 0, 0, 0, nil, 13, true, true)
-        orbRoomDoorDMG = SpawnCheck(orbRoomDoorDMG, 3109994857, v3.new(337.611, 4832.954, -58.595), 10, 0, 125, nil, 13, false, true)
-        if transitionState(true) <3 then
+    if asuka_lib.allow_spawn_check() then
+        orbRoomGlass = asuka_lib.spawn_and_check_object(orbRoomGlass, 2465657597, v3.new(335.882996, 4833.833008, -59.023998), 0, 0, 125, nil, 13, true, true)
+        orbRoomTable = asuka_lib.spawn_and_check_object(orbRoomTable, 81317377, v3.new(328.2, 4829, -58.9), 0, 0, 0, nil, 13, true, true)
+        orbRoomTable2 = asuka_lib.spawn_and_check_object(orbRoomTable2, 81317377, v3.new(328.2, 4829, -59.4), 0, 0, 0, nil, 13, true, true)
+        orbRoomDoorDMG = asuka_lib.spawn_and_check_object(orbRoomDoorDMG, 3109994857, v3.new(337.611, 4832.954, -58.595), 10, 0, 125, nil, 13, false, true)
+        if asuka_lib.transition_state(true) <3 then
             for players.list_except(true) as pid do
                 local players_position = players.get_position(pid)
                 local distance = VDIST(players_position.x, players_position.y, players_position.z, 328.47, 4828.87, -58.54)
@@ -3543,7 +3193,7 @@ path_block_orb_room = menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockor
                         --if not isModder(pid, true) then
                         --    menu.trigger_commands("interiorkick "..players.get_name(pid))
                         --end
-                        if not orbroomdetection(pid) then
+                        if not asuka_lib.has_detection(pid, "Glitched Orb Room Access") then
                             players.add_detection(pid, "Glitched Orb Room Access", TOAST_DEFAULT, 13)
                         end
                     end
@@ -3562,43 +3212,43 @@ end, function()
         set_as_illusion(pid, in_orb_room, false)
     end
     in_orb_room = {}
-    delete_ent(orbRoomGlass)
-    delete_ent(orbRoomTable)
-    delete_ent(orbRoomTable2)
-    delete_ent(orbRoomDoorDMG)
+    asuka_lib.delete_entity(orbRoomGlass)
+    asuka_lib.delete_entity(orbRoomTable)
+    asuka_lib.delete_entity(orbRoomTable2)
+    asuka_lib.delete_entity(orbRoomDoorDMG)
 end)
 
 local kosatkaMissile1 = nil
 local kosatkaMissile2 = nil
 path_block_kosatka_missile_terminal = menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {"blockkosatka"}, "Blocks the Missile terminal", function()
-    if allowSpawnCheck() and transitionState(true) < 3 then
-        kosatkaMissile1 = SpawnCheck(kosatkaMissile1, 1228076166, v3.new(1558.9, 387.111, -50.666), 0, 0, 0, nil, 13, true, true)
-        kosatkaMissile2 = SpawnCheck(kosatkaMissile2, 1228076166, v3.new(1558.9, 388.777, -50.666), 0, 0, 0, nil, 13, true, true)
+    if asuka_lib.allow_spawn_check() and asuka_lib.transition_state(true) < 3 then
+        kosatkaMissile1 = asuka_lib.spawn_and_check_object(kosatkaMissile1, 1228076166, v3.new(1558.9, 387.111, -50.666), 0, 0, 0, nil, 13, true, true)
+        kosatkaMissile2 = asuka_lib.spawn_and_check_object(kosatkaMissile2, 1228076166, v3.new(1558.9, 388.777, -50.666), 0, 0, 0, nil, 13, true, true)
     else
         util.yield(6666)
     end
     util.yield(1666)
 end, function()
-    delete_ent(kosatkaMissile1)
-    delete_ent(kosatkaMissile2)
+    asuka_lib.delete_entity(kosatkaMissile1)
+    asuka_lib.delete_entity(kosatkaMissile2)
 end)
 
 local antiTerrorGlass = nil
 --local antiTerrorShocker = nil
 --local antiTerrorFire = nil
 path_anit_terrorbyte = menu.toggle_loop(SessionWorld, "Anti Terrorbyte", {"blockterror"}, "Blocks the MK2 acces", function()
-    if allowSpawnCheck() and transitionState(true) < 3 then
-        antiTerrorGlass = SpawnCheck(antiTerrorGlass, 2465657597, v3.new(-1420.666, -3014.579, -79.0), 0, 0, -20, nil, 13, true, true)
-        --antiTerrorShocker = SpawnCheck(antiTerrorShocker, 1870961552, v3.new(-1420.8349609375, -3016.2561035156, -76.113542541504), 180, 0, 90, nil, 13, true, false)
-        --antiTerrorFire = SpawnCheck(antiTerrorFire, 3229200997, v3.new(-1420.8349609375, -3016.2561035156, -80.066642541504), 0, 0, 90, nil, 13, true, true)
+    if asuka_lib.allow_spawn_check() and asuka_lib.transition_state(true) < 3 then
+        antiTerrorGlass = asuka_lib.spawn_and_check_object(antiTerrorGlass, 2465657597, v3.new(-1420.666, -3014.579, -79.0), 0, 0, -20, nil, 13, true, true)
+        --antiTerrorShocker = asuka_lib.spawn_and_check_object(antiTerrorShocker, 1870961552, v3.new(-1420.8349609375, -3016.2561035156, -76.113542541504), 180, 0, 90, nil, 13, true, false)
+        --antiTerrorFire = asuka_lib.spawn_and_check_object(antiTerrorFire, 3229200997, v3.new(-1420.8349609375, -3016.2561035156, -80.066642541504), 0, 0, 90, nil, 13, true, true)
     else
         util.yield(6666)
     end
     util.yield(3666)
 end, function()
-    delete_ent(antiTerrorGlass)
-    --delete_ent(antiTerrorShocker)
-    --delete_ent(antiTerrorFire)
+    asuka_lib.delete_entity(antiTerrorGlass)
+    --asuka_lib.delete_entity(antiTerrorShocker)
+    --asuka_lib.delete_entity(antiTerrorFire)
 end)
 
 local shrineElements = {
@@ -3645,8 +3295,8 @@ local entityVars = {}
 local Asuka_shrine_blip = nil
 path_asukas_shrine = menu.toggle_loop(SessionWorld, "Asuka's Shrine", {"asukasshrine"}, "Shows Asuka's Shrine, Perfect for a hangout spot or Deep thinking.\nNormal its a calm and mystical place only lit by fire and candles , once entering a arcade u unlock the bright neon lights of the city~", function()
     util.yield(1666)
-    if allowSpawnCheck() then
-        if transitionState(true) == 1 then
+    if asuka_lib.allow_spawn_check() then
+        if asuka_lib.transition_state(true) == 1 then
             if not Asuka_shrine_blip or not DOES_BLIP_EXIST(Asuka_shrine_blip) then
                 Asuka_shrine_blip = ADD_BLIP_FOR_COORD(-1812.212, -127.127, 80.265)
              SET_BLIP_SPRITE(Asuka_shrine_blip, "617")
@@ -3665,9 +3315,9 @@ path_asukas_shrine = menu.toggle_loop(SessionWorld, "Asuka's Shrine", {"asukassh
             Asuka_shrine_blip = nil
         end
         for ipairs(shrineElements) as element do
-            if allowSpawnCheck() then
+            if asuka_lib.allow_spawn_check() then
                 local entityVar, conditions = element.var, element.conditions
-                entityVars[entityVar] = SpawnCheck(entityVars[entityVar], table.unpack(conditions))
+                entityVars[entityVar] = asuka_lib.spawn_and_check_object(entityVars[entityVar], table.unpack(conditions))
             end
             util.yield(420)
         end
@@ -3682,7 +3332,7 @@ end, function()
     Asuka_shrine_blip = nil
     for ipairs(shrineElements) as element do
         local entityVar = element.var
-        delete_ent(entityVars[entityVar])
+        asuka_lib.delete_entity(entityVars[entityVar])
         entityVars[element.var] = nil
     end
 end)
@@ -3760,7 +3410,7 @@ path_spinning_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Spinning Oppressor
     util.yield(1666)
 end, function()
     for pid in pairs(mk2noob) do
-        if player_Exist(pid) then
+        if asuka_lib.player_exist(pid) then
             local playerName = players.get_name(pid)
             menu.trigger_commands("spin"..playerName.." off")
             menu.trigger_commands("slippery"..playerName.." off")
@@ -3814,9 +3464,9 @@ menu.action(SessionMisc, "Cleanup \"Friend's\" Group", {"cleanupfriends"}, "remo
 end)
 
 path_kick_aggressive_on_attack = menu.toggle_loop(SessionMisc, "Kick Aggressive Host Token on Attack", {""}, "", function()
-    if transitionState(true) <3 then
+    if asuka_lib.transition_state(true) <3 then
         for players.list() as pid do
-            if players.is_marked_as_attacker(pid) and aggressive(pid) and not isFriend(pid) then
+            if players.is_marked_as_attacker(pid) and asuka_lib.has_detection(pid, "Spoofed Host Token (Aggressive)") and not isFriend(pid) then
                 StrategicKick(pid)
             end
         end
@@ -3832,7 +3482,7 @@ path_kick_aggressive_as_host = menu.toggle_loop(SessionMisc, "Block Aggressive H
         --    menu.trigger_command(menu.ref_by_path("Online>Protections>Detections>Spoofed Host Token (Aggressive)>Kick>Strangers"))
         --end
         for players.list() as pid do
-            if aggressive(pid) and not isFriend(pid) then
+            if asuka_lib.has_detection(pid, "Spoofed Host Token (Aggressive)") and not isFriend(pid) then
                 StrategicKick(pid)
             end
         end
@@ -3846,7 +3496,7 @@ path_kick_aggressive_as_host = menu.toggle_loop(SessionMisc, "Block Aggressive H
 end)
 
 --menu.action(SessionMisc, "de-Ghost entire Session", {""}, "", function()
---    if transitionState(true) == 1 then
+--    if asuka_lib.transition_state(true) == 1 then
 --        for players.list() as pid do
 --            SET_REMOTE_PLAYER_AS_GHOST(pid, false)
 --        end
@@ -3889,26 +3539,26 @@ menu.action(SessionInvite, "Set Discord Webhook", {"pgdiscordhook"}, "Never shar
 end, function(input_str)
     local _, _, webhook_path = string.find(input_str, "https://discord.com(.+)")
     if webhook_path then
-        writeToFilePIP(webhook_path, store_dir..'do_not_share_webhook.txt')
+        asuka_lib.write_to_file(webhook_path, store_dir..'do_not_share_webhook.txt')
         discord_webhook = webhook_path
     else
         print("Invalid Discord webhook URL. Please make sure it includes '/api'.")
     end
 end)
 
-discord_webhook = readFromFilePIP(store_dir..'do_not_share_webhook.txt')
+discord_webhook = asuka_lib.read_from_file(store_dir..'do_not_share_webhook.txt')
 
-local posted_session_code = readFromFilePIP(store_dir..'session_code.txt')
+local posted_session_code = asuka_lib.read_from_file(store_dir..'session_code.txt')
 local onlyPostasFriendlyHost = false
 local inviteAllFriendsOnWebhook = false
 path_post_session_code_via_webhook = menu.toggle_loop(SessionInvite, "Post Session Code via Webhook", {""}, "Never share you webhook ever!", function()
     if discord_webhook then
-        if transitionState(true) == 1 then
-            local code = get_session_code()
+        if asuka_lib.transition_state(true) == 1 then
+            local code = asuka_lib.get_session_code()
             if code ~= "N/A" and code ~= "Please wait..." then
                 if code ~= posted_session_code then
                     posted_session_code = code
-                    writeToFilePIP(code, store_dir..'/session_code.txt')
+                    asuka_lib.write_to_file(code, store_dir..'/session_code.txt')
                     if onlyPostasFriendlyHost and (not isFriend(players.get_host()) or GET_NUMBER_OF_PLAYERS() == 1) then
                         goto webhookSkip
                     end
@@ -3935,7 +3585,7 @@ path_post_session_code_via_webhook = menu.toggle_loop(SessionInvite, "Post Sessi
                         end
                         sessionPlayers = sessionPlayers .. playerInfo
                     end
-                    local description = "# ***🌐 [Join GTA:O " .. session_type() .. " Session.🡭](https://stand.gg/join#" .. code .. ")***\nOr Copy Command: ```codejoin " .. code .. "```\n\nPlayers: "..GET_NUMBER_OF_PLAYERS().."/30(32)\nCurrent Host: "..players.get_name(players.get_host()).."\n"..sessionPlayers
+                    local description = "# ***🌐 [Join GTA:O " .. asuka_lib.session_type() .. " Session.🡭](https://stand.gg/join#" .. code .. ")***\nOr Copy Command: ```codejoin " .. code .. "```\n\nPlayers: "..GET_NUMBER_OF_PLAYERS().."/30(32)\nCurrent Host: "..players.get_name(players.get_host()).."\n"..sessionPlayers
                     local embed = {
                         description = description,
                         timestamp = os.date("!%Y-%m-%dT%XZ"),
@@ -3953,10 +3603,10 @@ path_post_session_code_via_webhook = menu.toggle_loop(SessionInvite, "Post Sessi
                     local encode_status, body_json = pcall(soup.json.encode, body)                
                     local function on_success(body, header_fields, status_code)
                         notify_cmd("Webhook sent successfully!")
-                        if inviteAllFriendsOnWebhook and not NETWORK_IS_ACTIVITY_SESSION() and session_type() == "Public" then
+                        if inviteAllFriendsOnWebhook and not NETWORK_IS_ACTIVITY_SESSION() and asuka_lib.session_type() == "Public" then
                             while GET_ENTITY_SPEED(players.user_ped()) ~= 0 do
                                 util.yield(666)
-                                if isStuck(players.user()) then
+                                if asuka_lib.is_loading(players.user()) then
                                     break
                                 end
                                 if GET_ENTITY_SPEED(players.user_ped()) == 0 then
@@ -4002,12 +3652,12 @@ end)
 menu.divider(SessionInvite, "Other.")
 
 menu.action(SessionInvite, "Invite Friend's", {"invitefriends"}, "Invite all friends.", function()
-    if transitionState(true) == 1 then
+    if asuka_lib.transition_state(true) == 1 then
         local invited = 0
         local invitedFriends = {}
         local ignoredDueToDND = {}
         local ignoredDueToAlreadyHere = {}
-        local dndList = readFromFilePIP(store_dir..'dnd_list.txt')
+        local dndList = asuka_lib.read_from_file(store_dir..'dnd_list.txt')
         if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Friend's")) then
             for menu.ref_by_path("Online>Player History>Noted Players>Friend's"):getChildren() as friend do
                 local friend_target = friend.target
@@ -4059,12 +3709,12 @@ menu.action(SessionInvite, "Invite Friend's", {"invitefriends"}, "Invite all fri
 end)
 
 menu.action(SessionInvite, "Copy Discord Session invite link.", {"invitelink"}, "", function()
-    local code = get_session_code()
+    local code = asuka_lib.get_session_code()
     if code ~= "N/A" and code ~= "Please wait..." then
-        util.copy_to_clipboard("# ***🌐 [Join GTA:O "..session_type().." Session.🡭](https://stand.gg/join#"..code..")***\nOr Copy Command: ```codejoin "..code.."```", false)
-        notify("Invite link for "..session_type().." "..code.." copied.")
+        util.copy_to_clipboard("# ***🌐 [Join GTA:O "..asuka_lib.session_type().." Session.🡭](https://stand.gg/join#"..code..")***\nOr Copy Command: ```codejoin "..code.."```", false)
+        notify("Invite link for "..asuka_lib.session_type().." "..code.." copied.")
     else
-        notify("This session dosnt have a invite code right now.\n"..session_type().." | "..code)
+        notify("This session dosnt have a invite code right now.\n"..asuka_lib.session_type().." | "..code)
     end
 end)
 
@@ -4073,7 +3723,7 @@ local timeoutIgnore = {}
 local smartScriptHostMode = 1
 
 path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
-    if transitionState(true) == 1 then
+    if asuka_lib.transition_state(true) == 1 then
         if not IS_CUTSCENE_PLAYING() then
             if (players.user() == players.get_host() or (players.user() == players.get_script_host() and (not isFriend(players.get_host()) and not isModder(players.get_host())))) and smartScriptHostMode ~= 1 then
                 local playerList = {players.user()}
@@ -4137,8 +3787,8 @@ path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"
                                     break
                                 end
                             end
-                            if player_Exist(pid) then
-                                if not isStuck(pid) then
+                            if asuka_lib.player_exist(pid) then
+                                if not asuka_lib.is_loading(pid) then
                                     notify_cmd(name .. " Finished Loading.")
                                 end
                             else
@@ -4163,9 +3813,9 @@ path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"
                 end
                 ::skipSSH::
             else
-                if isStuck(players.user()) then
+                if asuka_lib.is_loading(players.user()) then
                     util.yield(20666)
-                    if isStuck(players.user()) then
+                    if asuka_lib.is_loading(players.user()) then
                         if players.user() ~= players.get_script_host() then
                             get_ScriptHost()
                             notify("You are loading too long.")
@@ -4202,7 +3852,7 @@ end)
 
 local in_self_god = false
 path_ghost_god_mode = menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"}, "Ghost everyone who is a god mode except Friends.\nIf they are not god anymore , it will de-ghost", function()
-    if transitionState(true) <3 then
+    if asuka_lib.transition_state(true) <3 then
         if not selfSafe() then
             in_self_god = false
             for players.list_except(true) as pid do
@@ -4224,7 +3874,7 @@ path_ghost_god_mode = menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"},
         else
             if not in_self_god then
                 for pid in pairs(sussy_god) do
-                    if player_Exist(pid) then
+                    if asuka_lib.player_exist(pid) then
                         set_as_illusion(pid, sussy_god, false)
                     end
                 end
@@ -4234,7 +3884,7 @@ path_ghost_god_mode = menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"},
         end
     else
         for pid in pairs(sussy_god) do
-            if player_Exist(pid) then
+            if asuka_lib.player_exist(pid) then
                 set_as_illusion(pid, sussy_god, false)
             end
         end
@@ -4243,7 +3893,7 @@ path_ghost_god_mode = menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"},
     util.yield(1666)
 end, function()
     for pid in pairs(sussy_god) do
-        if player_Exist(pid) then
+        if asuka_lib.player_exist(pid) then
             set_as_illusion(pid, sussy_god, false)
         end
     end
@@ -4262,7 +3912,7 @@ path_clear_traffic = menu.toggle_loop(Session, "Clear Traffic", {"antitraffic"},
     if menu.get_state(menu.ref_by_path("World>I Like Trains")) == "Off" then
         menu.set_state(menu.ref_by_path("World>I Like Trains"), "On")
     end
-    if transitionState(true) == 1 then
+    if asuka_lib.transition_state(true) == 1 then
         if menu.get_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas")) == "On" then
             menu.set_state(menu.ref_by_path("Online>Protections>Delete Modded Pop Multiplier Areas"), "Off")
         end
@@ -4303,7 +3953,7 @@ end, function()
 end)
 
 path_soft_clear_traffic = menu.toggle_loop(Session, "Soft Clear Traffic", {"softantitrafic"}, "Clears the traffic around you localy in close range.\nDosnt work with many players in close range.", function()
-    if is_user_inside_vehicle(false) and transitionState(true) == 1 then
+    if asuka_lib.is_user_inside_vehicle(false) and asuka_lib.transition_state(true) == 1 then
         if GET_ENTITY_HEIGHT_ABOVE_GROUND(players.user_ped()) < 13 then
             local driverPed = GET_PED_IN_VEHICLE_SEAT(GET_VEHICLE_PED_IS_IN(players.user_ped()), -1)
             if driverPed == players.user_ped() then
@@ -4356,7 +4006,7 @@ menu.action(Session, "De-Ghost all Debug", {""}, "", function()
 end)
 
 menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisible for the whole session, but with a nice effect for ppl close by.", function()
-    if transitionState(true) == 1 then
+    if asuka_lib.transition_state(true) == 1 then
         playerPosition = GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(players.user_ped(), 0, -23.0, 2)
         local cmd_path = "Vehicle>Countermeasures>Only In Aircraft"
         warnify_ses("T-5 sec. Start on \"GO!\"")
@@ -4437,7 +4087,7 @@ local function load_data_e()
         io.close(file)
         if contents == '' then
             contents = "[]"
-            writeToFilePIP("[]", resources_dir .. 'Export/Export_Blacklist.json')
+            asuka_lib.write_to_file("[]", resources_dir .. 'Export/Export_Blacklist.json')
         end
         local old_data_e = json.decode(contents) or {}
         data_e = old_data_e
@@ -4508,7 +4158,7 @@ local function startupConfig()
     menu.trigger_command(menu.ref_by_path("Online>Session>Block Joins>Message>Your Account Has A Bad Reputation"))
     if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Blacklist")) then
         local noexceptions = true
-        if session_type() == "Public" then
+        if asuka_lib.session_type() == "Public" then
             noexceptions = true
         else
             noexceptions = false
@@ -4551,11 +4201,11 @@ local function add_in_blocking(pid)
         local name = players.get_name(pid)
         local rid = players.get_rockstar_id(pid)
         if rid ~= players.get_rockstar_id(players.user()) then
-            if session_type() == "Public" then
+            if asuka_lib.session_type() == "Public" then
                 sc_block(rid)
             end
         end
-        if name ~= players.get_name(players.user()) and not hasDetection(pid, "Blacklist") then
+        if name ~= players.get_name(players.user()) and not asuka_lib.has_detection(pid, "Blacklist") then
             players.add_detection(pid, "Blacklist", TOAST_DEFAULT, 100)
             menu.trigger_commands("historynote ".. name .." Blacklist")
             util.yield(420)
@@ -4611,16 +4261,16 @@ end
 
 local current_session_type = nil
 local function SessionCheck(pid)
-    while player_Exist(pid) and not menu.player_root(pid):isValid() do
+    while asuka_lib.player_exist(pid) and not menu.player_root(pid):isValid() do
         util.yield(666)
     end
-    if session_type() ~= current_session_type then
-        current_session_type = session_type()
+    if asuka_lib.session_type() ~= current_session_type then
+        current_session_type = asuka_lib.session_type()
         startupConfig()
     end
     local rid = players.get_rockstar_id(pid)
     if is_player_in_blacklist(rid) then
-        if player_Exist(pid) then
+        if asuka_lib.player_exist(pid) then
             if not isFriend(pid) then
                 if rid == players.get_rockstar_id(pid) then
                     local name = players.get_name(pid)
@@ -4628,26 +4278,26 @@ local function SessionCheck(pid)
                         name = "N/A"
                     end
                     local notification = ""
-                    if session_type() == "Public" and not hasDetection(pid, "Blacklist") then
+                    if asuka_lib.session_type() == "Public" and not asuka_lib.has_detection(pid, "Blacklist") then
                         add_in_blocking(pid)
                     end
                     if isModder(pid) and pid == players.get_host() then
                         notification = "This Blacklist is Host, we don't kick them until they attack."
                         menu.trigger_commands("hellaa " .. name .. " on")
                         menu.trigger_commands("ghostplayer " .. name .. " on")
-                    elseif StandUser(pid) then
+                    elseif asuka_lib.has_detection(pid, "Stand User") then
                         notification = "This Blacklist is a Stand User, we don't kick them until they attack."
                         menu.trigger_commands("hellaa " .. name .. " on")
                         menu.trigger_commands("ghostplayer " .. name .. " on")
                     else
-                        if session_type() == "Public" then
+                        if asuka_lib.session_type() == "Public" then
                             StrategicKick(pid)
                         else
                             menu.trigger_commands("hellaa " .. name .. " on")
                             menu.trigger_commands("ghostplayer " .. name .. " on")
                         end
                     end
-                    if session_type() == "Public" and not hasDetection(pid, "Blacklist") then
+                    if asuka_lib.session_type() == "Public" and not asuka_lib.has_detection(pid, "Blacklist") then
                         local finalNotification = "Detected Blacklisted Player: \n" .. name .. " - " .. rid
                         if notification ~= "" then
                             finalNotification = finalNotification .. "\n" .. notification
@@ -4671,7 +4321,7 @@ players.on_join(SessionCheck)
 local IdentificationTimeout = {}
 
 local function removeFromTable(pid)
-    if transitionState(true) == 1 then
+    if asuka_lib.transition_state(true) == 1 then
         if players.get_script_host() == pid then
             menu.trigger_commands("scripthost")
             util.yield(13)
@@ -4700,10 +4350,10 @@ players.on_leave(removeFromTable)
 
 player_menu = function(pid)
     util.yield(113)
-    if player_Exist(pid) and players.get_name(pid) == "UndiscoveredPlayer" then 
+    if asuka_lib.player_exist(pid) and players.get_name(pid) == "UndiscoveredPlayer" then 
         util.yield(13)
     end
-    if not player_Exist(pid) then
+    if not asuka_lib.player_exist(pid) then
         return
     end
     local name = players.get_name(pid)
@@ -4723,15 +4373,15 @@ player_menu = function(pid)
             return
         end
         menu.trigger_command(menu.ref_by_rel_path(menu.player_root(pid), "Friendly>Give Collectibles>All"))
-        while player_Exist(pid) and players.get_rank(pid) < 120 and PGLEVELBOOST.value do
+        while asuka_lib.player_exist(pid) and players.get_rank(pid) < 120 and PGLEVELBOOST.value do
             menu.trigger_commands("rp " .. name)
             util.yield(113)
-            if not player_Exist(pid) then
+            if not asuka_lib.player_exist(pid) then
                 PGLEVELBOOST.value = false
                 break
             end
         end
-        if not player_Exist(pid) then
+        if not asuka_lib.player_exist(pid) then
             PGLEVELBOOST.value = false
             return
         end
@@ -4779,7 +4429,7 @@ player_menu = function(pid)
         crashlistConfig()
     end)
     ---menu.toggle_loop(Bad_Modder, "(Alpha) Report Bot", {"reportbot"}, "Weak menu? Spamm report them >:D", function()
-    ---    if player_Exist(pid) then
+    ---    if asuka_lib.player_exist(pid) then
     ---        menu.trigger_commands("reportgriefing " .. name)
     ---        menu.trigger_commands("reportexploits " .. name)
     ---        menu.trigger_commands("reportbugabuse " .. name)
@@ -5028,17 +4678,17 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
     menu.toggle_loop(Settings, "GTA RPC", {""}, "", function()
         local playerPosition = players.get_position(players.user())
         local streetInfo = get_Street_Names(playerPosition.x, playerPosition.y, playerPosition.z)
-        local vehicleInfo = is_user_inside_vehicle(true) and util.reverse_joaat(entities.get_model_hash(get_user_vehicle())) or "On Foot"
+        local vehicleInfo = asuka_lib.is_user_inside_vehicle(true) and util.reverse_joaat(entities.get_model_hash(asuka_lib.get_user_vehicle())) or "On Foot"
         local entSpeed = math.floor(GET_ENTITY_SPEED(players.user_ped()) * 3.6).." km/h"
-        local sesType = session_type()
+        local sesType = asuka_lib.session_type()
         local sesPlayers = GET_NUMBER_OF_PLAYERS()
         local myMommy = players.get_money(players.user())
-        local transitionState = transitionState(false)
+        local transitionState = asuka_lib.transition_state(false)
         local interior_hashish = GET_INTERIOR_FROM_ENTITY(players.user_ped())
         --local interior_Room_hashish = GET_ROOM_KEY_FROM_ENTITY(players.user_ped())
         local interior_Name = findInteriorNameByID(interior_hashish, interior_Names)
         local interior_Room_Name = ""--findInteriorNameByID(interior_Room_hashish, interior_Room_Names)
-        local sessionCode = get_session_code()
+        local sessionCode = asuka_lib.get_session_code()
         if interiorDev then
             if interior_Name == "" and interior_hashish ~= 0 then
                 notify_only("Interior Hash: "..interior_hashish)
@@ -5191,56 +4841,13 @@ local data_cfg = {
     store_soft_clear_traffic = path_soft_clear_traffic,
 }
 
-local function load_and_apply_config()
-    local file = io.open(store_dir..'/settings.json', 'r')
-    if file then
-        local config_data = file:read("*all")
-        file:close()
-
-        local decode_status, decoded_data = pcall(soup.json.decode, config_data)
-        if decode_status then
-            for store, path in pairs(data_cfg) do
-                local value = decoded_data[store]
-                if value ~= nil then
-                    menu.set_value(path, value)
-                end
-                util.yield()
-            end
-            print("Config loaded and applied successfully.")
-        else
-            print("Error: Unable to decode config data.")
-        end
-    else
-        print("Error: Unable to open config file.")
-    end
-end
-
-local function save_config(bool)
-    local config_data = {}
-    for store, path in pairs(data_cfg) do
-        config_data[store] = menu.get_value(path)
-        if bool then
-            util.yield()
-        end
-    end
-
-    local encode_status, json_data = pcall(soup.json.encode, config_data)
-    local file = io.open(store_dir..'/settings.json', 'w')
-    if file then
-        file:write(json_data)
-        file:close()
-    else
-        print("Error: Unable to open file for writing.")
-    end
-end
-
 util.on_stop(function()
     remove_blips()
 end)
 
 util.on_pre_stop(function()
-    if not pipBooty then
-        save_config(false)
+    if not asuka_lib.asuka_booty then
+        asuka_lib.save_config(store_dir..'/settings.json', data_cfg, false)
     end
 end)
 
@@ -5250,8 +4857,8 @@ util.on_transition_finished(function ()
         if not NETWORK_IS_ACTIVITY_SESSION() then
             players.teleport_3d(players.user(), customspawn.x, customspawn.y, customspawn.z)
         end
-        if get_user_vehicle() then
-            delete_ent(get_user_vehicle())
+        if asuka_lib.get_user_vehicle() then
+            asuka_lib.delete_entity(asuka_lib.get_user_vehicle())
         end
         menu.trigger_commands("resetheadshots")
         menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
@@ -5265,8 +4872,8 @@ util.on_transition_finished(function ()
         SET_PED_HEAD_OVERLAY(players.user_ped(), 3, 255, 0.0) --Remove any aging processes.
         SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
     end
-    save_config(true)
-    while transitionState(true) ~= 1 do
+    asuka_lib.save_config(store_dir..'/settings.json', data_cfg, true)
+    while asuka_lib.transition_state(true) ~= 1 do
         util.yield(666)
     end
     if filled_up then
@@ -5290,7 +4897,7 @@ end
 
 local function userIdentification()
     while true do
-        if transitionState(true) <3 then
+        if asuka_lib.transition_state(true) <3 then
             local tictac_tictac_tictac = os.time()
             local solCirlce = tonumber(os.date("%d", tictac_tictac_tictac)) + 213
             moonCircle = tonumber(os.date("%m", tictac_tictac_tictac)) + solCirlce
@@ -5310,12 +4917,12 @@ local function userIdentification()
                 end
             end
             for players.list_except(true) as pid do
-                if not hasDetection(pid, "PIP Girl User") then
+                if not asuka_lib.has_detection(pid, "PIP Girl User") then
                     if players.are_stats_ready(pid) then
                         if IdentificationTimeout[pid] == nil then
                             local targetped = GET_PLAYER_PED_SCRIPT_INDEX(pid)
                             local pedmodel = GET_ENTITY_MODEL(targetped)
-                            if PIP_does_entity_exist(targetped) and (pedmodel == -1667301416 or pedmodel == 1885233650) and math.abs(GET_PED_HEAD_OVERLAY(targetped, 12) - moonCircle) <= 1 then
+                            if asuka_lib.does_entity_exist(targetped) and (pedmodel == -1667301416 or pedmodel == 1885233650) and math.abs(GET_PED_HEAD_OVERLAY(targetped, 12) - moonCircle) <= 1 then
                                 if checkID(players.get_rockstar_id(pid)) then
                                     players.add_detection(pid, "PIP Girl User (Developer)", TOAST_DEFAULT, 100)
                                 else
@@ -5341,7 +4948,7 @@ local function userIdentification()
                 end
                 util.yield(3666)
             end
-            save_config(true)
+            asuka_lib.save_config(store_dir..'/settings.json', data_cfg, true)
         end
         util.yield(25666)
     end
@@ -5369,23 +4976,23 @@ if not is_player_in_blacklist(rockstarIsBad) then
     menu.hyperlink(menu.my_root(), "PIP Girl Discord", rainySky("aHR0cHM6Ly9kaXNjb3JkLmdnL0s2c0RVYTJhcWc="), "The PIP Girl Discord.")
 end
 if not filesystem.exists(store_dir..'/version.txt') then
-    writeToFilePIP(os.time() - 13, store_dir..'version.txt')
+    asuka_lib.write_to_file(os.time() - 13, store_dir..'version.txt')
 end
-local stored_pip_version = readFromFilePIP(store_dir..'version.txt')
+local stored_pip_version = asuka_lib.read_from_file(store_dir..'version.txt')
 if stored_pip_version == nil or stored_pip_version == "" or tonumber(stored_pip_version) == nil then
     io.remove(store_dir..'version.txt')
     util.yield(666)
     stored_pip_version = os.time()
-    writeToFilePIP(os.time(), store_dir..'version.txt')
+    asuka_lib.write_to_file(os.time(), store_dir..'version.txt')
 end
 if os.time() - tonumber(stored_pip_version) > 13 then
-    pipBooty = true
-    writeToFilePIP(os.time(), store_dir..'version.txt')
+    asuka_lib.asuka_booty = true
+    asuka_lib.write_to_file(os.time(), store_dir..'version.txt')
     util.yield(1666)
     util.restart_script()
 else
-    pipBooty = false
-    load_and_apply_config()
+    asuka_lib.asuka_booty = false
+    asuka_lib.load_and_apply_config(store_dir..'/settings.json', data_cfg)
     util.create_thread(startupCheck)
     util.create_thread(startupConfig)
     util.create_thread(crashlistConfig)
