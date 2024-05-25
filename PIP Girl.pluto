@@ -4356,6 +4356,14 @@ player_menu = function(pid)
     if not asuka_lib.player_exist(pid) then
         return
     end
+    for menu.get_children(menu.player_root(pid)) as player_child do
+        if menu.get_menu_name(player_child) == "PIP Girl" then
+            return
+        end
+        if menu.get_menu_name(player_child) == "~=^^=~" then
+            return
+        end
+    end
     local name = players.get_name(pid)
     local rid = players.get_rockstar_id(pid)
     menu.player_root(pid):divider('PIP Girl')
@@ -4394,6 +4402,7 @@ player_menu = function(pid)
     end)
     if isFriend(pid) then
         set_as_illusion(pid, set_passive, false)
+        menu.player_root(pid):divider('~=^^=~')
         return
     end
     local Bad_Modder = menu.list(menu.player_root(pid), 'Bad Modder?', {""}, '', function() end)
