@@ -3464,7 +3464,7 @@ menu.action(menu.my_root(), "Cleanup \"Friend's\" Group", {"cleanupfriends"}, "r
         end
         util.yield(666)
         menu.trigger_commands("createfriendsgroup")
-        menu.focus(menu.ref_by_path("Stand>Lua Scripts>"..SCRIPT_NAME..">Session>Misc>Create \"Friend's\" Group"))
+        menu.focus(menu.ref_by_path("Online>Player History>Noted Players>Friend's"))
     else
         notify("You dont have a \"Friend's\" Group. so we created one for you.")
         menu.trigger_commands("createfriendsgroup")
