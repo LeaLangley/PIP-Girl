@@ -1352,12 +1352,7 @@ local function buff_asuka_tech(vehicle)
         if DOES_VEHICLE_HAVE_SEARCHLIGHT(vehicle) then
             SET_VEHICLE_SEARCHLIGHT(vehicle, true, true)
         end
-        local buffVehModel = GET_ENTITY_MODEL(vehicle)
-        if buffVehModel == 167522317 then
-            if GET_VEHICLE_MOD(vehicle, 10) == 1 and checkVehMod(vehicle, 1) then
-                SET_VEHICLE_EXTRA(vehicle, 1, 0)
-            end
-        end
+
         if buffVehModel == 1770332643 then
             if checkVehMod(vehicle, 1) then
                 SET_VEHICLE_EXTRA(vehicle, 1, 0)
@@ -1429,25 +1424,25 @@ local function repair_asuka_tech(vehicle)
     else
         repair_amount = asuka_tech_repair_amount
     end
-    local engineHealth = GET_VEHICLE_ENGINE_HEALTH(vehicle)
-    local petrolTankHealth = GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
-    local bodyHealth = GET_VEHICLE_BODY_HEALTH(vehicle)
-    local heliTailHealth = GET_HELI_TAIL_BOOM_HEALTH(vehicle)
-    local heliRotorHealth = GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
 
     if IS_VEHICLE_DRIVEABLE(vehicle) then
+        local engineHealth = GET_VEHICLE_ENGINE_HEALTH(vehicle)
         if engineHealth > 0 and engineHealth < max_repair_limit then
             SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + repair_amount)
         end
+        local petrolTankHealth = GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
         if petrolTankHealth > 0 and petrolTankHealth < max_repair_limit then
             SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + repair_amount)
         end
+        local bodyHealth = GET_VEHICLE_BODY_HEALTH(vehicle)
         if bodyHealth > 0 and bodyHealth < max_repair_limit then
             SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + repair_amount)
         end
+        local heliTailHealth = GET_HELI_TAIL_ROTOR_HEALTH(vehicle)
         if heliTailHealth > 0 and heliTailHealth < max_repair_limit then
             SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + repair_amount)
         end
+        local heliRotorHealth = GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
         if heliRotorHealth > 0 and heliRotorHealth < max_repair_limit then
             SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + repair_amount)
         end
