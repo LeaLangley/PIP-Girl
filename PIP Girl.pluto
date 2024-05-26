@@ -515,7 +515,7 @@ local function healthyInternet(pid)
 end
 
 local function worthToUnstuck(pid)
-    if asuka_lib.player_exist(pid) and asuka_lib.is_loading(pid) and healthyInternet(pid) and asuka_lib.discovered_since(pid) > 113 then
+    if asuka_lib.player_exist(pid) and asuka_lib.is_loading(pid) and healthyInternet(pid) then
         return true
     else
         return false
