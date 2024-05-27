@@ -588,25 +588,27 @@ local function SuperClean(fix, ignoreMission)
                     if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
                         entities.delete(ent)
                         ct += 1
+                        util.yield(13)
                     end
                 end
             end
-            util.yield(13)
         end
     end
     util.yield(13)
     for pairs(entities.get_all_vehicles_as_handles()) as ent do
-        local driver = GET_PED_IN_VEHICLE_SEAT(ent, -1)
-        if not IS_PED_A_PLAYER(driver) then
-            if asuka_lib.does_entity_exist(ent) then
-                if not fix or (fix and GET_ENTITY_TYPE(ent)) then
-                    if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
-                        entities.delete(ent)
-                        ct += 1
+        if not IS_ENTITY_ATTACHED_TO_ANY_PED(ent) then
+            local driver = GET_PED_IN_VEHICLE_SEAT(ent, -1)
+            if not IS_PED_A_PLAYER(driver) then
+                if asuka_lib.does_entity_exist(ent) then
+                    if not fix or (fix and GET_ENTITY_TYPE(ent)) then
+                        if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
+                            entities.delete(ent)
+                            ct += 1
+                            util.yield(13)
+                        end
                     end
                 end
             end
-            util.yield(13)
         end
     end
     util.yield(13)
@@ -616,10 +618,10 @@ local function SuperClean(fix, ignoreMission)
                 if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
                     entities.delete(ent)
                     ct += 1
+                    util.yield(13)
                 end
             end
         end
-        util.yield(13)
     end
     util.yield(13)
     for pairs(entities.get_all_pickups_as_handles()) as ent do
@@ -628,10 +630,10 @@ local function SuperClean(fix, ignoreMission)
                 if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
                     entities.delete(ent)
                     ct += 1
+                    util.yield(13)
                 end
             end
         end
-        util.yield(13)
     end
     util.yield(13)
     notify("Done " .. ct .. "+ entities removed!")
