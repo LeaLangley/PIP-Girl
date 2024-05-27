@@ -2344,11 +2344,11 @@ end, function()
     end
 end)
 
-path_bike_helmet_var = menu.slider(Outfit, 'Smart Outfit Lock Helmet', {'SmartLockHelmet'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet.', -1, 201, OutfitLockHelmet, 1, function (new_value)
+path_bike_helmet_var = menu.slider(Outfit, 'Smart Outfit Bike Helmet', {'SmartLockHelmet'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet.', -1, 201, OutfitLockHelmet, 1, function (new_value)
     OutfitLockHelmet = new_value
 end)
 
-path_bike_helmet_color = menu.slider(Outfit, 'Smart Outfit Lock Helmet Color', {'SmartLockHelmetColor'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet Color.', -1, 50, OutfitLockHelmetColor, 1, function (new_value)
+path_bike_helmet_color = menu.slider(Outfit, 'Smart Outfit Bike Helmet Color', {'SmartLockHelmetColor'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet Color.', -1, 50, OutfitLockHelmetColor, 1, function (new_value)
     OutfitLockHelmetColor = new_value
 end)
 
