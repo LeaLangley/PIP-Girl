@@ -855,7 +855,7 @@ path_auto_org = menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "
     util.yield(666)
 end)
 
-path_auto_org_color = menu.slider(PIP_Girl, 'Auto Org Color', {'favorgcolor'}, "Enter the Color ID of your CEO.", -1, 14, ceo_color, 1, function (new_value)
+path_auto_org_color = menu.slider(PIP_Girl, 'Auto Org Color', {'favorgcolor'}, "Enter the Color ID of your org.\nThe color will be used when u auto register as Org.", -1, 14, ceo_color, 1, function (new_value)
     ceo_color = new_value
 end)
 
