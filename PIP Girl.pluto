@@ -1424,9 +1424,10 @@ local function repair_asuka_tech(vehicle)
     else
         repair_amount = asuka_tech_repair_amount
     end
-
+    local engineHealth = GET_VEHICLE_ENGINE_HEALTH(vehicle)
+    local bodyHealth = GET_VEHICLE_BODY_HEALTH(vehicle)
+    
     if IS_VEHICLE_DRIVEABLE(vehicle) then
-        local engineHealth = GET_VEHICLE_ENGINE_HEALTH(vehicle)
         if engineHealth > 0 and engineHealth < max_repair_limit then
             SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + repair_amount)
         end
@@ -1434,7 +1435,6 @@ local function repair_asuka_tech(vehicle)
         if petrolTankHealth > 0 and petrolTankHealth < max_repair_limit then
             SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + repair_amount)
         end
-        local bodyHealth = GET_VEHICLE_BODY_HEALTH(vehicle)
         if bodyHealth > 0 and bodyHealth < max_repair_limit then
             SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + repair_amount)
         end
