@@ -4372,32 +4372,45 @@ player_menu = function(pid)
     local rid = players.get_rockstar_id(pid)
     menu.player_root(pid):divider('PIP Girl')
     local FriendlyPIPGirl = menu.list(menu.player_root(pid), 'Friendly', {""}, '', function() end)
+    local levelPly = 120
+	menu.slider(FriendlyPIPGirl, "Stop At Level...", {"pgmaxlevel"}, "", 1, 8000, 120, 1, function(val)
+		levelPly = val
+	end)
+	local delayPly = 113
+	menu.slider(FriendlyPIPGirl, "Loop Delay", {"pgloopdelay"}, "in ms", 0, 2500, 113, 10, function(val)
+		delayPly = val
+	end)
     local PGLEVELBOOST
-    PGLEVELBOOST = menu.toggle(FriendlyPIPGirl, "Boost LVL 120", {"boostlevel"}, "Boost them to lvl 120.", function()
-        if players.get_rank(pid) >= 120 and PGLEVELBOOST.value then
+    PGLEVELBOOST = menu.toggle(FriendlyPIPGirl, "Boost LVL", {"pgboostlevel"}, "Boost them to lvl.", function()
+        if players.get_rank(pid) >= levelPly and PGLEVELBOOST.value and menu.player_root(pid):isValid() then
             notify(name.." is already "..players.get_rank(pid))
             PGLEVELBOOST.value = false
             return
         end
-        if not players.are_stats_ready(pid) and PGLEVELBOOST.value then
+        if not players.are_stats_ready(pid) and PGLEVELBOOST.value and menu.player_root(pid):isValid() then
             notify(name.." is still loading in , please wait.")
             PGLEVELBOOST.value = false
             return
         end
-        menu.trigger_command(menu.ref_by_rel_path(menu.player_root(pid), "Friendly>Give Collectibles>All"))
-        while asuka_lib.player_exist(pid) and players.get_rank(pid) < 120 and PGLEVELBOOST.value do
+        if asuka_lib.player_exist(pid) and players.get_rank(pid) < levelPly and PGLEVELBOOST.value and menu.player_root(pid):isValid() then
+            menu.trigger_command(menu.ref_by_rel_path(menu.player_root(pid), "Friendly>Give Collectibles>All"))
+        end
+        while asuka_lib.player_exist(pid) and players.get_rank(pid) < levelPly and PGLEVELBOOST.value and menu.player_root(pid):isValid() do
+            if not menu.player_root(pid):isValid() then
+                break
+            end
             menu.trigger_commands("rp " .. name)
-            util.yield(113)
+            util.yield(delayPly)
             if not asuka_lib.player_exist(pid) then
                 PGLEVELBOOST.value = false
                 break
             end
         end
-        if not asuka_lib.player_exist(pid) then
+        if not asuka_lib.player_exist(pid) and PGLEVELBOOST.value and menu.player_root(pid):isValid() then
             PGLEVELBOOST.value = false
             return
         end
-        if players.get_rank(pid) >= 120 then
+        if players.get_rank(pid) >= levelPly and PGLEVELBOOST.value and menu.player_root(pid):isValid() then
             notify(name.." Reached "..players.get_rank(pid))
             PGLEVELBOOST.value = false
             util.yield(113)
