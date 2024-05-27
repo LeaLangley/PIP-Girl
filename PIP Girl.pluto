@@ -829,11 +829,11 @@ path_auto_org = menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "
                     util.yield(13)
                     lastCeoName = menu.get_value(menu.ref_by_path("Online>CEO/MC>Name"))
                 end
-                if players.user() == players.get_script_host() then
-                    if ceo_color ~= -1 then
-                        check_CEO_Color()
-                    end
-                end
+                --if players.user() == players.get_script_host() then
+                --    if ceo_color ~= -1 then
+                --        check_CEO_Color()
+                --    end
+                --end
             end
         else
             if joinfriendsceo ~= 1 and players.get_boss(players.user()) == -1 then
@@ -859,14 +859,14 @@ path_auto_org_color = menu.slider(PIP_Girl, 'Auto Org Color', {'favorgcolor'}, "
     ceo_color = new_value
 end)
 
-path_auto_org_color_check = menu.toggle_loop(PIP_Girl, "Additional Org Color Checks.", {""}, "If u use \"Auto Become a CEO/MC\" it will check for u color on register.\nIf u dont use \"Auto Become a CEO/MC\" u can use Additinal Checks.", function(on)
-    if asuka_lib.transition_state(true) == 1 and players.get_boss(players.user()) ~= -1 and players.user() == players.get_script_host() then
-        if ceo_color ~= -1 then
-            check_CEO_Color(ceo_color)
-        end
-    end
-    util.yield(13666)
-end)
+--path_auto_org_color_check = menu.toggle_loop(PIP_Girl, "Additional Org Color Checks.", {""}, "If u use \"Auto Become a CEO/MC\" it will check for u color on register.\nIf u dont use \"Auto Become a CEO/MC\" u can use Additinal Checks.", function(on)
+--    if asuka_lib.transition_state(true) == 1 and players.get_boss(players.user()) ~= -1 and players.user() == players.get_script_host() then
+--        if ceo_color ~= -1 then
+--            check_CEO_Color()
+--        end
+--    end
+--    util.yield(13666)
+--end)
 
 path_join_friends_org = menu.list_select(PIP_Girl, "Auto Join Friends Org (!)", {""}, "Uses \"Auto Become a CEO/MC\"", {
     {1, "Don't"},
@@ -4788,7 +4788,7 @@ local data_cfg = {
     store_org_type = path_org_type,
     store_auto_org = path_auto_org,
     store_auto_org_color = path_auto_org_color,
-    store_auto_org_color_check = path_auto_org_color_check,
+    --store_auto_org_color_check = path_auto_org_color_check,
     store_join_friends_org = path_join_friends_org,
     store_collect_money = path_collect_money,
     --Stimpak
