@@ -2411,7 +2411,7 @@ path_auto_interact = menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'},
         }
         for ipairs(interactionsX) as label do
             if IS_HELP_MSG_DISPLAYED(label) then
-                SET_CONTROL_VALUE_NEXT_FRAME(2, 51, 1)
+                SET_CONTROL_VALUE_NEXT_FRAME(2, 37, 1)
                 break
             end
         end
