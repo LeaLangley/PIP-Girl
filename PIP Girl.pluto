@@ -3220,8 +3220,8 @@ local kosatkaMissile1 = nil
 local kosatkaMissile2 = nil
 path_block_kosatka_missile_terminal = menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {"blockkosatka"}, "Blocks the Missile terminal", function()
     if asuka_lib.allow_spawn_check() and asuka_lib.transition_state(true) < 3 then
-        kosatkaMissile1 = asuka_lib.spawn_and_check_object(kosatkaMissile1, 1228076166, v3.new(1558.9, 387.111, -50.666), 0, 0, 0, nil, 13, true, true, false)
-        kosatkaMissile2 = asuka_lib.spawn_and_check_object(kosatkaMissile2, 1228076166, v3.new(1558.9, 388.777, -50.666), 0, 0, 0, nil, 13, true, true, false)
+        kosatkaMissile1 = asuka_lib.spawn_and_check_object(kosatkaMissile1, 1228076166, v3.new(1558.9, 387.111, -50.666), 0, 0, 0, nil, 13, true, true, true)
+        kosatkaMissile2 = asuka_lib.spawn_and_check_object(kosatkaMissile2, 1228076166, v3.new(1558.9, 388.777, -50.666), 0, 0, 0, nil, 13, true, true, true)
     else
         util.yield(6666)
     end
