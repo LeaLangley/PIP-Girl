@@ -3431,7 +3431,7 @@ menu.action(SessionMisc, "Create \"Friend's\" Group", {"createfriendsgroup"}, "C
     menu.trigger_commands("friendswhitelist")
 end)
 
-menu.action(menu.my_root(), "Cleanup \"Friend's\" Group", {"cleanupfriends"}, "remove non friends from this group.", function()
+menu.action(SessionMisc, "Cleanup \"Friend's\" Group", {"cleanupfriends"}, "remove non friends from this group.", function()
     if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Friend's")) then
         menu.trigger_commands("findplayer Friend's")
         local friends = menu.ref_by_path("Online>Player History>Noted Players>Friend's"):getChildren()
