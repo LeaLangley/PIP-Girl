@@ -3155,6 +3155,7 @@ menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join 
     for players.list_except(true) as pid do
         if players.is_marked_as_admin(pid) or players.is_marked_as_modder_or_admin(pid) then
             menu.trigger_commands("quickbail")
+            util.yield()
             warnify("Admin Detected, We get you out of Here!")
             util.yield(666)
             menu.trigger_commands("unstuck")
@@ -3162,7 +3163,6 @@ menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join 
             menu.trigger_commands("go inviteonly")
         end
     end
-    util.yield()
 end)
 
 local SessionWorld = menu.list(Session, 'World', {}, 'Session World Manipulation.', function(); end)
