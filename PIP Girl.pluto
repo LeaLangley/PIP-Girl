@@ -2152,6 +2152,9 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
         if not IS_PED_A_PLAYER(driver) and driver ~= 0 then
             goto continue_loop
         end
+        if DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 then
+            goto continue_loop
+        end
         local vehiclePosition = GET_ENTITY_COORDS(vehicle)
         local distance = playerPosition:distance(vehiclePosition)
 
