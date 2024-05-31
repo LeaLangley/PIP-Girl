@@ -708,11 +708,11 @@ local function fillUpEverything()
     menu.trigger_commands("removebounty")
 end
 
-path_nc_pop = menu.toggle_loop(PIP_Girl, "Nightclub Party Never Stops!", {'ncpop'}, "The hottest NC in whole LS.\nKeeps you pop at 90-100%", function ()
+path_nc_pop = menu.toggle_loop(PIP_Girl, "Nightclub Party Never Stops!", {'ncpop'}, "The hottest NC in whole LS.\nKeeps you pop at 85-100%", function ()
     if asuka_lib.transition_state(true) == 1 then
         local ncpop = math.floor(STAT_GET_INT('CLUB_POPULARITY') / 10)
         if ncpop < 88 then
-            local random_pop = math.random(88, 100)
+            local random_pop = math.random(85, 100)
             menu.trigger_commands('clubpopularity '..random_pop)
             util.yield(66666)
         end
