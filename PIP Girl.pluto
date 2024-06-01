@@ -4866,7 +4866,7 @@ end)
 
 util.on_pre_stop(function()
     if not asuka_lib.asuka_booty then
-        asuka_lib.save_config(store_dir..'/settings.json', data_cfg, false)
+        asuka_lib.save_config(store_dir..'settings.json', data_cfg, false)
     end
 end)
 
@@ -4891,7 +4891,7 @@ util.on_transition_finished(function ()
         SET_PED_HEAD_OVERLAY(players.user_ped(), 3, 255, 0.0) --Remove any aging processes.
         SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
     end
-    asuka_lib.save_config(store_dir..'/settings.json', data_cfg, true)
+    asuka_lib.save_config(store_dir..'settings.json', data_cfg, true)
     while asuka_lib.transition_state(true) ~= 1 do
         util.yield(666)
     end
@@ -4967,7 +4967,7 @@ local function userIdentification()
                 end
                 util.yield(3666)
             end
-            asuka_lib.save_config(store_dir..'/settings.json', data_cfg, true)
+            asuka_lib.save_config(store_dir..'settings.json', data_cfg, true)
         end
         util.yield(25666)
     end
@@ -5011,7 +5011,7 @@ if os.time() - tonumber(stored_pip_version) > 13 then
     util.restart_script()
 else
     asuka_lib.asuka_booty = false
-    asuka_lib.load_and_apply_config(store_dir..'/settings.json', data_cfg)
+    asuka_lib.load_and_apply_config(store_dir..'settings.json', data_cfg)
     util.create_thread(startupCheck)
     util.create_thread(startupConfig)
     util.create_thread(crashlistConfig)
