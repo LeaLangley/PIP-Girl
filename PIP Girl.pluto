@@ -4503,7 +4503,11 @@ end)
 menu.divider(Credits, "My Friends. <3")
 
 menu.action(Credits, "Kev <3", {""}, "For using/testing my lua and gifting me Ultimate <3", function()
-    notify("Kev is very sexy.")
+    notify("Kev is giga very sexy.")
+end)
+
+menu.action(Credits, "Jan <3", {""}, "For activly using/testing my lua.", function()
+    notify("Jan is mhhhhhh aahhh.")
 end)
 
 menu.action(Credits, "Marcel <3", {""}, "For activly using/testing my lua.", function()
