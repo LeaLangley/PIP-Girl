@@ -3623,6 +3623,7 @@ path_post_session_code_via_webhook = menu.toggle_loop(SessionInvite, "Post Sessi
         end
     else
         notify("Please Create a Webhook first.")
+        menu.set_value(path_post_session_code_via_webhook, "Off")
     end
     ::webhookSkip::
     util.yield(13666)
