@@ -3525,20 +3525,6 @@ end)
 
 local SessionInvite = menu.list(Session, 'Session invite', {}, 'Copy session invite, invite all friends or A Discord session invite hook.', function(); end)
 
-if not filesystem.exists(store_dir) then
-    filesystem.mkdir(store_dir)
-end
-
-if not filesystem.exists(store_dir..'/do_not_share_webhook.txt') then
-    local file = io.open(store_dir..'/do_not_share_webhook.txt', "w")
-    file:close()
-end
-
-if not filesystem.exists(store_dir..'/session_code.txt') then
-    local file = io.open(store_dir..'/session_code.txt', "w")
-    file:close()
-end
-
 local discord_webhook = nil
 
 menu.divider(SessionInvite, "Discord Invite Web-hook.")
