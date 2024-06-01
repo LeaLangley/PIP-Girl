@@ -3534,7 +3534,7 @@ menu.action(SessionInvite, "Set Discord Webhook", {"pgdiscordhook"}, "Never shar
 end, function(input_str)
     local _, _, webhook_path = string.find(input_str, "https://discord.com(.+)")
     if webhook_path then
-        asuka_lib.write_to_file(webhook_path, store_dir..'do_not_share_webhook.txt')
+        asuka_lib.write_to_file(store_dir..'do_not_share_webhook.txt', webhook_path)
         discord_webhook = webhook_path
     else
         print("Invalid Discord webhook URL. Please make sure it includes '/api'.")
@@ -3553,7 +3553,7 @@ path_post_session_code_via_webhook = menu.toggle_loop(SessionInvite, "Post Sessi
             if code ~= "N/A" and code ~= "Please wait..." then
                 if code ~= posted_session_code then
                     posted_session_code = code
-                    asuka_lib.write_to_file(code, store_dir..'/session_code.txt')
+                    asuka_lib.write_to_file(store_dir..'/session_code.txt', code)
                     if onlyPostasFriendlyHost and (not isFriend(players.get_host()) or GET_NUMBER_OF_PLAYERS() == 1) then
                         goto webhookSkip
                     end
@@ -4082,7 +4082,7 @@ local function load_data_e()
         io.close(file)
         if contents == '' then
             contents = "[]"
-            asuka_lib.write_to_file("[]", resources_dir .. 'Export/Export_Blacklist.json')
+            asuka_lib.write_to_file(resources_dir .. 'Export/Export_Blacklist.json', "[]")
         end
         local old_data_e = json.decode(contents) or {}
         data_e = old_data_e
@@ -4992,18 +4992,18 @@ if not is_player_in_blacklist(rockstarIsBad) then
     menu.hyperlink(menu.my_root(), "PIP Girl Discord", rainySky("aHR0cHM6Ly9kaXNjb3JkLmdnL0s2c0RVYTJhcWc="), "The PIP Girl Discord.")
 end
 if not filesystem.exists(store_dir..'/version.txt') then
-    asuka_lib.write_to_file(os.time() - 13, store_dir..'version.txt')
+    asuka_lib.write_to_file(store_dir..'version.txt', os.time() - 13)
 end
 local stored_pip_version = asuka_lib.read_from_file(store_dir..'version.txt')
 if stored_pip_version == nil or stored_pip_version == "" or tonumber(stored_pip_version) == nil then
     io.remove(store_dir..'version.txt')
     util.yield(666)
     stored_pip_version = os.time()
-    asuka_lib.write_to_file(os.time(), store_dir..'version.txt')
+    asuka_lib.write_to_file(store_dir..'version.txt', os.time())
 end
 if os.time() - tonumber(stored_pip_version) > 13 then
     asuka_lib.asuka_booty = true
-    asuka_lib.write_to_file(os.time(), store_dir..'version.txt')
+    asuka_lib.write_to_file(store_dir..'version.txt', os.time())
     util.yield(1666)
     util.restart_script()
 else
