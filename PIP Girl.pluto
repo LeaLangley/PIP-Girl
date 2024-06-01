@@ -486,7 +486,9 @@ local function StrategicKick(pid)
             menu.trigger_commands("blocksync " .. name .. " on")
             if players.is_marked_as_attacker(pid) or isFriend(players.get_host()) or not isModder(players.get_host()) then
                 if asuka_lib.transition_state(true) ~= 1 then
-                    menu.trigger_commands("kick " .. name)
+                    if asuka_lib.transition_state(true) < 3 then
+                        menu.trigger_commands("kick " .. name)
+                    end
                     Wait_for_transitionState()
                 else
                     if menu.get_edition() > 1 then
@@ -4464,7 +4466,7 @@ player_menu = function(pid)
             if not is_player_in_blacklist(rid) then
                 add_player_to_blacklist(rid)
             end
-            warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
+            notify("Attempting to kick " .. name .. " bcs they atacked you.")
             util.yield(66666)
         else
             util.yield(1666)
@@ -4474,7 +4476,7 @@ player_menu = function(pid)
     menu.toggle_loop(Bad_Modder, "Kick on Atack", {"hellaa"}, "Auto kick if they atack you.", function()
         if players.is_marked_as_attacker(pid) then
             StrategicKick(pid)
-            warnify_net("Attempting to kick " .. name .. " bcs they atacked you.")
+            notify("Attempting to kick " .. name .. " bcs they atacked you.")
             util.yield(66666)
         else
             util.yield(1666)
