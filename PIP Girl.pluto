@@ -2279,9 +2279,9 @@ path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLo
                 menu.trigger_commands("outfit 1PIPGirlTemp")
                 temp_holding_outfit = false
             end
-            SET_PED_CONFIG_FLAG(players.user_ped(), 36, true)
-            SET_PED_CONFIG_FLAG(players.user_ped(), 438, false)
             if OutfitLockHelmet ~= -1 then
+                SET_PED_CONFIG_FLAG(players.user_ped(), 36, true)
+                SET_PED_CONFIG_FLAG(players.user_ped(), 438, false)
                 local vehicleClass = GET_VEHICLE_CLASS(GET_VEHICLE_PED_IS_IN(players.user_ped(), true))
                 if IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) and vehicleClass then
                     if menu.get_state(menu.ref_by_path("Self>Appearance>Outfit>Hat")) == "-1" and focused ~= "Profiles" then
@@ -2538,7 +2538,8 @@ local warningMessages = {
     [1073504880] = "There is a slot available in the GTA Online session you are currently queuing for. Joining Session.",
     [1748022689] = "Failed to join intended GTA Online session. Please return to Grand Theft Auto V and try again later.",
     [167092314] = "Failed to join intended GTA Online session. Joining a new GTA Online session.",
-    [1901152333] = "You are classed as a cheat and can only play with other cheats until you are forgiven. Okease return to Grand Theft Auto V and try again later."
+    [1901152333] = "A modder is blocking you join.\nYou are classed as a cheat and can only play with other cheats until you are forgiven. Okease return to Grand Theft Auto V and try again later.",
+    [161625414] = "A modder is blocking you join.\nUnable to join this session, your account has a bad reputation. Please return to Grand Theft Auto V and try again later."
 }
 local avoidWarningSkipHere = {
     { x = 1561.00, y = 385.89, z = -49.69 }, -- Cayo Planning Room
