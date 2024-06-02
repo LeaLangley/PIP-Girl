@@ -3367,6 +3367,10 @@ path_nerf_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Nerf Oppressor MK2s", 
                 requestControl(vehicle)
                 SET_VEHICLE_MOD(vehicle, 16, -1)
             end
+            if GET_VEHICLE_COUNTERMEASURE_AMMO(vehicle) ~= 0 then
+                requestControl(vehicle)
+                SET_VEHICLE_COUNTERMEASURE_AMMO(vehicle, 0)
+            end
         end
     end
     util.yield(1666)
@@ -3381,6 +3385,10 @@ path_downgrade_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Downgrade Oppress
                     requestControl(vehicle)
                     SET_VEHICLE_MOD(vehicle, vehModNum, -1)
                 end
+            end
+            if GET_VEHICLE_COUNTERMEASURE_AMMO(vehicle) ~= 0 then
+                requestControl(vehicle)
+                SET_VEHICLE_COUNTERMEASURE_AMMO(vehicle, 0)
             end
         end
     end
