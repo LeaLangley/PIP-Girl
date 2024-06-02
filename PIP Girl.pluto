@@ -2279,6 +2279,8 @@ path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLo
                 menu.trigger_commands("outfit 1PIPGirlTemp")
                 temp_holding_outfit = false
             end
+            SET_PED_CONFIG_FLAG(players.user_ped(), 36, true)
+            SET_PED_CONFIG_FLAG(players.user_ped(), 438, false)
             if OutfitLockHelmet ~= -1 then
                 local vehicleClass = GET_VEHICLE_CLASS(GET_VEHICLE_PED_IS_IN(players.user_ped(), true))
                 if IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) and vehicleClass then
