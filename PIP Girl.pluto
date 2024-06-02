@@ -3363,6 +3363,10 @@ path_nerf_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Nerf Oppressor MK2s", 
                 requestControl(vehicle)
                 SET_VEHICLE_MOD(vehicle, 10, -1)
             end
+            if GET_VEHICLE_MOD(vehicle, 16) ~= -1 then
+                requestControl(vehicle)
+                SET_VEHICLE_MOD(vehicle, 16, -1)
+            end
         end
     end
     util.yield(1666)
