@@ -4389,20 +4389,21 @@ player_menu = function(pid)
 	end)
     local PGLEVELBOOST
     PGLEVELBOOST = menu.toggle(FriendlyPIPGirl, "Boost LVL", {"pgboostlevel"}, "Boost them to lvl.", function()
-        if players.get_rank(pid) >= levelPly and PGLEVELBOOST.value and menu.player_root(pid):isValid() then
+        if menu.player_root(pid):isValid() and players.get_rank(pid) >= levelPly and PGLEVELBOOST.value then
             notify(name.." is already "..players.get_rank(pid))
             PGLEVELBOOST.value = false
             return
         end
-        if not players.are_stats_ready(pid) and PGLEVELBOOST.value and menu.player_root(pid):isValid() then
+        if menu.player_root(pid):isValid() and not players.are_stats_ready(pid) and PGLEVELBOOST.value then
             notify(name.." is still loading in , please wait.")
             PGLEVELBOOST.value = false
             return
         end
-        if asuka_lib.player_exist(pid) and players.get_rank(pid) < levelPly and PGLEVELBOOST.value and menu.player_root(pid):isValid() then
+        if menu.player_root(pid):isValid() and asuka_lib.player_exist(pid) and players.get_rank(pid) < levelPly and PGLEVELBOOST.value then
             menu.trigger_command(menu.ref_by_rel_path(menu.player_root(pid), "Friendly>Give Collectibles>All"))
+            menu.trigger_commands("figurines " .. name)
         end
-        while asuka_lib.player_exist(pid) and players.get_rank(pid) < levelPly and PGLEVELBOOST.value and menu.player_root(pid):isValid() do
+        while menu.player_root(pid):isValid() and asuka_lib.player_exist(pid) and players.get_rank(pid) < levelPly and PGLEVELBOOST.value do
             if not menu.player_root(pid):isValid() then
                 break
             end
@@ -4413,11 +4414,11 @@ player_menu = function(pid)
                 break
             end
         end
-        if not asuka_lib.player_exist(pid) and PGLEVELBOOST.value and menu.player_root(pid):isValid() then
+        if menu.player_root(pid):isValid() and not asuka_lib.player_exist(pid) and PGLEVELBOOST.value then
             PGLEVELBOOST.value = false
             return
         end
-        if players.get_rank(pid) >= levelPly and PGLEVELBOOST.value and menu.player_root(pid):isValid() then
+        if menu.player_root(pid):isValid() and players.get_rank(pid) >= levelPly and PGLEVELBOOST.value then
             notify(name.." Reached "..players.get_rank(pid))
             PGLEVELBOOST.value = false
             util.yield(113)
