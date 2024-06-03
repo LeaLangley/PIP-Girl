@@ -399,6 +399,9 @@ local function thunderForMin(min)
     end
 end
 
+local streetNamePtr = memory.alloc_int()
+local crossingRoadPtr = memory.alloc_int()
+
 local function get_Street_Names(x, y, z)
     local playerPosition
     if x and y and z then
@@ -406,9 +409,6 @@ local function get_Street_Names(x, y, z)
     else
         playerPosition = players.get_position(players.user())
     end
-
-    local streetNamePtr = memory.alloc_int()
-    local crossingRoadPtr = memory.alloc_int()
 
     GET_STREET_NAME_AT_COORD(playerPosition.x, playerPosition.y, playerPosition.z, streetNamePtr, crossingRoadPtr)
     local zoneNameRaw = GET_NAME_OF_ZONE(playerPosition.x, playerPosition.y, playerPosition.z)
@@ -2665,12 +2665,11 @@ end)
 local function drawESPText(coord, Yoffset, text, scale, color)
     directx.draw_text(coord.x, coord.y + Yoffset, text, ALIGN_CENTRE, scale, color.r, color.g, color.b, 1)
 end
-
+local sx_worldToScreen = memory.alloc()
+local sy_worldToScreen = memory.alloc()
 local function worldToScreen(coords)
-    local sx = memory.alloc()
-    local sy = memory.alloc()
-    local success = GET_SCREEN_COORD_FROM_WORLD_COORD(coords.x, coords.y, coords.z, sx, sy)
-    local screenx = memory.read_float(sx) local screeny = memory.read_float(sy) --memory.free(sx) memory.free(sy)
+    local success = GET_SCREEN_COORD_FROM_WORLD_COORD(coords.x, coords.y, coords.z, sx_worldToScreen, sy_worldToScreen)
+    local screenx = memory.read_float(sx_worldToScreen) local screeny = memory.read_float(sy_worldToScreen) --memory.free(sx) memory.free(sy)
     return {x = screenx, y = screeny, success = success}
 end
 
