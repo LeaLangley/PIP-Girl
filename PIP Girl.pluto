@@ -4401,7 +4401,6 @@ player_menu = function(pid)
         end
         if menu.player_root(pid):isValid() and asuka_lib.player_exist(pid) and players.get_rank(pid) < levelPly and PGLEVELBOOST.value then
             menu.trigger_command(menu.ref_by_rel_path(menu.player_root(pid), "Friendly>Give Collectibles>All"))
-            menu.trigger_commands("figurines " .. name)
         end
         while menu.player_root(pid):isValid() and asuka_lib.player_exist(pid) and players.get_rank(pid) < levelPly and PGLEVELBOOST.value do
             if not menu.player_root(pid):isValid() then
