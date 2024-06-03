@@ -1716,15 +1716,26 @@ menu.action(Vehicle, "Teleport and Enter Asuka Tech Vehicle", {"tpenterasuka"}, 
     if asuka_lib.does_entity_exist(target_vehicle) then
         requestControl(target_vehicle)
         if not asuka_lib.is_vehicle_free_for_use(target_vehicle) then
-            SET_ENTITY_COORDS_NO_OFFSET(target_vehicle, 1057.81, -3200.08, -39.57, true, true, true)
-            local TEATV_Timeout = os.time()
-            while not asuka_lib.is_vehicle_free_for_use(target_vehicle) do
-                util.yield(666)
-                if os.time() - TEATV_Timeout > 13 then
-                    break
+            if target_vehicle == entities.get_user_personal_vehicle_as_handle() then
+                asuka_lib.delete_entity(target_vehicle)
+                while not asuka_lib.does_entity_exist(entities.get_user_personal_vehicle_as_handle()) do
+                    util.yield(666)
+                    if asuka_lib.does_entity_exist(entities.get_user_personal_vehicle_as_handle()) then
+                        break
+                    end
                 end
-                if asuka_lib.is_vehicle_free_for_use(target_vehicle) then
-                    break
+                target_vehicle = entities.get_user_personal_vehicle_as_handle()
+            else
+                SET_ENTITY_COORDS_NO_OFFSET(target_vehicle, 1057.81, -3200.08, -39.57, true, true, true)
+                local TEATV_Timeout = os.time()
+                while not asuka_lib.is_vehicle_free_for_use(target_vehicle) do
+                    util.yield(666)
+                    if os.time() - TEATV_Timeout > 13 then
+                        break
+                    end
+                    if asuka_lib.is_vehicle_free_for_use(target_vehicle) then
+                        break
+                    end
                 end
             end
         end
