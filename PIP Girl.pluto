@@ -4418,8 +4418,7 @@ player_menu = function(pid)
             end
             menu.trigger_commands("rp " .. name)
             util.yield(delayPly)
-            if not asuka_lib.player_exist(pid) then
-                PGLEVELBOOST.value = false
+            if not asuka_lib.player_exist(pid) or not menu.player_root(pid):isValid() then
                 break
             end
         end
@@ -4431,6 +4430,9 @@ player_menu = function(pid)
             notify(name.." Reached "..players.get_rank(pid))
             PGLEVELBOOST.value = false
             util.yield(113)
+            return
+        end
+        if not menu.player_root(pid):isValid() then
             return
         end
     end)
