@@ -1804,6 +1804,7 @@ menu.action(Vehicle, "Detonate Asuka Tech Vehicle", {"boomasuka"}, "", function(
         SET_VEHICLE_NEON_ENABLED(target_vehicle, 1, true)
         SET_VEHICLE_NEON_ENABLED(target_vehicle, 2, true)
         SET_VEHICLE_NEON_ENABLED(target_vehicle, 3, true)
+        TOGGLE_VEHICLE_MOD(vehicle, 22, true)
         SET_VEHICLE_XENON_LIGHT_COLOR_INDEX(target_vehicle, 8)
         util.yield(3666)
     end
@@ -1918,7 +1919,7 @@ end)
 local vehicleFavColor = 2
 
 path_vehicle_light_color = menu.slider(Vehicle, "Vehicle light color", {"favheadlights"}, "Default lights: 0 & 1 | Color lights: 2-14", 2, 14, vehicleFavColor, 1, function (new_value)
-    vehicleFavColor = new_value
+    vehicleFavColor = new_value - 2
 end)
 
 path_auto_vehicle_light_color = menu.toggle_loop(Vehicle, "Auto Vehicle Light Color",{"autocarlights"},"Automatically set your favorite vehicle color for vehicles with default lights that u drive and are mission ent.\nDefault lights: 0 & 1 | Color lights: 2-14",function()
@@ -1926,8 +1927,9 @@ path_auto_vehicle_light_color = menu.toggle_loop(Vehicle, "Auto Vehicle Light Co
     if vehicleFavColor ~= 0 then
         if asuka_lib.transition_state(true) <3 then
             local vehicle = asuka_lib.get_user_vehicle()
-            if asuka_lib.does_entity_exist(vehicle) and asuka_lib.is_vehicle_free_for_use(vehicle) and (GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 or GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 10) then
+            if asuka_lib.does_entity_exist(vehicle) and asuka_lib.is_vehicle_free_for_use(vehicle) and GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 then
                 if DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 or vehicle == entities.get_user_personal_vehicle_as_handle() then
+                    TOGGLE_VEHICLE_MOD(vehicle, 22, true)
                     SET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle, vehicleFavColor - 2)
                 end
             end
