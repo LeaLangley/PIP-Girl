@@ -1286,6 +1286,7 @@ local closestMarker = nil
 local closestDistance = math.huge
 local wasInZone = false
 local protectMissionVehicles = false
+local asuka_tech_lights = 2
 local function checkVehMod(vehicle, mod)
     if DOES_EXTRA_EXIST(vehicle, mod) and not IS_VEHICLE_EXTRA_TURNED_ON(vehicle, mod) then
         return true
@@ -1369,7 +1370,7 @@ local function buff_asuka_tech(vehicle)
     end
 
     SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
-    SET_VEHICLE_LIGHTS(vehicle, 2)
+    SET_VEHICLE_LIGHTS(vehicle, asuka_tech_lights)
     SET_VEHICLE_INTERIORLIGHT(vehicle, false)
     SET_HELI_TAIL_BOOM_CAN_BREAK_OFF(vehicle, false)
     SET_VEHICLE_CAN_ENGINE_MISSFIRE(vehicle, false)
@@ -1693,6 +1694,21 @@ path_asuka_tech_dirt = menu.list_select(Asuka_Tech, "Asuka Tech Vehicle Dirt", {
 }, 1, function(value, menu_name, prev_value, click_type)
     asuka_tech_dirt = value
     --notify("Asuka Tech Vehicle Dirt: "..menu_name)
+end)
+
+path_asuka_tech_lights = menu.list_select(Asuka_Tech, "Asuka Tech Vehicle lights", {""}, "", {
+    {0, "Vanilla"},
+    {1, "Always off"},
+    {2, "Always on"},
+}, 2, function(value, menu_name, prev_value, click_type)
+    asuka_tech_lights = value
+    local target_vehicle = asuka_lib.get_user_vehicle()
+    if asuka_lib.does_entity_exist(current_asuka_tech_vehicle) then
+        target_vehicle = current_asuka_tech_vehicle
+    end
+    if asuka_lib.does_entity_exist(target_vehicle) then
+        SET_VEHICLE_LIGHTS(target_vehicle, asuka_tech_lights)
+    end
 end)
 
 menu.action(Vehicle, "Enter Asuka Tech Vehicle", {"enterasuka"}, "Enter the current Asuka Tech Vehicle", function()
@@ -4857,8 +4873,9 @@ local data_cfg = {
     store_asuka_tech_hp_bar = path_asuka_tech_hp_bar,
     store_asuka_tech_info_overlay = path_asuka_tech_info_overlay,
     store_asuka_tech_dirt = path_asuka_tech_dirt,
+    store_asuka_tech_lights = path_asuka_tech_lights,
     store_vehicle_light_rhythm_sos = path_vehicle_light_rhythm_sos,
-    path_vehicle_light_rhythm_rapid_slowdown = path_vehicle_light_rhythm_rapid_slowdown,
+    store_vehicle_light_rhythm_rapid_slowdown = path_vehicle_light_rhythm_rapid_slowdown,
     store_vehicle_light_color = path_vehicle_light_color,
     store_auto_vehicle_light_color = path_auto_vehicle_light_color,
     store_asukas_repair_stops = path_asukas_repair_stops,
