@@ -1926,10 +1926,9 @@ path_auto_vehicle_light_color = menu.toggle_loop(Vehicle, "Auto Vehicle Light Co
     if vehicleFavColor ~= 0 then
         if asuka_lib.transition_state(true) <3 then
             local vehicle = asuka_lib.get_user_vehicle()
-            if vehicle and asuka_lib.is_user_driving_vehicle(vehicle) and GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 then
+            if asuka_lib.does_entity_exist(vehicle) and GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 then
                 if DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 or vehicle == entities.get_user_personal_vehicle_as_handle() then
-                    vehicleLightsSet = vehicle
-                    menu.trigger_commands("headlights "..vehicleFavColor)
+                    SET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle, vehicleFavColor - 2)
                 end
             end
             util.yield(3666)
