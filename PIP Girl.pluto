@@ -1742,6 +1742,7 @@ menu.action(Vehicle, "Teleport and Enter Asuka Tech Vehicle", {"tpenterasuka"}, 
         if not asuka_lib.is_vehicle_free_for_use(target_vehicle) then
             if target_vehicle == entities.get_user_personal_vehicle_as_handle() then
                 asuka_lib.delete_entity(target_vehicle)
+                util.yield(113)
                 while not asuka_lib.does_entity_exist(entities.get_user_personal_vehicle_as_handle()) do
                     util.yield(666)
                     if asuka_lib.does_entity_exist(entities.get_user_personal_vehicle_as_handle()) then
