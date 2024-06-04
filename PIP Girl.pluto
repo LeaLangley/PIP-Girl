@@ -3777,7 +3777,7 @@ local smartScriptHostMode = 1
 path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
     if asuka_lib.transition_state(true) == 1 then
         if not IS_CUTSCENE_PLAYING() then
-            if (players.user() == players.get_host() or (players.user() == players.get_script_host() and (not is_trusted(players.get_host()) and not isModder(players.get_host())))) and smartScriptHostMode ~= 1 then
+            --[[if (players.user() == players.get_host() or (players.user() == players.get_script_host() and (not is_trusted(players.get_host()) and not isModder(players.get_host())))) and smartScriptHostMode ~= 1 then
                 local playerList = {players.user()}
                 if smartScriptHostMode == 2 then
                     playerList = players.list_only(true, true, false, true)
@@ -3854,27 +3854,30 @@ path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"
                     end
                 end
                 if not is_trusted(players.get_script_host()) then
-                    if not players.are_stats_ready(players.get_script_host()) and isModder(players.get_script_host()) then
+                    if not players.are_stats_ready(players.get_script_host()) and not (is_trusted(players.get_host()) and isModder(players.get_script_host())) then
                         get_ScriptHost()
                     end
-                    if timeoutIgnore[players.get_script_host()] then
-                        if timeoutIgnore[pid] and timeoutIgnore[pid] > os.time() then
-                            get_ScriptHost()
-                        end
-                    end
+                    --if timeoutIgnore[players.get_script_host()] then
+                    --    if timeoutIgnore[pid] and timeoutIgnore[pid] > os.time() then
+                    --        get_ScriptHost()
+                    --    end
+                    --end
                 end
                 ::skipSSH::
-            else
-                if asuka_lib.is_loading(players.user()) then
-                    util.yield(20666)
-                    if asuka_lib.is_loading(players.user()) then
-                        if players.user() ~= players.get_script_host() then
-                            get_ScriptHost()
-                            notify("You are loading too long.")
-                        end
-                    else
-                        util.yield(13666)
+                if not is_trusted(players.get_script_host()) then
+                    if not players.are_stats_ready(players.get_script_host()) and not (is_trusted(players.get_host()) and isModder(players.get_script_host())) then
+                        get_ScriptHost()
                     end
+                end]]--
+            if asuka_lib.is_loading(players.user()) then
+                util.yield(20666)
+                if asuka_lib.is_loading(players.user()) then
+                    if players.user() ~= players.get_script_host() then
+                        get_ScriptHost()
+                        notify("You are loading too long.")
+                    end
+                else
+                    util.yield(13666)
                 end
             end
         else
@@ -3894,7 +3897,7 @@ path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"
     util.yield(666)
 end)
 
-path_smart_script_host_mode = menu.list_select(Session, "Smart Script Host Help", {""}, "uses in the option above, currently not functional", {
+path_smart_script_host_mode = menu.list_select(Session, "Smart Script Host Help (!)", {""}, "Smart script host only helps yourself, currently any other mode is not supported", {
     {1, "Myself"},
     {2, "Friendly"},
     {3, "Everyone"},
