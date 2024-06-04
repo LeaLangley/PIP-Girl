@@ -3875,6 +3875,7 @@ path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"
                     if players.user() ~= players.get_script_host() then
                         get_ScriptHost()
                         notify("You are loading too long.")
+                        util.yield(13666)
                     end
                 else
                     util.yield(13666)
