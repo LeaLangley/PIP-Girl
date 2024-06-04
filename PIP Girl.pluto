@@ -1299,7 +1299,12 @@ local function buff_asuka_tech(vehicle)
     menu.trigger_commands("smoothflight on")
     if protectMissionVehicles and not players.is_in_interior(players.user()) and not players.is_using_rc_vehicle(players.user()) then
         if IS_ENTITY_A_MISSION_ENTITY(vehicle) and DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 then
-            notify("Installed Lockon Jammer on: "..util.get_label_text(util.reverse_joaat(entities.get_model_hash(vehicle))))
+            local vehicle_name = util.reverse_joaat(entities.get_model_hash(vehicle))
+            local vehicle_label = util.get_label_text(vehicle_name)
+            if vehicle_label ~= "NULL" then
+                vehicle_name = vehicle_label
+            end
+            notify("Installed Lockon Jammer on: "..vehicle_name)
             SET_VEHICLE_ALLOW_HOMING_MISSLE_LOCKON(vehicle, false, false)
             SET_VEHICLE_ALLOW_HOMING_MISSLE_LOCKON_SYNCED(vehicle, false, false)
         end
@@ -1669,7 +1674,12 @@ path_asuka_tech_info_overlay = menu.toggle_loop(Asuka_Tech, "Asuka Tech Info Ove
         if asuka_lib.does_entity_exist(target_vehicle) then
             local enginePercent = GET_VEHICLE_ENGINE_HEALTH(target_vehicle) / 10
             local bodyPercent = GET_VEHICLE_BODY_HEALTH(target_vehicle) / 10
-            util.draw_debug_text(util.get_label_text(util.reverse_joaat(entities.get_model_hash(target_vehicle))).."\nEngine Health: "..string.format("%.1f%%", enginePercent).."\nBody Health: "..string.format("%.1f%%", bodyPercent))
+            local vehicle_name = util.reverse_joaat(entities.get_model_hash(target_vehicle))
+            local vehicle_label = util.get_label_text(vehicle_name)
+            if vehicle_label ~= "NULL" then
+                vehicle_name = vehicle_label
+            end
+            util.draw_debug_text(vehicle_name.."\nEngine Health: "..string.format("%.1f%%", enginePercent).."\nBody Health: "..string.format("%.1f%%", bodyPercent))
         end
     else
         util.yield(13666)
@@ -2084,7 +2094,12 @@ path_heli_sparrow_handling = menu.toggle_loop(Vehicle, "Heli Sparrow Handling",{
                         menu.trigger_commands("vhpontoonverticaldampingcoefficientdown 600.00000")
                         menu.trigger_commands("vhkeelspheresize 0.30000")
                         menu.trigger_commands("deploychaff")
-                        notify("Sparrow Handling Applyed on: "..util.get_label_text(util.reverse_joaat(entities.get_model_hash(vehicle))))
+                        local vehicle_name = util.reverse_joaat(entities.get_model_hash(vehicle))
+                        local vehicle_label = util.get_label_text(vehicle_name)
+                        if vehicle_label ~= "NULL" then
+                            vehicle_name = vehicle_label
+                        end
+                        notify("Sparrow Handling Applyed on: "..vehicle_name)
                         util.yield(3666)
                     end
                 end
