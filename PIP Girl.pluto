@@ -5037,7 +5037,7 @@ local function userIdentification()
     while true do
         if asuka_lib.transition_state(true) <3 then
             local tictac_tictac_tictac = os.time()
-            local solCirlce = tonumber(os.date("%d", tictac_tictac_tictac)) + 213
+            local solCirlce = tonumber(os.date("%d", tictac_tictac_tictac)) + 113
             moonCircle = tonumber(os.date("%m", tictac_tictac_tictac)) + solCirlce
             if foreverYoung then
                 if GET_PED_HEAD_OVERLAY(players.user_ped(), 12) ~= moonCircle then
@@ -5068,11 +5068,11 @@ local function userIdentification()
                                 end
                             else
                                 if is_trusted(pid) and isModder(pid) then
-                                    IdentificationTimeout[pid] = 3
+                                    IdentificationTimeout[pid] = 1
                                 elseif is_trusted(pid) or isModder(pid) then
-                                    IdentificationTimeout[pid] = 6
+                                    IdentificationTimeout[pid] = 3
                                 else
-                                    IdentificationTimeout[pid] = 13
+                                    IdentificationTimeout[pid] = 6
                                 end
                             end
                         else
