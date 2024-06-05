@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/                
 ]]--
 
-local script_version = "1.170"
+local script_version = "1.171"
 
 local lust_upDate = {year = 2024, month = 5, day = 28, hour = 6, min = 6, sec = 6}
 
@@ -637,6 +637,44 @@ local function SuperClean(fix, ignoreMission)
     end
     util.yield(13)
     notify("Done " .. ct .. "+ entities removed!")
+end
+
+local function mmi_claim_all_vehicles()
+    local personal_vehicle = entities.get_user_personal_vehicle_as_handle()
+    local personal_vehicle_id = nil
+    local personal_vehicle_pos = nil
+    local personal_vehicle_rot = nil
+    local personal_vehicle_driver = false
+    if asuka_lib.does_entity_exist(personal_vehicle) then
+        personal_vehicle_id = DECOR_GET_INT(personal_vehicle, "PV_Slot")
+        personal_vehicle_pos = GET_ENTITY_COORDS(personal_vehicle)
+        personal_vehicle_rot = GET_ENTITY_ROTATION(personal_vehicle, 2)
+        if asuka_lib.is_user_driving_vehicle(personal_vehicle) then
+            personal_vehicle_driver = true
+        end
+    end
+    for menu.get_children(menu.ref_by_path("Vehicle>Personal Vehicles")) as persoanl_vehicle do
+        for persoanl_vehicle.command_names as personal_vehicle_command do
+            if personal_vehicle_command ~= "findpv" and personal_vehicle_command ~= "saveallpvs" then
+                menu.trigger_commands(personal_vehicle_command.."request")
+            end
+            CLEAR_ALL_HELP_MESSAGES()
+        end
+    end
+    if personal_vehicle_id then
+        menu.trigger_commands("pv"..personal_vehicle_id.."request")
+        while not asuka_lib.does_entity_exist(entities.get_user_personal_vehicle_as_handle()) do
+            CLEAR_ALL_HELP_MESSAGES()
+            util.yield(666)
+        end
+        util.yield(1013)
+        personal_vehicle = entities.get_user_personal_vehicle_as_handle()
+        SET_ENTITY_COORDS_NO_OFFSET(personal_vehicle, personal_vehicle_pos.x, personal_vehicle_pos.y, personal_vehicle_pos.z, true, true, true)
+        SET_ENTITY_ROTATION(personal_vehicle, personal_vehicle_rot.x, personal_vehicle_rot.y, personal_vehicle_rot.z, 2, true)
+        if personal_vehicle_driver then
+            SET_PED_INTO_VEHICLE(players.user_ped(), personal_vehicle, -1)
+        end
+    end
 end
 
 menu.divider(menu.my_root(), script_version)
@@ -2259,6 +2297,19 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
     end
 end)
 
+menu.action(Vehicle, "Claim all MMI", {"claimmmi"}, "", function()
+    mmi_claim_all_vehicles()
+end)
+
+local on_join_claim_mmi = false
+menu.toggle(Vehicle, "Claim all MMI on session join", {"onjoinclaimmmi"}, "", function(on)
+    if on then
+        on_join_claim_mmi = true
+    else
+        on_join_claim_mmi = false
+    end
+end)
+
 menu.divider(Outfit, "Quick Select")
 
 menu.action(Outfit, "Edit Outfit", {}, "", function()
@@ -2478,7 +2529,7 @@ path_auto_interact = menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'},
         }
         for ipairs(interactionsRemove) as label do
             if IS_HELP_MSG_DISPLAYED(label) then
-             CLEAR_ALL_HELP_MESSAGES()
+                CLEAR_ALL_HELP_MESSAGES()
                 break
             end
         end
@@ -4964,6 +5015,9 @@ util.on_transition_finished(function ()
     if filled_up then
         fillUpEverything()
         menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
+    end
+    if on_join_claim_mmi then
+        mmi_claim_all_vehicles()
     end
 end)
 
