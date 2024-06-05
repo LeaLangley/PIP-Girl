@@ -1597,18 +1597,18 @@ path_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly
                         end
                         util.yield(113)
                         asukaTechBlip = ADD_BLIP_FOR_ENTITY(current_asuka_tech_vehicle)
-                     SET_BLIP_DISPLAY(asukaTechBlip, 2)
-                     SET_BLIP_SCALE(asukaTechBlip, 0.8)
-                     BEGIN_TEXT_COMMAND_SET_BLIP_NAME("STRING")
-                     ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Asuka Tech Vehicle')
-                     END_TEXT_COMMAND_SET_BLIP_NAME(asukaTechBlip)
-                     SET_BLIP_PRIORITY(asukaTechBlip, 13)
+                        SET_BLIP_DISPLAY(asukaTechBlip, 2)
+                        SET_BLIP_SCALE(asukaTechBlip, 0.8)
+                        BEGIN_TEXT_COMMAND_SET_BLIP_NAME("STRING")
+                        ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME('Asuka Tech Vehicle')
+                        END_TEXT_COMMAND_SET_BLIP_NAME(asukaTechBlip)
+                        SET_BLIP_PRIORITY(asukaTechBlip, 13)
                     end
                     if GET_BLIP_SPRITE(asukaTechBlip) ~= 641 then
-                     SET_BLIP_SPRITE(asukaTechBlip, 641)
+                        SET_BLIP_SPRITE(asukaTechBlip, 641)
                     end
                     if GET_BLIP_COLOUR(asukaTechBlip) ~= 76 then
-                     SET_BLIP_COLOUR(asukaTechBlip, 76)
+                        SET_BLIP_COLOUR(asukaTechBlip, 76)
                     end
                     local isDriving = nil
                     if isInVehicleAT then
@@ -1625,16 +1625,16 @@ path_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly
                             SET_VEHICLE_SEARCHLIGHT(vehicle, true, true)
                         end
                         if asukaTechBlip and DOES_BLIP_EXIST(asukaTechBlip) then
-                         SET_BLIP_PRIORITY(asukaTechBlip, 25)
-                         SET_BLIP_SCALE(asukaTechBlip, 0.5)
+                            SET_BLIP_PRIORITY(asukaTechBlip, 25)
+                            SET_BLIP_SCALE(asukaTechBlip, 0.5)
                         end
                     elseif not isDriving and isInVehicleAT then
                         isInVehicleAT = false
                         util.yield(666)
                         --SET_VEHICLE_DOORS_SHUT(vehicle, false)
                         if asukaTechBlip and DOES_BLIP_EXIST(asukaTechBlip) then
-                         SET_BLIP_PRIORITY(asukaTechBlip, 13)
-                         SET_BLIP_SCALE(asukaTechBlip, 0.7)
+                            SET_BLIP_PRIORITY(asukaTechBlip, 13)
+                            SET_BLIP_SCALE(asukaTechBlip, 0.7)
                         end
                     end
                 else
@@ -2231,7 +2231,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
         if not IS_PED_A_PLAYER(driver) and driver ~= 0 then
             goto continue_loop
         end
-        if DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 then
+        if (DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 or not IS_ENTITY_A_MISSION_ENTITY(vehicle)) then
             goto continue_loop
         end
         local vehiclePosition = GET_ENTITY_COORDS(vehicle)
