@@ -3573,7 +3573,7 @@ menu.action(SessionMisc, "Cleanup \"Friend's\" Group", {"cleanupfriends"}, "remo
         end
         util.yield(666)
         menu.trigger_commands("createfriendsgroup")
-        menu.focus(menu.ref_by_path("Online>Player History>Noted Players>Friend's"))
+        menu.focus(menu.ref_by_path("Online>Player History>Noted Players"))
     else
         notify("You dont have a \"Friend's\" Group. so we created one for you.")
         menu.trigger_commands("createfriendsgroup")
@@ -5010,15 +5010,15 @@ util.on_transition_finished(function ()
         SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
     end
     asuka_lib.save_config(store_dir..'settings.json', data_cfg, true)
+    if on_join_claim_mmi then
+        mmi_claim_all_vehicles()
+    end
     while asuka_lib.transition_state(true) ~= 1 do
         util.yield(666)
     end
     if filled_up then
         fillUpEverything()
         menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
-    end
-    if on_join_claim_mmi then
-        mmi_claim_all_vehicles()
     end
 end)
 
