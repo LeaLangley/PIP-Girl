@@ -614,7 +614,7 @@ local function SuperClean(fix, ignoreMission)
     util.yield(13)
     for pairs(entities.get_all_objects_as_handles()) as ent do
         if asuka_lib.does_entity_exist(ent) then
-            if not fix or (fix and GET_ENTITY_TYPE(ent) and not string.contains(util.reverse_joaat(entities.get_model_hash(ent)), "yacht")) then
+            if not fix or (fix and GET_ENTITY_TYPE(ent) and not (string.contains(util.reverse_joaat(entities.get_model_hash(ent)), "yacht") and (IS_ENTITY_IN_WATER(ent) or IS_ENTITY_A_MISSION_ENTITY(ent)))) then
                 if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
                     entities.delete(ent)
                     ct += 1
