@@ -10,7 +10,7 @@ open powershell , paste in the code , it will download into stands scripts folde
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/PIP%20Girl.pluto" -OutFile "$env:APPDATA\Stand\Lua Scripts\PIP Girl.pluto"; If ([System.IO.File]::Exists("$env:APPDATA\Stand\Lua Scripts\PIP Girl.pluto")) {"`r`nInstalled Successfully`r`n"} Else {"`r`nInstall Failed, Try Installing Manually`r`n"}
 ```
 
-# [Download!](https://github.com/LeaLangley/PIP-Girl/releases/download/LatestAutoInstall/PIP-Girl.pluto)
+# [Or Download as file!](https://github.com/LeaLangley/PIP-Girl/releases/download/LatestAutoInstall/PIP-Girl.pluto)
 
 ## Licensing
 
