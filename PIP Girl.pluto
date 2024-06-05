@@ -2302,7 +2302,7 @@ menu.action(Vehicle, "Claim all MMI", {"claimmmi"}, "", function()
 end)
 
 local on_join_claim_mmi = false
-menu.toggle(Vehicle, "Claim all MMI on session join", {"onjoinclaimmmi"}, "", function(on)
+path_claim_all_mmi_on_join = menu.toggle(Vehicle, "Claim all MMI on session join", {"onjoinclaimmmi"}, "", function(on)
     if on then
         on_join_claim_mmi = true
     else
@@ -4938,6 +4938,7 @@ local data_cfg = {
     store_asukas_repair_stops = path_asukas_repair_stops,
     store_heli_sparrow_handling = path_heli_sparrow_handling,
     store_easy_opmk2ud_handling = path_easy_opmk2ud_handling,
+    store_claim_all_mmi_on_join = path_claim_all_mmi_on_join,
     --Outfit
     store_vampire_young = path_vampire_young,
     store_smart_outfit_lock = path_smart_outfit_lock,
