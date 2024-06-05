@@ -4316,8 +4316,6 @@ local function add_in_blocking(pid)
         if name ~= players.get_name(players.user()) and not asuka_lib.has_detection(pid, "Blacklist") then
             players.add_detection(pid, "Blacklist", TOAST_DEFAULT, 100)
             menu.trigger_commands("historynote ".. name .." Blacklist")
-            util.yield(420)
-            util.create_thread(startupConfig)
         end
     end
 end
