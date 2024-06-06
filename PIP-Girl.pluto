@@ -5155,7 +5155,6 @@ local function userIdentification()
         util.yield(25666)
     end
 end
-
 if os.time() - os.time(lust_upDate) >= 6 * 24 * 60 * 60 then
     menu.trigger_commands("asukasshrine on")
 end
@@ -5202,7 +5201,6 @@ end
 --    menu.trigger_commands("antiadmin on")
 --    menu.set_state(menu.ref_by_path("Online>Session>Stand User Identification>For Strangers"), "Off")
 --end
-
 asuka_lib.asuka_booty = false
 asuka_lib.load_and_apply_config(store_dir..'settings.json', data_cfg)
 util.create_thread(startupCheck)
