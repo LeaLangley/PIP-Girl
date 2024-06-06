@@ -985,13 +985,16 @@ local vehicle_money_hashish = {
     1745876935, --underwater money xD
     -1249748547, --Smugler money
 }
-path_collect_money = menu.toggle_loop(PIP_Girl, "Collect all NPC money", {}, "Collect all NPC money.", function()
+path_collect_money = menu.toggle_loop(PIP_Girl, "Collect all local money pickups", {}, "Collect all NPC money.", function()
     if asuka_lib.transition_state(true) == 1 and GET_ENTITY_HEALTH(players.user_ped()) ~= 0 then
         local pos = players.get_position(players.user())
         for entities.get_all_pickups_as_handles() as pickup do
             if not HAS_PICKUP_BEEN_COLLECTED(pickup) and not IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
                 local pickupHash = entities.get_model_hash(pickup)
                 if pickupHash == -1249748547 and entities.get_owner(pickup) ~= players.user() then
+                    goto we_aint_need_that_pickup
+                end
+                if pickupHash == -295781225 and NETWORK_GET_NETWORK_ID_FROM_ENTITY(pickup) ~= 0 then
                     goto we_aint_need_that_pickup
                 end
                 if asuka_lib.is_user_inside_vehicle(true) then
