@@ -502,6 +502,8 @@ local function StrategicKick(pid)
                         menu.trigger_commands("kick " .. name)
                     end
                 end
+            else
+                menu.trigger_commands("hellaa " .. name .. " on")
             end
         end
     end
