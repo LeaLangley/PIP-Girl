@@ -480,7 +480,7 @@ local function set_as_illusion(pid, tbl, state)
 end
 
 local function StrategicKick(pid)
-    if asuka_lib.player_exist(pid) and pid ~= players.user() then
+    if asuka_lib.player_exist(pid) and pid ~= players.user() and menu.player_root(pid):isValid() then
         local name = players.get_name(pid)
         if name ~= players.get_name(players.user()) then
             menu.trigger_commands("ghostplayer " .. name)
