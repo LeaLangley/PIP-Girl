@@ -484,7 +484,6 @@ local function StrategicKick(pid)
         local name = players.get_name(pid)
         if name ~= players.get_name(players.user()) then
             menu.trigger_commands("ghostplayer " .. name)
-            menu.trigger_commands("ignore " .. name .. " on")
             menu.trigger_commands("blocksync " .. name .. " on")
             if players.is_marked_as_attacker(pid) or is_trusted(players.get_host()) or not isModder(players.get_host()) then
                 if asuka_lib.transition_state(true) ~= 1 then
