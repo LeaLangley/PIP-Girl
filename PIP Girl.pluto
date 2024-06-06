@@ -3992,15 +3992,15 @@ path_smart_script_host_mode = menu.list_select(smart_script_host_list, "Smart Sc
     smartScriptHostMode = value
 end)
 
-path_ssh_detection_time = menu.slider(smart_script_host_list, "Stuck Detection Time", {"pgsdk"}, "in seconds", 15, 120, ssh_stuck_detection_time, 1, function(val)
+path_ssh_detection_time = menu.slider(smart_script_host_list, "Stuck Detection Time", {"pgsdk"}, "in seconds", 13, 120, ssh_stuck_detection_time, 1, function(val)
     ssh_stuck_detection_time = val
 end)
 
-path_ssh_detection_time_friendly = menu.slider(smart_script_host_list, "Friendly Stuck Detection Time", {"pgfsdt"}, "in seconds", 15, 120, ssh_stuck_detection_time_friendly, 1, function(val)
+path_ssh_detection_time_friendly = menu.slider(smart_script_host_list, "Friendly Stuck Detection Time", {"pgfsdt"}, "in seconds", 13, 120, ssh_stuck_detection_time_friendly, 1, function(val)
     ssh_stuck_detection_time_friendly = val
 end)
 
-path_ssh_unstuck_timeout = menu.slider(smart_script_host_list, "Unstuck Timeout", {"pgust"}, "in seconds", 15, 60, ssh_unstuck_timeout, 1, function(val)
+path_ssh_unstuck_timeout = menu.slider(smart_script_host_list, "Unstuck Timeout", {"pgust"}, "in seconds", 13, 60, ssh_unstuck_timeout, 1, function(val)
     ssh_unstuck_timeout = val
 end)
 
