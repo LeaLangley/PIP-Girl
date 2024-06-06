@@ -19,7 +19,7 @@ local auto_update_config = {
     source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/PIP%20Girl.pluto",
     script_relpath=SCRIPT_RELPATH,
     verify_file_begins_with="--",
-    auto_restart=false,
+    --auto_restart=false,
     check_interval=0,
     restart_delay=666,
     dependencies={
@@ -5073,6 +5073,7 @@ util.on_transition_finished(function ()
     end
     asuka_lib.save_config(store_dir..'settings.json', data_cfg, true)
     if on_join_claim_mmi then
+        util.yield(666)
         mmi_claim_all_vehicles()
     end
     while asuka_lib.transition_state(true) ~= 1 do
@@ -5177,30 +5178,38 @@ if not is_player_in_blacklist(rockstarIsBad) then
     end
     menu.hyperlink(menu.my_root(), "PIP Girl Discord", rainySky("aHR0cHM6Ly9kaXNjb3JkLmdnL0s2c0RVYTJhcWc="), "The PIP Girl Discord.")
 end
-if not filesystem.exists(store_dir..'/version.txt') then
-    asuka_lib.write_to_file(store_dir..'version.txt', os.time() - 13)
-end
-local stored_pip_version = asuka_lib.read_from_file(store_dir..'version.txt')
-if stored_pip_version == nil or stored_pip_version == "" or tonumber(stored_pip_version) == nil then
-    io.remove(store_dir..'version.txt')
-    util.yield(666)
-    stored_pip_version = os.time()
-    asuka_lib.write_to_file(store_dir..'version.txt', os.time())
-end
-if os.time() - tonumber(stored_pip_version) > 13 then
-    asuka_lib.asuka_booty = true
-    asuka_lib.write_to_file(store_dir..'version.txt', os.time())
-    util.yield(420)
-    util.restart_script()
-else
-    asuka_lib.asuka_booty = false
-    asuka_lib.load_and_apply_config(store_dir..'settings.json', data_cfg)
-    util.create_thread(startupCheck)
-    util.create_thread(startupConfig)
-    util.create_thread(crashlistConfig)
-    util.create_thread(userIdentification)
-    menu.trigger_commands("antiadmin on")
-    menu.set_state(menu.ref_by_path("Online>Session>Stand User Identification>For Strangers"), "Off")
-end
+--if not filesystem.exists(store_dir..'/version.txt') then
+--    asuka_lib.write_to_file(store_dir..'version.txt', os.time() - 13)
+--end
+--local stored_pip_version = asuka_lib.read_from_file(store_dir..'version.txt')
+--if stored_pip_version == nil or stored_pip_version == "" or tonumber(stored_pip_version) == nil then
+--    io.remove(store_dir..'version.txt')
+--    util.yield(666)
+--    stored_pip_version = os.time()
+--    asuka_lib.write_to_file(store_dir..'version.txt', os.time())
+--end
+--if os.time() - tonumber(stored_pip_version) > 13 then
+--    asuka_lib.asuka_booty = true
+--    asuka_lib.write_to_file(store_dir..'version.txt', os.time())
+--    util.yield(420)
+--    util.restart_script()
+--else
+--    asuka_lib.asuka_booty = false
+--    asuka_lib.load_and_apply_config(store_dir..'settings.json', data_cfg)
+--    util.create_thread(startupCheck)
+--    util.create_thread(startupConfig)
+--    util.create_thread(crashlistConfig)
+--    util.create_thread(userIdentification)
+--    menu.trigger_commands("antiadmin on")
+--    menu.set_state(menu.ref_by_path("Online>Session>Stand User Identification>For Strangers"), "Off")
+--end
 
+asuka_lib.asuka_booty = false
+asuka_lib.load_and_apply_config(store_dir..'settings.json', data_cfg)
+util.create_thread(startupCheck)
+util.create_thread(startupConfig)
+util.create_thread(crashlistConfig)
+util.create_thread(userIdentification)
+menu.trigger_commands("antiadmin on")
+menu.set_state(menu.ref_by_path("Online>Session>Stand User Identification>For Strangers"), "Off")
 util.keep_running()
