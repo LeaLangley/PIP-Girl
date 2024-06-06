@@ -586,7 +586,7 @@ local function SuperClean(fix, ignoreMission)
             local driver = GET_PED_IN_VEHICLE_SEAT(ent, -1)
             if not IS_PED_A_PLAYER(driver) then
                 if asuka_lib.does_entity_exist(ent) then
-                    if not fix or (fix and GET_ENTITY_TYPE(ent)) then
+                    if not fix or (fix and NETWORK_GET_NETWORK_ID_FROM_ENTITY(ent) ~= 0) then
                         if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
                             entities.delete(ent)
                             ct += 1
@@ -601,7 +601,7 @@ local function SuperClean(fix, ignoreMission)
     for pairs(entities.get_all_peds_as_handles()) as ent do
         if not IS_PED_A_PLAYER(ent) then
             if asuka_lib.does_entity_exist(ent) then
-                if not fix or (fix and GET_ENTITY_TYPE(ent)) then
+                if not fix or (fix and NETWORK_GET_NETWORK_ID_FROM_ENTITY(ent) ~= 0) then
                     if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
                         entities.delete(ent)
                         ct += 1
@@ -614,7 +614,7 @@ local function SuperClean(fix, ignoreMission)
     util.yield(13)
     for pairs(entities.get_all_objects_as_handles()) as ent do
         if asuka_lib.does_entity_exist(ent) then
-            if not fix or (fix and GET_ENTITY_TYPE(ent) and not (string.contains(util.reverse_joaat(entities.get_model_hash(ent)), "yacht") and (IS_ENTITY_IN_WATER(ent) or IS_ENTITY_A_MISSION_ENTITY(ent)))) then
+            if not fix or (fix and NETWORK_GET_NETWORK_ID_FROM_ENTITY(ent) ~= 0) then
                 if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
                     entities.delete(ent)
                     ct += 1
@@ -626,7 +626,7 @@ local function SuperClean(fix, ignoreMission)
     util.yield(13)
     for pairs(entities.get_all_pickups_as_handles()) as ent do
         if asuka_lib.does_entity_exist(ent) then
-            if not fix or (fix and GET_ENTITY_TYPE(ent)) then
+            if not fix or (fix and NETWORK_GET_NETWORK_ID_FROM_ENTITY(ent) ~= 0) then
                 if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
                     entities.delete(ent)
                     ct += 1
@@ -2976,6 +2976,7 @@ local function findAnewHome()
     end
     if asuka_lib.transition_state(true) > 2 and asuka_lib.session_type() ~= "Singleplayer" then
         menu.trigger_commands("unstuck")
+        util.yield(666)
         local findAnewHomeTimeOut = os.time()
         while asuka_lib.transition_state(true) > 2 do
             if os.time() - findAnewHomeTimeOut > 13 then
@@ -2991,7 +2992,7 @@ local function findAnewHome()
     end
     util.yield(1666)
     menu.trigger_commands("go public")
-    while asuka_lib.transition_state(true) ~= 3 or asuka_lib.session_type() == "Singleplayer" do
+    while asuka_lib.session_type() ~= "Public" or asuka_lib.session_type() == "Singleplayer" do
         util.yield(13)
     end
     util.yield(666)
