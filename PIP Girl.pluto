@@ -65,7 +65,7 @@ util.require_natives("3095a", "g")
 local current_gta_version = tonumber(GET_ONLINE_VERSION())
 local supported_gta_version = 1.68
 
-resources_dir = filesystem.resources_dir() .. '/1 PIP Girl/'
+resources_dir = filesystem.resources_dir() .. '/PIP Girl/'
 store_dir = filesystem.store_dir() .. '/PIP Girl/'
 logo = directx.create_texture(resources_dir .. 'logo.png')
 if SCRIPT_MANUAL_START or SCRIPT_SILENT_START then
