@@ -224,18 +224,20 @@ end --thanks to galactys
 local ceo_color = -1
 local function check_CEO_Color()
     if ceo_color ~= -1 then
-        if asuka_lib.transition_state(true) == 1 and players.user() == players.get_script_host() and NETWORK_IS_PLAYER_ACTIVE(players.user()) then
+        if asuka_lib.transition_state(true) == 1 and NETWORK_IS_PLAYER_ACTIVE(players.user()) then
             if ceo_color ~= players.get_org_colour(players.user()) then
                 local fallback_color = 14
                 for players.list() as pid do
                     if players.get_boss(pid) ~= -1 then
                         if pid ~= players.user() then
-                            local pidorgColor = players.get_org_colour(pid)
-                            if pidorgColor == ceo_color and not isModder(pid) and not is_trusted(pid) then
-                                if fallback_color == ceo_color then
-                                    fallback_color = fallback_color - 1
+                            if players.user() == players.get_script_host() then
+                                local pidorgColor = players.get_org_colour(pid)
+                                if pidorgColor == ceo_color and not isModder(pid) and not is_trusted(pid) then
+                                    if fallback_color == ceo_color then
+                                        fallback_color = fallback_color - 1
+                                    end
+                                    memory.write_int(orgColor(pid), fallback_color)
                                 end
-                                memory.write_int(orgColor(pid), fallback_color)
                             end
                         else
                             memory.write_int(orgColor(players.user()), ceo_color)
@@ -816,64 +818,63 @@ path_auto_org = menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "
                     end
                     util.yield(6666)
                 end
-                local CEOLabels = {
-                    "HIP_HELP_BBOSS",
-                    "HIP_HELP_BBOSS2",
-                    "HPBOARD_REG",
-                    "HPBOARD_REGB",
-                    "HT_NOT_BOSS",
-                    "HUB_PC_BLCK",
-                    "NHPG_HELP_BBOSS",
-                    "OFF_COMP_REG",
-                    "TRUCK_PC_BLCK",
-                    "TUN_HELP_BBOSS",
-                    "BUNK_PC_BLCK",
-                    "CH_FINALE_REG",
-                    "CH_PREP_REG",
-                    "CH_SETUP_REG",
-                    "FHQ_PC_BLCK",
-                    "HANG_PC_BLCK",
-                    "HFBOARD_REG",
-                    "HIBOARD_REG",
-                    "HIBOARD_REGB",
-                    "MP_OFF_LAP_1",
-                    "MP_OFF_LAP_PC",
-                    "OFF_COMP_REG",
-                    "ARC_PC_BLCK",
-                    "ARC_HT_0",
-                    "ARC_HT_0B",
-                    "ACID_SLL_HLP2",
-                    "HRBOARD_REG",
-                    "HRBOARD_REGB",
-                }
-                for _, label in ipairs(CEOLabels) do
-                    if IS_HELP_MSG_DISPLAYED(label) then
-                        organization_control("CEO")
-                        util.yield(1666)
-                    end
-                end
-                local MCLabels = {
-                    "CLBHBKRREG",
-                    "ARC_HT_1",
-                    "ARC_HT_1B",
-                }
-                for _, label in ipairs(MCLabels) do
-                    if IS_HELP_MSG_DISPLAYED(label) then
-                        organization_control("MC")
-                        util.yield(1666)
-                    end
-                end
+            else
                 local currentCeoName = menu.get_value(menu.ref_by_path("Online>CEO/MC>Name"))
                 if currentCeoName ~= urceoname and currentCeoName ~= lastCeoName then
                     menu.trigger_commands("ceoname " .. urceoname)
                     util.yield(13)
                     lastCeoName = menu.get_value(menu.ref_by_path("Online>CEO/MC>Name"))
                 end
-                --if players.user() == players.get_script_host() then
-                --    if ceo_color ~= -1 then
-                --        check_CEO_Color()
-                --    end
-                --end
+                if ceo_color ~= -1 then
+                    check_CEO_Color()
+                end
+            end
+            local CEOLabels = {
+                "HIP_HELP_BBOSS",
+                "HIP_HELP_BBOSS2",
+                "HPBOARD_REG",
+                "HPBOARD_REGB",
+                "HT_NOT_BOSS",
+                "HUB_PC_BLCK",
+                "NHPG_HELP_BBOSS",
+                "OFF_COMP_REG",
+                "TRUCK_PC_BLCK",
+                "TUN_HELP_BBOSS",
+                "BUNK_PC_BLCK",
+                "CH_FINALE_REG",
+                "CH_PREP_REG",
+                "CH_SETUP_REG",
+                "FHQ_PC_BLCK",
+                "HANG_PC_BLCK",
+                "HFBOARD_REG",
+                "HIBOARD_REG",
+                "HIBOARD_REGB",
+                "MP_OFF_LAP_1",
+                "MP_OFF_LAP_PC",
+                "OFF_COMP_REG",
+                "ARC_PC_BLCK",
+                "ARC_HT_0",
+                "ARC_HT_0B",
+                "ACID_SLL_HLP2",
+                "HRBOARD_REG",
+                "HRBOARD_REGB",
+            }
+            for _, label in ipairs(CEOLabels) do
+                if IS_HELP_MSG_DISPLAYED(label) then
+                    organization_control("CEO")
+                    util.yield(1666)
+                end
+            end
+            local MCLabels = {
+                "CLBHBKRREG",
+                "ARC_HT_1",
+                "ARC_HT_1B",
+            }
+            for _, label in ipairs(MCLabels) do
+                if IS_HELP_MSG_DISPLAYED(label) then
+                    organization_control("MC")
+                    util.yield(1666)
+                end
             end
         else
             if joinfriendsceo ~= 1 and players.get_boss(players.user()) == -1 then
