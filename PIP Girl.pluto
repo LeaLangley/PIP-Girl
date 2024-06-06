@@ -3877,7 +3877,7 @@ path_smart_script_host = menu.toggle_loop(smart_script_host_list, "Smart Script 
                     playerList = players.list_only(true, true, false, true)
                 end
                 if smartScriptHostMode == 3 then
-                    playerList = players.list_only(true, true, false, true)
+                    playerList = players.list_except(true)
                 end
                 for playerList as pid do
                     if worthToUnstuck(pid) then
