@@ -1504,7 +1504,7 @@ local function repair_asuka_tech(vehicle)
     local engineHealth = GET_VEHICLE_ENGINE_HEALTH(vehicle)
     local bodyHealth = GET_VEHICLE_BODY_HEALTH(vehicle)
     
-    if IS_VEHICLE_DRIVEABLE(vehicle) then
+    if repair_amount > 0 and IS_VEHICLE_DRIVEABLE(vehicle) then
         if engineHealth > 0 and engineHealth < max_repair_limit then
             SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + repair_amount)
         end
@@ -1549,6 +1549,7 @@ local function repair_asuka_tech(vehicle)
 end
 local current_asuka_tech_vehicle = nil
 local saved_trailer_id = nil
+local saved_towing_vehicle = nil
 local isInVehicleAT = false
 local isInInteriorAT = false
 local vehicleProtected = false
@@ -1590,7 +1591,7 @@ path_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly
                     --    vehicleProtected = false
                     --end
 
-                    if asuka_tech_repair_amount > 0 then
+                    if asuka_tech_repair_amount > 0 or asuka_tech_mission_repair_amount > 0 then
                         repair_asuka_tech(vehicle)
                     end
 
@@ -1616,7 +1617,7 @@ path_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly
                         else
                             trailer = asuka_lib.get_trailer(vehicle)
                         end
-                        if asuka_tech_repair_amount > 0 then
+                        if asuka_tech_repair_amount > 0 or asuka_tech_mission_repair_amount > 0 then
                             repair_asuka_tech(trailer)
                         end
                         if saved_trailer_id == nil or saved_trailer_id ~= trailer then
@@ -1626,6 +1627,20 @@ path_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly
                     else
                         saved_trailer_id = nil
                     end
+
+                    local towing_vehicle = GET_ENTITY_ATTACHED_TO_TOW_TRUCK(vehicle)
+                    if towing_vehicle ~= 0 and asuka_lib.does_entity_exist(towing_vehicle) then
+                        if asuka_tech_repair_amount > 0 or asuka_tech_mission_repair_amount > 0 then
+                            repair_asuka_tech(towing_vehicle)
+                        end
+                        if saved_towing_vehicle == nil or saved_towing_vehicle ~= towing_vehicle then
+                            saved_towing_vehicle = towing_vehicle
+                            buff_asuka_tech(towing_vehicle)
+                        end
+                    else
+                        saved_towing_vehicle = nil
+                    end
+
                     if asukaTechBlipVeh ~= current_asuka_tech_vehicle or (asukaTechBlip and not DOES_BLIP_EXIST(asukaTechBlip)) then
                         asukaTechBlipVeh = current_asuka_tech_vehicle
                         if asukaTechBlip then
