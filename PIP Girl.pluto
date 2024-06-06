@@ -13,5 +13,6 @@ local auto_update_config = {
     script_relpath=SCRIPT_RELPATH,
     verify_file_begins_with="--",
     check_interval=0,
+    restart_delay=666,
 }
 auto_updater.run_auto_update(auto_update_config)
