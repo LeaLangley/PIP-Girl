@@ -225,12 +225,12 @@ local ceo_color = -1
 local function check_CEO_Color()
     if ceo_color ~= -1 then
         if asuka_lib.transition_state(true) == 1 and NETWORK_IS_PLAYER_ACTIVE(players.user()) then
-            if ceo_color ~= players.get_org_colour(players.user()) then
-                local fallback_color = 14
-                for players.list() as pid do
-                    if players.get_boss(pid) ~= -1 then
-                        if pid ~= players.user() then
-                            if players.user() == players.get_script_host() then
+            if players.user() == players.get_script_host() then
+                if ceo_color ~= players.get_org_colour(players.user()) then
+                    local fallback_color = 14
+                    for players.list() as pid do
+                        if players.get_boss(pid) ~= -1 then
+                            if pid ~= players.user() then
                                 local pidorgColor = players.get_org_colour(pid)
                                 if pidorgColor == ceo_color and not isModder(pid) and not is_trusted(pid) then
                                     if fallback_color == ceo_color then
@@ -238,9 +238,9 @@ local function check_CEO_Color()
                                     end
                                     memory.write_int(orgColor(pid), fallback_color)
                                 end
+                            else
+                                memory.write_int(orgColor(players.user()), ceo_color)
                             end
-                        else
-                            memory.write_int(orgColor(players.user()), ceo_color)
                         end
                     end
                 end
