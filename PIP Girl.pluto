@@ -3862,6 +3862,9 @@ end)
 local stuckPlayers = {}
 local timeoutIgnore = {}
 local smartScriptHostMode = 1
+local ssh_stuck_detection_time = 30
+local ssh_stuck_detection_time_friendly = 20
+local ssh_unstuck_timeout = 13
 
 local smart_script_host_list = menu.list(Session, 'Smart Script Host', {}, 'A Smart Script host that will help YOU if stuck in loading screens etc.', function(); end)
 
@@ -3882,9 +3885,9 @@ path_smart_script_host = menu.toggle_loop(smart_script_host_list, "Smart Script 
                             stuckPlayers[pid] = os.time()
                         end
                         local stuckDuration = os.time() - stuckPlayers[pid]
-                        local stuckDurationTol = 30
+                        local stuckDurationTol = ssh_stuck_detection_timess
                         if is_trusted(pid) then
-                            stuckDurationTol = 20
+                            stuckDurationTol = ssh_stuck_detection_time_friendly
                         end
                         if timeoutIgnore[pid] then
                             if timeoutIgnore[pid] < os.time() then
@@ -3911,7 +3914,7 @@ path_smart_script_host = menu.toggle_loop(smart_script_host_list, "Smart Script 
                                 notify_cmd(name .. " is Loading since: "..stuckDuration)
                                 timeoutIgnore[pid] = nil
                             end
-                            local loading_timeout = os.time() + 13
+                            local loading_timeout = os.time() + ssh_unstuck_timeout
                             while worthToUnstuck(pid) do
                                 util.yield(13)
                                 if os.time() > loading_timeout then
@@ -3987,6 +3990,18 @@ path_smart_script_host_mode = menu.list_select(smart_script_host_list, "Smart Sc
     {3, "Everyone"},
 }, 1, function(value, menu_name, prev_value, click_type)
     smartScriptHostMode = value
+end)
+
+path_ssh_detection_time = menu.slider(smart_script_host_list, "Stuck Detection Time", {"pgsdk"}, "in seconds", 15, 120, ssh_stuck_detection_time, 1, function(val)
+    ssh_stuck_detection_time = val
+end)
+
+path_ssh_detection_time_friendly = menu.slider(smart_script_host_list, "Friendly Stuck Detection Time", {"pgfsdt"}, "in seconds", 15, 120, ssh_stuck_detection_time_friendly, 1, function(val)
+    ssh_stuck_detection_time_friendly = val
+end)
+
+path_ssh_unstuck_timeout = menu.slider(smart_script_host_list, "Unstuck Timeout", {"pgust"}, "in seconds", 15, 60, ssh_unstuck_timeout, 1, function(val)
+    ssh_unstuck_timeout = val
 end)
 
 local in_self_god = false
@@ -5002,6 +5017,9 @@ local data_cfg = {
     store_invite_all_friends_on_webhook = path_invite_all_friends_on_webhook,
     store_smart_script_host = path_smart_script_host,
     store_smart_script_host_mode = path_smart_script_host_mode,
+    store_ssh_detection_time = path_ssh_detection_time,
+    store_ssh_detection_time_friendly = path_ssh_detection_time_friendly,
+    store_ssh_unstuck_timeout = path_ssh_unstuck_timeout,
     store_ghost_god_mode = path_ghost_god_mode,
     store_clear_traffic = path_clear_traffic,
     store_soft_clear_traffic = path_soft_clear_traffic,
