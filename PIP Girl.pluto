@@ -5190,7 +5190,7 @@ end
 if os.time() - tonumber(stored_pip_version) > 13 then
     asuka_lib.asuka_booty = true
     asuka_lib.write_to_file(store_dir..'version.txt', os.time())
-    util.yield(1666)
+    util.yield(420)
     util.restart_script()
 else
     asuka_lib.asuka_booty = false
