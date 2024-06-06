@@ -3749,13 +3749,13 @@ path_post_session_code_via_webhook = menu.toggle_loop(SessionInvite, "Post Sessi
                         color = 0x8b0000,
                         author = {
                             name = "Session Overview",
-                            icon_url = "https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/logo.png"
+                            icon_url = "https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/PIP-Girl/logo.png"
                         }
                     }
                     local body = {
                         embeds = { embed },
                         username = "PIP Girl",
-                        avatar_url = "https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/1%20PIP%20Girl/logo.png"
+                        avatar_url = "https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/PIP-Girl/logo.png"
                     }
                     local encode_status, body_json = pcall(soup.json.encode, body)                
                     local function on_success(body, header_fields, status_code)
