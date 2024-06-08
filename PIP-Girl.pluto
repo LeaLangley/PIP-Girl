@@ -3911,7 +3911,7 @@ path_smart_script_host = menu.toggle_loop(smart_script_host_list, "Smart Script 
                                 timeoutIgnore[pid] = nil
                             end
                         end
-                        if scriptHost ~= pid and stuckDuration > stuckDurationTol and stuckDuration < 420 and (not timeoutIgnore[pid] or (timeoutIgnore[pid] and os.time() > timeoutIgnore[pid])) then
+                        if players.get_script_host() ~= pid and stuckDuration > stuckDurationTol and stuckDuration < 420 and (not timeoutIgnore[pid] or (timeoutIgnore[pid] and os.time() > timeoutIgnore[pid])) then
                             local name = players.get_name(pid)
                             menu.trigger_commands("givesh " .. name)
                             local givingSHTimeout = os.time() + 6
