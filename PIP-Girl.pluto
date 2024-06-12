@@ -8,7 +8,7 @@ __________._____________    ________.__       .__
 
 local script_version = "1.171"
 
-local lust_upDate = {year = 2024, month = 6, day = 13, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 6, day = 16, hour = 6, min = 6, sec = 6}
 
 local startupmsg = "PIP Girl remembers your settings! :D\nSettings changed in Script will never be lost!\nReport bugs in the discord.\n\nAsuka Tech on top!"
 
@@ -485,6 +485,7 @@ local function StrategicKick(pid)
         if name ~= players.get_name(players.user()) then
             menu.trigger_commands("ghostplayer " .. name)
             menu.trigger_commands("blocksync " .. name .. " on")
+            util.yield()
             if players.is_marked_as_attacker(pid) or is_trusted(players.get_host()) or not isModder(players.get_host()) then
                 if asuka_lib.transition_state(true) ~= 1 then
                     if asuka_lib.transition_state(true) < 3 then
