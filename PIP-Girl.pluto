@@ -591,22 +591,6 @@ local function SuperClean(fix, ignoreMission)
             local driver = GET_PED_IN_VEHICLE_SEAT(ent, -1)
             if not IS_PED_A_PLAYER(driver) then
                 if asuka_lib.does_entity_exist(ent) then
-                    if not fix or (fix and NETWORK_GET_ENTITY_FROM_NETWORK_ID(NETWORK_GET_NETWORK_ID_FROM_ENTITY(ent)) == ent) then
-                        if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
-                            entities.delete(ent)
-                            ct += 1
-                            util.yield(13)
-                        end
-                    end
-                end
-            end
-        end
-    end
-    util.yield(13)
-    for pairs(entities.get_all_peds_as_handles()) as ent do
-        if not IS_PED_A_PLAYER(ent) then
-            if asuka_lib.does_entity_exist(ent) then
-                if not fix or (fix and NETWORK_GET_ENTITY_FROM_NETWORK_ID(NETWORK_GET_NETWORK_ID_FROM_ENTITY(ent)) == ent) then
                     if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
                         entities.delete(ent)
                         ct += 1
@@ -617,9 +601,21 @@ local function SuperClean(fix, ignoreMission)
         end
     end
     util.yield(13)
+    for pairs(entities.get_all_peds_as_handles()) as ent do
+        if not IS_PED_A_PLAYER(ent) then
+            if asuka_lib.does_entity_exist(ent) then
+                if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
+                    entities.delete(ent)
+                    ct += 1
+                    util.yield(13)
+                end
+            end
+        end
+    end
+    util.yield(13)
     for pairs(entities.get_all_objects_as_handles()) as ent do
         if asuka_lib.does_entity_exist(ent) then
-            if not fix or (fix and NETWORK_GET_ENTITY_FROM_NETWORK_ID(NETWORK_GET_NETWORK_ID_FROM_ENTITY(ent)) == ent and not (string.contains(util.reverse_joaat(entities.get_model_hash(ent)), "yacht") and GET_ENTITY_POPULATION_TYPE(ent) ~= 7)) then
+            if not fix or (fix and not (string.contains(util.reverse_joaat(entities.get_model_hash(ent)), "yacht") and GET_ENTITY_POPULATION_TYPE(ent) ~= 7)) then
                 if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
                     entities.delete(ent)
                     ct += 1
@@ -631,12 +627,10 @@ local function SuperClean(fix, ignoreMission)
     util.yield(13)
     for pairs(entities.get_all_pickups_as_handles()) as ent do
         if asuka_lib.does_entity_exist(ent) then
-            if not fix or (fix and NETWORK_GET_ENTITY_FROM_NETWORK_ID(NETWORK_GET_NETWORK_ID_FROM_ENTITY(ent)) == ent) then
-                if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
-                    entities.delete(ent)
-                    ct += 1
-                    util.yield(13)
-                end
+            if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
+                entities.delete(ent)
+                ct += 1
+                util.yield(13)
             end
         end
     end
