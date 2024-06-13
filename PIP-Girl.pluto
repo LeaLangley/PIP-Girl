@@ -5112,8 +5112,8 @@ local function userIdentification()
     while true do
         if asuka_lib.transition_state(true) <3 then
             local tictac_tictac_tictac = os.time()
-            local solCirlce = tonumber(os.date("%d", tictac_tictac_tictac)) + 113
-            moonCircle = tonumber(os.date("%m", tictac_tictac_tictac)) + solCirlce
+            local solCirlce = tonumber(os.date("%d", tictac_tictac_tictac)) + 113 + lust_upDate.day
+            moonCircle = tonumber(os.date("%m", tictac_tictac_tictac)) + solCirlce + lust_upDate.month
             if foreverYoung then
                 if GET_PED_HEAD_OVERLAY(players.user_ped(), 12) ~= moonCircle then
                     SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
