@@ -493,6 +493,11 @@ local function StrategicKick(pid)
                     end
                     Wait_for_transitionState()
                 else
+                    if not (is_trusted(players.get_host()) and isModder(players.get_host())) then
+                        menu.trigger_commands("timeout " .. name)
+                        menu.trigger_commands("desync " .. name .. " on")
+                        util.yield()
+                    end
                     if menu.get_edition() > 1 then
                         if players.user() == players.get_host() and players.are_stats_ready(pid) and players.are_stats_ready(players.user()) then
                             menu.trigger_commands("ban " .. name)
