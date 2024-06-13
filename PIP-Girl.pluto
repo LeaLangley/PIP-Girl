@@ -5078,7 +5078,7 @@ util.on_transition_finished(function ()
     end
     asuka_lib.save_config(store_dir..'settings.json', data_cfg, true)
     if on_join_claim_mmi then
-        util.yield(666)
+        util.yield(6666)
         mmi_claim_all_vehicles()
     end
     while asuka_lib.transition_state(true) ~= 1 do
