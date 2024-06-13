@@ -3806,56 +3806,64 @@ menu.divider(SessionInvite, "Other.")
 
 menu.action(SessionInvite, "Invite Friend's", {"invitefriends"}, "Invite all friends.", function()
     if asuka_lib.transition_state(true) == 1 then
-        local invited = 0
-        local invitedFriends = {}
-        local ignoredDueToDND = {}
-        local ignoredDueToAlreadyHere = {}
-        local dndList = asuka_lib.read_from_file(store_dir..'dnd_list.txt')
-        if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Friend's")) then
-            for menu.ref_by_path("Online>Player History>Noted Players>Friend's"):getChildren() as friend do
-                local friend_target = friend.target
-                local skipInvite = false
-                local cleanFriendName = friend_target.menu_name:gsub("[-_]", "")
-                for players.list() as pid do
-                    local pidName = players.get_name(pid)
-                    if cleanFriendName == pidName then
-                        skipInvite = true
-                        ignoredDueToAlreadyHere[#ignoredDueToAlreadyHere + 1] = players.get_name_with_tags(pid)
-                        break
-                    end
-                end
-                if dndList and not skipInvite then
-                    for name in dndList:gmatch("[^\r\n]+") do
-                        local cleanDNDName = name:gsub("[-_]", "")
-                        if cleanFriendName == cleanDNDName then
+        if asuka_lib.session_type() ~= "Singleplayer" then
+            if asuka_lib.session_type() ~= "Public" and players.get_host() ~= players.user() then
+                notify("You need to be host in a non Public ses to invite friends.")
+                return
+            end
+            local invited = 0
+            local invitedFriends = {}
+            local ignoredDueToDND = {}
+            local ignoredDueToAlreadyHere = {}
+            local dndList = asuka_lib.read_from_file(store_dir..'dnd_list.txt')
+            if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Friend's")) then
+                for menu.ref_by_path("Online>Player History>Noted Players>Friend's"):getChildren() as friend do
+                    local friend_target = friend.target
+                    local skipInvite = false
+                    local cleanFriendName = friend_target.menu_name:gsub("[-_]", "")
+                    for players.list() as pid do
+                        local pidName = players.get_name(pid)
+                        if cleanFriendName == pidName then
                             skipInvite = true
-                            ignoredDueToDND[#ignoredDueToDND + 1] = friend_target.menu_name
+                            ignoredDueToAlreadyHere[#ignoredDueToAlreadyHere + 1] = players.get_name_with_tags(pid)
                             break
                         end
                     end
+                    if dndList and not skipInvite then
+                        for name in dndList:gmatch("[^\r\n]+") do
+                            local cleanDNDName = name:gsub("[-_]", "")
+                            if cleanFriendName == cleanDNDName then
+                                skipInvite = true
+                                ignoredDueToDND[#ignoredDueToDND + 1] = friend_target.menu_name
+                                break
+                            end
+                        end
+                    end
+                    if not skipInvite and friend_target:getState() ~= "Offline" then
+                        menu.trigger_command(friend_target:refByRelPath("Invite To Session"))
+                        invited = invited + 1
+                        invitedFriends[#invitedFriends + 1] = friend_target.menu_name
+                        util.yield(420)
+                    end
                 end
-                if not skipInvite and friend_target:getState() ~= "Offline" then
-                    menu.trigger_command(friend_target:refByRelPath("Invite To Session"))
-                    invited = invited + 1
-                    invitedFriends[#invitedFriends + 1] = friend_target.menu_name
-                    util.yield(420)
-                end
+            else
+                notify("Please create a \"Friend's\" group first.\nYou can do that with the \"createfriendsgroup\" command.")
+                return
             end
+            local invitedNames = table.concat(invitedFriends, ", ")
+            local ignoredNames = table.concat(ignoredDueToDND, ", ")
+            local alreadyHereNames = table.concat(ignoredDueToAlreadyHere, ", ")
+            local notificationMessage = "Invited " .. invited .. " Friend's: " .. invitedNames
+            if #ignoredDueToDND > 0 then
+                notificationMessage = notificationMessage .. "\n\nSkipped due to DND: " .. ignoredNames
+            end
+            if #ignoredDueToAlreadyHere > 0 then
+                notificationMessage = notificationMessage .. "\n\nSkipped due to Already here: " .. alreadyHereNames
+            end
+            notify(notificationMessage)
         else
-            notify("Please create a \"Friend's\" group first.\nYou can do that with the \"createfriendsgroup\" command.")
-            return
+            notify("Needs to be Public to invite friends.")
         end
-        local invitedNames = table.concat(invitedFriends, ", ")
-        local ignoredNames = table.concat(ignoredDueToDND, ", ")
-        local alreadyHereNames = table.concat(ignoredDueToAlreadyHere, ", ")
-        local notificationMessage = "Invited " .. invited .. " Friend's: " .. invitedNames
-        if #ignoredDueToDND > 0 then
-            notificationMessage = notificationMessage .. "\n\nSkipped due to DND: " .. ignoredNames
-        end
-        if #ignoredDueToAlreadyHere > 0 then
-            notificationMessage = notificationMessage .. "\n\nSkipped due to Already here: " .. alreadyHereNames
-        end
-        notify(notificationMessage)
     else     
         notify("Wait until you are loaded in.")
     end
