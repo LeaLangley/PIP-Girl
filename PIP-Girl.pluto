@@ -3910,7 +3910,7 @@ path_smart_script_host = menu.toggle_loop(smart_script_host_list, "Smart Script 
                             stuckPlayers[pid] = os.time()
                         end
                         local stuckDuration = os.time() - stuckPlayers[pid]
-                        local stuckDurationTol = ssh_stuck_detection_timess
+                        local stuckDurationTol = ssh_stuck_detection_time
                         if is_trusted(pid) then
                             stuckDurationTol = ssh_stuck_detection_time_friendly
                         end
