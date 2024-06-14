@@ -1002,12 +1002,12 @@ path_collect_money = menu.toggle_loop(PIP_Girl, "Collect all local money pickups
                 if asuka_lib.is_user_inside_vehicle(true) then
                     if contains(money_hashish, pickupHash) then
                         requestControl(pickup)
-                        SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
+                        SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z - 66, false, false, false, false)
                     end
                 else
                     if contains(money_hashish, pickupHash) then
                         SET_PICKUP_OBJECT_COLLECTABLE_IN_VEHICLE(pickup)
-                        SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z - 66, false, false, false, false)
+                        SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
                     end
                 end
                 if contains(vehicle_money_hashish, pickupHash) then
