@@ -4244,63 +4244,57 @@ local data_e = {}
 
 local PIP_Girl_Blacklist = {}
 
-if not filesystem.exists(resources_dir .. 'Export/Export_Blacklist.json') then
-    local file = io.open(resources_dir .. 'Export/Export_Blacklist.json', "w")
-    file:write("[]")
-    file:close()
+local user_export_blacklist_path = resources_dir .. 'Export/'..players.get_name(players.user())..'_Blacklist.json'
+
+if not filesystem.exists(user_export_blacklist_path) then
+    local old_export = asuka_lib.read_from_file(resources_dir .. 'Export/Export_Blacklist.json')
+    if old_export then
+        asuka_lib.write_to_file(user_export_blacklist_path, old_export)
+        os.remove(resources_dir .. 'Export/Export_Blacklist.json')
+    else
+        asuka_lib.write_to_file(user_export_blacklist_path, "[]")
+    end
 end
 
 local function save_data_e()
-    local file = io.open(resources_dir .. 'Export/Export_Blacklist.json', 'w+')
-    if file then
-        local encode_status, data_encoded_e = pcall(soup.json.encode, data_e)
-        file:write(data_encoded_e)
-        io.close(file)
+    local encode_status, data_encoded_e = pcall(soup.json.encode, data_e)
+    if encode_status and data_encoded_e then
+        asuka_lib.write_to_file(user_export_blacklist_path, data_encoded_e)
     end
 end
 
 local function load_data_e()
-    local file = io.open(resources_dir .. 'Export/Export_Blacklist.json', 'r')
-    if file then
-        local contents = file:read('*all')
-        io.close(file)
-        if contents == '' then
-            contents = "[]"
-            asuka_lib.write_to_file(resources_dir .. 'Export/Export_Blacklist.json', "[]")
-        end
-        local old_data_e = json.decode(contents) or {}
-        data_e = old_data_e
-
-        local is_old_format = false
-        for id, player in pairs(old_data_e) do
-            if player["Name"] then
-                is_old_format = true
-                break
-            end
-        end
-
-        if is_old_format then
-            data_e = {}
-            for id, player in pairs(old_data_e) do
-                if player["Name"] then
-                    table.insert(data_e, id)
+    for filesystem.list_files(resources_dir .. 'Export') as path do
+        if string.contains(path, "_Blacklist.json") then
+            local contents = asuka_lib.read_from_file(path)
+            if contents then
+                notify_cmd("Loaded Blacklist file: "..string.match(path, "[^/\\]+$"))
+                if contents == '' then
+                    contents = "[]"
+                    asuka_lib.write_to_file(user_export_blacklist_path, contents)
+                end
+                local old_data_e = json.decode(contents) or {}
+                local file_data_e = old_data_e
+                local is_old_format = false
+                for id, player in pairs(old_data_e) do
+                    if player["Name"] then
+                        is_old_format = true
+                        break
+                    end
+                end
+                if is_old_format then
+                    file_data_e = {}
+                    for id, player in pairs(old_data_e) do
+                        if player["Name"] then
+                            table.insert(file_data_e, id)
+                        end
+                    end
+                    asuka_lib.write_to_file(the_path, file_data_e)
+                end
+                for ipairs(file_data_e) as id do
+                    PIP_Girl_Blacklist[id] = true
                 end
             end
-
-            save_data_e()
-        end
-
-        for ipairs(data_e) as id do
-            PIP_Girl_Blacklist[id] = true
-        end
-    else
-        local new_file = io.open(resources_dir .. 'Export/Export_Blacklist.json', 'w')
-        if new_file then
-            new_file:write("[]")
-            io.close(new_file)
-            data_e = {}
-        else
-            warnify("Failed to create Export_Blacklist.json")
         end
     end
 end
@@ -5198,16 +5192,6 @@ end
 --    asuka_lib.write_to_file(store_dir..'version.txt', os.time())
 --    util.yield(420)
 --    util.restart_script()
---else
---    asuka_lib.asuka_booty = false
---    asuka_lib.load_and_apply_config(store_dir..'settings.json', data_cfg)
---    util.create_thread(startupCheck)
---    util.create_thread(startupConfig)
---    util.create_thread(crashlistConfig)
---    util.create_thread(userIdentification)
---    menu.trigger_commands("antiadmin on")
---    menu.set_state(menu.ref_by_path("Online>Session>Stand User Identification>For Strangers"), "Off")
---end
 asuka_lib.asuka_booty = false
 asuka_lib.load_and_apply_config(store_dir..'settings.json', data_cfg)
 util.create_thread(startupCheck)
