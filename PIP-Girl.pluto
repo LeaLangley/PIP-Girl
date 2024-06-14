@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local script_version = "1.171"
+local script_version = "1.172"
 
 local lust_upDate = {year = 2024, month = 6, day = 16, hour = 6, min = 6, sec = 6}
 
@@ -4729,8 +4729,8 @@ menu.divider(Settings, "<3")
 
 menu.action(Settings, "Check for Update", {}, "The script will automatically check for updates at most daily, but you can manually check using this option anytime.", function()
     auto_updater.run_auto_update(auto_update_config)
-    util.yield(1666)
-    util.restart_script()
+    util.yield(6666)
+    notify("no update =)")
 end)
 
 menu.action(Settings, 'Open Export Blacklist Folder', {'oef'}, '', function()
