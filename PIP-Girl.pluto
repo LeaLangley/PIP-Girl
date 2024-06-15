@@ -1330,7 +1330,7 @@ local closestMarker = nil
 local closestDistance = math.huge
 local wasInZone = false
 local protectMissionVehicles = false
-local asuka_tech_lights = 2
+local asuka_tech_lights = 0
 local function checkVehMod(vehicle, mod)
     if DOES_EXTRA_EXIST(vehicle, mod) then
         return true
@@ -1972,7 +1972,7 @@ end, function()
     isOutVehicle = false
     local vehicle = asuka_lib.get_user_vehicle()
     if vehicle then
-        SET_VEHICLE_LIGHTS(vehicle, 0)
+        SET_VEHICLE_LIGHTS(vehicle, asuka_tech_lights)
     end
 end)
 
@@ -1990,6 +1990,7 @@ path_vehicle_light_rhythm_rapid_slowdown = menu.toggle_loop(Vehicle_Light, "Flas
                     util.yield(66)
                 end
             else
+                SET_VEHICLE_LIGHTS(vehicle, asuka_tech_lights)
                 util.yield(111)
             end
         else
@@ -2003,7 +2004,7 @@ end, function()
     isOutVehicle = false
     local vehicle = asuka_lib.get_user_vehicle()
     if vehicle then
-        SET_VEHICLE_LIGHTS(vehicle, 0)
+        SET_VEHICLE_LIGHTS(vehicle, asuka_tech_lights)
     end
 end)
 
