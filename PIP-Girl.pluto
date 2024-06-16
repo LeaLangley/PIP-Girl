@@ -827,9 +827,9 @@ path_auto_org = menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "
                     util.yield(13)
                     lastCeoName = menu.get_value(menu.ref_by_path("Online>CEO/MC>Name"))
                 end
-                if ceo_color ~= -1 then
-                    check_CEO_Color()
-                end
+                --if ceo_color ~= -1 then
+                --    check_CEO_Color()
+                --end
             end
             local CEOLabels = {
                 "HIP_HELP_BBOSS",
