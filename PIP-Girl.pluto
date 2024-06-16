@@ -1907,7 +1907,7 @@ menu.divider(Vehicle, "Lights")
 
 local Vehicle_Light = menu.list(Vehicle, 'Vehicle Light Modes', {}, 'Flash the lights pretty and nice.', function(); end)
 
-path_vehicle_light_rhythm_sos = menu.toggle_loop(Vehicle_Light, "S.O.S. Morse",{"sosmorse"},"",function()
+path_vehicle_light_rhythm_sos = menu.toggle_loop(Vehicle_Light, "S.O.S. Morse",{"sosmorse"},"Uses asuka tech lights as default state.",function()
     local vehicle = asuka_lib.get_user_vehicle()
     if vehicle then
         SET_VEHICLE_LIGHTS(vehicle, 1)
@@ -1976,7 +1976,7 @@ end, function()
     end
 end)
 
-path_vehicle_light_rhythm_rapid_slowdown = menu.toggle_loop(Vehicle_Light, "Flash on Rapid slowdown",{"rapidslowdownwarn"},"",function()
+path_vehicle_light_rhythm_rapid_slowdown = menu.toggle_loop(Vehicle_Light, "Flash on Rapid slowdown",{"rapidslowdownwarn"},"Uses asuka tech lights as default state.",function()
     local vehicle = asuka_lib.get_user_vehicle()
     if asuka_lib.is_user_inside_vehicle(true) then
         local speedVector = GET_ENTITY_SPEED_VECTOR(vehicle, true)
