@@ -1330,7 +1330,7 @@ local closestMarker = nil
 local closestDistance = math.huge
 local wasInZone = false
 local protectMissionVehicles = false
-local asuka_tech_lights = 0
+local asuka_tech_lights = 2
 local function checkVehMod(vehicle, mod)
     if DOES_EXTRA_EXIST(vehicle, mod) then
         return true
