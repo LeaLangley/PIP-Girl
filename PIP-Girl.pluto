@@ -2994,8 +2994,10 @@ path_claim_current_session = menu.toggle(SessionClaimer, "Claim current session,
     end
 end)
 
+local session_claimer_players_range = session_claimer_players
+
 local function sessionWorthy()
-    if GET_NUMBER_OF_PLAYERS() >= session_claimer_players or (session_claimer_players_range < session_claimer_players and GET_NUMBER_OF_PLAYERS() > 1) then
+    if GET_NUMBER_OF_PLAYERS() >= session_claimer_players or (session_claimer_players_range < session_claimer_players and GET_NUMBER_OF_PLAYERS() > 3) then
         if (not isModder(players.get_host()) or is_trusted(players.get_host())) and players.get_host_queue_position(players.user()) <= 1 then
             return true
         end
@@ -3005,8 +3007,6 @@ local function sessionWorthy()
     end
     return false
 end
-
-local session_claimer_players_range = session_claimer_players
 
 local sessionClaimer_firstRun = true
 
