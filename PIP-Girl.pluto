@@ -3014,9 +3014,9 @@ local function findAnewHome()
     local findAnewHomeMSG
     if asuka_lib.session_type() ~= "Singleplayer" then
         if GET_NUMBER_OF_PLAYERS() == 1 then
-            findAnewHomeMSG = "You are alone."
+            findAnewHomeMSG = "Not worth it."
         elseif GET_NUMBER_OF_PLAYERS() <= session_claimer_players then
-            findAnewHomeMSG = "Not Enoght "
+            findAnewHomeMSG = "Not Enoght Players."
         elseif isModder(players.get_host()) then
             findAnewHomeMSG = "Host is a Modder."
         else
