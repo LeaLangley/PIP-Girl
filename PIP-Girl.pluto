@@ -3096,7 +3096,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             if os.time() - join_timeout_start > join_timeout_time then
                 break
             end
-            if GET_NUMBER_OF_PLAYERS() > 1 and asuka_lib.get_session_code_bool() and not sessionWorthy() then
+            if isModder(players.get_host()) and not is_trusted(players.get_host()) then
                 break
             else
                 if asuka_lib.session_type() == "Singleplayer" then
