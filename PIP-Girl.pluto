@@ -2995,7 +2995,7 @@ path_claim_current_session = menu.toggle(SessionClaimer, "Claim current session,
 end)
 
 local function sessionWorthy()
-    if GET_NUMBER_OF_PLAYERS() >= session_claimer_players then
+    if GET_NUMBER_OF_PLAYERS() >= session_claimer_players or (session_claimer_players_range < session_claimer_players and GET_NUMBER_OF_PLAYERS() > 1) then
         if (not isModder(players.get_host()) or is_trusted(players.get_host())) and players.get_host_queue_position(players.user()) <= 1 then
             return true
         end
@@ -3102,22 +3102,26 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             if os.time() - join_timeout_start > join_timeout_time then
                 break
             end
-            if asuka_lib.session_type() == "Singleplayer" then
-                util.yield(1666)
-                findAnewHome()
-                goto sessionclaimerShortcut
+            if GET_NUMBER_OF_PLAYERS() > 1 and not sessionWorthy() then
+                break
             else
-                if sessionClaimer_firstRun then
-                    sessionClaimer_firstRun = false
-                end
-            end
-            if asuka_lib.transition_state(true) < 3 then
-                util.yield(3666)
-                if GET_NUMBER_OF_PLAYERS() == 1 then
+                if asuka_lib.session_type() == "Singleplayer" then
+                    util.yield(1666)
                     findAnewHome()
                     goto sessionclaimerShortcut
                 else
-                    break
+                    if sessionClaimer_firstRun then
+                        sessionClaimer_firstRun = false
+                    end
+                end
+                if asuka_lib.transition_state(true) < 3 then
+                    util.yield(3666)
+                    if GET_NUMBER_OF_PLAYERS() == 1 then
+                        findAnewHome()
+                        goto sessionclaimerShortcut
+                    else
+                        break
+                    end
                 end
             end
             util.yield(666)
@@ -3197,10 +3201,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         if session_claimer_players ~= 0 and session_claimer_players < 31 then
             session_claimer_players_range = session_claimer_players_range + 1
             if session_claimer_players_range > 30 then
-                session_claimer_players_range = ROUND(session_claimer_players / 2)
-                if session_claimer_players_range <= 3 then
-                    session_claimer_players_range = 6
-                end
+                session_claimer_players_range = 6
             end
         end
         util.yield(666)
