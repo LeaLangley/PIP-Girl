@@ -3205,6 +3205,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         util.yield(6666)
     end
 end, function()
+    session_claimer_players_range = session_claimer_players
     for path, original_state in pairs(SessionClaimerOriginal_states) do
         menu.set_state(menu.ref_by_path(path), original_state)
     end
