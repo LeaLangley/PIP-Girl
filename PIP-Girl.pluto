@@ -3312,7 +3312,12 @@ if not customVehiclespawn then
 end
 
 menu.action(SessionJoin, "Set Custom Vehicle Spawn", {""}, "", function()
-    currentpos = players.get_position(players.user())
+    currentpos = nil
+    if asuka_lib.is_user_inside_vehicle(false) then
+        currentpos = GET_ENTITY_COORDS(entities.get_user_vehicle_as_handle(true))
+    else
+        currentpos = players.get_position(players.user())
+    end
     customVehiclespawn = string.format("x:%.2f y:%.2f z:%.2f", currentpos.x, currentpos.y, currentpos.z)
     menu.trigger_commands("customspawnvehpos " .. customVehiclespawn)
 end)
