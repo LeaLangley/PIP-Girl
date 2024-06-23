@@ -3374,6 +3374,12 @@ menu.action(SessionJoin, "Set Favorite Vehicle", {""}, "", function()
     if asuka_lib.does_entity_exist(personal_vehicle) then
         personal_vehicle_id = DECOR_GET_INT(personal_vehicle, "PV_Slot")
         menu.trigger_commands("favoritevehicleid " .. personal_vehicle_id)
+        local vehicle_name = util.reverse_joaat(entities.get_model_hash(personal_vehicle))
+        local vehicle_label = util.get_label_text(vehicle_name)
+        if vehicle_label ~= "NULL" then
+            vehicle_name = vehicle_label
+        end
+        notify("Favorite vehicle is now: "..vehicle_name)
     else
         notify("Please request a personal vehicle first!")
     end
@@ -5171,6 +5177,7 @@ util.on_transition_finished(function ()
     end
     if customspawnedvehiclefav and favoritevehid ~= -1 then
         menu.trigger_commands("pv"..favoritevehid.."request")
+        CLEAR_ALL_HELP_MESSAGES()
     end
     if foreverYoung then
         SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
@@ -5194,13 +5201,28 @@ util.on_transition_finished(function ()
         end
         mmi_claim_all_vehicles(special_vehicle, special_cords)
     end
-    if customspawnedvehicle and asuka_lib.does_entity_exist(asuka_lib.get_user_vehicle()) then
-        if customVehiclespawn.z ~= 0 then
-            requestControl(asuka_lib.get_user_vehicle())
-            SET_ENTITY_COORDS_NO_OFFSET(asuka_lib.get_user_vehicle(), customVehiclespawn.x, customVehiclespawn.y, customVehiclespawn.z, true, true, true)
-            PLACE_OBJECT_ON_GROUND_OR_OBJECT_PROPERLY(asuka_lib.get_user_vehicle())
-        else
-            asuka_lib.delete_entity(asuka_lib.get_user_vehicle())
+    if customspawnedvehicle then
+        if customspawnedvehiclefav and favoritevehid ~= -1 then
+            if asuka_lib.does_entity_exist(asuka_lib.get_user_vehicle()) then
+                menu.trigger_commands("pv"..favoritevehid.."request")
+                local request_timeout = os.time()
+                while not asuka_lib.does_entity_exist(entities.get_user_personal_vehicle_as_handle()) do
+                    CLEAR_ALL_HELP_MESSAGES()
+                    util.yield(666)
+                    if request_timeout - os.time() > 13 then
+                        break
+                    end
+                end
+            end
+        end
+        if asuka_lib.does_entity_exist(asuka_lib.get_user_vehicle()) then
+            if customVehiclespawn.z ~= 0 then
+                requestControl(asuka_lib.get_user_vehicle())
+                SET_ENTITY_COORDS_NO_OFFSET(asuka_lib.get_user_vehicle(), customVehiclespawn.x, customVehiclespawn.y, customVehiclespawn.z, true, true, true)
+                PLACE_OBJECT_ON_GROUND_OR_OBJECT_PROPERLY(asuka_lib.get_user_vehicle())
+            else
+                asuka_lib.delete_entity(asuka_lib.get_user_vehicle())
+            end
         end
     end
     while asuka_lib.transition_state(true) ~= 1 do
