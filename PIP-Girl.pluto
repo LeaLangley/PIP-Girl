@@ -3251,13 +3251,18 @@ menu.divider(Session, "<3")
 local SessionJoin = menu.list(Session, 'Join Settings', {}, 'Session Join Settings.', function(); end)
 
 local customspawned
+local customspawnedvehicle
 local customspawn = nil
+local customVehiclespawn = nil
 local default_spawn = string.format("x:%.2f y:%.2f z:%.2f", -1806.73, -126.08, 78.7865)
+local default_vehicle_spawn = string.format("x:%.2f y:%.2f z:%.2f", 0, 0, 0)
 
 local function extractCoordinatesFromString(str)
     local x, y, z = str:match("x:(%-?%d+%.?%d*) y:(%-?%d+%.?%d*) z:(%-?%d+%.?%d*)")
     return tonumber(x), tonumber(y), tonumber(z)
 end
+
+menu.divider(Session, "Custom Player Spawn")
 
 path_custom_spawn = menu.text_input(SessionJoin, "Spawn", {"customspawnpos"}, "", function(input)
     local x, y, z = extractCoordinatesFromString(input)
@@ -3286,6 +3291,38 @@ path_use_custom_spawn = menu.toggle(SessionJoin, "Use Custom Spawn", {""}, "", f
         --PIP_STAT_SET_INT("SPAWN_LOCATION_SETTING", 4)
     else
         customspawned = false
+    end
+end)
+
+menu.divider(Session, "Custom Vehicle Spawn")
+
+path_custom_vehicle_spawn = menu.text_input(SessionJoin, "Vehicle Spawn", {"customspawnvehpos"}, "", function(input)
+    local x, y, z = extractCoordinatesFromString(input)
+    if x and y and z then
+        customVehiclespawn = { x = x, y = y, z = z }
+    else
+        notify("Invalid custom spawn format.\nApplying Default spawn.")
+        menu.trigger_commands("customspawnvehpos "..default_vehicle_spawn)
+    end
+end, default_vehicle_spawn)
+
+if not customVehiclespawn then
+    local x, y, z = extractCoordinatesFromString(default_vehicle_spawn)
+    customVehiclespawn = { x = x, y = y, z = z }
+end
+
+menu.action(SessionJoin, "Set Custom Vehicle Spawn", {""}, "", function()
+    currentpos = players.get_position(players.user())
+    customVehiclespawn = string.format("x:%.2f y:%.2f z:%.2f", currentpos.x, currentpos.y, currentpos.z)
+    menu.trigger_commands("customspawnvehpos " .. customVehiclespawn)
+end)
+
+path_use_custom_vehicle_spawn = menu.toggle(SessionJoin, "Use Custom Vehicle Spawn", {""}, "", function(on)
+    if on then
+        customspawnedvehicle = true
+        --PIP_STAT_SET_INT("SPAWN_LOCATION_SETTING", 4)
+    else
+        customspawnedvehicle = false
     end
 end)
 
@@ -5063,7 +5100,11 @@ util.on_transition_finished(function ()
             players.teleport_3d(players.user(), customspawn.x, customspawn.y, customspawn.z)
         end
         if asuka_lib.get_user_vehicle() then
-            asuka_lib.delete_entity(asuka_lib.get_user_vehicle())
+            if customspawnedvehicle and customVehiclespawn.z ~= 0 then
+                SET_ENTITY_COORDS_NO_OFFSET(asuka_lib.get_user_vehicle(), customVehiclespawn.x, customVehiclespawn.y, customVehiclespawn.z, true, true, true)
+            else
+                asuka_lib.delete_entity(asuka_lib.get_user_vehicle())
+            end
         end
         menu.trigger_commands("resetheadshots")
         menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
