@@ -643,7 +643,7 @@ local function SuperClean(fix, ignoreMission)
     notify("Done " .. ct .. "+ entities removed!")
 end
 
-local function mmi_claim_all_vehicles(special_vehicle)
+local function mmi_claim_all_vehicles(special_vehicle, special_cords)
     local personal_vehicle = entities.get_user_personal_vehicle_as_handle()
     local personal_vehicle_id = nil
     local personal_vehicle_pos = nil
@@ -667,6 +667,9 @@ local function mmi_claim_all_vehicles(special_vehicle)
     end
     if special_vehicle then
         personal_vehicle_id = special_vehicle
+    end
+    if special_cords then
+        personal_vehicle_pos = special_cords
     end
     if personal_vehicle_id then
         menu.trigger_commands("pv"..personal_vehicle_id.."request")
@@ -3296,8 +3299,8 @@ end
 
 menu.action(SessionJoin, "Set Custom Spawn", {""}, "", function()
     currentpos = players.get_position(players.user())
-    customspawn = string.format("x:%.2f y:%.2f z:%.2f", currentpos.x, currentpos.y, currentpos.z)
-    menu.trigger_commands("customspawnpos " .. customspawn)
+    setcustomspawn = string.format("x:%.2f y:%.2f z:%.2f", currentpos.x, currentpos.y, currentpos.z)
+    menu.trigger_commands("customspawnpos " .. setcustomspawn)
 end)
 
 path_use_custom_spawn = menu.toggle(SessionJoin, "Use Custom Spawn", {""}, "", function(on)
@@ -3333,8 +3336,8 @@ menu.action(SessionJoin, "Set Custom Vehicle Spawn", {""}, "", function()
     else
         currentpos = players.get_position(players.user())
     end
-    customVehiclespawn = string.format("x:%.2f y:%.2f z:%.2f", currentpos.x, currentpos.y, currentpos.z)
-    menu.trigger_commands("customspawnvehpos " .. customVehiclespawn)
+    setcustomVehiclespawn = string.format("x:%.2f y:%.2f z:%.2f", currentpos.x, currentpos.y, currentpos.z)
+    menu.trigger_commands("customspawnvehpos " .. setcustomVehiclespawn)
 end)
 
 path_use_custom_vehicle_spawn = menu.toggle(SessionJoin, "Use Custom Vehicle Spawn", {""}, "", function(on)
@@ -3347,6 +3350,8 @@ path_use_custom_vehicle_spawn = menu.toggle(SessionJoin, "Use Custom Vehicle Spa
 end)
 
 menu.divider(SessionJoin, "Favorite Vehicle Spawn")
+menu.divider(SessionJoin, "(This is in development)")
+menu.divider(SessionJoin, "(Could be buggy, no need to report)")
 
 local favoritevehid = -1
 
@@ -5170,10 +5175,14 @@ util.on_transition_finished(function ()
     if on_join_claim_mmi then
         util.yield(6666)
         local special_vehicle = nil
-        if favoritevehid ~= -1 and customspawnedvehiclefav then
+        local special_cords = nil
+        if customspawnedvehiclefav and favoritevehid ~= -1 then
             special_vehicle = favoritevehid
         end
-        mmi_claim_all_vehicles(special_vehicle)
+        if customspawnedvehicle and customVehiclespawn.z ~= 0 then
+            special_cords = customVehiclespawn
+        end
+        mmi_claim_all_vehicles(special_vehicle, special_cords)
     end
     if customspawnedvehicle and asuka_lib.does_entity_exist(asuka_lib.get_user_vehicle()) then
         if customVehiclespawn.z ~= 0 then
