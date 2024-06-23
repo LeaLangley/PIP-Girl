@@ -1895,7 +1895,7 @@ menu.action(Vehicle, "Detonate Asuka Tech Vehicle", {"boomasuka"}, "", function(
         SET_VEHICLE_NEON_ENABLED(target_vehicle, 1, true)
         SET_VEHICLE_NEON_ENABLED(target_vehicle, 2, true)
         SET_VEHICLE_NEON_ENABLED(target_vehicle, 3, true)
-        TOGGLE_VEHICLE_MOD(vehicle, 22, true)
+        TOGGLE_VEHICLE_MOD(target_vehicle, 22, true)
         SET_VEHICLE_XENON_LIGHT_COLOR_INDEX(target_vehicle, 8)
         util.yield(3666)
     end
