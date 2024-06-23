@@ -5190,7 +5190,7 @@ util.on_transition_finished(function ()
     end
     asuka_lib.save_config(store_dir..'settings.json', data_cfg, true)
     if on_join_claim_mmi then
-        util.yield(6666)
+        util.yield(666)
         local special_vehicle = nil
         local special_cords = nil
         if customspawnedvehiclefav and favoritevehid ~= -1 then
