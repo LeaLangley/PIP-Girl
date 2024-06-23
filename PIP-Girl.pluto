@@ -3262,7 +3262,7 @@ local function extractCoordinatesFromString(str)
     return tonumber(x), tonumber(y), tonumber(z)
 end
 
-menu.divider(Session, "Custom Player Spawn")
+menu.divider(SessionJoin, "Custom Player Spawn")
 
 path_custom_spawn = menu.text_input(SessionJoin, "Spawn", {"customspawnpos"}, "", function(input)
     local x, y, z = extractCoordinatesFromString(input)
@@ -3294,7 +3294,7 @@ path_use_custom_spawn = menu.toggle(SessionJoin, "Use Custom Spawn", {""}, "", f
     end
 end)
 
-menu.divider(Session, "Custom Vehicle Spawn")
+menu.divider(SessionJoin, "Custom Vehicle Spawn")
 
 path_custom_vehicle_spawn = menu.text_input(SessionJoin, "Vehicle Spawn", {"customspawnvehpos"}, "", function(input)
     local x, y, z = extractCoordinatesFromString(input)
