@@ -643,7 +643,7 @@ local function SuperClean(fix, ignoreMission)
     notify("Done " .. ct .. "+ entities removed!")
 end
 
-local function mmi_claim_all_vehicles(special_cords)
+local function mmi_claim_all_vehicles(special_vehicle)
     local personal_vehicle = entities.get_user_personal_vehicle_as_handle()
     local personal_vehicle_id = nil
     local personal_vehicle_pos = nil
@@ -665,21 +665,27 @@ local function mmi_claim_all_vehicles(special_cords)
             CLEAR_ALL_HELP_MESSAGES()
         end
     end
+    if special_vehicle then
+        personal_vehicle_id = special_vehicle
+    end
     if personal_vehicle_id then
-        if special_cords then
-            personal_vehicle_pos = special_cords
-        end
         menu.trigger_commands("pv"..personal_vehicle_id.."request")
+        local request_timeout = os.time()
         while not asuka_lib.does_entity_exist(entities.get_user_personal_vehicle_as_handle()) do
             CLEAR_ALL_HELP_MESSAGES()
             util.yield(666)
+            if request_timeout - os.time() > 13 then
+                break
+            end
         end
         util.yield(1013)
         personal_vehicle = entities.get_user_personal_vehicle_as_handle()
-        SET_ENTITY_COORDS_NO_OFFSET(personal_vehicle, personal_vehicle_pos.x, personal_vehicle_pos.y, personal_vehicle_pos.z, true, true, true)
-        SET_ENTITY_ROTATION(personal_vehicle, personal_vehicle_rot.x, personal_vehicle_rot.y, personal_vehicle_rot.z, 2, true)
-        if personal_vehicle_driver then
-            SET_PED_INTO_VEHICLE(players.user_ped(), personal_vehicle, -1)
+        if asuka_lib.does_entity_exist(personal_vehicle) then
+            SET_ENTITY_COORDS_NO_OFFSET(personal_vehicle, personal_vehicle_pos.x, personal_vehicle_pos.y, personal_vehicle_pos.z, true, true, true)
+            SET_ENTITY_ROTATION(personal_vehicle, personal_vehicle_rot.x, personal_vehicle_rot.y, personal_vehicle_rot.z, 2, true)
+            if personal_vehicle_driver then
+                SET_PED_INTO_VEHICLE(players.user_ped(), personal_vehicle, -1)
+            end
         end
     end
 end
@@ -3002,6 +3008,10 @@ end)
 
 local session_claimer_players_range = session_claimer_players
 
+if session_claimer_players_range < 3 then
+    session_claimer_players_range = 6
+end
+
 local function sessionWorthy()
     if (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) <= 1) or is_trusted(players.get_host()) then
         if GET_NUMBER_OF_PLAYERS() >= session_claimer_players or (session_claimer_players_range < session_claimer_players and GET_NUMBER_OF_PLAYERS() > 3) then
@@ -3333,6 +3343,32 @@ path_use_custom_vehicle_spawn = menu.toggle(SessionJoin, "Use Custom Vehicle Spa
         --PIP_STAT_SET_INT("SPAWN_LOCATION_SETTING", 4)
     else
         customspawnedvehicle = false
+    end
+end)
+
+menu.divider(SessionJoin, "Favorite Vehicle Spawn")
+
+local favoritevehid = -1
+
+path_favorite_vehicle_spawn = menu.text_input(SessionJoin, "Favorite Veh ID", {"favoritevehicleid"}, "", function(input)
+    favoritevehid = input
+end, -1)
+
+menu.action(SessionJoin, "Set Favorite Vehicle", {""}, "", function()
+    local personal_vehicle = entities.get_user_personal_vehicle_as_handle()
+    if asuka_lib.does_entity_exist(personal_vehicle) then
+        personal_vehicle_id = DECOR_GET_INT(personal_vehicle, "PV_Slot")
+        menu.trigger_commands("favoritevehicleid " .. personal_vehicle_id)
+    else
+        notify("Please request a personal vehicle first!")
+    end
+end)
+
+path_use_favorite_vehicle_spawn = menu.toggle(SessionJoin, "Spawn Favorite Vehicle", {""}, "On join.", function(on)
+    if on then
+        customspawnedvehiclefav = true
+    else
+        customspawnedvehiclefav = false
     end
 end)
 
@@ -5070,6 +5106,10 @@ local data_cfg = {
     store_claim_current_session = path_claim_current_session,
     store_custom_spawn = path_custom_spawn,
     store_use_custom_spawn = path_use_custom_spawn,
+    store_custom_vehicle_spawn = path_custom_vehicle_spawn,
+    store_use_custom_vehicle_spawn = path_use_custom_vehicle_spawn,
+    store_favorite_vehicle_spawn = path_favorite_vehicle_spawn,
+    store_use_favorite_vehicle_spawn = path_use_favorite_vehicle_spawn,
     store_quick_session_join = path_quick_session_join,
     store_block_orb_room = path_block_orb_room,
     store_block_kosatka_missile_terminal = path_block_kosatka_missile_terminal,
@@ -5109,15 +5149,13 @@ util.on_transition_finished(function ()
         if not NETWORK_IS_ACTIVITY_SESSION() then
             players.teleport_3d(players.user(), customspawn.x, customspawn.y, customspawn.z)
         end
-        if asuka_lib.get_user_vehicle() then
-            if customspawnedvehicle and customVehiclespawn.z ~= 0 then
-                SET_ENTITY_COORDS_NO_OFFSET(asuka_lib.get_user_vehicle(), customVehiclespawn.x, customVehiclespawn.y, customVehiclespawn.z, true, true, true)
-            else
-                asuka_lib.delete_entity(asuka_lib.get_user_vehicle())
-            end
-        end
         menu.trigger_commands("resetheadshots")
-        menu.set_state(menu.ref_by_path("Online>Spoofing>Position Spoofing>Position Spoofing"), "Off")
+        if not customspawnedvehicle and asuka_lib.does_entity_exist(asuka_lib.get_user_vehicle()) then
+            asuka_lib.delete_entity(asuka_lib.get_user_vehicle())
+        end
+    end
+    if customspawnedvehiclefav and favoritevehid ~= -1 then
+        menu.trigger_commands("pv"..favoritevehid.."request")
     end
     if foreverYoung then
         SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
@@ -5131,11 +5169,18 @@ util.on_transition_finished(function ()
     asuka_lib.save_config(store_dir..'settings.json', data_cfg, true)
     if on_join_claim_mmi then
         util.yield(6666)
-        local special_cords = nil
-        if customVehiclespawn.z ~= 0 then
-            special_cords = customVehiclespawn
+        local special_vehicle = nil
+        if favoritevehid ~= -1 and customspawnedvehiclefav then
+            special_vehicle = favoritevehid
         end
-        mmi_claim_all_vehicles(special_cords)
+        mmi_claim_all_vehicles(special_vehicle)
+    end
+    if customspawnedvehicle and asuka_lib.does_entity_exist(asuka_lib.get_user_vehicle()) then
+        if customVehiclespawn.z ~= 0 then
+            SET_ENTITY_COORDS_NO_OFFSET(asuka_lib.get_user_vehicle(), customVehiclespawn.x, customVehiclespawn.y, customVehiclespawn.z, true, true, true)
+        else
+            asuka_lib.delete_entity(asuka_lib.get_user_vehicle())
+        end
     end
     while asuka_lib.transition_state(true) ~= 1 do
         util.yield(666)
