@@ -5204,6 +5204,13 @@ util.on_transition_finished(function ()
     if customspawnedvehicle then
         if customspawnedvehiclefav and favoritevehid ~= -1 then
             if not asuka_lib.does_entity_exist(asuka_lib.get_user_vehicle()) then
+                local interior_timeout = os.time()
+                while not players.is_visible(players.user()) or NETWORK_IS_PLAYER_FADING(players.user()) do
+                    util.yield(666)
+                    if interior_timeout - os.time() > 666 then
+                        break
+                    end
+                end
                 menu.trigger_commands("pv"..favoritevehid.."request")
                 local request_timeout = os.time()
                 while not asuka_lib.does_entity_exist(entities.get_user_personal_vehicle_as_handle()) do
