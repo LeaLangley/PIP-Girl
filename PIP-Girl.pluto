@@ -5203,7 +5203,7 @@ util.on_transition_finished(function ()
     end
     if customspawnedvehicle then
         if customspawnedvehiclefav and favoritevehid ~= -1 then
-            if asuka_lib.does_entity_exist(asuka_lib.get_user_vehicle()) then
+            if not asuka_lib.does_entity_exist(asuka_lib.get_user_vehicle()) then
                 menu.trigger_commands("pv"..favoritevehid.."request")
                 local request_timeout = os.time()
                 while not asuka_lib.does_entity_exist(entities.get_user_personal_vehicle_as_handle()) do
