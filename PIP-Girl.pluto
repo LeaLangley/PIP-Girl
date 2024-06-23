@@ -670,8 +670,15 @@ local function mmi_claim_all_vehicles(special_vehicle, special_cords)
     end
     if special_cords then
         personal_vehicle_pos = special_cords
+        if not personal_vehicle_rot then
+            personal_vehicle_rot = players.get_cam_rot(players.user())
+        end
     end
     if personal_vehicle_id then
+        if asuka_lib.does_entity_exist(entities.get_user_personal_vehicle_as_handle()) then
+            menu.trigger_commands("returnpv")
+            asuka_lib.delete_entity(entities.get_user_personal_vehicle_as_handle())
+        end
         menu.trigger_commands("pv"..personal_vehicle_id.."request")
         local request_timeout = os.time()
         while not asuka_lib.does_entity_exist(entities.get_user_personal_vehicle_as_handle()) do
@@ -684,8 +691,12 @@ local function mmi_claim_all_vehicles(special_vehicle, special_cords)
         util.yield(1013)
         personal_vehicle = entities.get_user_personal_vehicle_as_handle()
         if asuka_lib.does_entity_exist(personal_vehicle) then
+            requestControl(personal_vehicle)
             SET_ENTITY_COORDS_NO_OFFSET(personal_vehicle, personal_vehicle_pos.x, personal_vehicle_pos.y, personal_vehicle_pos.z, true, true, true)
             SET_ENTITY_ROTATION(personal_vehicle, personal_vehicle_rot.x, personal_vehicle_rot.y, personal_vehicle_rot.z, 2, true)
+            if special_cords then
+                PLACE_OBJECT_ON_GROUND_OR_OBJECT_PROPERLY(personal_vehicle)
+            end
             if personal_vehicle_driver then
                 SET_PED_INTO_VEHICLE(players.user_ped(), personal_vehicle, -1)
             end
@@ -3299,8 +3310,8 @@ end
 
 menu.action(SessionJoin, "Set Custom Spawn", {""}, "", function()
     currentpos = players.get_position(players.user())
-    setcustomspawn = string.format("x:%.2f y:%.2f z:%.2f", currentpos.x, currentpos.y, currentpos.z)
-    menu.trigger_commands("customspawnpos " .. setcustomspawn)
+    customspawn = string.format("x:%.2f y:%.2f z:%.2f", currentpos.x, currentpos.y, currentpos.z + 0.6)
+    menu.trigger_commands("customspawnpos " .. customspawn)
 end)
 
 path_use_custom_spawn = menu.toggle(SessionJoin, "Use Custom Spawn", {""}, "", function(on)
@@ -3336,8 +3347,8 @@ menu.action(SessionJoin, "Set Custom Vehicle Spawn", {""}, "", function()
     else
         currentpos = players.get_position(players.user())
     end
-    setcustomVehiclespawn = string.format("x:%.2f y:%.2f z:%.2f", currentpos.x, currentpos.y, currentpos.z)
-    menu.trigger_commands("customspawnvehpos " .. setcustomVehiclespawn)
+    customVehiclespawn = string.format("x:%.2f y:%.2f z:%.2f", currentpos.x, currentpos.y, currentpos.z)
+    menu.trigger_commands("customspawnvehpos " .. customVehiclespawn)
 end)
 
 path_use_custom_vehicle_spawn = menu.toggle(SessionJoin, "Use Custom Vehicle Spawn", {""}, "", function(on)
@@ -3350,14 +3361,13 @@ path_use_custom_vehicle_spawn = menu.toggle(SessionJoin, "Use Custom Vehicle Spa
 end)
 
 menu.divider(SessionJoin, "Favorite Vehicle Spawn")
-menu.divider(SessionJoin, "(This is in development)")
-menu.divider(SessionJoin, "(Could be buggy, no need to report)")
+menu.divider(SessionJoin, "(This is in development, could be buggy)")
 
 local favoritevehid = -1
 
-path_favorite_vehicle_spawn = menu.text_input(SessionJoin, "Favorite Veh ID", {"favoritevehicleid"}, "", function(input)
-    favoritevehid = input
-end, -1)
+path_favorite_vehicle_spawn = menu.slider(SessionJoin, "Favorite Veh ID", {"favoritevehicleid"}, "", -1, 1666, favoritevehid, 1, function (new_value)
+    favoritevehid = new_value
+end)
 
 menu.action(SessionJoin, "Set Favorite Vehicle", {""}, "", function()
     local personal_vehicle = entities.get_user_personal_vehicle_as_handle()
@@ -5186,7 +5196,9 @@ util.on_transition_finished(function ()
     end
     if customspawnedvehicle and asuka_lib.does_entity_exist(asuka_lib.get_user_vehicle()) then
         if customVehiclespawn.z ~= 0 then
+            request_control(asuka_lib.get_user_vehicle())
             SET_ENTITY_COORDS_NO_OFFSET(asuka_lib.get_user_vehicle(), customVehiclespawn.x, customVehiclespawn.y, customVehiclespawn.z, true, true, true)
+            PLACE_OBJECT_ON_GROUND_OR_OBJECT_PROPERLY(asuka_lib.get_user_vehicle())
         else
             asuka_lib.delete_entity(asuka_lib.get_user_vehicle())
         end
