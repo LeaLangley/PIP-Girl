@@ -643,7 +643,7 @@ local function SuperClean(fix, ignoreMission)
     notify("Done " .. ct .. "+ entities removed!")
 end
 
-local function mmi_claim_all_vehicles()
+local function mmi_claim_all_vehicles(special_cords)
     local personal_vehicle = entities.get_user_personal_vehicle_as_handle()
     local personal_vehicle_id = nil
     local personal_vehicle_pos = nil
@@ -666,6 +666,9 @@ local function mmi_claim_all_vehicles()
         end
     end
     if personal_vehicle_id then
+        if special_cords then
+            personal_vehicle_pos = special_cords
+        end
         menu.trigger_commands("pv"..personal_vehicle_id.."request")
         while not asuka_lib.does_entity_exist(entities.get_user_personal_vehicle_as_handle()) do
             CLEAR_ALL_HELP_MESSAGES()
@@ -1832,8 +1835,10 @@ menu.action(Vehicle, "Teleport and Enter Asuka Tech Vehicle", {"tpenterasuka"}, 
         requestControl(target_vehicle)
         if not asuka_lib.is_vehicle_free_for_use(target_vehicle) then
             if target_vehicle == entities.get_user_personal_vehicle_as_handle() then
+                local personal_vehicle_id = DECOR_GET_INT(personal_vehicle, "PV_Slot")
                 asuka_lib.delete_entity(target_vehicle)
                 util.yield(113)
+                menu.trigger_commands("pv"..personal_vehicle_id.."request")
                 while not asuka_lib.does_entity_exist(entities.get_user_personal_vehicle_as_handle()) do
                     util.yield(666)
                     if asuka_lib.does_entity_exist(entities.get_user_personal_vehicle_as_handle()) then
@@ -5126,7 +5131,11 @@ util.on_transition_finished(function ()
     asuka_lib.save_config(store_dir..'settings.json', data_cfg, true)
     if on_join_claim_mmi then
         util.yield(6666)
-        mmi_claim_all_vehicles()
+        local special_cords = nil
+        if customVehiclespawn.z ~= 0 then
+            special_cords = customVehiclespawn
+        end
+        mmi_claim_all_vehicles(special_cords)
     end
     while asuka_lib.transition_state(true) ~= 1 do
         util.yield(666)
