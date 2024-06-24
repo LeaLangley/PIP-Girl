@@ -5179,6 +5179,7 @@ util.on_transition_finished(function ()
         end
     end
     if customspawnedvehiclefav and favoritevehid ~= -1 then
+        util.yield(666)
         menu.trigger_commands("pv"..favoritevehid.."request")
         CLEAR_ALL_HELP_MESSAGES()
     end
