@@ -671,7 +671,7 @@ local function mmi_claim_all_vehicles(special_vehicle, special_cords)
     if special_cords then
         personal_vehicle_pos = special_cords
         if not personal_vehicle_rot then
-            personal_vehicle_rot = {0.0, 0.0, 0.0}
+            personal_vehicle_rot = v3.new(0.0, 0.0, 0.0)
         end
     end
     if personal_vehicle_id then
