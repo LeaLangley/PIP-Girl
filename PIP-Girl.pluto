@@ -8,7 +8,7 @@ __________._____________    ________.__       .__
 
 local script_version = "1.173"
 
-local lust_upDate = {year = 2024, month = 6, day = 25, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 6, day = 28, hour = 6, min = 6, sec = 6}
 
 local startupmsg = "PIP Girl remembers your settings! :D\nSettings changed in Script will never be lost!\nReport bugs in the discord.\n\nAsuka Tech on top!"
 
@@ -2668,7 +2668,6 @@ local warningMessages = {
     [997975234] = "Session may no longer exist.",
     [1285618746] = "Starting Job.",
     [379245697] = "Quitting Job.",
-    [2053786350] = "Unable to Connect.",
     [1616251414] = "Unable to Join, A modder is blocking u join with 99% probability.",
     [1597894155] = "Unable to join the game, you must first accept the GTA Online user policy.",
     [1670923214] = "Unable to join intended GTA Online session. Joining a new GTA Online session.",
@@ -2700,7 +2699,6 @@ local warningMessages = {
     [496145784] = "There has been an error with this session. Please return to Grand Theft Auto V and try again.",
     [1496393742] = "There has been an error joining this session. Please return to Grand Theft Auto V and try again.",
     [1990323196] = "There was a network error joining this Job. Please try again. Return to GTA Online.",
-    [705668975] = "You have already been voted out of this game session. Joining a new GTA Online session.",
     [1336517554] = "You were kicked from this GTA Online session by other players. Return to GTA Online.",
     [2052473979] = "Failed to find a compatible GTA Online session containing friends. Joining a new GTA Online session.",
     [2055607490] = "XD\nUsing more then your allotted graphics card memory can result in serious performance drops and stability issues. Proceed with caution. :clown:",
@@ -2708,12 +2706,14 @@ local warningMessages = {
     [1691856278] = "The session you are trying to join is private and friends only. You must be invited by a friend to join this session. Joining a new GTA Online session.",
     [1910579138] = "The session you are trying to join is private and friends only. You must be invited by a friend to join this session. Joining a new GTA Online session.",
     [163296038] = "The session you are trying to join is private and friends only. You must be invited by a friend to join this session. Joining a new GTA Online session.",
-    [610824840] = "The session you are trying to join is for cheaters only. Joining a new GTA Online session.", 
     [1073504880] = "There is a slot available in the GTA Online session you are currently queuing for. Joining Session.",
-    [1748022689] = "Failed to join intended GTA Online session. Please return to Grand Theft Auto V and try again later.",
-    [167092314] = "Failed to join intended GTA Online session. Joining a new GTA Online session.",
+    [2053786350] = "A modder is *maybe* blocking you join.\nUnable to Connect.",
+    [705668975] = "A modder is *likely* blocking you join.\nYou have already been voted out of this game session. Joining a new GTA Online session.",
+    [1748022689] = "A modder is *likely* blocking you join.\nFailed to join intended GTA Online session. Please return to Grand Theft Auto V and try again later.",
+    [167092314] = "A modder is *likely* blocking you join.\nFailed to join intended GTA Online session. Joining a new GTA Online session.",
+    [161625414] = "A modder is *likely* blocking you join.\nUnable to join this session, your account has a bad reputation. Please return to Grand Theft Auto V and try again later.",
     [1901152333] = "A modder is blocking you join.\nYou are classed as a cheat and can only play with other cheats until you are forgiven. Okease return to Grand Theft Auto V and try again later.",
-    [161625414] = "A modder is blocking you join.\nUnable to join this session, your account has a bad reputation. Please return to Grand Theft Auto V and try again later."
+    [610824840] = "A modder is blocking you join.\nThe session you are trying to join is for cheaters only. Joining a new GTA Online session."
 }
 local avoidWarningSkipHere = {
     { x = 1561.00, y = 385.89, z = -49.69 }, -- Cayo Planning Room
