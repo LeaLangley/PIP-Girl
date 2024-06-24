@@ -3122,6 +3122,9 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         if sessionClaimer_firstRun or asuka_lib.session_type() == "Singleplayer" then
             join_timeout_time = 25
         end
+        if sessionClaimer_firstRun then
+            session_claimer_players_range = session_claimer_players
+        end
         while asuka_lib.transition_state(true) > 2 do
             if os.time() - join_timeout_start > join_timeout_time then
                 break
