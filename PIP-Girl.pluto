@@ -10,7 +10,7 @@ local script_version = "1.174"
 
 local lust_upDate = {year = 2024, month = 6, day = 28, hour = 6, min = 6, sec = 6}
 
-local startupmsg = "PIP Girl remembers your settings! :D\nSettings changed in Script will never be lost!\nAsuka tech armor out now!\nin asuka tecch settings.\n\nReport bugs in the discord.\nAsuka Tech on top!"
+local startupmsg = "PIP Girl remembers your settings! :D\n\nAsuka tech armor out now!\nin asuka tech settings.\n\nReport bugs in the discord.\nAsuka Tech on top!"
 
 util.ensure_package_is_installed("lua/auto-updater")
 local auto_updater = require("auto-updater")
