@@ -2690,6 +2690,7 @@ local warningMessages = {
     [988273680] = "Seting up Cayo.",
     [398982408] = "Targeting mode Changed.",
     [1767925417] = "Currently unavaiable.",
+    [1290260622] = "Thanks for playing Grand Theft Auto Online. B)",
     [139087761] = "This session is full and you can't invite any more players at this time.",
     [1504249340] = "Close ur game, load Backup of ur game and Start again. :c\nUnable to joing the game as you save game failed to load. The R* game services unavailable right now, please try again later.",
     [141301462] = "Restart u game. :s\nYour save data could not be loaded form the R* cloud servers at this time. Please try again later. Returning to Grand Theft Auto V.",
