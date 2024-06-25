@@ -1753,6 +1753,38 @@ path_asuka_tech_lockon_jammer = menu.toggle(Asuka_Tech, "Lockon Jammer for Missi
     end
 end)
 
+path_asuka_tech_armor = menu.toggle(Asuka_Tech, "Asuka Tech Armor", {""}, "Very much like Imani tech and for every vehicle , but may a little weaker.", function(toggle)
+    if toggle then
+        asuka_tech_armor = true
+    else
+        asuka_tech_armor = false
+    end
+end, true)
+
+path_asuka_tech_dirt = menu.list_select(Asuka_Tech, "Asuka Tech Vehicle Dirt", {""}, "Vanilla: Games Default, does nothing.\n\nGain: Gain Dirt every repair tick.\n\nClean: Removes Dirt every repair tick.\n\nIt Does not Add or Remove Dirt all in one, just a little every tick, to give the illusion of pollution/cleaning duo to repairs.", {
+    {1, "Vanilla"},
+    {2, "Gain"},
+    {3, "Clean"},
+}, 1, function(value, menu_name, prev_value, click_type)
+    asuka_tech_dirt = value
+    --notify("Asuka Tech Vehicle Dirt: "..menu_name)
+end)
+
+path_asuka_tech_lights = menu.list_select(Asuka_Tech, "Asuka Tech Vehicle lights", {""}, "", {
+    {0, "Vanilla"},
+    {1, "Always off"},
+    {2, "Always on"},
+}, 2, function(value, menu_name, prev_value, click_type)
+    asuka_tech_lights = value
+    local target_vehicle = asuka_lib.get_user_vehicle()
+    if asuka_lib.does_entity_exist(current_asuka_tech_vehicle) then
+        target_vehicle = current_asuka_tech_vehicle
+    end
+    if asuka_lib.does_entity_exist(target_vehicle) then
+        SET_VEHICLE_LIGHTS(target_vehicle, asuka_tech_lights)
+    end
+end)
+
 function draw_bar(value, maxValue, x, y, width, height, barColor, backColor)
     local barWidth = (value / maxValue) * width
     directx.draw_rect(x, y - height, width, height, backColor)
@@ -1802,38 +1834,6 @@ path_asuka_tech_info_overlay = menu.toggle_loop(Asuka_Tech, "Asuka Tech Info Ove
         end
     else
         util.yield(13666)
-    end
-end)
-
-path_asuka_tech_armor = menu.toggle(Asuka_Tech, "Asuka Tech Armor", {""}, "Very much like Imani tech and for every vehicle , but may a little weaker.", function(toggle)
-    if toggle then
-        asuka_tech_armor = true
-    else
-        asuka_tech_armor = false
-    end
-end, true)
-
-path_asuka_tech_dirt = menu.list_select(Asuka_Tech, "Asuka Tech Vehicle Dirt", {""}, "Vanilla: Games Default, does nothing.\n\nGain: Gain Dirt every repair tick.\n\nClean: Removes Dirt every repair tick.\n\nIt Does not Add or Remove Dirt all in one, just a little every tick, to give the illusion of pollution/cleaning duo to repairs.", {
-    {1, "Vanilla"},
-    {2, "Gain"},
-    {3, "Clean"},
-}, 1, function(value, menu_name, prev_value, click_type)
-    asuka_tech_dirt = value
-    --notify("Asuka Tech Vehicle Dirt: "..menu_name)
-end)
-
-path_asuka_tech_lights = menu.list_select(Asuka_Tech, "Asuka Tech Vehicle lights", {""}, "", {
-    {0, "Vanilla"},
-    {1, "Always off"},
-    {2, "Always on"},
-}, 2, function(value, menu_name, prev_value, click_type)
-    asuka_tech_lights = value
-    local target_vehicle = asuka_lib.get_user_vehicle()
-    if asuka_lib.does_entity_exist(current_asuka_tech_vehicle) then
-        target_vehicle = current_asuka_tech_vehicle
-    end
-    if asuka_lib.does_entity_exist(target_vehicle) then
-        SET_VEHICLE_LIGHTS(target_vehicle, asuka_tech_lights)
     end
 end)
 
