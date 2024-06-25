@@ -1760,7 +1760,7 @@ path_asuka_tech_lockon_jammer = menu.toggle(Asuka_Tech, "Lockon Jammer for Missi
     end
 end)
 
-path_asuka_tech_armor = menu.toggle(Asuka_Tech, "Asuka Tech Armor", {""}, "Very much like Imani tech and for every vehicle , but may a little weaker.", {
+path_asuka_tech_armor = menu.list_select(Asuka_Tech, "Asuka Tech Armor", {""}, "Very much like Imani tech and for every vehicle , but may a little weaker.", {
     {1, "Vanilla"},
     {2, "Active"},
     {3, "Only Mission Vehicle"},
