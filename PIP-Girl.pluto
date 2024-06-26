@@ -1233,7 +1233,6 @@ path_first_aid_kit = menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle
                 menu.trigger_commands("newborn")
             elseif not in_vehicle and was_user_in_vehicle then
                 was_user_in_vehicle = false
-                menu.trigger_commands("newborn")
             end
         end
         util.yield(666)
