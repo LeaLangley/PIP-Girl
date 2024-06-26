@@ -500,7 +500,7 @@ local function StrategicKick(pid)
                     end
                     if menu.get_edition() > 1 then
                         if players.user() == players.get_host() and players.are_stats_ready(pid) and players.are_stats_ready(players.user()) then
-                            menu.trigger_commands("ban " .. name)
+                            menu.trigger_commands("blacklist " .. name)
                         else
                             menu.trigger_commands("kick " .. name)
                         end
@@ -4634,15 +4634,6 @@ local IdentificationTimeout = {}
 
 local function removeFromTable(pid)
     if asuka_lib.transition_state(true) == 1 then
-        if players.get_script_host() == pid then
-            menu.trigger_commands("scripthost")
-            util.yield(13)
-            if players.get_script_host() == players.user() then
-                notify_cmd("Saved the Script-Host via on_leave")
-                menu.trigger_command(menu.ref_by_path("Online>Session>Clear Blacklist"))
-                util.yield(113)
-            end
-        end
         if players.get_host() == players.user() then
             if is_trusted(pid) then
                 menu.trigger_command(menu.ref_by_path("Online>Session>Clear Blacklist"))
