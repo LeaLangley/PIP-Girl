@@ -2503,6 +2503,8 @@ path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLo
                     end
                 else
                     if ChangedHelmet then
+                        SET_PED_CONFIG_FLAG(players.user_ped(), 36, true)
+                        SET_PED_CONFIG_FLAG(players.user_ped(), 438, false)
                         while GET_ENTITY_SPEED(players.user_ped()) ~=0 do
                             util.yield(666)
                             if GET_ENTITY_SPEED(players.user_ped()) ==0 then
@@ -2511,9 +2513,14 @@ path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLo
                             if lang.get_string(menu.get_current_menu_list():getParent().menu_name) == "Profiles" then
                                 break
                             end
-                            SET_PED_CONFIG_FLAG(players.user_ped(), 36, true)
-                            SET_PED_CONFIG_FLAG(players.user_ped(), 438, false)
                         end
+                        while IS_PED_DEAD_OR_DYING(players.user_ped(), false) then
+                            util.yield(666)
+                            if lang.get_string(menu.get_current_menu_list():getParent().menu_name) == "Profiles" then
+                                break
+                            end
+                        end
+                        util.yield(666)
                         menu.trigger_commands("hat -1")
                         ChangedHelmet = false
                     end
