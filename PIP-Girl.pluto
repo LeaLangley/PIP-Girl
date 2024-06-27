@@ -499,7 +499,7 @@ local function StrategicKick(pid)
                         util.yield()
                     end
                     if menu.get_edition() > 1 then
-                        if players.user() == players.get_host() and players.are_stats_ready(pid) and players.are_stats_ready(players.user()) then
+                        if players.user() == players.get_host() then
                             menu.trigger_commands("blacklist " .. name)
                         else
                             menu.trigger_commands("kick " .. name)
