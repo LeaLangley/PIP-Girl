@@ -2480,14 +2480,16 @@ path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLo
         end
         menu.trigger_commands("lockoutfit off")
     else
-        if NETWORK_IS_ACTIVITY_SESSION() and 4 >= GET_NUMBER_OF_PLAYERS() then
-            if ChangedHelmet then
-                menu.trigger_commands("hat -1")
-                ChangedHelmet = false
-            end
-            if not temp_holding_outfit then
-                menu.trigger_commands("saveoutfit 1 PIP Girl Temp")
-                temp_holding_outfit = true
+        if (NETWORK_IS_ACTIVITY_SESSION() and 4 >= GET_NUMBER_OF_PLAYERS()) or asuka_lib.session_type() == "Singleplayer" then
+            if asuka_lib.session_type() ~= "Singleplayer" then
+                if ChangedHelmet then
+                    menu.trigger_commands("hat -1")
+                    ChangedHelmet = false
+                end
+                if not temp_holding_outfit then
+                    menu.trigger_commands("saveoutfit 1 PIP Girl Temp")
+                    temp_holding_outfit = true
+                end
             end
             menu.trigger_commands("lockoutfit off")
         else
