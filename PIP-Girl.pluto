@@ -1618,11 +1618,11 @@ path_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly
                         current_asuka_tech_vehicle = vehicle
                         buff_asuka_tech(vehicle)
                     else
-                        local is_in_interior = players.is_in_interior(players.user())
-                        if is_in_interior and not isInInteriorAT then
+                        local is_in_interior = GET_INTERIOR_FROM_ENTITY(vehicle)
+                        if is_in_interior ~= 0 and not isInInteriorAT then
                             isInInteriorAT = true
                             buff_asuka_tech(vehicle)
-                        elseif not is_in_interior and isInInteriorAT then
+                        elseif is_in_interior == 0 and isInInteriorAT then
                             isInInteriorAT = false
                             buff_asuka_tech(vehicle)
                         end
