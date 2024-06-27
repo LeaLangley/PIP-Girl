@@ -3337,8 +3337,8 @@ local SessionJoin = menu.list(Session, 'Join Settings', {}, 'Session Join Settin
 
 local customspawned
 local customspawnedvehicle
-local customspawn = nil
-local customVehiclespawn = nil
+local customspawn = { x = -1806.73, y = -126.08, z = 78.7865 }
+local customVehiclespawn = { x = 0, y = 0, z = 0 }
 local default_spawn = string.format("x:%.2f y:%.2f z:%.2f", -1806.73, -126.08, 78.7865)
 local default_vehicle_spawn = string.format("x:%.2f y:%.2f z:%.2f", 0, 0, 0)
 
@@ -3355,19 +3355,15 @@ path_custom_spawn = menu.text_input(SessionJoin, "Spawn", {"customspawnpos"}, ""
         customspawn = { x = x, y = y, z = z }
     else
         notify("Invalid custom spawn format.\nApplying Default spawn.")
-        menu.trigger_commands("customspawnpos "..default_spawn)
+        menu.trigger_commands("customspawnpos " .. default_spawn)
     end
 end, default_spawn)
 
-if not customspawn then
-    local x, y, z = extractCoordinatesFromString(default_spawn)
-    customspawn = { x = x, y = y, z = z }
-end
-
 menu.action(SessionJoin, "Set Custom Spawn", {""}, "", function()
-    currentpos = players.get_position(players.user())
-    customspawn = string.format("x:%.2f y:%.2f z:%.2f", currentpos.x, currentpos.y, currentpos.z + 0.6)
-    menu.trigger_commands("customspawnpos " .. customspawn)
+    local currentpos = players.get_position(players.user())
+    local new_spawn = string.format("x:%.2f y:%.2f z:%.2f", currentpos.x, currentpos.y, currentpos.z + 0.6)
+    customspawn = { x = currentpos.x, y = currentpos.y, z = currentpos.z + 0.6 }
+    menu.trigger_commands("customspawnpos " .. new_spawn)
 end)
 
 path_use_custom_spawn = menu.toggle(SessionJoin, "Use Custom Spawn", {""}, "", function(on)
@@ -3391,20 +3387,16 @@ path_custom_vehicle_spawn = menu.text_input(SessionJoin, "Vehicle Spawn", {"cust
     end
 end, default_vehicle_spawn)
 
-if not customVehiclespawn then
-    local x, y, z = extractCoordinatesFromString(default_vehicle_spawn)
-    customVehiclespawn = { x = x, y = y, z = z }
-end
-
 menu.action(SessionJoin, "Set Custom Vehicle Spawn", {""}, "", function()
-    currentpos = nil
+    local currentpos = nil
     if asuka_lib.is_user_inside_vehicle(false) then
         currentpos = GET_ENTITY_COORDS(entities.get_user_vehicle_as_handle(true))
     else
         currentpos = players.get_position(players.user())
     end
-    customVehiclespawn = string.format("x:%.2f y:%.2f z:%.2f", currentpos.x, currentpos.y, currentpos.z)
-    menu.trigger_commands("customspawnvehpos " .. customVehiclespawn)
+    local new_vehicle_spawn = string.format("x:%.2f y:%.2f z:%.2f", currentpos.x, currentpos.y, currentpos.z)
+    customVehiclespawn = { x = currentpos.x, y = currentpos.y, z = currentpos.z }
+    menu.trigger_commands("customspawnvehpos " .. new_vehicle_spawn)
 end)
 
 path_use_custom_vehicle_spawn = menu.toggle(SessionJoin, "Use Custom Vehicle Spawn", {""}, "", function(on)
