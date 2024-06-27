@@ -4257,6 +4257,8 @@ path_clear_traffic = menu.toggle_loop(Session, "Clear Traffic", {"antitraffic"},
             SET_REDUCE_VEHICLE_MODEL_BUDGET(true)
         else
             pop_multiplier_free = create_pop_multiplier(pop_multiplier_free, 1.13, 0.0)
+            local pos = players.get_position(players.user())
+            CLEAR_AREA_OF_VEHICLES(pos.x, pos.y, pos.z, 19666, false, false, false, false, false, false, 0)
             util.yield(6666)
         end
     else
