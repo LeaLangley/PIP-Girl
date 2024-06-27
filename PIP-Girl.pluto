@@ -227,21 +227,21 @@ local function check_CEO_Color()
         if asuka_lib.transition_state(true) == 1 and NETWORK_IS_PLAYER_ACTIVE(players.user()) then
             if players.user() == players.get_script_host() then
                 if ceo_color ~= players.get_org_colour(players.user()) then
-                    local fallback_color = 14
-                    for players.list() as pid do
-                        if players.get_boss(pid) ~= -1 then
-                            if pid ~= players.user() then
-                                local pidorgColor = players.get_org_colour(pid)
-                                if pidorgColor == ceo_color and not isModder(pid) and not is_trusted(pid) then
-                                    if fallback_color == ceo_color then
-                                        fallback_color = fallback_color - 1
-                                    end
-                                    memory.write_int(orgColor(pid), fallback_color)
-                                end
-                            else
-                                memory.write_int(orgColor(players.user()), ceo_color)
-                            end
-                        end
+                    --local fallback_color = 14
+                    --for players.list() as pid do
+                    if players.get_boss(pid) ~= -1 then
+                            --if pid ~= players.user() then
+                            --    local pidorgColor = players.get_org_colour(pid)
+                            --    if pidorgColor == ceo_color and not isModder(pid) and not is_trusted(pid) then
+                            --        if fallback_color == ceo_color then
+                            --            fallback_color = fallback_color - 1
+                            --        end
+                            --        memory.write_int(orgColor(pid), fallback_color)
+                            --    end
+                            --else
+                        memory.write_int(orgColor(players.user()), ceo_color)
+                            --end
+                        --end
                     end
                 end
             end
@@ -1529,7 +1529,7 @@ local asuka_tech_repair_amount = 1
 local asuka_tech_mission_repair_amount = 3
 local asukaTechBlip = nil
 local asuka_tech_dirt = 1
-local asuka_tech_dirt_amount = 0.06
+local asuka_tech_dirt_amount = 0.03
 local function repair_asuka_tech(vehicle)
     local repair_amount = 0
     local max_repair_limit = 1000
