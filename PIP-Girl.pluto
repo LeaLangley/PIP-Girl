@@ -690,7 +690,7 @@ local function mmi_claim_all_vehicles(special_vehicle, special_cords)
         end
         util.yield(1013)
         personal_vehicle = entities.get_user_personal_vehicle_as_handle()
-        if asuka_lib.does_entity_exist(personal_vehicle) then
+        if asuka_lib.does_entity_exist(personal_vehicle) and personal_vehicle_pos then
             requestControl(personal_vehicle)
             SET_ENTITY_COORDS_NO_OFFSET(personal_vehicle, personal_vehicle_pos.x, personal_vehicle_pos.y, personal_vehicle_pos.z, true, true, true)
             SET_ENTITY_ROTATION(personal_vehicle, personal_vehicle_rot.x, personal_vehicle_rot.y, personal_vehicle_rot.z, 2, true)
