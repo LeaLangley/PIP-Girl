@@ -4043,112 +4043,24 @@ menu.action(SessionInvite, "Copy Discord Session invite link.", {"invitelink"}, 
     end
 end)
 
-local stuckPlayers = {}
-local timeoutIgnore = {}
-local smartScriptHostMode = 1
-local ssh_stuck_detection_time = 30
-local ssh_stuck_detection_time_friendly = 20
-local ssh_unstuck_timeout = 13
-
-local smart_script_host_list = menu.list(Session, 'Smart Script Host', {}, 'A Smart Script host that will help YOU if stuck in loading screens etc.', function(); end)
-
-path_smart_script_host = menu.toggle_loop(smart_script_host_list, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
+path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
     if asuka_lib.transition_state(true) == 1 then
         if not IS_CUTSCENE_PLAYING() then
-            if (players.user() == players.get_host() or (players.user() == players.get_script_host() and (not is_trusted(players.get_host()) and not isModder(players.get_host())))) and smartScriptHostMode ~= 1 then
-                local playerList = {players.user()}
-                if smartScriptHostMode == 2 then
-                    playerList = players.list_only(true, true, false, true)
-                end
-                if smartScriptHostMode == 3 then
-                    playerList = players.list_except(true)
-                end
-                for playerList as pid do
-                    if worthToUnstuck(pid) then
-                        if not stuckPlayers[pid] then
-                            stuckPlayers[pid] = os.time()
-                        end
-                        local stuckDuration = os.time() - stuckPlayers[pid]
-                        local stuckDurationTol = ssh_stuck_detection_time
-                        if is_trusted(pid) then
-                            stuckDurationTol = ssh_stuck_detection_time_friendly
-                        end
-                        if timeoutIgnore[pid] then
-                            if timeoutIgnore[pid] < os.time() then
-                                timeoutIgnore[pid] = nil
-                            end
-                        end
-                        if players.get_script_host() ~= pid and stuckDuration > stuckDurationTol and stuckDuration < 420 and (not timeoutIgnore[pid] or (timeoutIgnore[pid] and os.time() > timeoutIgnore[pid])) then
-                            local name = players.get_name(pid)
-                            menu.trigger_commands("givesh " .. name)
-                            local givingSHTimeout = os.time() + 6
-                            while worthToUnstuck(pid) and players.get_script_host() ~= pid do
-                                util.yield(13)
-                                if os.time() > givingSHTimeout then
-                                    get_ScriptHost()
-                                    notify_cmd(name .. " took too long to give SH.")
-                                    timeoutIgnore[pid] = os.time() + 420
-                                    goto skipSSH
-                                end
-                                if players.get_script_host() == pid then
-                                    break
-                                end
-                            end
-                            if players.get_script_host() == pid then
-                                notify_cmd(name .. " is Loading since: "..stuckDuration)
-                                timeoutIgnore[pid] = nil
-                            end
-                            local loading_timeout = os.time() + ssh_unstuck_timeout
-                            while worthToUnstuck(pid) do
-                                util.yield(13)
-                                if os.time() > loading_timeout then
-                                    notify_cmd(name .. " took too long to load. Timeout reached.")
-                                    get_ScriptHost()
-                                    timeoutIgnore[pid] = os.time() + 213
-                                    break
-                                end
-                                if not healthyInternet(pid) then
-                                    notify_cmd(name .. " has trashy internet.")
-                                    get_ScriptHost()
-                                    timeoutIgnore[pid] = os.time() + 420
-                                    break
-                                end
-                                if players.get_script_host() ~= pid then
-                                    break
-                                end
-                            end
-                            if asuka_lib.player_exist(pid) then
-                                if not asuka_lib.is_loading(pid) then
-                                    notify_cmd(name .. " Finished Loading.")
-                                end
-                            else
-                                get_ScriptHost()
-                                notify_cmd(name .. " got Lost in the Void.")
-                                util.yield(25666)
-                            end
-                        end
-                    else
-                        stuckPlayers[pid] = nil
-                    end
-                end
-                if not is_trusted(players.get_script_host()) then
-                    if not players.are_stats_ready(players.get_script_host()) and not (is_trusted(players.get_host()) and isModder(players.get_script_host())) then
-                        get_ScriptHost()
-                    end
-                end
-                ::skipSSH::
-            else
+            if asuka_lib.is_loading(players.user()) then
+                util.yield(15666)
                 if asuka_lib.is_loading(players.user()) then
-                    util.yield(20666)
-                    if asuka_lib.is_loading(players.user()) then
-                        if players.user() ~= players.get_script_host() then
-                            get_ScriptHost()
-                            notify("You are loading too long.")
-                            util.yield(13666)
-                        end
-                    else
+                    if players.user() ~= players.get_script_host() then
+                        get_ScriptHost()
+                        notify("You are loading too long.")
                         util.yield(13666)
                     end
+                else
+                    util.yield(13666)
+                end
+            end
+            if players.get_host() == players.user() and not is_trusted(players.get_script_host()) then
+                if not players.are_stats_ready(players.get_script_host()) and isModder(players.get_script_host()) then
+                    get_ScriptHost()
                 end
             end
         else
@@ -4166,26 +4078,6 @@ path_smart_script_host = menu.toggle_loop(smart_script_host_list, "Smart Script 
         util.yield(13666)
     end
     util.yield(666)
-end)
-
-path_smart_script_host_mode = menu.list_select(smart_script_host_list, "Smart Script Host Help", {""}, "Smart script host only helps yourself, currently any other mode is not supported", {
-    {1, "Myself"},
-    {2, "Friendly"},
-    {3, "Everyone"},
-}, 1, function(value, menu_name, prev_value, click_type)
-    smartScriptHostMode = value
-end)
-
-path_ssh_detection_time = menu.slider(smart_script_host_list, "Stuck Detection Time", {"pgsdk"}, "in seconds", 13, 120, ssh_stuck_detection_time, 1, function(val)
-    ssh_stuck_detection_time = val
-end)
-
-path_ssh_detection_time_friendly = menu.slider(smart_script_host_list, "Friendly Stuck Detection Time", {"pgfsdt"}, "in seconds", 13, 120, ssh_stuck_detection_time_friendly, 1, function(val)
-    ssh_stuck_detection_time_friendly = val
-end)
-
-path_ssh_unstuck_timeout = menu.slider(smart_script_host_list, "Unstuck Timeout", {"pgust"}, "in seconds", 13, 60, ssh_unstuck_timeout, 1, function(val)
-    ssh_unstuck_timeout = val
 end)
 
 local in_self_god = false
@@ -4661,9 +4553,7 @@ local function removeFromTable(pid)
     in_orb_room[pid] = nil
     sussy_god[pid] = nil
     set_passive[pid] = nil
-    mk2noob[pid] = nil    
-    stuckPlayers[pid] = nil
-    timeoutIgnore[pid] = nil
+    mk2noob[pid] = nil
     IdentificationTimeout[pid] = nil
 end
 
@@ -5191,10 +5081,6 @@ local data_cfg = {
     store_post_webhook_if_friendly = path_post_webhook_if_friendly,
     store_invite_all_friends_on_webhook = path_invite_all_friends_on_webhook,
     store_smart_script_host = path_smart_script_host,
-    store_smart_script_host_mode = path_smart_script_host_mode,
-    store_ssh_detection_time = path_ssh_detection_time,
-    store_ssh_detection_time_friendly = path_ssh_detection_time_friendly,
-    store_ssh_unstuck_timeout = path_ssh_unstuck_timeout,
     store_ghost_god_mode = path_ghost_god_mode,
     store_clear_traffic = path_clear_traffic,
     store_soft_clear_traffic = path_soft_clear_traffic,
