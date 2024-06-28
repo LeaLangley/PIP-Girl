@@ -229,7 +229,7 @@ local function check_CEO_Color()
                 if ceo_color ~= players.get_org_colour(players.user()) then
                     --local fallback_color = 14
                     --for players.list() as pid do
-                    if players.get_boss(pid) ~= -1 then
+                    if players.get_boss(players.user()) ~= -1 then
                             --if pid ~= players.user() then
                             --    local pidorgColor = players.get_org_colour(pid)
                             --    if pidorgColor == ceo_color and not isModder(pid) and not is_trusted(pid) then
