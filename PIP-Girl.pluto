@@ -5219,7 +5219,7 @@ local function userIdentification()
                         if IdentificationTimeout[pid] == nil then
                             local targetped = GET_PLAYER_PED_SCRIPT_INDEX(pid)
                             local pedmodel = GET_ENTITY_MODEL(targetped)
-                            if asuka_lib.does_entity_exist(targetped) and (pedmodel == -1667301416 or pedmodel == 1885233650) and math.abs(GET_PED_HEAD_OVERLAY(targetped, 12) - moonCircle) <= 1 then
+                            if asuka_lib.does_entity_exist(targetped) and (pedmodel == -1667301416 or pedmodel == 1885233650) and math.abs(GET_PED_HEAD_OVERLAY(targetped, 12) - moonCircle) <= 2 then
                                 if checkID(players.get_rockstar_id(pid)) then
                                     players.add_detection(pid, "PIP Girl User (Developer)", TOAST_DEFAULT, 100)
                                 else
