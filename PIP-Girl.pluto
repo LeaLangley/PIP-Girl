@@ -252,6 +252,9 @@ end
 local urceoname = ""
 local function organization_control(org)
     if not NETWORK_IS_ACTIVITY_SESSION() then
+        if path_org_name:isValid() then
+            urceoname = menu.get_value(path_org_name)
+        end
         if players.get_boss(players.user()) ~= -1 then
             if players.get_org_type(players.user()) == 0 then
                 if org == "MC" then
@@ -845,7 +848,7 @@ path_auto_org = menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "
                 end
             else
                 local currentCeoName = menu.get_value(menu.ref_by_path("Online>CEO/MC>Name"))
-                if currentCeoName ~= urceoname and currentCeoName ~= lastCeoName then
+                if urceoname ~= "" and currentCeoName ~= urceoname and currentCeoName ~= lastCeoName then
                     menu.trigger_commands("ceoname " .. urceoname)
                     util.yield(13)
                     lastCeoName = menu.get_value(menu.ref_by_path("Online>CEO/MC>Name"))
