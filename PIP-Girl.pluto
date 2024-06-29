@@ -4519,12 +4519,12 @@ local function SessionCheck(pid)
                             menu.trigger_commands("ghostplayer " .. name .. " on")
                         end
                     end
-                    if asuka_lib.session_type() == "Public" and not asuka_lib.has_detection(pid, "Blacklist") then
+                    if asuka_lib.session_type() == "Public" then
                         local finalNotification = "Detected Blacklisted Player: \n" .. name .. " - " .. rid
                         if notification ~= "" then
                             finalNotification = finalNotification .. "\n" .. notification
                         end
-                        notify(finalNotification)
+                        notify_cmd(finalNotification)
                     end             
                 end
             end
