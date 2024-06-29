@@ -4486,7 +4486,7 @@ local function SessionCheck(pid)
     while asuka_lib.player_exist(pid) and not menu.player_root(pid):isValid() do
         util.yield(666)
     end
-    util.yield(666)
+    util.yield(113)
     if asuka_lib.session_type() ~= current_session_type then
         current_session_type = asuka_lib.session_type()
         startupConfig()
