@@ -3449,21 +3449,6 @@ path_use_favorite_vehicle_spawn = menu.toggle(SessionJoin, "Spawn Favorite Vehic
     end
 end)
 
-path_quick_session_join = menu.toggle(Session, "Quick Session Join", {"quickjoin"}, " Please Set you're Spawn to \"Last Location\" or \"Random\".\nQuick Session Joining.", function(on)
-    if on then
-        menu.ref_by_path("Online>Transitions>Speed Up>Don't Wait For Data Broadcast"):applyDefaultState()
-        menu.ref_by_path("Online>Transitions>Speed Up>Don't Wait For Mission Launcher"):applyDefaultState()
-        menu.trigger_commands("speedupspawn on")
-        menu.trigger_commands("skipswoopdown on")
-        --PIP_STAT_SET_INT("SPAWN_LOCATION_SETTING", 4)
-    else
-        menu.ref_by_path("Online>Transitions>Speed Up>Don't Wait For Data Broadcast"):applyDefaultState()
-        menu.ref_by_path("Online>Transitions>Speed Up>Don't Wait For Mission Launcher"):applyDefaultState()
-        menu.ref_by_path("Online>Transitions>Speed Up>Don't Ask For Permission To Spawn"):applyDefaultState()
-        menu.ref_by_path("Online>Transitions>Skip Swoop Down"):applyDefaultState()
-    end
-end)
-
 menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join Invite only\nIf R* Admin Detected", function()
     for players.list_except(true) as pid do
         if players.is_marked_as_admin(pid) or players.is_marked_as_modder_or_admin(pid) then
@@ -5070,7 +5055,6 @@ local data_cfg = {
     store_use_custom_vehicle_spawn = path_use_custom_vehicle_spawn,
     store_favorite_vehicle_spawn = path_favorite_vehicle_spawn,
     store_use_favorite_vehicle_spawn = path_use_favorite_vehicle_spawn,
-    store_quick_session_join = path_quick_session_join,
     store_block_orb_room = path_block_orb_room,
     store_block_kosatka_missile_terminal = path_block_kosatka_missile_terminal,
     store_anit_terrorbyte = path_anit_terrorbyte,
