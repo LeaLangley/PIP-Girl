@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local script_version = "1.174"
+local script_version = "1.175"
 
 local lust_upDate = {year = 2024, month = 7, day = 3, hour = 6, min = 6, sec = 6}
 
@@ -2603,7 +2603,7 @@ path_clothing_shop_outfit_lock = menu.toggle(smart_outfit_settings, "in clothing
     end
 end)
 
-menu.divider(smart_outfit_settings, "Helmets:")
+menu.divider(smart_outfit_settings, "(leave -1 = off) Helmets:")
 
 path_bike_helmet_var = menu.slider(smart_outfit_settings, 'Smart Outfit Bike Helmet', {'pgsobh'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet.', -1, 201, bike_OutfitLockHelmet, 1, function (new_value)
     bike_OutfitLockHelmet = new_value
