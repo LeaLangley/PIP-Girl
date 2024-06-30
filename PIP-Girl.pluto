@@ -2479,12 +2479,28 @@ end)
 
 menu.divider(Outfit, "Smart Outfit")
 
-local OutfitLockHelmet = -1
-local OutfitLockHelmetColor = -1
+local bike_OutfitLockHelmet = -1
+local bike_OutfitLockHelmetColor = -1
+local Aircraft_OutfitLockHelmet = -1
+local Aircraft_OutfitLockHelmetColor = -1
 local ChangedHelmet = false
 local temp_holding_outfit = nil
-path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLock"}, "This will lock you outfit only if u dont have interaction menu open or in some critical mission.", function()
-    if util.is_interaction_menu_open() then
+
+local dont_lock_interaction_outfit = true
+local dont_lock_clothing_shop_outfit = false
+local clothing_shop_id = {165633, 235265, 166145, 140801, 176129, 169217, 201473, 171265, 137217, 198145, 183553, 175361, 179713, 202497}
+local function should_not_lock_outfit()
+    if dont_lock_interaction_outfit and util.is_interaction_menu_open() then
+        return true
+    end
+    if dont_lock_clothing_shop_outfit and contains(clothing_shop_id, GET_INTERIOR_FROM_ENTITY(players.user_ped())) then
+        return true
+    end
+    return false
+end
+
+path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit", {"Smartoutfit"}, "This will lock you outfit only if u dont have interaction menu open or in some critical mission.\nalso chang ehte appearance of u outfit depending on situations.", function()
+    if should_not_lock_outfit() then
         if ChangedHelmet then
             menu.trigger_commands("hat -1")
             ChangedHelmet = false
@@ -2509,54 +2525,43 @@ path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLo
                 menu.trigger_commands("outfit xyz PIPGirlTemp")
                 temp_holding_outfit = false
             end
-            if OutfitLockHelmet ~= -1 then
-                SET_PED_CONFIG_FLAG(players.user_ped(), 36, true)
-                SET_PED_CONFIG_FLAG(players.user_ped(), 438, false)
-                local vehicleClass = GET_VEHICLE_CLASS(GET_VEHICLE_PED_IS_IN(players.user_ped(), true))
-                if IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) and vehicleClass then
-                    if menu.get_state(menu.ref_by_path("Self>Appearance>Outfit>Hat")) == "-1" then
-                        if vehicleClass == 8 or vehicleClass == 13 then
-                            menu.trigger_commands("hat "..OutfitLockHelmet)
-                            SET_PED_CONFIG_FLAG(players.user_ped(), 36, true)
-                            SET_PED_CONFIG_FLAG(players.user_ped(), 438, false)
-                            util.yield(13)
-                            if OutfitLockHelmetColor ~= -1 then
-                                menu.trigger_commands("hatvar "..OutfitLockHelmetColor)
-                            end
-                            ChangedHelmet = true
-                        end
-                    end
-                else
-                    if ChangedHelmet then
+            if IS_PED_IN_ANY_VEHICLE(players.user_ped(), false) then
+                if menu.get_state(menu.ref_by_path("Self>Appearance>Outfit>Hat")) == "-1" then
+                    local vehicleClass = GET_VEHICLE_CLASS(GET_VEHICLE_PED_IS_IN(players.user_ped(), true))
+                    if bike_OutfitLockHelmet ~= -1 and vehicleClass == 8 then
                         SET_PED_CONFIG_FLAG(players.user_ped(), 36, true)
                         SET_PED_CONFIG_FLAG(players.user_ped(), 438, false)
-                        while GET_ENTITY_SPEED(players.user_ped()) ~=0 do
-                            util.yield(666)
-                            if GET_ENTITY_SPEED(players.user_ped()) ==0 then
-                                break
-                            end
-                            if lang.get_string(menu.get_current_menu_list():getParent().menu_name) == "Profiles" then
-                                break
-                            end
+                        menu.trigger_commands("hat "..bike_OutfitLockHelmet)
+                        if bike_OutfitLockHelmetColor ~= -1 then
+                            menu.trigger_commands("hatvar "..bike_OutfitLockHelmetColor)
                         end
-                        while IS_PED_DEAD_OR_DYING(players.user_ped(), false) do
-                            util.yield(666)
-                            if lang.get_string(menu.get_current_menu_list():getParent().menu_name) == "Profiles" then
-                                break
-                            end
-                        end
-                        util.yield(666)
-                        menu.trigger_commands("hat -1")
-                        ChangedHelmet = false
+                        ChangedHelmet = true
                     end
+                    if Aircraft_OutfitLockHelmet ~= -1 and (vehicleClass == 15 or vehicleClass == 16) then
+                        SET_PED_CONFIG_FLAG(players.user_ped(), 36, true)
+                        SET_PED_CONFIG_FLAG(players.user_ped(), 438, false)
+                        menu.trigger_commands("hat "..Aircraft_OutfitLockHelmet)
+                        if Aircraft_OutfitLockHelmetColor ~= -1 then
+                            menu.trigger_commands("hatvar "..Aircraft_OutfitLockHelmetColor)
+                        end
+                        ChangedHelmet = true
+                    end
+                end
+            else
+                if ChangedHelmet then
+                    while GET_ENTITY_SPEED(players.user_ped()) ~= 0 do
+                        util.yield(666)
+                    end
+                    while IS_PED_DEAD_OR_DYING(players.user_ped(), false) do
+                        util.yield(666)
+                    end
+                    util.yield(666)
+                    menu.trigger_commands("hat -1")
+                    ChangedHelmet = false
                 end
             end
         end
     end
-    if ChangedHelmet then
-        menu.trigger_commands("hat -1")
-        ChangedHelmet = false
-    end 
     if foreverYoung and asuka_lib.transition_state(true) <3 then
         SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
         SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
@@ -2566,6 +2571,7 @@ path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit Lock", {"SmartLo
         SET_PED_HEAD_OVERLAY(players.user_ped(), 3, 255, 0.0) --Remove any aging processes.
         SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
     end
+    util.yield(113)
 end, function()
     menu.trigger_commands("lockoutfit off")
     if ChangedHelmet then
@@ -2578,12 +2584,41 @@ end, function()
     end
 end)
 
-path_bike_helmet_var = menu.slider(Outfit, 'Smart Outfit Bike Helmet', {'SmartLockHelmet'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet.', -1, 201, OutfitLockHelmet, 1, function (new_value)
-    OutfitLockHelmet = new_value
+local smart_outfit_settings = menu.list(Outfit, 'Smart Outfit Settings', {}, 'Smart Outfit Settings.', function(); end)
+
+menu.divider(smart_outfit_settings, "Dont lock outfit when:")
+path_interaction_menu_outfit_lock = menu.toggle(smart_outfit_settings, "interaction menu open", {""}, "", function(on)
+    if on then
+        dont_lock_interaction_outfit = true
+    else
+        dont_lock_interaction_outfit = false
+    end
+end, true)
+
+path_clothing_shop_outfit_lock = menu.toggle(smart_outfit_settings, "in clothing shop", {""}, "", function(on)
+    if on then
+        dont_lock_clothing_shop_outfit = true
+    else
+        dont_lock_clothing_shop_outfit = false
+    end
 end)
 
-path_bike_helmet_color = menu.slider(Outfit, 'Smart Outfit Bike Helmet Color', {'SmartLockHelmetColor'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet Color.', -1, 50, OutfitLockHelmetColor, 1, function (new_value)
-    OutfitLockHelmetColor = new_value
+menu.divider(smart_outfit_settings, "Helmets:")
+
+path_bike_helmet_var = menu.slider(smart_outfit_settings, 'Smart Outfit Bike Helmet', {'pgsobh'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet.', -1, 201, bike_OutfitLockHelmet, 1, function (new_value)
+    bike_OutfitLockHelmet = new_value
+end)
+
+path_bike_helmet_color = menu.slider(smart_outfit_settings, 'Smart Outfit Bike Helmet Color', {'pgsobhc'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet Color.', -1, 50, bike_OutfitLockHelmetColor, 1, function (new_value)
+    bike_OutfitLockHelmetColor = new_value
+end)
+
+path_Aircraft_helmet_var = menu.slider(smart_outfit_settings, 'Smart Outfit Aircraft Helmet', {'pgsoah'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet.', -1, 201, bike_OutfitLockHelmet, 1, function (new_value)
+    Aircraft_OutfitLockHelmet = new_value
+end)
+
+path_Aircraft_helmet_color = menu.slider(smart_outfit_settings, 'Smart Outfit Aircraft Helmet Color', {'pgsoahc'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet Color.', -1, 50, bike_OutfitLockHelmetColor, 1, function (new_value)
+    Aircraft_OutfitLockHelmetColor = new_value
 end)
 
 menu.divider(Game, "Exclude Mission.")
@@ -4465,8 +4500,6 @@ local function startupCheck()
         }
         auto_updater.run_auto_update(auto_update_config)
     else
-        auto_updater.run_auto_update(auto_update_config)
-        util.yield(restart_delay)
         notify(script_version.."\n"..startupmsg)
     end
 end
@@ -5038,8 +5071,12 @@ local data_cfg = {
     --Outfit
     store_vampire_young = path_vampire_young,
     store_smart_outfit_lock = path_smart_outfit_lock,
+    store_interaction_menu_outfit_lock = path_interaction_menu_outfit_lock,
+    store_clothing_shop_outfit_lock = path_clothing_shop_outfit_lock,
     store_bike_helmet_var = path_bike_helmet_var,
     store_bike_helmet_color = path_bike_helmet_color,
+    store_Aircraft_helmet_var = path_Aircraft_helmet_var,
+    store_Aircraft_helmet_color = path_Aircraft_helmet_color,
     --Game
     store_auto_interact = path_auto_interact,
     store_auto_skip_conversation = path_auto_skip_conversation,
@@ -5276,9 +5313,9 @@ end
 --    asuka_lib.write_to_file(store_dir..'version.txt', os.time())
 --    util.yield(420)
 --    util.restart_script()
+util.create_thread(startupCheck)
 asuka_lib.asuka_booty = false
 asuka_lib.load_and_apply_config(store_dir..'settings.json', data_cfg)
-util.create_thread(startupCheck)
 util.create_thread(startupConfig)
 util.create_thread(crashlistConfig)
 util.create_thread(userIdentification)
