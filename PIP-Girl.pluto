@@ -49,7 +49,6 @@ local auto_update_config = {
         },
     }
 }
-util.create_thread(auto_updater.run_auto_update(auto_update_config))
 
 if not filesystem.exists(filesystem.scripts_dir().."/lib/Asuka_Library/asuka_lib.pluto") then
     util.toast("If the script dosnt restart working, there might be a issue downloading resources to make this script work.")
@@ -5313,6 +5312,7 @@ end
 --    asuka_lib.write_to_file(store_dir..'version.txt', os.time())
 --    util.yield(420)
 --    util.restart_script()
+auto_updater.run_auto_update(auto_update_config)
 util.create_thread(startupCheck)
 asuka_lib.asuka_booty = false
 asuka_lib.load_and_apply_config(store_dir..'settings.json', data_cfg)
