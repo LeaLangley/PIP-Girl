@@ -218,6 +218,15 @@ local function is_trusted(pid)
     return false
 end
 
+local function is_sc_friend(pid)
+    for players.list_only(true, true, false, false) as plid do
+        if plid == pid then
+            return true
+        end
+    end
+    return false
+end
+
 local function orgColor(pid)
     return memory.script_global(2648918 + 818 + 44 + 1 + memory.read_int(memory.script_global(2648918 + 818 + 11 + 1 + (memory.read_int(memory.script_global(1886967 + 1 + (pid * 609) + 10))))) * 2 + 1)
 end --thanks to galactys
@@ -4475,7 +4484,7 @@ local function SessionCheck(pid)
     end
     if asuka_lib.player_exist(pid) then
         if is_player_in_blacklist(rid) then
-            if not is_trusted(pid) then
+            if not is_sc_friend(pid) then
                 if rid == players.get_rockstar_id(pid) then
                     local name = players.get_name(pid)
                     if name == players.get_name(players.user()) then
@@ -4607,7 +4616,7 @@ player_menu = function(pid)
             return
         end
     end)
-    if is_trusted(pid) then
+    if is_sc_friend(pid) then
         set_as_illusion(pid, set_passive, false)
         menu.player_root(pid):divider('~=^^=~')
         return
