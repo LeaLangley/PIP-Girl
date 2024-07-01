@@ -3509,10 +3509,10 @@ local orbRoomDoorDMG = nil
 
 path_block_orb_room = menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockorb"}, "Blocks the Entrance for the Orb Room", function()
     if asuka_lib.allow_spawn_check() then
-        orbRoomGlass = asuka_lib.spawn_and_check_object(orbRoomGlass, 2465657597, v3.new(335.882996, 4833.833008, -59.023998), 0, 0, 125, nil, 13, true, true, true)
-        orbRoomTable = asuka_lib.spawn_and_check_object(orbRoomTable, 81317377, v3.new(328.2, 4829, -58.9), 0, 0, 0, nil, 13, true, true, true)
-        orbRoomTable2 = asuka_lib.spawn_and_check_object(orbRoomTable2, 81317377, v3.new(328.2, 4829, -59.4), 0, 0, 0, nil, 13, true, true, true)
-        orbRoomDoorDMG = asuka_lib.spawn_and_check_object(orbRoomDoorDMG, 3109994857, v3.new(337.611, 4832.954, -58.595), 10, 0, 125, nil, 13, false, true, true)
+        orbRoomGlass = asuka_lib.spawn_and_check_object(orbRoomGlass, "prop_showroom_glass_1b", v3.new(335.882996, 4833.833008, -59.023998), 0, 0, 125, nil, 13, true, true, true)
+        orbRoomTable = asuka_lib.spawn_and_check_object(orbRoomTable, "xs_prop_arena_flipper_large_01a_sf", v3.new(328.2, 4829, -58.9), 0, 0, 0, nil, 13, true, true, true)
+        orbRoomTable2 = asuka_lib.spawn_and_check_object(orbRoomTable2, "xs_prop_arena_flipper_large_01a_sf", v3.new(328.2, 4829, -59.4), 0, 0, 0, nil, 13, true, true, true)
+        orbRoomDoorDMG = asuka_lib.spawn_and_check_object(orbRoomDoorDMG, "ba_prop_battle_secpanel_dam", v3.new(337.611, 4832.954, -58.595), 10, 0, 125, nil, 13, false, true, true)
         if asuka_lib.transition_state(true) <3 then
             for players.list_except(true) as pid do
                 local players_position = players.get_position(pid)
@@ -3555,8 +3555,8 @@ local kosatkaMissile1 = nil
 local kosatkaMissile2 = nil
 path_block_kosatka_missile_terminal = menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {"blockkosatka"}, "Blocks the Missile terminal", function()
     if asuka_lib.allow_spawn_check() and asuka_lib.transition_state(true) < 3 and GET_INTERIOR_FROM_ENTITY(players.user_ped()) ~= 281345 then
-        kosatkaMissile1 = asuka_lib.spawn_and_check_object(kosatkaMissile1, 1228076166, v3.new(1558.9, 387.111, -50.666), 0, 0, 0, nil, 13, true, true, true)
-        kosatkaMissile2 = asuka_lib.spawn_and_check_object(kosatkaMissile2, 1228076166, v3.new(1558.9, 388.777, -50.666), 0, 0, 0, nil, 13, true, true, true)
+        kosatkaMissile1 = asuka_lib.spawn_and_check_object(kosatkaMissile1, "hei_prop_heist_weed_pallet_02", v3.new(1558.9, 387.111, -50.666), 0, 0, 0, nil, 13, true, true, true)
+        kosatkaMissile2 = asuka_lib.spawn_and_check_object(kosatkaMissile2, "hei_prop_heist_weed_pallet_02", v3.new(1558.9, 388.777, -50.666), 0, 0, 0, nil, 13, true, true, true)
     else
         asuka_lib.delete_entity(kosatkaMissile1)
         asuka_lib.delete_entity(kosatkaMissile2)
@@ -3573,9 +3573,9 @@ local antiTerrorGlass = nil
 --local antiTerrorFire = nil
 path_anit_terrorbyte = menu.toggle_loop(SessionWorld, "Anti Terrorbyte", {"blockterror"}, "Blocks the MK2 acces", function()
     if asuka_lib.allow_spawn_check() and asuka_lib.transition_state(true) < 3 then
-        antiTerrorGlass = asuka_lib.spawn_and_check_object(antiTerrorGlass, 2465657597, v3.new(-1420.666, -3014.579, -79.0), 0, 0, -20, nil, 13, true, true, true)
+        antiTerrorGlass = asuka_lib.spawn_and_check_object(antiTerrorGlass, "prop_showroom_glass_1b", v3.new(-1420.666, -3014.579, -79.0), 0, 0, -20, nil, 13, true, true, true)
         --antiTerrorShocker = asuka_lib.spawn_and_check_object(antiTerrorShocker, 1870961552, v3.new(-1420.8349609375, -3016.2561035156, -76.113542541504), 180, 0, 90, nil, 13, true, false)
-        --antiTerrorFire = asuka_lib.spawn_and_check_object(antiTerrorFire, 3229200997, v3.new(-1420.8349609375, -3016.2561035156, -80.066642541504), 0, 0, 90, nil, 13, true, true)
+        --antiTerrorFire = asuka_lib.spawn_and_check_object(antiTerrorFire, "prop_beach_fire", v3.new(-1420.8349609375, -3016.2561035156, -80.066642541504), 0, 0, 90, nil, 13, true, true)
     else
         util.yield(6666)
     end
@@ -3587,44 +3587,42 @@ end, function()
 end)
 
 local shrineElements = {
-    {var = "vamp_candle_1", conditions = {199039671, v3.new(-1811.891, -128.114, 77.788), 0, 0, 0, nil, 13, false, false, false}},
-    {var = "vamp_candle_2", conditions = {199039671, v3.new(-1812.547, -126.255, 77.788), 0, 0, 0, nil, 13, false, false, false}},
-    {var = "gravestone", conditions = {1667673456, v3.new(-1812.212, -127.127, 80.265), 0, 180, -70, nil, 13, false, false, false}},
-    {var = "skull", conditions = {1925085104, v3.new(-1812.212, -127.127, 79.0), 0, 0, 110, nil, 13, false, false, false}},
-    {var = "flowers_1", conditions = {2543019639, v3.new(-1813.49, -131.37, 77.86), 0, 0, 0, nil, 13, false, false, false}},
-    {var = "small_candle_1", conditions = {540021153, v3.new(-1811.97, -127.64, 77.81), 0, 0, 13, nil, 13, false, false, false}},
-    {var = "small_candle_2", conditions = {540021153, v3.new(-1812.29, -126.63, 77.81), 0, 0, 420, nil, 13, false, false, false}},
-    {var = "small_candle_3", conditions = {540021153, v3.new(-1811.35, -125.05, 77.81), 0, 0, 666, nil, 13, false, false, false}},
-    {var = "small_candle_4", conditions = {540021153, v3.new(-1808.91, -122.75, 77.81), 0, 0, 13, nil, 13, false, false, false}},
-    {var = "small_candle_5", conditions = {540021153, v3.new(-1805.61, -122.23, 77.81), 0, 0, 420, nil, 13, false, false, false}},
-    {var = "small_candle_6", conditions = {540021153, v3.new(-1802.71, -123.86, 77.81), 0, 0, 666, nil, 13, false, false, false}},
-    {var = "small_candle_7", conditions = {540021153, v3.new(-1802.16, -128.65, 78.01), 0, 0, 13, nil, 13, false, false, false}},
-    {var = "small_candle_8", conditions = {540021153, v3.new(-1801.09, -126.17, 78.01), 0, 0, 420, nil, 13, false, false, false}},
-    {var = "small_candle_9", conditions = {540021153, v3.new(-1791.51, -139.59, 74.20), 0, 0, 666, nil, 13, false, false, false}},
-    {var = "small_candle_10", conditions = {540021153, v3.new(-1794.39, -139.90, 74.20), 0, 0, 13, nil, 13, false, false, false}},
-    {var = "roses_1", conditions = {4241635085, v3.new(-1812.52, -125.81, 77.79), 0, 0, 420, nil, 13, false, false, false}},
-    {var = "roses_2", conditions = {4241635085, v3.new(-1811.66, -128.39, 77.79), 0, 0, 666, nil, 13, false, false, false}},
-    {var = "firepit", conditions = {1125395611, v3.new(-1806.11, -130.02, 77.79), 0, 0, 0, nil, 13, false, true, true}},
-    {var = "fire1", conditions = {3229200997, v3.new(-1806.1933, -130.1367, 77.90), 0, 0, 13, nil, 13, false, true, true}},
-    {var = "flagpole1", conditions = {3539805879, v3.new(-1799.96, -126.12, 76.18), 0, 0, 0, nil, 13, false, false, false}},
-    {var = "flagpole2", conditions = {3539805879, v3.new(-1809.21, -134.90, 76.72), 0, 0, 0, nil, 13, false, false, false}},
-    {var = "flagpole3", conditions = {3539805879, v3.new(-1805.41, -118.65, 76.31), 0, 0, 0, nil, 13, false, false, false}},
-    {var = "flagpole4", conditions = {3539805879, v3.new(-1804.57, -118.48, 75.96), 0, 0, 0, nil, 13, false, false, false}},
-    {var = "flagpole5", conditions = {3539805879, v3.new(-1815.91, -123.55, 75.82), 0, 0, 0, nil, 13, false, false, false}},
-    {var = "flagpole6", conditions = {3539805879, v3.new(-1815.41, -123.35, 76.11), 0, 0, 0, nil, 13, false, false, false}},
-    {var = "canopy", conditions = {1559093072, v3.new(-1808.43, -125.63, 83.41), 0, 0, 141, nil, 13, false, false, false}},
-    {var = "flagpole7", conditions = {3539805879, v3.new(-1799.96, -126.12, 83.13), 0, 0, 0, nil, 13, false, false, false}},
-    {var = "flagpole8", conditions = {3539805879, v3.new(-1809.21, -134.90, 83.13), 0, 0, 0, nil, 13, false, false, false}},
-    {var = "jpflag", conditions = {4116151441, v3.new(-1799.95, -126.3, 89.63), 0, 0, 13, nil, 13, false, false, false}},
-    {var = "cdflag", conditions = {1627828183, v3.new(-1809.17, -135.1, 89.63), 0, 0, -13, nil, 13, false, false, false}},
-    {var = "pc1", conditions = {2809166081, v3.new(-1801.90, -128.70, 77.99), 0, 0, 0, nil, 13, false, false, false}},
-    {var = "pc2", conditions = {4151318791, v3.new(-1801.91, -128.70, 78.00), 0, 0, -13, nil, 13, false, false, false}},
-    {var = "neonbg1", conditions = {2488440396, v3.new(-1811.4531, -122.53303, 79.13), 0, 0, 223, nil, 0, false, false, false}},
-    {var = "neon1", conditions = {3289598046, v3.new(-1811.4531, -122.53303, 79.13), 0, 0, 223, nil, 0, false, false, false}},
-    {var = "neonbg2", conditions = {4247336133, v3.new(-1807.5847, -120.3335, 79.13), 0, 0, 145, nil, 0, false, false, false}},
-    {var = "neon2", conditions = {1086909509, v3.new(-1807.5847, -120.3335, 79.13), 0, 0, 145, nil, 0, false, false, false}},
-    {var = "neonbg3", conditions = {3927826330, v3.new(-1803.0785, -121.25219, 79.66), 90, 0, -28, nil, 0, false, false, false}},
-    {var = "neon3", conditions = {711334609, v3.new(-1803.0785, -121.25219, 79.66), 90, 0, -28, nil, 0, false, false, false}},
+    {var = "vamp_candle_1", conditions = {"v_res_m_candle", v3.new(-1811.891, -128.114, 77.788), 0, 0, 0, nil, 13, false, false, false}},
+    {var = "vamp_candle_2", conditions = {"v_res_m_candle", v3.new(-1812.547, -126.255, 77.788), 0, 0, 0, nil, 13, false, false, false}},
+    {var = "gravestone", conditions = {"prop_prlg_gravestone_05a_l1", v3.new(-1812.212, -127.127, 80.265), 0, 180, -70, nil, 13, false, false, false}},
+    {var = "skull", conditions = {"vw_prop_casino_art_skull_01b", v3.new(-1812.212, -127.127, 79.0), 0, 0, 110, nil, 13, false, false, false}},
+    {var = "flowers_1", conditions = {"prop_plant_flower_01", v3.new(-1813.49, -131.37, 77.86), 0, 0, 0, nil, 13, false, false, false}},
+    {var = "small_candle_1", conditions = {"v_prop_floatcandle", v3.new(-1811.97, -127.64, 77.81), 0, 0, 13, nil, 13, false, false, false}},
+    {var = "small_candle_2", conditions = {"v_prop_floatcandle", v3.new(-1812.29, -126.63, 77.81), 0, 0, 420, nil, 13, false, false, false}},
+    {var = "small_candle_3", conditions = {"v_prop_floatcandle", v3.new(-1811.35, -125.05, 77.81), 0, 0, 666, nil, 13, false, false, false}},
+    {var = "small_candle_4", conditions = {"v_prop_floatcandle", v3.new(-1808.91, -122.75, 77.81), 0, 0, 13, nil, 13, false, false, false}},
+    {var = "small_candle_5", conditions = {"v_prop_floatcandle", v3.new(-1805.61, -122.23, 77.81), 0, 0, 420, nil, 13, false, false, false}},
+    {var = "small_candle_6", conditions = {"v_prop_floatcandle", v3.new(-1802.71, -123.86, 77.81), 0, 0, 666, nil, 13, false, false, false}},
+    {var = "small_candle_7", conditions = {"v_prop_floatcandle", v3.new(-1802.16, -128.65, 78.01), 0, 0, 13, nil, 13, false, false, false}},
+    {var = "small_candle_8", conditions = {"v_prop_floatcandle", v3.new(-1801.09, -126.17, 78.01), 0, 0, 420, nil, 13, false, false, false}},
+    {var = "small_candle_9", conditions = {"v_prop_floatcandle", v3.new(-1791.51, -139.59, 74.20), 0, 0, 666, nil, 13, false, false, false}},
+    {var = "small_candle_10", conditions = {"v_prop_floatcandle", v3.new(-1794.39, -139.90, 74.20), 0, 0, 13, nil, 13, false, false, false}},
+    {var = "roses_1", conditions = {"v_res_rosevasedead", v3.new(-1812.52, -125.81, 77.79), 0, 0, 420, nil, 13, false, false, false}},
+    {var = "roses_2", conditions = {"v_res_rosevasedead", v3.new(-1811.66, -128.39, 77.79), 0, 0, 666, nil, 13, false, false, false}},
+    {var = "firepit", conditions = {"h4_prop_h4_firepit_rocks_01a", v3.new(-1806.11, -130.02, 77.79), 0, 0, 0, nil, 13, false, true, true}},
+    {var = "fire1", conditions = {"prop_beach_fire", v3.new(-1806.1933, -130.1367, 77.90), 0, 0, 13, nil, 13, false, true, true}},
+    {var = "flagpole1", conditions = {"prop_flagpole_3a", v3.new(-1799.96, -126.12, 76.18), 0, 0, 0, nil, 13, false, false, false}},
+    {var = "flagpole2", conditions = {"prop_flagpole_3a", v3.new(-1809.21, -134.90, 76.72), 0, 0, 0, nil, 13, false, false, false}},
+    {var = "flagpole3", conditions = {"prop_flagpole_3a", v3.new(-1805.41, -118.65, 76.31), 0, 0, 0, nil, 13, false, false, false}},
+    {var = "flagpole4", conditions = {"prop_flagpole_3a", v3.new(-1804.57, -118.48, 75.96), 0, 0, 0, nil, 13, false, false, false}},
+    {var = "flagpole5", conditions = {"prop_flagpole_3a", v3.new(-1815.91, -123.55, 75.82), 0, 0, 0, nil, 13, false, false, false}},
+    {var = "flagpole6", conditions = {"prop_flagpole_3a", v3.new(-1815.41, -123.35, 76.11), 0, 0, 0, nil, 13, false, false, false}},
+    {var = "canopy", conditions = {"sf_mpsecurity_additions_musicrooftop_canopy2_lod", v3.new(-1808.43, -125.63, 83.41), 0, 0, 141, nil, 13, false, false, false}},
+    {var = "flagpole7", conditions = {"prop_flagpole_3a", v3.new(-1799.96, -126.12, 83.13), 0, 0, 0, nil, 13, false, false, false}},
+    {var = "flagpole8", conditions = {"prop_flagpole_3a", v3.new(-1809.21, -134.90, 83.13), 0, 0, 0, nil, 13, false, false, false}},
+    {var = "jpflag", conditions = {"prop_flag_japan", v3.new(-1799.95, -126.3, 89.63), 0, 0, 13, nil, 13, false, false, false}},
+    {var = "cdflag", conditions = {"prop_flag_canada", v3.new(-1809.17, -135.1, 89.63), 0, 0, -13, nil, 13, false, false, false}},
+    {var = "neonbg1", conditions = {"ch_chint02_vinewood_mural", v3.new(-1811.4531, -122.53303, 79.13), 0, 0, 223, nil, 0, false, false, false}},
+    {var = "neon1", conditions = {"ch_chint02_vinewood_neon", v3.new(-1811.4531, -122.53303, 79.13), 0, 0, 223, nil, 0, false, false, false}},
+    {var = "neonbg2", conditions = {"ch_chint02_robotgum_mural", v3.new(-1807.5847, -120.3335, 79.13), 0, 0, 145, nil, 0, false, false, false}},
+    {var = "neon2", conditions = {"ch_chint02_robotgum_neon", v3.new(-1807.5847, -120.3335, 79.13), 0, 0, 145, nil, 0, false, false, false}},
+    {var = "neonbg3", conditions = {"ch_chint02_carcrash_mural", v3.new(-1803.0785, -121.25219, 79.66), 90, 0, -28, nil, 0, false, false, false}},
+    {var = "neon3", conditions = {"ch_chint02_carcrash_neon", v3.new(-1803.0785, -121.25219, 79.66), 90, 0, -28, nil, 0, false, false, false}},
 }
 local entityVars = {}
 local Asuka_shrine_blip = nil
