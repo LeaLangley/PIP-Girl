@@ -3662,10 +3662,9 @@ end, function()
         util.remove_blip(Asuka_shrine_blip)
     end
     Asuka_shrine_blip = nil
-    for ipairs(shrineElements) as element do
-        local entityVar = element.var
-        asuka_lib.delete_entity(entityVars[entityVar])
-        entityVars[element.var] = nil
+    for var in pairs(entityVars) do
+        asuka_lib.delete_entity(entityVars[var])
+        entityVars[var] = nil
     end
 end)
 --local save_zone = nil
