@@ -5314,8 +5314,8 @@ end
 --    util.restart_script()
 auto_updater.run_auto_update(auto_update_config)
 util.create_thread(startupCheck)
-asuka_lib.asuka_booty = false
 asuka_lib.load_and_apply_config(store_dir..'settings.json', data_cfg)
+asuka_lib.asuka_booty = false
 util.create_thread(startupConfig)
 util.create_thread(crashlistConfig)
 util.create_thread(userIdentification)
