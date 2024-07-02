@@ -2506,8 +2506,9 @@ local function save_temp_outfit()
             menu.set_value(clothing_things, true)
         end
     end
-    util.yield()
+    util.yield(13)
     menu.trigger_commands("saveoutfit xyzPIPGirlTemp")
+    util.yield(13)
     for path, value in pairs(temp_storage) do
         menu.set_value(path, value)
     end
