@@ -2499,18 +2499,21 @@ local function should_not_lock_outfit()
 end
 
 local function save_temp_outfit()
-    local temp_storage = {}
-    for i, clothing_things in ipairs(menu.get_children(menu.ref_by_path("Self>Appearance>Outfit>Wardrobe>Save Outfit"))) do
-        if i > 2 then
-            temp_storage[clothing_things] = menu.get_value(clothing_things)
-            menu.set_value(clothing_things, true)
+    local pedmodel = GET_ENTITY_MODEL(players.user_ped())
+    if pedmodel == -1667301416 or pedmodel == 1885233650 then
+        local temp_storage = {}
+        for i, clothing_things in ipairs(menu.get_children(menu.ref_by_path("Self>Appearance>Outfit>Wardrobe>Save Outfit"))) do
+            if i > 2 then
+                temp_storage[clothing_things] = menu.get_value(clothing_things)
+                menu.set_value(clothing_things, true)
+            end
         end
-    end
-    util.yield(13)
-    menu.trigger_commands("saveoutfit xyzPIPGirlTemp")
-    util.yield(13)
-    for path, value in pairs(temp_storage) do
-        menu.set_value(path, value)
+        util.yield(13)
+        menu.trigger_commands("saveoutfit xyzPIPGirlTemp")
+        util.yield(13)
+        for path, value in pairs(temp_storage) do
+            menu.set_value(path, value)
+        end
     end
 end
 
