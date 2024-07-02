@@ -2518,16 +2518,19 @@ local function save_temp_outfit()
 end
 
 local function is_outfit_corrupted()
-    local urgly_parts = 0
-    for i, clothing_things in ipairs(menu.get_children(menu.ref_by_path("Self>Appearance>Outfit"))) do
-        if i > 4 then
-            if menu.get_value(clothing_things) < 1 then
-                urgly_parts = urgly_parts + 1
+    local pedmodel = GET_ENTITY_MODEL(players.user_ped())
+    if pedmodel == -1667301416 or pedmodel == 1885233650 then
+        local urgly_parts = 0
+        for i, clothing_things in ipairs(menu.get_children(menu.ref_by_path("Self>Appearance>Outfit"))) do
+            if i > 4 then
+                if menu.get_value(clothing_things) < 1 then
+                    urgly_parts = urgly_parts + 1
+                end
             end
         end
-    end
-    if urgly_parts == 36 then
-        return true
+        if urgly_parts == 36 then
+            return true
+        end
     end
     return false
 end
