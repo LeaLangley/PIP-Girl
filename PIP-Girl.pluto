@@ -6,9 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local script_version = "1.175"
+local script_version = "1.176"
 
-local lust_upDate = {year = 2024, month = 7, day = 3, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 7, day = 6, hour = 6, min = 6, sec = 6}
 
 local startupmsg = "PIP Girl remembers your settings! :D\n\nAsuka tech armor out now!\nin asuka tech settings.\n\nReport bugs in the discord.\nAsuka Tech on top!"
 
@@ -4579,6 +4579,26 @@ end
 
 players.on_leave(removeFromTable)
 
+local rallytruck = util.joaat("rallytruck")
+local MP_F_DeadHooker = util.joaat("MP_F_DeadHooker")
+local mad_objects = {
+    {util.joaat("prop_ld_ferris_wheel")},
+    {util.joaat("p_spinning_anus_s")},
+    {util.joaat("prop_windmill_01")},
+    {util.joaat("prop_staticmixer_01")},
+    {util.joaat("prop_towercrane_02a")},
+    {util.joaat("des_scaffolding_root")},
+    {util.joaat("stt_prop_stunt_bowling_ball")},
+    {util.joaat("stt_prop_stunt_soccer_ball")},
+    {util.joaat("prop_juicestand")},
+    {util.joaat("stt_prop_stunt_jump_l")},
+    {util.joaat("ar_prop_ar_neon_gate4x_04a")},
+    {util.joaat("prop_asteroid_01")},
+    {util.joaat("apa_mp_apa_crashed_usaf_01a")},
+    {util.joaat("m23_2_prop_m32_xmaxtree_l_01a")},
+    {util.joaat("prop_tree_jacada_01")},
+}
+
 player_menu = function(pid)
     while asuka_lib.player_exist(pid) and not menu.player_root(pid):isValid() do
         util.yield()
@@ -4651,6 +4671,46 @@ player_menu = function(pid)
         return
     end
     local Bad_Modder = menu.list(menu.player_root(pid), 'Bad Modder?', {""}, '', function() end)
+    menu.toggle_loop(Bad_Modder, "Fuck em up", {""}, "go crazy, go stupid.", function()
+        local ped = GET_PLAYER_PED_SCRIPT_INDEX(pid)
+        if not asuka_lib.does_entity_exist(ped) then
+            notify(players.get_name(pid) .. " is too far. :/")
+            return
+        end
+        local pos = players.get_position(pid)
+        if menu.player_root(pid):isValid() then
+            menu.trigger_command(menu.ref_by_rel_path(menu.player_root(pid), "Trolling>Particle Spam>Particle>blood_fall"))
+            menu.set_state(menu.ref_by_rel_path(menu.player_root(pid), "Trolling>Particle Spam>Scale"), "10.00")
+            menu.set_state(menu.ref_by_rel_path(menu.player_root(pid), "Trolling>Particle Spam>Particle Spam"), "On")
+        end
+        local randomIndex = math.random(#mad_objects)
+        local glitchObjMdl = mad_objects[randomIndex][1]
+        util.request_model(glitchObjMdl)
+        util.request_model(rallytruck)
+        local obj = entities.create_object(glitchObjMdl, pos)
+        entities.set_can_migrate(obj, false)
+        local vehicle = entities.create_vehicle(rallytruck, pos, 0)
+        entities.set_can_migrate(vehicle, false)
+        SET_ENTITY_VISIBLE(obj, false)
+        SET_ENTITY_VISIBLE(vehicle, false)
+        SET_ENTITY_INVINCIBLE(obj, true)
+        SET_ENTITY_COLLISION(obj, true, true)
+        if IS_PED_IN_ANY_VEHICLE(ped) then
+            local vehicle = GET_VEHICLE_PED_IS_USING(ped)
+            if ARE_ANY_VEHICLE_SEATS_FREE(vehicle) then
+                local slave = entities.create_ped(26, MP_F_DeadHooker, pos, 0)
+                SET_ENTITY_INVINCIBLE(slave, true)
+                entities.set_can_migrate(slave, false)
+                SET_PED_INTO_VEHICLE(slave, vehicle, -2)
+                ATTACH_ENTITY_TO_ENTITY(obj, slave, 0, v3(), v3(), false, false, false, false, 0, true, 0)
+            end
+        end
+        util.yield(50)
+        asuka_lib.delete_entity(obj)
+        asuka_lib.delete_entity(vehicle)
+        asuka_lib.delete_entity(slave)
+        util.yield(50)
+    end)
     menu.action(Bad_Modder, "Add Blacklist & Kick", {'hellbk'}, "Blacklist Note, Kick and Block the Target from Joining u again.", function ()
         add_in_blocking(pid)
         StrategicKick(pid)
