@@ -2498,13 +2498,43 @@ local function should_not_lock_outfit()
     return false
 end
 
+local function save_temp_outfit()
+    local temp_storage = {}
+    for i, clothing_things in ipairs(menu.get_children(menu.ref_by_path("Self>Appearance>Outfit>Wardrobe>Save Outfit"))) do
+        if i > 2 then
+            temp_storage[clothing_things] = menu.get_value(clothing_things)
+            menu.set_value(clothing_things, true)
+        end
+    end
+    util.yield()
+    menu.trigger_commands("saveoutfit xyzPIPGirlTemp")
+    for path, value in pairs(temp_storage) do
+        menu.set_value(path, value)
+    end
+end
+
+local function is_outfit_corrupted()
+    local urgly_parts = 0
+    for i, clothing_things in ipairs(menu.get_children(menu.ref_by_path("Self>Appearance>Outfit"))) do
+        if i > 4 then
+            if menu.get_value(clothing_things) < 1 then
+                urgly_parts = urgly_parts + 1
+            end
+        end
+    end
+    if urgly_parts == 36 then
+        return true
+    end
+    return false
+end
+
 path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit", {"Smartoutfit"}, "This will lock you outfit only if u dont have interaction menu open or in some critical mission.\nalso chang ehte appearance of u outfit depending on situations.", function()
     if should_not_lock_outfit() then
         if ChangedHelmet then
             menu.trigger_commands("hat -1")
             ChangedHelmet = false
         end
-        menu.trigger_commands("saveoutfit xyzPIPGirlTemp")
+        save_temp_outfit()
         menu.trigger_commands("lockoutfit off")
     else
         if (NETWORK_IS_ACTIVITY_SESSION() and 4 >= GET_NUMBER_OF_PLAYERS()) or asuka_lib.session_type() == "Singleplayer" then
@@ -2514,7 +2544,7 @@ path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit", {"Smartoutfit"
                     ChangedHelmet = false
                 end
                 if not temp_holding_outfit then
-                    menu.trigger_commands("saveoutfit xyzPIPGirlTemp")
+                    save_temp_outfit()
                     temp_holding_outfit = true
                 end
             end
@@ -2582,7 +2612,7 @@ end, function()
         menu.trigger_commands("outfit xyzPIPGirlTemp")
         temp_holding_outfit = false
     else
-        menu.trigger_commands("saveoutfit xyzPIPGirlTemp")
+        save_temp_outfit()
     end
 end)
 
@@ -5200,6 +5230,12 @@ util.on_transition_finished(function ()
         menu.trigger_commands("pv"..favoritevehid.."request")
         CLEAR_ALL_HELP_MESSAGES()
     end
+    if menu.get_value(path_smart_outfit_lock) then
+        if is_outfit_corrupted() then
+            menu.trigger_commands("outfit xyzPIPGirlTemp")
+            notify("Smart Outfit: The transition broke u locked outfit, restoring with last known working outfit.")
+        end
+    end
     if foreverYoung then
         SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
         SET_PED_HEAD_OVERLAY(players.user_ped(), 11, 255, 0.0) --Remove Moles. (body)
@@ -5330,6 +5366,11 @@ local function userIdentification()
                 util.yield(3666)
             end
             asuka_lib.save_config(store_dir..'settings.json', data_cfg, true)
+            if menu.get_value(path_smart_outfit_lock) then
+                if not is_outfit_corrupted() then
+                    save_temp_outfit()
+                end
+            end
         end
         util.yield(25666)
     end
