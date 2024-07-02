@@ -4723,23 +4723,29 @@ player_menu = function(pid)
             menu.set_state(menu.ref_by_rel_path(menu.player_root(pid), "Trolling>Particle Spam>Scale"), "10.00")
             menu.set_state(menu.ref_by_rel_path(menu.player_root(pid), "Trolling>Particle Spam>Particle Spam"), "On")
         end
+        local glitchObjMdl = mad_objects[math.random(#mad_objects)][1]
         util.request_model(glitchObjMdl)
-        util.request_model(rallytruck)
-        local obj = entities.create_object(mad_objects[math.random(#mad_objects)][1], pos)
+        local obj = entities.create_object(glitchObjMdl, pos)
         entities.set_can_migrate(obj, false)
         SET_ENTITY_INVINCIBLE(obj, true)
         SET_ENTITY_VISIBLE(obj, false)
         SET_ENTITY_COLLISION(obj, true, true)
+        util.request_model(rallytruck)
         local vehicle = entities.create_vehicle(rallytruck, pos, 0)
         entities.set_can_migrate(vehicle, false)
         SET_ENTITY_VISIBLE(vehicle, false)
         if IS_PED_IN_ANY_VEHICLE(ped) then
             local ped_vehicle = GET_VEHICLE_PED_IS_USING(ped)
             if ARE_ANY_VEHICLE_SEATS_FREE(ped_vehicle) then
+                util.request_model(MP_F_DeadHooker)
                 local slave = entities.create_ped(26, MP_F_DeadHooker, pos, 0)
                 entities.set_can_migrate(slave, false)
                 SET_ENTITY_INVINCIBLE(slave, true)
-                SET_PED_INTO_VEHICLE(slave, ped_vehicle, -2)
+                if ARE_ANY_VEHICLE_SEATS_FREE(ped_vehicle) then
+                    SET_PED_INTO_VEHICLE(slave, ped_vehicle, -2)
+                else
+                    SET_PED_INTO_VEHICLE(slave, vehicle, -2)
+                end
                 ATTACH_ENTITY_TO_ENTITY(obj, slave, 0, v3(), v3(), false, false, false, false, 0, true, 0)
             end
         end
