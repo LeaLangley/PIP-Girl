@@ -2504,6 +2504,7 @@ path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit", {"Smartoutfit"
             menu.trigger_commands("hat -1")
             ChangedHelmet = false
         end
+        menu.trigger_commands("saveoutfit xyzPIPGirlTemp")
         menu.trigger_commands("lockoutfit off")
     else
         if (NETWORK_IS_ACTIVITY_SESSION() and 4 >= GET_NUMBER_OF_PLAYERS()) or asuka_lib.session_type() == "Singleplayer" then
@@ -2580,6 +2581,8 @@ end, function()
     if temp_holding_outfit then
         menu.trigger_commands("outfit xyzPIPGirlTemp")
         temp_holding_outfit = false
+    else
+        menu.trigger_commands("saveoutfit xyzPIPGirlTemp")
     end
 end)
 
