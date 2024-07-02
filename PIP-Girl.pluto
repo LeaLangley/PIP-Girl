@@ -2851,7 +2851,8 @@ local warningMessages = {
     [167092314] = "A modder is *likely* blocking you join.\nFailed to join intended GTA Online session. Joining a new GTA Online session.",
     [161625414] = "A modder is *likely* blocking you join.\nUnable to join this session, your account has a bad reputation. Please return to Grand Theft Auto V and try again later.",
     [1901152333] = "A modder is blocking you join.\nYou are classed as a cheat and can only play with other cheats until you are forgiven. Okease return to Grand Theft Auto V and try again later.",
-    [610824840] = "A modder is blocking you join.\nThe session you are trying to join is for cheaters only. Joining a new GTA Online session."
+    [610824840] = "A modder is blocking you join.\nThe session you are trying to join is for cheaters only. Joining a new GTA Online session.",
+    [1616252414] = "A modder is blocking you join.\nUnable to join this session, your account has a bad reputation. Please return to Grand Theft Auto V and try again later."
 }
 local avoidWarningSkipHere = {
     { x = 1561.00, y = 385.89, z = -49.69 }, -- Cayo Planning Room
