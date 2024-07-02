@@ -49,6 +49,7 @@ local auto_update_config = {
         },
     }
 }
+auto_updater.run_auto_update(auto_update_config)
 
 if not filesystem.exists(filesystem.scripts_dir().."/lib/Asuka_Library/asuka_lib.pluto") then
     util.toast("If the script dosnt restart working, there might be a issue downloading resources to make this script work.")
