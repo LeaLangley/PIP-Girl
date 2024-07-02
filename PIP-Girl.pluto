@@ -4712,7 +4712,7 @@ player_menu = function(pid)
         return
     end
     local Bad_Modder = menu.list(menu.player_root(pid), 'Bad Modder?', {""}, '', function() end)
-    menu.toggle_loop(Bad_Modder, "Fuck'em up™", {""}, "go crazy, go stupid.", function()
+    menu.toggle_loop(Bad_Modder, "Fuck'em up™", {"fuckup"}, "go crazy, go stupid.", function()
         local ped = GET_PLAYER_PED_SCRIPT_INDEX(pid)
         if not asuka_lib.does_entity_exist(ped) then
             notify(players.get_name(pid) .. " is too far. :/")
