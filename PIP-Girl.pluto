@@ -2587,6 +2587,8 @@ path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit", {"Smartoutfit"
                 end
             else
                 if ChangedHelmet then
+                    SET_PED_CONFIG_FLAG(players.user_ped(), 36, true)
+                    SET_PED_CONFIG_FLAG(players.user_ped(), 438, false)
                     while GET_ENTITY_SPEED(players.user_ped()) ~= 0 do
                         util.yield(666)
                     end
