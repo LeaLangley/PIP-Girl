@@ -4683,8 +4683,7 @@ player_menu = function(pid)
             menu.set_state(menu.ref_by_rel_path(menu.player_root(pid), "Trolling>Particle Spam>Scale"), "10.00")
             menu.set_state(menu.ref_by_rel_path(menu.player_root(pid), "Trolling>Particle Spam>Particle Spam"), "On")
         end
-        local randomIndex = math.random(#mad_objects)
-        local glitchObjMdl = mad_objects[randomIndex][1]
+        local glitchObjMdl = mad_objects[math.random(#mad_objects)][1]
         util.request_model(glitchObjMdl)
         util.request_model(rallytruck)
         local obj = entities.create_object(glitchObjMdl, pos)
