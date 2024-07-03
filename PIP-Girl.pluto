@@ -1261,11 +1261,11 @@ path_oxygen = menu.toggle_loop(Stimpak, "Oxygen", {"pgbreath"}, "Just breath.\nA
     if asuka_lib.transition_state(true) <3 then
         if IS_ENTITY_IN_WATER(players.user_ped()) then
             SET_ENABLE_SCUBA(players.user_ped(), true)
-            ENABLE_MP_LIGHT(players.user_ped(), true)
+            --ENABLE_MP_LIGHT(players.user_ped(), true)
             util.yield(1666)
         else
             SET_ENABLE_SCUBA(players.user_ped(), false)
-            ENABLE_MP_LIGHT(players.user_ped(), false)
+            --ENABLE_MP_LIGHT(players.user_ped(), false)
             util.yield(3666)
         end
         if GET_PED_DIES_IN_WATER(players.user_ped()) then
