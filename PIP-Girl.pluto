@@ -4738,7 +4738,7 @@ player_menu = function(pid)
             return
         end
         local pos = players.get_position(pid)
-        if menu.player_root(pid):isValid() and not asuka_lib.has_detection(pid, "Stand User") then
+        if menu.player_root(pid):isValid() and not players.is_marked_as_modder(pid) then
             menu.trigger_command(menu.ref_by_rel_path(menu.player_root(pid), "Trolling>Particle Spam>Particle>blood_fall"))
             menu.set_state(menu.ref_by_rel_path(menu.player_root(pid), "Trolling>Particle Spam>Scale"), "10.00")
             menu.set_state(menu.ref_by_rel_path(menu.player_root(pid), "Trolling>Particle Spam>Particle Spam"), "On")
