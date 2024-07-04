@@ -2730,6 +2730,13 @@ path_demon_horns = menu.toggle_loop(outfit_decoration, "Demon Horns", {"demonhor
             ATTACH_ENTITY_TO_ENTITY(demon_horn2, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -2 / 50.0, 0, 100, 0, 125, false, true, true, false, 0, true, 1)
         end
     end
+    if GET_FOLLOW_PED_CAM_VIEW_MODE() == 4 then
+        SET_ENTITY_VISIBLE(demon_horn1, false, false)
+        SET_ENTITY_VISIBLE(demon_horn2, false, false)
+    else
+        SET_ENTITY_VISIBLE(demon_horn1, true, false)
+        SET_ENTITY_VISIBLE(demon_horn2, true, false)
+    end
     util.yield(666)
 end, function()
     asuka_lib.delete_entity(demon_horn1)
