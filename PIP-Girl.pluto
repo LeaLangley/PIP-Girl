@@ -774,6 +774,11 @@ menu.action(PIP_Girl_APPS, "The Avenger App", {}, "Your avenger screen.", functi
     start_script("appavengeroperations")
 end)
 
+menu.action(PIP_Girl_APPS, "The Bail Office App", {}, "Your Bail Office screen.", function()
+    organization_control("CEO")
+    start_script("appbailoffice")
+end)
+
 menu.action(PIP_Girl_APPS, "The Internet App", {}, "Your internet screen.", function()
     start_script("appinternet")
 end)
