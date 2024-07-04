@@ -4647,21 +4647,13 @@ local mad_objects = {
     {util.joaat("stt_prop_stunt_jump_l")},
     {util.joaat("ar_prop_ar_neon_gate4x_04a")},
     {util.joaat("prop_asteroid_01")},
-    {util.joaat("apa_mp_apa_crashed_usaf_01a")},
     {util.joaat("m23_2_prop_m32_xmaxtree_l_01a")},
     {util.joaat("prop_tree_jacada_01")},
     {util.joaat("xs_propint4_waste_09_intube")},
     {util.joaat("xs_propint4_waste_09_bikerim")},
-    {util.joaat("xs_propint2_building_base_03")},
-    {util.joaat("xs_propint2_building_07")},
     {util.joaat("xs_prop_hamburgher_wl")},
     {util.joaat("xs_prop_arena_oil_jack_01a")},
-    {util.joaat("xs_prop_arena_goal")},
-    {util.joaat("xs_prop_arena_box_test")},
-    {util.joaat("xs_prop_arena_bigscreen_01")},
     {util.joaat("xm_prop_x17_sub_damage")},
-    {util.joaat("xm_prop_x17_silo_01a")},
-    {util.joaat("xm_prop_x17_shamal_crash")},
 }
 
 player_menu = function(pid)
