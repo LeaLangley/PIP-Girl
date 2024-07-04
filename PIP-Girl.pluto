@@ -2538,7 +2538,7 @@ local function is_outfit_corrupted()
                 end
             end
         end
-        if urgly_parts == 36 then
+        if urgly_parts >= 35 then
             return true
         end
     end
