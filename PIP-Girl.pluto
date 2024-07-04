@@ -2684,21 +2684,21 @@ path_demon_horns = menu.toggle_loop(outfit_decoration, "Demon Horns", {"demonhor
     if not asuka_lib.does_entity_exist(demon_horn1) then
         if asuka_lib.request_model(demon_horn_hash, 3) then
             demon_horn1 = entities.create_object(demon_horn_hash, players.get_position(players.user()))
-            ATTACH_ENTITY_TO_ENTITY(demon_horn1, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -2 / 50.0, 0, 80, 0, 125, false, true, true, false, 0, true, 1)
+            ATTACH_ENTITY_TO_ENTITY(demon_horn1, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -1 / 50.0, 0, 80, 0, 125, false, true, true, false, 0, true, 1)
         end
     else
         if not IS_ENTITY_ATTACHED_TO_ENTITY(demon_horn1, pup) then
-            ATTACH_ENTITY_TO_ENTITY(demon_horn1, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -2 / 50.0, 0, 80, 0, 125, false, true, true, false, 0, true, 1)
+            ATTACH_ENTITY_TO_ENTITY(demon_horn1, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -1 / 50.0, 0, 80, 0, 125, false, true, true, false, 0, true, 1)
         end
     end
     if not asuka_lib.does_entity_exist(demon_horn2) then
         if asuka_lib.request_model(demon_horn_hash, 3) then
             demon_horn2 = entities.create_object(demon_horn_hash, players.get_position(players.user()))
-            ATTACH_ENTITY_TO_ENTITY(demon_horn2, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -2 / 50.0, 0, 100, 0, 125, false, true, true, false, 0, true, 1)
+            ATTACH_ENTITY_TO_ENTITY(demon_horn2, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -1 / 50.0, 0, 100, 0, 125, false, true, true, false, 0, true, 1)
         end
     else
         if not IS_ENTITY_ATTACHED_TO_ENTITY(demon_horn2, pup) then
-            ATTACH_ENTITY_TO_ENTITY(demon_horn2, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -2 / 50.0, 0, 100, 0, 125, false, true, true, false, 0, true, 1)
+            ATTACH_ENTITY_TO_ENTITY(demon_horn2, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -1 / 50.0, 0, 100, 0, 125, false, true, true, false, 0, true, 1)
         end
     end
     if GET_FOLLOW_PED_CAM_VIEW_MODE() == 4 then
@@ -2735,11 +2735,11 @@ path_demon_horns_color = menu.list_select(outfit_decoration, "Demon Horns Color"
         local pup = players.user_ped()
         if not asuka_lib.does_entity_exist(demon_horn1) then
             demon_horn1 = entities.create_object(value, pos)
-            ATTACH_ENTITY_TO_ENTITY(demon_horn1, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -2 / 50.0, 0, 80, 0, 125, false, true, true, false, 0, true, 1)
+            ATTACH_ENTITY_TO_ENTITY(demon_horn1, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -1 / 50.0, 0, 80, 0, 125, false, true, true, false, 0, true, 1)
         end
         if not asuka_lib.does_entity_exist(demon_horn2) then
             demon_horn2 = entities.create_object(value, pos)
-            ATTACH_ENTITY_TO_ENTITY(demon_horn2, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -2 / 50.0, 0, 100, 0, 125, false, true, true, false, 0, true, 1)
+            ATTACH_ENTITY_TO_ENTITY(demon_horn2, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -1 / 50.0, 0, 100, 0, 125, false, true, true, false, 0, true, 1)
         end
     end
 end)
