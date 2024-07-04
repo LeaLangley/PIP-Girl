@@ -2672,6 +2672,70 @@ path_Aircraft_helmet_color = menu.slider(smart_outfit_settings, 'Smart Outfit Ai
     Aircraft_OutfitLockHelmetColor = new_value
 end)
 
+menu.divider(Outfit, "3<")
+
+local outfit_decoration = menu.list(Outfit, 'Demon Horns Color', {}, '', function(); end)
+local demon_horn1 = nil
+local demon_horn2 = nil
+local demon_horn_hash = util.joaat("w_me_knife_01")
+path_demon_horns_color = menu.list_select(outfit_decoration, "Demon Horns Color", {}, "", {
+    {util.joaat("w_me_knife_01"), "Default"},
+    {util.joaat("w_me_knife_xm3"), "Eyes"},
+    {util.joaat("w_me_knife_xm3_01"), "Spatter"},
+    {util.joaat("w_me_knife_xm3_02"), "Flames"},
+    {util.joaat("w_me_knife_xm3_03"), "Lightning"},
+    {util.joaat("w_me_knife_xm3_04"), "Pills"},
+    {util.joaat("w_me_knife_xm3_05"), "Snakeskin"},
+    {util.joaat("w_me_knife_xm3_06"), "Lucha Libre"},
+    {util.joaat("w_me_knife_xm3_07"), "Trippy"},
+    {util.joaat("w_me_knife_xm3_08"), "Tequilya"},
+    {util.joaat("w_me_knife_xm3_09"), "Orang-O-Tang"},
+}, demon_horn_hash, function(value, menu_name, prev_value, click_type)
+    demon_horn_hash = value
+    if asuka_lib.request_model(value, 3) then
+        asuka_lib.delete_entity(demon_horn1)
+        asuka_lib.delete_entity(demon_horn2)
+        local pos = players.get_position(players.user())
+        local pup = players.user_ped()
+        if not asuka_lib.does_entity_exist(demon_horn1) then
+            demon_horn1 = entities.create_object(value, pos)
+            ATTACH_ENTITY_TO_ENTITY(demon_horn1, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -2 / 50.0, 0, 80, 0, 125, false, true, true, false, 0, true, 1)
+        end
+        if not asuka_lib.does_entity_exist(demon_horn2) then
+            demon_horn2 = entities.create_object(value, pos)
+            ATTACH_ENTITY_TO_ENTITY(demon_horn2, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -2 / 50.0, 0, 100, 0, 125, false, true, true, false, 0, true, 1)
+        end
+    end
+end)
+
+path_demon_horns = menu.toggle_loop(outfit_decoration, "Demon Horns", {"demonhorns"}, "", function()
+    local pup = players.user_ped()
+    if not asuka_lib.does_entity_exist(demon_horn1) then
+        if asuka_lib.request_model(demon_horn_hash, 3) then
+            demon_horn1 = entities.create_object(demon_horn_hash, players.get_position(players.user()))
+            ATTACH_ENTITY_TO_ENTITY(demon_horn1, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -2 / 50.0, 0, 80, 0, 125, false, true, true, false, 0, true, 1)
+        end
+    else
+        if not IS_ENTITY_ATTACHED_TO_ENTITY(demon_horn1, pup) then
+            ATTACH_ENTITY_TO_ENTITY(demon_horn1, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -2 / 50.0, 0, 80, 0, 125, false, true, true, false, 0, true, 1)
+        end
+    end
+    if not asuka_lib.does_entity_exist(demon_horn2) then
+        if asuka_lib.request_model(demon_horn_hash, 3) then
+            demon_horn2 = entities.create_object(demon_horn_hash, players.get_position(players.user()))
+            ATTACH_ENTITY_TO_ENTITY(demon_horn2, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -2 / 50.0, 0, 100, 0, 125, false, true, true, false, 0, true, 1)
+        end
+    else
+        if not IS_ENTITY_ATTACHED_TO_ENTITY(demon_horn2, pup) then
+            ATTACH_ENTITY_TO_ENTITY(demon_horn2, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -2 / 50.0, 0, 100, 0, 125, false, true, true, false, 0, true, 1)
+        end
+    end
+    util.yield(666)
+end, function()
+    asuka_lib.delete_entity(demon_horn1)
+    asuka_lib.delete_entity(demon_horn2)
+end)
+
 menu.divider(Game, "Exclude Mission.")
 
 menu.action(Game, 'Super Cleanse No yacht fix', {"scleannysave"}, 'BCS R* is a mess.', function()
@@ -5200,6 +5264,8 @@ local data_cfg = {
     store_bike_helmet_color = path_bike_helmet_color,
     store_Aircraft_helmet_var = path_Aircraft_helmet_var,
     store_Aircraft_helmet_color = path_Aircraft_helmet_color,
+    store_demon_horns_color = path_demon_horns_color,
+    store_demon_horns = path_demon_horns,
     --Game
     store_auto_interact = path_auto_interact,
     store_auto_skip_conversation = path_auto_skip_conversation,
