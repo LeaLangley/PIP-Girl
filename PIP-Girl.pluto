@@ -4441,7 +4441,7 @@ load_data_e()
 load_data_g()
 
 local function add_player_to_blacklist(rid)
-    if pid ~= players.user() then
+    if rid ~= players.get_rockstar_id(players.user()) then
         local id = tostring(rid)
         table.insert(data_e, id)
         PIP_Girl_Blacklist[id] = true
