@@ -495,10 +495,13 @@ local function set_as_illusion(pid, tbl, state)
     end
 end
 
-local function StrategicKick(pid)
+local function StrategicKick(pid, rid)
     if asuka_lib.player_exist(pid) and pid ~= players.user() and menu.player_root(pid):isValid() then
         local name = players.get_name(pid)
-        if name ~= players.get_name(players.user()) then
+        if not rid then
+            rid = players.get_rockstar_id(pid)
+        end
+        if name ~= players.get_name(players.user()) and rid == players.get_rockstar_id(pid) then
             menu.trigger_commands("ghostplayer " .. name)
             menu.trigger_commands("blocksync " .. name .. " on")
             util.yield()
@@ -3411,7 +3414,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     menu.trigger_commands("ceopay "..host_name.." on")
                     util.yield(13666)
                     if not is_trusted(players.get_host()) and sessionWorthy() then
-                        StrategicKick(players.get_host())
+                        StrategicKick(players.get_host(), players.get_rockstar_id(players.get_host()))
                         menu.trigger_commands("timeout"..host_name.." off")
                     end
                 end
@@ -3954,7 +3957,7 @@ path_kick_aggressive_on_attack = menu.toggle_loop(SessionMisc, "Kick Aggressive 
     if asuka_lib.transition_state(true) <3 then
         for players.list() as pid do
             if players.is_marked_as_attacker(pid) and asuka_lib.has_detection(pid, "Spoofed Host Token (Aggressive)") and not is_trusted(pid) then
-                StrategicKick(pid)
+                StrategicKick(pid, nil)
             end
         end
         util.yield(3666)
@@ -3970,7 +3973,7 @@ path_kick_aggressive_as_host = menu.toggle_loop(SessionMisc, "Block Aggressive H
         --end
         for players.list() as pid do
             if asuka_lib.has_detection(pid, "Spoofed Host Token (Aggressive)") and not is_trusted(pid) then
-                StrategicKick(pid)
+                StrategicKick(pid, nil)
             end
         end
         util.yield(3666)
@@ -4668,7 +4671,7 @@ local function SessionCheck(pid)
                         menu.trigger_commands("ghostplayer " .. name .. " on")
                     else
                         if asuka_lib.session_type() == "Public" then
-                            StrategicKick(pid)
+                            StrategicKick(pid, rid)
                         else
                             menu.trigger_commands("hellaa " .. name .. " on")
                             menu.trigger_commands("ghostplayer " .. name .. " on")
@@ -4862,7 +4865,7 @@ player_menu = function(pid)
     end)
     menu.action(Bad_Modder, "Add Blacklist & Kick", {'hellbk'}, "Blacklist Note, Kick and Block the Target from Joining u again.", function ()
         add_in_blocking(pid)
-        StrategicKick(pid)
+        StrategicKick(pid, rid)
         if not is_player_in_blacklist(rid) then
             add_player_to_blacklist(rid)
         end
@@ -4871,7 +4874,7 @@ player_menu = function(pid)
         add_in_blocking(pid)
         menu.trigger_commands("crash ".. name)
         util.yield(666)
-        StrategicKick(pid)
+        StrategicKick(pid, rid)
         if not is_player_in_blacklist(rid) then
             add_player_to_blacklist(rid)
         end
@@ -4883,7 +4886,7 @@ player_menu = function(pid)
         end
     end)
     menu.action(Bad_Modder, "Kick", {"hellk"}, "", function()
-        StrategicKick(pid)
+        StrategicKick(pid, rid)
     end)
     menu.action(Bad_Modder, "Add Crash list and Crash", {'hellcrash'}, "Blacklist Note and Block the Target from Joining u again.", function ()
         menu.trigger_commands("historynote "..name.." Crash :3")
@@ -4906,7 +4909,7 @@ player_menu = function(pid)
     menu.toggle_loop(Bad_Modder, "Blacklist Kick on Atack", {"hellaab"}, "Auto kick if they atack you, and add them to blacklist.", function()
         if players.is_marked_as_attacker(pid) then
             add_in_blocking(pid)
-            StrategicKick(pid)
+            StrategicKick(pid, rid)
             if not is_player_in_blacklist(rid) then
                 add_player_to_blacklist(rid)
             end
@@ -4919,7 +4922,7 @@ player_menu = function(pid)
     end)
     menu.toggle_loop(Bad_Modder, "Kick on Atack", {"hellaa"}, "Auto kick if they atack you.", function()
         if players.is_marked_as_attacker(pid) then
-            StrategicKick(pid)
+            StrategicKick(pid, rid)
             notify("Attempting to kick " .. name .. " bcs they atacked you.")
             util.yield(66666)
         else
