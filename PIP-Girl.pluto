@@ -2813,6 +2813,7 @@ path_auto_interact = menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'},
         for ipairs(interactionsE) as label do
             if IS_HELP_MSG_DISPLAYED(label) then
                 SET_CONTROL_VALUE_NEXT_FRAME(2, 51, 1)
+                util.yield(113)
                 break
             end
         end
@@ -2823,6 +2824,7 @@ path_auto_interact = menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'},
         for ipairs(interactionsX) as label do
             if IS_HELP_MSG_DISPLAYED(label) then
                 SET_CONTROL_VALUE_NEXT_FRAME(2, 73, 1)
+                util.yield(113)
                 break
             end
         end
@@ -2832,6 +2834,7 @@ path_auto_interact = menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'},
         for ipairs(interactionsRight) as label do
             if IS_HELP_MSG_DISPLAYED(label) then
                 SET_CONTROL_VALUE_NEXT_FRAME(2, 190, 1)
+                util.yield(113)
                 break
             end
         end
@@ -2844,6 +2847,7 @@ path_auto_interact = menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'},
         for ipairs(interactionsRemove) as label do
             if IS_HELP_MSG_DISPLAYED(label) then
                 CLEAR_ALL_HELP_MESSAGES()
+                util.yield(113)
                 break
             end
         end
