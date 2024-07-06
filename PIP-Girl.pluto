@@ -2677,7 +2677,7 @@ end)
 
 menu.divider(Outfit, "3<")
 
-local outfit_decoration = menu.list(Outfit, 'Demon Horns Color', {}, '', function(); end)
+local outfit_decoration = menu.list(Outfit, 'Decoration\'s', {}, '', function(); end)
 local demon_horn1 = nil
 local demon_horn2 = nil
 local demon_horn_hash = util.joaat("w_me_knife_01")
