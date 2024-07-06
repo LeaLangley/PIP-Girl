@@ -1632,7 +1632,7 @@ path_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly
                 if IS_VEHICLE_DRIVEABLE(vehicle) then
                     if current_asuka_tech_vehicle == nil or current_asuka_tech_vehicle ~= vehicle then
                         if asuka_tech_protection > 1 then
-                            if asuka_lib.does_entity_exist(current_asuka_tech_vehicle) and not entities.get_can_migrate(vehicle) then
+                            if asuka_lib.does_entity_exist(current_asuka_tech_vehicle) then
                                 entities.set_can_migrate(vehicle, true)
                                 if asuka_tech_protection == 3 then
                                     FREEZE_ENTITY_POSITION(vehicle, false)
