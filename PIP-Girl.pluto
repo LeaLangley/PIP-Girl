@@ -616,7 +616,7 @@ local function SuperClean(fix, ignoreMission)
             end
         end
     end
-    util.yield(13)
+    util.yield(113)
     for pairs(entities.get_all_peds_as_handles()) as ent do
         if not IS_PED_A_PLAYER(ent) then
             if asuka_lib.does_entity_exist(ent) then
@@ -628,7 +628,7 @@ local function SuperClean(fix, ignoreMission)
             end
         end
     end
-    util.yield(13)
+    util.yield(113)
     for pairs(entities.get_all_objects_as_handles()) as ent do
         if asuka_lib.does_entity_exist(ent) then
             if not fix or (fix and not (string.contains(util.reverse_joaat(entities.get_model_hash(ent)), "yacht") and GET_ENTITY_POPULATION_TYPE(ent) ~= 7)) then
@@ -640,7 +640,7 @@ local function SuperClean(fix, ignoreMission)
             end
         end
     end
-    util.yield(13)
+    util.yield(113)
     for pairs(entities.get_all_pickups_as_handles()) as ent do
         if asuka_lib.does_entity_exist(ent) then
             if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
