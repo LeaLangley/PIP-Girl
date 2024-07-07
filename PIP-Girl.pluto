@@ -517,15 +517,7 @@ local function StrategicKick(pid, rid)
                         menu.trigger_commands("desync " .. name .. " on")
                         util.yield()
                     end
-                    if menu.get_edition() > 1 then
-                        if players.user() == players.get_host() then
-                            menu.trigger_commands("blacklist " .. name)
-                        else
-                            menu.trigger_commands("kick " .. name)
-                        end
-                    else
-                        menu.trigger_commands("kick " .. name)
-                    end
+                    menu.trigger_commands("kick " .. name)
                 end
             else
                 menu.trigger_commands("hellaa " .. name .. " on")
