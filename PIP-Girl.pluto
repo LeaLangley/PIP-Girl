@@ -1402,6 +1402,9 @@ local function buff_asuka_tech(vehicle)
             SET_VEHICLE_ALLOW_HOMING_MISSLE_LOCKON_SYNCED(vehicle, false, false)
         end
     end
+    if IS_ENTITY_A_MISSION_ENTITY(vehicle) and DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 then
+        SET_VEHICLE_STRONG(vehicle, true)
+    end
     ----the_bone = GET_ENTITY_BONE_INDEX_BY_NAME(vehicle, "dashglow")
     --the_bone = GET_ENTITY_BONE_INDEX_BY_NAME(vehicle, "bonnet")
     --if the_bone ~= -1 then
@@ -1654,18 +1657,20 @@ path_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly
                     end
                     
                     if asuka_tech_protection > 1 then
-                        if asuka_lib.is_vehicle_empty(vehicle) then
-                            if entities.get_can_migrate(vehicle) then
-                                entities.set_can_migrate(vehicle, false)
-                                if asuka_tech_protection == 3 then
-                                    FREEZE_ENTITY_POSITION(vehicle, true)
+                        if vehicle == entities.get_user_personal_vehicle_as_handle() then
+                            if asuka_lib.is_vehicle_empty(vehicle) then
+                                if entities.get_can_migrate(vehicle) then
+                                    entities.set_can_migrate(vehicle, false)
+                                    if asuka_tech_protection == 3 then
+                                        FREEZE_ENTITY_POSITION(vehicle, true)
+                                    end
                                 end
-                            end
-                        else
-                            if not entities.get_can_migrate(vehicle) then
-                                entities.set_can_migrate(vehicle, true)
-                                if asuka_tech_protection == 3 then
-                                    FREEZE_ENTITY_POSITION(vehicle, false)
+                            else
+                                if not entities.get_can_migrate(vehicle) then
+                                    entities.set_can_migrate(vehicle, true)
+                                    if asuka_tech_protection == 3 then
+                                        FREEZE_ENTITY_POSITION(vehicle, false)
+                                    end
                                 end
                             end
                         end
