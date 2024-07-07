@@ -629,14 +629,19 @@ local function SuperClean(fix, ignoreMission)
         end
     end
     util.yield(113)
-    for pairs(entities.get_all_objects_as_handles()) as ent do
-        if asuka_lib.does_entity_exist(ent) then
-            if not fix or (fix and not (string.contains(util.reverse_joaat(entities.get_model_hash(ent)), "yacht") and GET_ENTITY_POPULATION_TYPE(ent) ~= 7)) then
-                if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
-                    entities.delete(ent)
-                    ct += 1
-                    util.yield(13)
+    for pairs(entities.get_all_objects_as_pointers()) as ent do
+        if not fix or (fix and not (string.contains(util.reverse_joaat(entities.get_model_hash(ent)), "yacht"))) then
+            if ignoreMission then
+                if entities.has_handle(ent) then
+                    ent = entities.pointer_to_handle(ent)
+                else
+                    return
                 end
+            end
+            if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
+                entities.delete(ent)
+                ct += 1
+                util.yield(13)
             end
         end
     end
