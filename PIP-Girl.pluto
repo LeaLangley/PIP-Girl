@@ -655,61 +655,70 @@ local function SuperClean(fix, ignoreMission)
 end
 
 local function mmi_claim_all_vehicles(special_vehicle, special_cords)
-    local personal_vehicle = entities.get_user_personal_vehicle_as_handle()
-    local personal_vehicle_id = nil
-    local personal_vehicle_pos = nil
-    local personal_vehicle_rot = nil
-    local personal_vehicle_driver = false
-    if asuka_lib.does_entity_exist(personal_vehicle) then
-        personal_vehicle_id = DECOR_GET_INT(personal_vehicle, "PV_Slot")
-        personal_vehicle_pos = GET_ENTITY_COORDS(personal_vehicle)
-        personal_vehicle_rot = GET_ENTITY_ROTATION(personal_vehicle, 2)
-        if asuka_lib.is_user_driving_vehicle(personal_vehicle) then
-            personal_vehicle_driver = true
+    local interior_timeout = os.time()
+    while not players.is_visible(players.user()) or NETWORK_IS_PLAYER_FADING(players.user()) do
+        util.yield(666)
+        if interior_timeout - os.time() > 666 then
+            break
         end
-    end
-    for menu.get_children(menu.ref_by_path("Vehicle>Personal Vehicles")) as persoanl_vehicle do
-        for persoanl_vehicle.command_names as personal_vehicle_command do
-            if personal_vehicle_command ~= "findpv" and personal_vehicle_command ~= "saveallpvs" then
-                menu.trigger_commands(personal_vehicle_command.."request")
-            end
-            CLEAR_ALL_HELP_MESSAGES()
-        end
-    end
-    if special_vehicle then
-        personal_vehicle_id = special_vehicle
-    end
-    if special_cords then
-        personal_vehicle_pos = special_cords
-        if not personal_vehicle_rot then
-            personal_vehicle_rot = v3.new(0.0, 0.0, 0.0)
-        end
-    end
-    if personal_vehicle_id then
-        if asuka_lib.does_entity_exist(entities.get_user_personal_vehicle_as_handle()) then
-            menu.trigger_commands("returnpv")
-            asuka_lib.delete_entity(entities.get_user_personal_vehicle_as_handle())
-        end
-        menu.trigger_commands("pv"..personal_vehicle_id.."request")
-        local request_timeout = os.time()
-        while not asuka_lib.does_entity_exist(entities.get_user_personal_vehicle_as_handle()) do
-            CLEAR_ALL_HELP_MESSAGES()
-            util.yield(666)
-            if request_timeout - os.time() > 13 then
-                break
+    end 
+    if players.is_visible(players.user()) then
+        local personal_vehicle = entities.get_user_personal_vehicle_as_handle()
+        local personal_vehicle_id = nil
+        local personal_vehicle_pos = nil
+        local personal_vehicle_rot = nil
+        local personal_vehicle_driver = false
+        if asuka_lib.does_entity_exist(personal_vehicle) then
+            personal_vehicle_id = DECOR_GET_INT(personal_vehicle, "PV_Slot")
+            personal_vehicle_pos = GET_ENTITY_COORDS(personal_vehicle)
+            personal_vehicle_rot = GET_ENTITY_ROTATION(personal_vehicle, 2)
+            if asuka_lib.is_user_driving_vehicle(personal_vehicle) then
+                personal_vehicle_driver = true
             end
         end
-        util.yield(1013)
-        personal_vehicle = entities.get_user_personal_vehicle_as_handle()
-        if asuka_lib.does_entity_exist(personal_vehicle) and personal_vehicle_pos and DECOR_GET_INT(personal_vehicle, "PV_Slot") == personal_vehicle_id then
-            requestControl(personal_vehicle)
-            SET_ENTITY_COORDS_NO_OFFSET(personal_vehicle, personal_vehicle_pos.x, personal_vehicle_pos.y, personal_vehicle_pos.z, true, true, true)
-            SET_ENTITY_ROTATION(personal_vehicle, personal_vehicle_rot.x, personal_vehicle_rot.y, personal_vehicle_rot.z, 2, true)
-            if special_cords then
-                PLACE_OBJECT_ON_GROUND_OR_OBJECT_PROPERLY(personal_vehicle)
+        for menu.get_children(menu.ref_by_path("Vehicle>Personal Vehicles")) as persoanl_vehicle do
+            for persoanl_vehicle.command_names as personal_vehicle_command do
+                if personal_vehicle_command ~= "findpv" and personal_vehicle_command ~= "saveallpvs" then
+                    menu.trigger_commands(personal_vehicle_command.."request")
+                end
+                CLEAR_ALL_HELP_MESSAGES()
             end
-            if personal_vehicle_driver then
-                SET_PED_INTO_VEHICLE(players.user_ped(), personal_vehicle, -1)
+        end
+        if special_vehicle then
+            personal_vehicle_id = special_vehicle
+        end
+        if special_cords then
+            personal_vehicle_pos = special_cords
+            if not personal_vehicle_rot then
+                personal_vehicle_rot = v3.new(0.0, 0.0, 0.0)
+            end
+        end
+        if personal_vehicle_id then
+            if asuka_lib.does_entity_exist(entities.get_user_personal_vehicle_as_handle()) then
+                menu.trigger_commands("returnpv")
+                asuka_lib.delete_entity(entities.get_user_personal_vehicle_as_handle())
+            end
+            menu.trigger_commands("pv"..personal_vehicle_id.."request")
+            local request_timeout = os.time()
+            while not asuka_lib.does_entity_exist(entities.get_user_personal_vehicle_as_handle()) do
+                CLEAR_ALL_HELP_MESSAGES()
+                util.yield(666)
+                if request_timeout - os.time() > 13 then
+                    break
+                end
+            end
+            util.yield(1013)
+            personal_vehicle = entities.get_user_personal_vehicle_as_handle()
+            if asuka_lib.does_entity_exist(personal_vehicle) and personal_vehicle_pos and DECOR_GET_INT(personal_vehicle, "PV_Slot") == personal_vehicle_id then
+                requestControl(personal_vehicle)
+                SET_ENTITY_COORDS_NO_OFFSET(personal_vehicle, personal_vehicle_pos.x, personal_vehicle_pos.y, personal_vehicle_pos.z, true, true, true)
+                SET_ENTITY_ROTATION(personal_vehicle, personal_vehicle_rot.x, personal_vehicle_rot.y, personal_vehicle_rot.z, 2, true)
+                if special_cords then
+                    PLACE_OBJECT_ON_GROUND_OR_OBJECT_PROPERLY(personal_vehicle)
+                end
+                if personal_vehicle_driver then
+                    SET_PED_INTO_VEHICLE(players.user_ped(), personal_vehicle, -1)
+                end
             end
         end
     end
@@ -5394,14 +5403,16 @@ util.on_transition_finished(function ()
                     if interior_timeout - os.time() > 666 then
                         break
                     end
-                end
-                menu.trigger_commands("pv"..favoritevehid.."request")
-                local request_timeout = os.time()
-                while not asuka_lib.does_entity_exist(entities.get_user_personal_vehicle_as_handle()) do
-                    CLEAR_ALL_HELP_MESSAGES()
-                    util.yield(666)
-                    if request_timeout - os.time() > 13 then
-                        break
+                end 
+                if players.is_visible(players.user()) then
+                    menu.trigger_commands("pv"..favoritevehid.."request")
+                    local request_timeout = os.time()
+                    while not asuka_lib.does_entity_exist(entities.get_user_personal_vehicle_as_handle()) do
+                        CLEAR_ALL_HELP_MESSAGES()
+                        util.yield(666)
+                        if request_timeout - os.time() > 13 then
+                            break
+                        end
                     end
                 end
             end
