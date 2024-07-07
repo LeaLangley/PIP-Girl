@@ -629,21 +629,22 @@ local function SuperClean(fix, ignoreMission)
         end
     end
     util.yield(113)
-    for pairs(entities.get_all_objects_as_pointers()) as ent do
-        if not fix or (fix and not (string.contains(util.reverse_joaat(entities.get_model_hash(ent)), "yacht"))) then
-            if ignoreMission then
-                if entities.has_handle(ent) then
-                    ent = entities.pointer_to_handle(ent)
-                else
-                    return
-                end
-            end
-            if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
-                entities.delete(ent)
-                ct += 1
-                util.yield(13)
-            end
+    local temp_storage = {}
+    for i, clear_thing in ipairs(menu.get_children(menu.ref_by_path("World>Inhabitants>Clear Area"))) do
+        if i > 1 then
+            temp_storage[clear_thing] = menu.get_value(clear_thing)
         end
+        if i > 2 then
+            menu.set_value(clear_thing, false)
+        end
+    end
+    util.yield(13)
+    menu.trigger_commands("clearproximity 1000.00")
+    menu.trigger_commands("clearobjects on")
+    util.yield(13)
+    menu.trigger_commands("cleararea")
+    for path, value in pairs(temp_storage) do
+        menu.set_value(path, value)
     end
     util.yield(113)
     for pairs(entities.get_all_pickups_as_handles()) as ent do
