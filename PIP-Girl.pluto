@@ -629,6 +629,9 @@ local function SuperClean(fix, ignoreMission)
         end
     end
     util.yield(113)
+    for pairs(entities.get_all_objects_as_pointers()) as ent do
+        ct += 1
+    end
     local temp_storage = {}
     for i, clear_thing in ipairs(menu.get_children(menu.ref_by_path("World>Inhabitants>Clear Area"))) do
         if i > 1 then
@@ -641,6 +644,9 @@ local function SuperClean(fix, ignoreMission)
     util.yield(13)
     menu.trigger_commands("clearproximity 1000.00")
     menu.trigger_commands("clearobjects on")
+    if ignoreMission then
+        menu.trigger_commands("clearnomissions on")
+    end
     util.yield(13)
     menu.trigger_commands("cleararea")
     for path, value in pairs(temp_storage) do
@@ -657,7 +663,7 @@ local function SuperClean(fix, ignoreMission)
         end
     end
     util.yield(13)
-    notify("Done " .. ct .. "+ entities removed!")
+    notify("Done " .. ct .. "'ish entities removed!")
 end
 
 local function mmi_claim_all_vehicles(special_vehicle, special_cords)
