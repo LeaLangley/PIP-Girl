@@ -1585,7 +1585,7 @@ local function repair_asuka_tech(vehicle)
             SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + repair_amount)
         end
 
-        if petrolTankHealth >= 1000 and engineHealth >= 1000 and bodyHealth >= 1000 then
+        if petrolTankHealth >= max_repair_limit and engineHealth >= max_repair_limit and bodyHealth >= max_repair_limit then
             SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, false)
             SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, false)
         else
