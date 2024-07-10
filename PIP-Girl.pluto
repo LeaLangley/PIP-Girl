@@ -4761,7 +4761,7 @@ player_menu = function(pid)
         if menu.get_menu_name(player_child) == "PIP Girl" then
             return
         end
-        if menu.get_menu_name(player_child) == "~=^^=~" then
+        if menu.get_menu_name(player_child) == "~=^.^=~" then
             return
         end
     end
@@ -4818,7 +4818,7 @@ player_menu = function(pid)
     end)
     if is_sc_friend(pid) then
         set_as_illusion(pid, set_passive, false)
-        menu.player_root(pid):divider('~=^^=~')
+        menu.player_root(pid):divider('~=^.^=~')
         return
     end
     local Bad_Modder = menu.list(menu.player_root(pid), 'Bad Modder?', {""}, '', function() end)
@@ -4946,7 +4946,7 @@ player_menu = function(pid)
             set_as_illusion(pid, set_passive, false)
         end
     end)
-    menu.player_root(pid):divider('~=^^=~')
+    menu.player_root(pid):divider('~=^.^=~')
 end
 
 players.on_join(player_menu)
