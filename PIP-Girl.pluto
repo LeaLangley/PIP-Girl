@@ -201,7 +201,7 @@ local function hasAnyDetection(pid)
     return false
 end
 
-local function isModder(pid, bool)
+local function is_Modder(pid, bool)
     if players.is_marked_as_modder(pid) or players.is_marked_as_modder_or_admin(pid) then
         return true
     end
@@ -245,7 +245,7 @@ local function check_CEO_Color()
                     if players.get_boss(players.user()) ~= -1 then
                             --if pid ~= players.user() then
                             --    local pidorgColor = players.get_org_colour(pid)
-                            --    if pidorgColor == ceo_color and not isModder(pid) and not is_trusted(pid) then
+                            --    if pidorgColor == ceo_color and not is_Modder(pid) and not is_trusted(pid) then
                             --        if fallback_color == ceo_color then
                             --            fallback_color = fallback_color - 1
                             --        end
@@ -388,7 +388,7 @@ local function getEntryByValue(tbl, value)
     end
 end
 
-local requestControl = entities.request_control
+local request_control = entities.request_control
 
 local function thunderForMin(min)
     if asuka_lib.transition_state(true) == 1 then
@@ -505,14 +505,14 @@ local function StrategicKick(pid, rid)
             menu.trigger_commands("ghostplayer " .. name)
             menu.trigger_commands("blocksync " .. name .. " on")
             util.yield()
-            if players.is_marked_as_attacker(pid) or is_trusted(players.get_host()) or not isModder(players.get_host()) then
+            if players.is_marked_as_attacker(pid) or is_trusted(players.get_host()) or not is_Modder(players.get_host()) then
                 if asuka_lib.transition_state(true) ~= 1 then
                     if asuka_lib.transition_state(true) < 3 then
                         menu.trigger_commands("kick " .. name)
                     end
                     Wait_for_transitionState()
                 else
-                    if not (is_trusted(players.get_host()) and isModder(players.get_host())) then
+                    if not (is_trusted(players.get_host()) and is_Modder(players.get_host())) then
                         menu.trigger_commands("timeout " .. name)
                         menu.trigger_commands("desync " .. name .. " on")
                         util.yield()
@@ -705,7 +705,7 @@ local function mmi_claim_all_vehicles(special_vehicle, special_cords)
             util.yield(1013)
             personal_vehicle = entities.get_user_personal_vehicle_as_handle()
             if asuka_lib.does_entity_exist(personal_vehicle) and personal_vehicle_pos and DECOR_GET_INT(personal_vehicle, "PV_Slot") == personal_vehicle_id then
-                requestControl(personal_vehicle)
+                request_control(personal_vehicle)
                 SET_ENTITY_COORDS_NO_OFFSET(personal_vehicle, personal_vehicle_pos.x, personal_vehicle_pos.y, personal_vehicle_pos.z, true, true, true)
                 SET_ENTITY_ROTATION(personal_vehicle, personal_vehicle_rot.x, personal_vehicle_rot.y, personal_vehicle_rot.z, 2, true)
                 if special_cords then
@@ -1044,7 +1044,7 @@ path_collect_money = menu.toggle_loop(PIP_Girl, "Collect all local money pickups
                 end
                 if asuka_lib.is_user_inside_vehicle(true) then
                     if contains(money_hashish, pickupHash) then
-                        requestControl(pickup)
+                        request_control(pickup)
                         SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z - 66, false, false, false, false)
                     end
                 else
@@ -1054,7 +1054,7 @@ path_collect_money = menu.toggle_loop(PIP_Girl, "Collect all local money pickups
                     end
                 end
                 if contains(vehicle_money_hashish, pickupHash) then
-                    requestControl(pickup)
+                    request_control(pickup)
                     SET_PICKUP_OBJECT_COLLECTABLE_IN_VEHICLE(pickup)
                     SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
                 end
@@ -1076,7 +1076,7 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all pickups on yo
         local playerPed = players.user_ped()
         for entities.get_all_pickups_as_handles() as pickup do
             if not IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) and not HAS_PICKUP_BEEN_COLLECTED(pickup) then
-                requestControl(pickup)
+                request_control(pickup)
                 --ATTACH_ENTITY_TO_ENTITY(pickup, playerPed, GET_PED_BONE_INDEX(playerPed, 24818), 0.0, -0.3, 0.0, 0.0, 90, 0.0, false, true, true, false, 0, true, 1)
                 ATTACH_ENTITY_TO_ENTITY(pickup, playerPed, GET_PED_BONE_INDEX(playerPed, 24818), 0, -0.3, 0, 0, 90, 0, false, true, true, false, 0, true, 1)
                 table.insert(carryingPickups, pickup)
@@ -1091,7 +1091,7 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all pickups on yo
         local pos = players.get_position(players.user())
         for ipairs(carryingPickups) as pickup do
             if not HAS_PICKUP_BEEN_COLLECTED(pickup) and IS_ENTITY_ATTACHED_TO_ANY_PED(pickup) then
-                requestControl(pickup)
+                request_control(pickup)
                 DETACH_ENTITY(pickup, true, true)
                 util.yield(13)
                 SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z-0.8, false, false, false, false)
@@ -1382,7 +1382,7 @@ local function checkVehMod(vehicle, mod)
 end
 local function buff_asuka_tech(vehicle)
     if asuka_lib.is_vehicle_empty(vehicle) then
-        requestControl(vehicle)
+        request_control(vehicle)
     end
     menu.trigger_commands("smoothflight on")
     if protectMissionVehicles and not players.is_in_interior(players.user()) and not players.is_using_rc_vehicle(players.user()) then
@@ -1904,7 +1904,7 @@ menu.action(Vehicle, "Enter Asuka Tech Vehicle", {"enterasuka"}, "Enter the curr
         local driver = GET_PED_IN_VEHICLE_SEAT(target_vehicle, -1)
         local my_ped = players.user_ped()
         if asuka_lib.is_vehicle_free_for_use(target_vehicle) then
-            requestControl(target_vehicle)
+            request_control(target_vehicle)
             SET_PED_INTO_VEHICLE(my_ped, target_vehicle, -1)
         else
             SET_PED_INTO_VEHICLE(my_ped, target_vehicle, -2)
@@ -1922,7 +1922,7 @@ menu.action(Vehicle, "Teleport and Enter Asuka Tech Vehicle", {"tpenterasuka"}, 
         target_vehicle = current_asuka_tech_vehicle
     end
     if asuka_lib.does_entity_exist(target_vehicle) then
-        requestControl(target_vehicle)
+        request_control(target_vehicle)
         if not asuka_lib.is_vehicle_free_for_use(target_vehicle) then
             if target_vehicle == entities.get_user_personal_vehicle_as_handle() then
                 local personal_vehicle_id = DECOR_GET_INT(personal_vehicle, "PV_Slot")
@@ -1955,7 +1955,7 @@ menu.action(Vehicle, "Teleport and Enter Asuka Tech Vehicle", {"tpenterasuka"}, 
         SET_ENTITY_COORDS_NO_OFFSET(target_vehicle, pos.x, pos.y, pos.z, true, true, true)
         SET_ENTITY_ROTATION(target_vehicle, 0.0, 0.0, currentRotation.z, 2, true)
         if asuka_lib.is_vehicle_free_for_use(target_vehicle) then
-            requestControl(target_vehicle)
+            request_control(target_vehicle)
             SET_PED_INTO_VEHICLE(players.user_ped(), target_vehicle, -1)
         else
             SET_PED_INTO_VEHICLE(players.user_ped(), target_vehicle, -2)
@@ -1972,7 +1972,7 @@ menu.action(Vehicle, "Detonate Asuka Tech Vehicle", {"boomasuka"}, "", function(
     if asuka_lib.does_entity_exist(current_asuka_tech_vehicle) then
         target_vehicle = current_asuka_tech_vehicle
     end
-    requestControl(target_vehicle)
+    request_control(target_vehicle)
     entities.set_can_migrate(target_vehicle, false)
     ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(target_vehicle)
     LOCK_DOORS_WHEN_NO_LONGER_NEEDED(target_vehicle)
@@ -2157,7 +2157,7 @@ path_asukas_repair_stops = menu.toggle_loop(Vehicle, "Asuka's Repair Stop's", {"
                     local vehicle = asuka_lib.get_user_vehicle()
                     wasInZone = true
                     if asuka_lib.is_vehicle_free_for_use(vehicle) then
-                        requestControl(vehicle)
+                        request_control(vehicle)
                         menu.trigger_commands("performance")
                         menu.trigger_commands("fixvehicle")
                     end
@@ -2388,7 +2388,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
 
         if distance <= 100.0 then
             indistance = indistance + 1
-            requestControl(vehicle)
+            request_control(vehicle)
             util.yield(213)
             if driver == 0 or driver == players.user() then
                 SET_PED_INTO_VEHICLE(my_ped, vehicle, -1)
@@ -3135,7 +3135,7 @@ local function espOnPlayer(pid, namesync)
             elseif players.is_marked_as_attacker(pid) then
                 classificationESP = "(ATK)"
                 detectionCOLOR = { r = 255.0/255, g = 13.0/255, b = 13.0/255, a = 1.0 }
-            elseif isModder(pid) then
+            elseif is_Modder(pid) then
                 classificationESP = "(MOD)"
                 detectionCOLOR = { r = 255.0/255, g = 13.0/255, b = 13.0/255, a = 1.0 }
             elseif players.is_in_interior(pid) then
@@ -3217,7 +3217,7 @@ end)
 local function ReportSessionKD(numPlayers)
     local topPlayers = {}
     for players.list(false, false, true) as pid do
-        if not isModder(pid) then
+        if not is_Modder(pid) then
             local kd = players.get_kd(pid)
             local playerRank = players.get_rank(pid)
             
@@ -3269,7 +3269,7 @@ if session_claimer_players_range < 3 then
 end
 
 local function sessionWorthy()
-    if (not isModder(players.get_host()) and players.get_host_queue_position(players.user()) <= 1) or is_trusted(players.get_host()) then
+    if (not is_Modder(players.get_host()) and players.get_host_queue_position(players.user()) <= 1) or is_trusted(players.get_host()) then
         if GET_NUMBER_OF_PLAYERS() >= session_claimer_players or (session_claimer_players_range < session_claimer_players and GET_NUMBER_OF_PLAYERS() > 3) then
             return true
         end
@@ -3286,7 +3286,7 @@ local function findAnewHome()
             findAnewHomeMSG = "Not worth it."
         elseif GET_NUMBER_OF_PLAYERS() <= session_claimer_players then
             findAnewHomeMSG = "Not Enoght Players."
-        elseif isModder(players.get_host()) then
+        elseif is_Modder(players.get_host()) then
             findAnewHomeMSG = "Host is a Modder."
         else
             findAnewHomeMSG = "error."
@@ -3371,7 +3371,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             if os.time() - join_timeout_start > join_timeout_time then
                 break
             end
-            if isModder(players.get_host()) and not is_trusted(players.get_host()) then
+            if is_Modder(players.get_host()) and not is_trusted(players.get_host()) then
                 break
             else
                 if asuka_lib.session_type() == "Singleplayer" then
@@ -3670,7 +3670,7 @@ path_block_orb_room = menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockor
                         if not menu.is_ref_valid(menu.ref_by_path("Stand>Lua Scripts>JinxScript>Detections>Normal Detections>Orbital Cannon")) or menu.get_state(menu.ref_by_path("Stand>Lua Scripts>JinxScript>Detections>Normal Detections>Orbital Cannon")) == "Off" then
                             notify_only(players.get_name(pid).." is in Orb Room.")
                         end
-                        --if not isModder(pid, true) then
+                        --if not is_Modder(pid, true) then
                         --    menu.trigger_commands("interiorkick "..players.get_name(pid))
                         --end
                         if not asuka_lib.has_detection(pid, "Glitched Orb Room Access") then
@@ -3701,13 +3701,16 @@ end)
 local kosatkaMissile1 = nil
 local kosatkaMissile2 = nil
 path_block_kosatka_missile_terminal = menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {"blockkosatka"}, "Blocks the Missile terminal", function()
-    if asuka_lib.allow_spawn_check() and asuka_lib.transition_state(true) < 3 and GET_INTERIOR_FROM_ENTITY(players.user_ped()) ~= 281345 then
-        kosatkaMissile1 = asuka_lib.spawn_and_check_object(kosatkaMissile1, "hei_prop_heist_weed_pallet_02", v3.new(1558.9, 387.111, -50.666), 0, 0, 0, nil, 13, true, true, true)
-        kosatkaMissile2 = asuka_lib.spawn_and_check_object(kosatkaMissile2, "hei_prop_heist_weed_pallet_02", v3.new(1558.9, 388.777, -50.666), 0, 0, 0, nil, 13, true, true, true)
-    else
-        asuka_lib.delete_entity(kosatkaMissile1)
-        asuka_lib.delete_entity(kosatkaMissile2)
-        util.yield(6666)
+    if asuka_lib.allow_spawn_check() then
+        if GET_INTERIOR_FROM_ENTITY(players.user_ped()) ~= 281345 then
+            kosatkaMissile1 = asuka_lib.spawn_and_check_object(kosatkaMissile1, "hei_prop_heist_weed_pallet_02", v3.new(1558.9, 387.111, -50.666), 0, 0, 0, nil, 13, true, true, true)
+            kosatkaMissile2 = asuka_lib.spawn_and_check_object(kosatkaMissile2, "hei_prop_heist_weed_pallet_02", v3.new(1558.9, 388.777, -50.666), 0, 0, 0, nil, 13, true, true, true)
+            util.yield(13666)
+        else
+            asuka_lib.delete_entity(kosatkaMissile1)
+            asuka_lib.delete_entity(kosatkaMissile2)
+            util.yield(6666)
+        end
     end
     util.yield(1666)
 end, function()
@@ -3719,10 +3722,11 @@ local antiTerrorGlass = nil
 --local antiTerrorShocker = nil
 --local antiTerrorFire = nil
 path_anit_terrorbyte = menu.toggle_loop(SessionWorld, "Anti Terrorbyte", {"blockterror"}, "Blocks the MK2 acces", function()
-    if asuka_lib.allow_spawn_check() and asuka_lib.transition_state(true) < 3 then
+    if asuka_lib.allow_spawn_check() then
         antiTerrorGlass = asuka_lib.spawn_and_check_object(antiTerrorGlass, "prop_showroom_glass_1b", v3.new(-1420.666, -3014.579, -79.0), 0, 0, -20, nil, 13, true, true, true)
         --antiTerrorShocker = asuka_lib.spawn_and_check_object(antiTerrorShocker, 1870961552, v3.new(-1420.8349609375, -3016.2561035156, -76.113542541504), 180, 0, 90, nil, 13, true, false)
         --antiTerrorFire = asuka_lib.spawn_and_check_object(antiTerrorFire, "prop_beach_fire", v3.new(-1420.8349609375, -3016.2561035156, -80.066642541504), 0, 0, 90, nil, 13, true, true)
+        util.yield(66666)
     else
         util.yield(6666)
     end
@@ -3800,6 +3804,7 @@ path_asukas_shrine = menu.toggle_loop(SessionWorld, "Asuka's Shrine", {"asukassh
             end
             util.yield(13)
         end
+        util.yield(66666)
     else
         util.yield(6666)
     end
@@ -3834,18 +3839,18 @@ end)
 
 path_nerf_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Nerf Oppressor MK2s", {""}, "Nerf Oppressor mk2 weapons, except Modder and Friend's", function()
     for players.list_except(true) as pid do
-        if players.get_vehicle_model(pid) == 2069146067 and not is_trusted(pid) and not isModder(pid) then
+        if players.get_vehicle_model(pid) == 2069146067 and not is_trusted(pid) and not is_Modder(pid) then
             local vehicle = GET_VEHICLE_PED_IS_IN(GET_PLAYER_PED_SCRIPT_INDEX(pid))
             if GET_VEHICLE_MOD(vehicle, 10) ~= -1 then
-                requestControl(vehicle)
+                request_control(vehicle)
                 SET_VEHICLE_MOD(vehicle, 10, -1)
             end
             if GET_VEHICLE_MOD(vehicle, 16) ~= -1 then
-                requestControl(vehicle)
+                request_control(vehicle)
                 SET_VEHICLE_MOD(vehicle, 16, -1)
             end
             if GET_VEHICLE_COUNTERMEASURE_AMMO(vehicle) ~= 0 then
-                requestControl(vehicle)
+                request_control(vehicle)
                 SET_VEHICLE_COUNTERMEASURE_AMMO(vehicle, 0)
                 SET_VEHICLE_ENGINE_CAN_DEGRADE(vehicle, true)
             end
@@ -3856,16 +3861,16 @@ end)
 
 path_downgrade_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Downgrade Oppressor MK2s", {""}, "Downgrade Oppressor mk2, except Modder and Friend's", function()
     for players.list_except(true) as pid do
-        if players.get_vehicle_model(pid) == 2069146067 and not is_trusted(pid) and not isModder(pid) then
+        if players.get_vehicle_model(pid) == 2069146067 and not is_trusted(pid) and not is_Modder(pid) then
             local vehicle = GET_VEHICLE_PED_IS_IN(GET_PLAYER_PED_SCRIPT_INDEX(pid))
             for vehModNum = 0, 100 do
                 if GET_VEHICLE_MOD(vehicle, vehModNum) ~= -1 then
-                    requestControl(vehicle)
+                    request_control(vehicle)
                     SET_VEHICLE_MOD(vehicle, vehModNum, -1)
                 end
             end
             if GET_VEHICLE_COUNTERMEASURE_AMMO(vehicle) ~= 0 then
-                requestControl(vehicle)
+                request_control(vehicle)
                 SET_VEHICLE_COUNTERMEASURE_AMMO(vehicle, 0)
                 SET_VEHICLE_ENGINE_CAN_DEGRADE(vehicle, true)
             end
@@ -3879,7 +3884,7 @@ local mk2noob = {}
 path_spinning_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Spinning Oppressor MK2s", {""}, "Spin all MK2's, except Modder and Friend's", function()
     for players.list_except(true) as pid do
         if players.get_vehicle_model(pid) == 2069146067 and not is_trusted(pid) then
-            if not isModder(pid) then 
+            if not is_Modder(pid) then 
                 if not mk2noob[pid] then
                     mk2noob[pid] = true
                     local playerName = players.get_name(pid)
@@ -4065,7 +4070,7 @@ path_post_session_code_via_webhook = menu.toggle_loop(SessionInvite, "Post Sessi
                         if is_trusted(pid) then
                             playerInfo = playerInfo.."(Friendly)"
                         end
-                        if isModder(pid) then
+                        if is_Modder(pid) then
                             playerInfo = playerInfo.."(Modder)"
                         end
                         sessionPlayers = sessionPlayers .. playerInfo
@@ -4228,7 +4233,7 @@ path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"
                 end
             end
             if (players.get_host() == players.user() or not (is_sc_friend(players.get_host()))) and not is_trusted(players.get_script_host()) then
-                if not players.are_stats_ready(players.get_script_host()) and isModder(players.get_script_host()) then
+                if not players.are_stats_ready(players.get_script_host()) and is_Modder(players.get_script_host()) then
                     get_ScriptHost()
                 end
             end
@@ -4670,7 +4675,7 @@ local function SessionCheck(pid)
                     if asuka_lib.session_type() == "Public" and not asuka_lib.has_detection(pid, "Blacklist") then
                         add_in_blocking(pid)
                     end
-                    if isModder(pid) and pid == players.get_host() then
+                    if is_Modder(pid) and pid == players.get_host() then
                         notification = "This Blacklist is Host, we don't kick them until they attack."
                         menu.trigger_commands("hellaa " .. name .. " on")
                         menu.trigger_commands("ghostplayer " .. name .. " on")
@@ -5420,7 +5425,7 @@ util.on_transition_finished(function ()
         local pv = asuka_lib.get_user_vehicle()
         if asuka_lib.does_entity_exist(pv) and not asuka_lib.is_user_driving_vehicle(pv) then
             if customVehiclespawn.z ~= 0 then
-                requestControl(pv)
+                request_control(pv)
                 SET_ENTITY_COORDS_NO_OFFSET(pv, customVehiclespawn.x, customVehiclespawn.y, customVehiclespawn.z, true, true, true)
                 SET_ENTITY_ROTATION(pv, 0.0, 0.0, 0.0, 2, true)
                 PLACE_OBJECT_ON_GROUND_OR_OBJECT_PROPERLY(pv)
@@ -5481,9 +5486,9 @@ local function userIdentification()
                                     players.add_detection(pid, "PIP Girl User", TOAST_DEFAULT, 0)
                                 end
                             else
-                                if is_trusted(pid) and isModder(pid) then
+                                if is_trusted(pid) and is_Modder(pid) then
                                     IdentificationTimeout[pid] = 1
-                                elseif is_trusted(pid) or isModder(pid) then
+                                elseif is_trusted(pid) or is_Modder(pid) then
                                     IdentificationTimeout[pid] = 3
                                 else
                                     IdentificationTimeout[pid] = 6
