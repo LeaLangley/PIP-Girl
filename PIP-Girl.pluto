@@ -8,7 +8,7 @@ __________._____________    ________.__       .__
 
 local script_version = "1.176"
 
-local lust_upDate = {year = 2024, month = 7, day = 14, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 7, day = 20, hour = 6, min = 6, sec = 6}
 
 local startupmsg = "PIP Girl remembers your settings! :D\n\nAsuka tech armor out now!\nin asuka tech settings.\n\nReport bugs in the discord.\nAsuka Tech on top!"
 
@@ -3207,10 +3207,21 @@ local thermal_command = menu.ref_by_path('Game>Rendering>Thermal Vision')
 menu.toggle(Game, "Better Thermal Scope",{},"",function(on)
     if on then
         menu.trigger_command(thermal_command,"on")
+        SEETHROUGH_SET_FADE_ENDDISTANCE(13666.0)
+        SEETHROUGH_SET_FADE_STARTDISTANCE(9666.0)
+        SEETHROUGH_SET_HEATSCALE(0, 0.75)
+        SEETHROUGH_SET_HEATSCALE(1, 0.75)
+        SEETHROUGH_SET_HEATSCALE(2, 0.75)
+        SEETHROUGH_SET_HEATSCALE(3, 0.75)
+        SEETHROUGH_SET_COLOR_NEAR(166, 13, 166)
         SEETHROUGH_SET_MAX_THICKNESS(10000.0)
+        SEETHROUGH_SET_NOISE_MIN(0.0)
+        SEETHROUGH_SET_NOISE_MAX(0.0)
+        SEETHROUGH_SET_HILIGHT_INTENSITY(1.0)
+        SEETHROUGH_SET_HIGHLIGHT_NOISE(0.0)
     else
         menu.trigger_command(thermal_command,"off")
-        SEETHROUGH_SET_MAX_THICKNESS(1.0)
+        SEETHROUGH_RESET()
     end
 end)
 
