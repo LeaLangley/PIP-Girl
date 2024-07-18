@@ -2696,7 +2696,7 @@ path_demon_horns = menu.toggle_loop(outfit_decoration, "Demon Horns", {"demonhor
             end
         else
             if not IS_ENTITY_ATTACHED_TO_ENTITY(demon_horn1, pup) then
-                ATTACH_ENTITY_TO_ENTITY(demon_horn1, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -1 / 50.0, 0, 78, 0, 122, false, true, false, false, 0, true, 1)
+                asuka_lib.delete_entity(demon_horn1)
             end
         end
         if not asuka_lib.does_entity_exist(demon_horn2) then
@@ -2709,7 +2709,7 @@ path_demon_horns = menu.toggle_loop(outfit_decoration, "Demon Horns", {"demonhor
             end
         else
             if not IS_ENTITY_ATTACHED_TO_ENTITY(demon_horn2, pup) then
-                ATTACH_ENTITY_TO_ENTITY(demon_horn2, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -1 / 50.0, 0, 102, 0, 122, false, true, false, false, 0, true, 1)
+                asuka_lib.delete_entity(demon_horn2)
             end
         end
         if GET_FOLLOW_PED_CAM_VIEW_MODE() == 4 then
