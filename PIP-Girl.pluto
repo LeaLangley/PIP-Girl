@@ -3430,6 +3430,10 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 --  <3
                 local host_name = players.get_name(players.get_host())
                 if not is_trusted(players.get_host()) and sessionWorthy() and players.get_host() ~= players.user() then
+                    local pidPed = GET_PLAYER_PED_SCRIPT_INDEX(players.get_host())
+                    if IS_PED_IN_ANY_VEHICLE(pidPed, true) then
+                        request_control(GET_VEHICLE_PED_IS_IN(pidPed, true))
+                    end
                     if players.get_rank(pid) >= 120 then
                         menu.trigger_commands("givecollectibles "..host_name)
                     else
