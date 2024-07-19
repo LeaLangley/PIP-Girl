@@ -3434,7 +3434,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     if IS_PED_IN_ANY_VEHICLE(pidPed, true) then
                         request_control(GET_VEHICLE_PED_IS_IN(pidPed, true))
                     end
-                    if players.get_rank(pid) >= 120 then
+                    if players.get_rank(players.get_host()) >= 120 then
                         menu.trigger_commands("givecollectibles "..host_name)
                     else
                         menu.trigger_commands("pgboostlevel "..host_name)
