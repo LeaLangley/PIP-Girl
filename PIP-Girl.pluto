@@ -6,11 +6,11 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local script_version = "1.176"
+local script_version = "1.177"
 
-local lust_upDate = {year = 2024, month = 7, day = 20, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 7, day = 25, hour = 6, min = 6, sec = 6}
 
-local startupmsg = "PIP Girl remembers your settings! :D\n\nAsuka tech armor out now!\nin asuka tech settings.\n\nReport bugs in the discord.\nAsuka Tech on top!"
+local startupmsg = "PIP Girl remembers your settings! :D\n\n\n\nReport bugs in the discord.\nAsuka Tech on top!"
 
 util.ensure_package_is_installed("lua/auto-updater")
 local auto_updater = require("auto-updater")
@@ -727,6 +727,7 @@ local PIP_Girl_APPS = menu.list(PIP_Girl, 'PIP Girl Apps', {}, 'Personal Informa
 local Stimpak = menu.list(menu.my_root(), 'Stimpak', {}, 'Take a breath.', function(); end)
 local Vehicle = menu.list(menu.my_root(), 'Vehicle', {}, 'Drive pretty and nice.', function(); end)
 local Outfit = menu.list(menu.my_root(), 'Outfit', {}, 'Look pretty and nice.', function(); end)
+local Combat = menu.list(menu.my_root(), 'Combat', {}, 'Very combat today.', function(); end)
 local Game = menu.list(menu.my_root(), 'Game', {}, 'Very gaming today.', function(); end)
 local Session = menu.list(menu.my_root(), 'Online', {}, '.enilnO', function(); end)
 local SessionClaimer = menu.list(Session, 'Session Claimer Settings', {}, 'Session Claimer settings.', function(); end)
@@ -2762,6 +2763,88 @@ path_demon_horns_color = menu.list_select(outfit_decoration, "Demon Horns Color"
     end
 end)
 
+local Thermal_Vision = menu.list(Combat, 'Thermal Vision Settings', {}, 'Doing the looking.', function(); end)
+
+
+local function float_to_int_color(color)
+    local r255 = math.floor(color.r * 255 + 0.5)
+    local g255 = math.floor(color.g * 255 + 0.5)
+    local b255 = math.floor(color.b * 255 + 0.5)
+    return r255, g255, b255
+end
+local thermal_color = { r = 1.0, g = 0.0, b = 1.0, a = 1.0 }
+
+path_thermal_color = menu.colour(Thermal_Vision, "Color", {"thermalcolor"}, "Label help_text", 1.0, 0.0, 1.0, 1.0, false, function(color, click_type)
+    local r, g, b = float_to_int_color(color)
+    thermal_color = color
+    SEETHROUGH_SET_COLOR_NEAR(r, g, b)
+end)
+
+menu.rainbow(path_thermal_color)
+
+path_thermal_highlight = menu.slider(Thermal_Vision, "Highlight Intensity", {"thermalhighlight"}, "", -100, 100, 1, 1, function (new_value)
+    SEETHROUGH_SET_HILIGHT_INTENSITY(new_value)
+end)
+
+local thermal_command = menu.ref_by_path('Game>Rendering>Thermal Vision')
+menu.toggle(Combat, "Better Thermal Vision",{},"",function(on)
+    if on then
+        menu.trigger_command(thermal_command,"on")
+        SEETHROUGH_SET_FADE_ENDDISTANCE(13666.0)
+        SEETHROUGH_SET_FADE_STARTDISTANCE(9666.0)
+        SEETHROUGH_SET_HEATSCALE(0, 0.75)
+        SEETHROUGH_SET_HEATSCALE(1, 0.75)
+        SEETHROUGH_SET_HEATSCALE(2, 0.75)
+        SEETHROUGH_SET_HEATSCALE(3, 0.75)
+        SEETHROUGH_SET_COLOR_NEAR(float_to_int_color(thermal_color))
+        SEETHROUGH_SET_MAX_THICKNESS(10000.0)
+        SEETHROUGH_SET_NOISE_MIN(0.0)
+        SEETHROUGH_SET_NOISE_MAX(0.0)
+        SEETHROUGH_SET_HILIGHT_INTENSITY(menu.get_value(path_thermal_highlight))
+        SEETHROUGH_SET_HIGHLIGHT_NOISE(0.0)
+    else
+        menu.trigger_command(thermal_command,"off")
+        SEETHROUGH_RESET()
+    end
+end)
+
+path_silent_bst = menu.toggle_loop(Combat, "Silent BST", {}, "", function()
+	SET_PLAYER_WEAPON_DAMAGE_MODIFIER(players.user(), 1.44)
+	SET_PLAYER_MELEE_WEAPON_DAMAGE_MODIFIER(players.user(), 2.0)
+	SET_PLAYER_MELEE_WEAPON_DEFENSE_MODIFIER(players.user(), 0.5)
+    util.draw_debug_text("BST On")
+end, function()
+    SET_PLAYER_WEAPON_DAMAGE_MODIFIER(players.user(), 0.72)
+	SET_PLAYER_MELEE_WEAPON_DAMAGE_MODIFIER(players.user(), 1.0)
+	SET_PLAYER_MELEE_WEAPON_DEFENSE_MODIFIER(players.user(), 1.0)
+end)
+
+path_bst_info = menu.toggle_loop(Combat, "BST User Info Overlay", {}, "shows a list of all bst users", function()
+    local bst_users = ""
+    for pid in players.list() do
+        if math.abs(players.get_weapon_damage_modifier(pid) - 1.44) < 0.001 then
+            if math.abs(players.get_melee_weapon_damage_modifier(pid) - 2.0) < 0.01 then
+                if bst_users == "" then
+                    bst_users = players.get_name(pid)
+                else
+                    bst_users = bst_users .. ", " .. players.get_name(pid)
+                end
+            end
+        end
+    end
+    if bst_users ~= "" then
+        bst_users = "BST Users: " .. bst_users .. "."
+        util.draw_debug_text(bst_users)
+    end
+end)
+
+path_weapon_light = menu.toggle_loop(Combat, "Weapon light default on", {}, "", function()
+    SET_FLASH_LIGHT_ACTIVE_HISTORY(players.user_ped(), true)
+    util.yield(666)
+end, function()
+    SET_FLASH_LIGHT_ACTIVE_HISTORY(players.user_ped(), false)
+end)
+
 menu.divider(Game, "Exclude Mission.")
 
 menu.action(Game, 'Super Cleanse No yacht fix', {"scleannysave"}, 'BCS R* is a mess.', function()
@@ -3069,7 +3152,7 @@ end)
 
 local function drawESPText(coord, Yoffset, text, scale, color)
     local shadowColor = { r = 0, g = 0, b = 0, a = 0.666 }
-    local shadowOffset = 0.0005
+    local shadowOffset = 0.001
     directx.draw_text(coord.x + shadowOffset, coord.y + Yoffset + shadowOffset, text, ALIGN_CENTRE, scale, shadowColor.r, shadowColor.g, shadowColor.b, shadowColor.a)
     directx.draw_text(coord.x, coord.y + Yoffset, text, ALIGN_CENTRE, scale, color.r, color.g, color.b, color.a)
 end
@@ -3078,8 +3161,9 @@ local sx_worldToScreen = memory.alloc()
 local sy_worldToScreen = memory.alloc()
 local function worldToScreen(coords)
     local success = GET_SCREEN_COORD_FROM_WORLD_COORD(coords.x, coords.y, coords.z, sx_worldToScreen, sy_worldToScreen)
-    local screenx = memory.read_float(sx_worldToScreen) local screeny = memory.read_float(sy_worldToScreen) --memory.free(sx) memory.free(sy)
-    return {x = screenx, y = screeny, success = success}
+    local screenx = memory.read_float(sx_worldToScreen)
+    local screeny = memory.read_float(sy_worldToScreen)
+    return { x = screenx, y = screeny, success = success }
 end
 
 local r, g, b, a = memory.alloc(1), memory.alloc(1), memory.alloc(1), memory.alloc(1)
@@ -3089,7 +3173,7 @@ function getOrgColor(pid)
     if orgColorIdx == -1 then
         return -1
     end
- GET_HUD_COLOUR(orgColorIdx + 192, r, g, b, a)
+    GET_HUD_COLOUR(orgColorIdx + 192, r, g, b, a)
     local color = {
         r = memory.read_ubyte(r) / 255,
         g = memory.read_ubyte(g) / 255,
@@ -3100,20 +3184,21 @@ function getOrgColor(pid)
 end
 
 local function espOnPlayer(pid, namesync)
-    --coordinate stuff
-    local targetped = GET_PLAYER_PED_SCRIPT_INDEX(pid)
-    local ppos = GET_ENTITY_COORDS(targetped)
+    local targetpos = players.get_cam_pos(pid)
     local mypos = players.get_cam_pos(players.user())
-    local vdist = mypos:distance(ppos)
+    local vdist = mypos:distance(targetpos)
     local show_distance = 0
     if not IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) then
         show_distance = 420
     else
         show_distance = 666
     end
+    local weapon = math.abs(GET_SELECTED_PED_WEAPON(players.user_ped()))
+    if weapon ~= 1122011548 and weapon ~= 1569615261 then
+        show_distance = show_distance + 666
+    end
     if vdist <= show_distance then
-        local playerHeadOffset = GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(targetped, 0, 0, 1.0)
-        local screenName = worldToScreen(playerHeadOffset)
+        local screenName = worldToScreen(targetpos)
 
         if screenName.success then
             local blipColor = getOrgColor(pid)
@@ -3160,7 +3245,12 @@ local function espOnPlayer(pid, namesync)
             else
                 detectionCOLOR = colText
             end
-            drawESPText(screenName, -0.10, "("..rank..") "..playerName.." ("..math.floor(vdist).."m)", txtscale, colText)
+
+            local fixedYOffset = -0.03 -- Increased spacing between the lines to move them higher
+            
+            drawESPText(screenName, fixedYOffset, "("..rank..") "..playerName.." ("..math.floor(vdist).."m)", txtscale, colText)
+
+            local targetped = GET_PLAYER_PED_SCRIPT_INDEX(pid)
             local health = GET_ENTITY_HEALTH(targetped) - 100
             local armor = GET_PED_ARMOUR(targetped)
             local textSegments = {}
@@ -3178,7 +3268,7 @@ local function espOnPlayer(pid, namesync)
                 table.insert(textSegments, classificationESP)
             end
             local infoText = table.concat(textSegments, " | ")
-            drawESPText(screenName, -0.10 * 1.2, infoText, txtscale, detectionCOLOR)
+            drawESPText(screenName, fixedYOffset - 0.02, infoText, txtscale, detectionCOLOR)
         end
     end
 end
@@ -3194,6 +3284,8 @@ path_name_esp = menu.toggle_loop(Game, "Name ESP", {"pgesp"}, "ESP", function ()
     end
 end)
 
+
+
 if menu.get_edition() > 1 then
     path_bone_esp_while_armed = menu.toggle_loop(Game,"Bone ESP While Armed", {"aimboneesp"}, "Also counts for armed vehicles.", function()
         local weapon = math.abs(GET_SELECTED_PED_WEAPON(players.user_ped()))
@@ -3206,28 +3298,6 @@ if menu.get_edition() > 1 then
         menu.trigger_command(menu.ref_by_path("World>Inhabitants>Player ESP>Bone ESP>Disabled"))
     end)
 end
-
-local thermal_command = menu.ref_by_path('Game>Rendering>Thermal Vision')
-menu.toggle(Game, "Better Thermal Scope",{},"",function(on)
-    if on then
-        menu.trigger_command(thermal_command,"on")
-        SEETHROUGH_SET_FADE_ENDDISTANCE(13666.0)
-        SEETHROUGH_SET_FADE_STARTDISTANCE(9666.0)
-        SEETHROUGH_SET_HEATSCALE(0, 0.75)
-        SEETHROUGH_SET_HEATSCALE(1, 0.75)
-        SEETHROUGH_SET_HEATSCALE(2, 0.75)
-        SEETHROUGH_SET_HEATSCALE(3, 0.75)
-        SEETHROUGH_SET_COLOR_NEAR(166, 13, 166)
-        SEETHROUGH_SET_MAX_THICKNESS(10000.0)
-        SEETHROUGH_SET_NOISE_MIN(0.0)
-        SEETHROUGH_SET_NOISE_MAX(0.0)
-        SEETHROUGH_SET_HILIGHT_INTENSITY(1.0)
-        SEETHROUGH_SET_HIGHLIGHT_NOISE(0.0)
-    else
-        menu.trigger_command(thermal_command,"off")
-        SEETHROUGH_RESET()
-    end
-end)
 
 local function ReportSessionKD(numPlayers)
     local topPlayers = {}
@@ -5324,6 +5394,12 @@ local data_cfg = {
     store_Aircraft_helmet_color = path_Aircraft_helmet_color,
     store_demon_horns_color = path_demon_horns_color,
     store_demon_horns = path_demon_horns,
+    --Combat
+    store_thermal_highlight = path_thermal_highlight,
+    store_silent_bst = path_silent_bst,
+    store_bst_info = path_bst_info,
+    store_weapon_light = path_weapon_light,
+
     --Game
     store_auto_interact = path_auto_interact,
     store_auto_skip_conversation = path_auto_skip_conversation,
