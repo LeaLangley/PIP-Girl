@@ -2808,7 +2808,7 @@ menu.toggle(Combat, "Better Thermal Vision",{},"",function(on)
     end
 end)
 
-path_silent_bst = menu.toggle_loop(Combat, "Silent BST", {}, "", function()
+menu.toggle_loop(Combat, "Silent BST", {}, "", function()
 	SET_PLAYER_WEAPON_DAMAGE_MODIFIER(players.user(), 1.44)
 	SET_PLAYER_MELEE_WEAPON_DAMAGE_MODIFIER(players.user(), 2.0)
 	SET_PLAYER_MELEE_WEAPON_DEFENSE_MODIFIER(players.user(), 0.5)
@@ -5396,7 +5396,6 @@ local data_cfg = {
     store_demon_horns = path_demon_horns,
     --Combat
     store_thermal_highlight = path_thermal_highlight,
-    store_silent_bst = path_silent_bst,
     store_bst_info = path_bst_info,
     store_weapon_light = path_weapon_light,
 
