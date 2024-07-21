@@ -4366,7 +4366,6 @@ local in_self_god = false
 path_ghost_god_mode = menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"}, "Ghost everyone who is a god mode except Friends.\nIf they are not god anymore , it will de-ghost", function()
     if asuka_lib.transition_state(true) <3 then
         if not selfSafe() then
-            in_self_god = false
             for players.list_except(true) as pid do
                 if not is_trusted(pid) and not players.is_using_rc_vehicle(pid) and not players.is_in_interior(pid)then
                     if players.is_godmode(pid) then
@@ -4384,15 +4383,12 @@ path_ghost_god_mode = menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"},
                 end
             end
         else
-            if not in_self_god then
-                for pid in pairs(sussy_god) do
-                    if asuka_lib.player_exist(pid) then
-                        set_as_illusion(pid, sussy_god, false)
-                    end
+            for pid in pairs(sussy_god) do
+                if asuka_lib.player_exist(pid) then
+                    set_as_illusion(pid, sussy_god, false)
                 end
-                sussy_god = {}
-                in_self_god = true
             end
+            sussy_god = {}
         end
     else
         for pid in pairs(sussy_god) do
