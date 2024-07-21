@@ -3185,6 +3185,7 @@ end
 
 local function espOnPlayer(pid, namesync)
     local targetpos = players.get_position(pid)
+    targetpos = v3.new(targetpos:getX(), targetpos:getY(), targetpos:getZ() + 0.8)
     local targetcampos = players.get_cam_pos(pid)
     local target_and_cam = v3.distance(v3.new(targetpos:getX(), targetpos:getY(), 0), v3.new(targetcampos:getX(), targetcampos:getY(), 0))
     local mypos = players.get_cam_pos(players.user())
