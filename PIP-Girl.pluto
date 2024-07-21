@@ -3195,8 +3195,13 @@ local function espOnPlayer(pid, namesync)
     else
         show_distance = 666
     end
-    if IS_PLAYER_FREE_AIMING(players.user()) then
-        show_distance = show_distance + 666
+    local weapon = math.abs(GET_SELECTED_PED_WEAPON(players.user_ped()))
+    if weapon ~= 1122011548 and weapon ~= 1569615261 then
+        if IS_PLAYER_FREE_AIMING(players.user()) then
+            show_distance = show_distance + 666
+        else
+            show_distance = show_distance + 420
+        end
     end
     if vdist <= show_distance then
         local screenName = worldToScreen(targetpos)
