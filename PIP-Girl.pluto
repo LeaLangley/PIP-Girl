@@ -4183,7 +4183,7 @@ path_post_session_code_via_webhook = menu.toggle_loop(SessionInvite, "Post Sessi
                         username = "PIP Girl",
                         avatar_url = "https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/resources/PIP-Girl/logo.png"
                     }
-                    local encode_status, body_json = pcall(soup.json.encode, body)                
+                    local body_json_status, body_json = pcall(json.encode, body)
                     local function on_success(body, header_fields, status_code)
                         notify_cmd("Webhook sent successfully!")
                         if inviteAllFriendsOnWebhook and not NETWORK_IS_ACTIVITY_SESSION() and asuka_lib.session_type() == "Public" then
@@ -4574,8 +4574,8 @@ if not filesystem.exists(user_export_blacklist_path) then
 end
 
 local function save_data_e()
-    local encode_status, data_encoded_e = pcall(soup.json.encode, data_e)
-    if encode_status and data_encoded_e then
+    local data_e_status, data_encoded_e = pcall(json.encode, data_e)
+    if data_e_status and data_encoded_e then
         asuka_lib.write_to_file(user_export_blacklist_path, data_encoded_e)
     end
 end
@@ -4590,26 +4590,28 @@ local function load_data_e()
                     contents = "[]"
                     asuka_lib.write_to_file(user_export_blacklist_path, contents)
                 end
-                local old_data_e = json.decode(contents) or {}
-                local file_data_e = old_data_e
-                local is_old_format = false
-                for id, player in pairs(old_data_e) do
-                    if player["Name"] then
-                        is_old_format = true
-                        break
-                    end
-                end
-                if is_old_format then
-                    file_data_e = {}
+                local old_data_e_status, old_data_e = pcall(json.decode, contents)
+                if old_data_e_status and old_data_e then
+                    local file_data_e = old_data_e
+                    local is_old_format = false
                     for id, player in pairs(old_data_e) do
                         if player["Name"] then
-                            table.insert(file_data_e, id)
+                            is_old_format = true
+                            break
                         end
                     end
-                    asuka_lib.write_to_file(the_path, file_data_e)
-                end
-                for ipairs(file_data_e) as id do
-                    PIP_Girl_Blacklist[id] = true
+                    if is_old_format then
+                        file_data_e = {}
+                        for id, player in pairs(old_data_e) do
+                            if player["Name"] then
+                                table.insert(file_data_e, id)
+                            end
+                        end
+                        asuka_lib.write_to_file(the_path, file_data_e)
+                    end
+                    for ipairs(file_data_e) as id do
+                        PIP_Girl_Blacklist[id] = true
+                    end
                 end
             end
         end
@@ -4621,9 +4623,11 @@ local function load_data_g()
     if file then
         local contents = file:read('*all')
         io.close(file)
-        local json_data = json.decode(contents) or {}
-        for ipairs(json_data) as id do
-            PIP_Girl_Blacklist[id] = true
+        local load_data_g_status, json_data_g = pcall(json.decode, contents)
+        if load_data_g_status and json_data_g then
+            for ipairs(json_data_g) as id do
+                PIP_Girl_Blacklist[id] = true
+            end
         end
     end
 end
@@ -5291,11 +5295,11 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
             sessionCode = sessionCode,
         }
         
-        local encode_status, json_data = pcall(soup.json.encode, data)
+        local json_data_rpc_status, json_data_rpc = pcall(json.encode, data)
         
         local file = io.open(store_dir..'/gta_rpc.json', 'w')
-        if file then
-            file:write(json_data)
+        if json_data_rpc_status and json_data_rpc and file then
+            file:write(json_data_rpc)
             file:close()
         else
             print("Error: Unable to open file for writing.")
