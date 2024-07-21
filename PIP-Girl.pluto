@@ -2809,10 +2809,12 @@ menu.toggle(Combat, "Better Thermal Vision",{},"",function(on)
 end)
 
 menu.toggle_loop(Combat, "Silent BST", {}, "", function()
-	SET_PLAYER_WEAPON_DAMAGE_MODIFIER(players.user(), 1.44)
-	SET_PLAYER_MELEE_WEAPON_DAMAGE_MODIFIER(players.user(), 2.0)
-	SET_PLAYER_MELEE_WEAPON_DEFENSE_MODIFIER(players.user(), 0.5)
-    util.draw_debug_text("BST On")
+    if NETWORK_IS_PLAYER_ACTIVE(players.user()) then
+        SET_PLAYER_WEAPON_DAMAGE_MODIFIER(players.user(), 1.44)
+        SET_PLAYER_MELEE_WEAPON_DAMAGE_MODIFIER(players.user(), 2.0)
+        SET_PLAYER_MELEE_WEAPON_DEFENSE_MODIFIER(players.user(), 0.5)
+        util.draw_debug_text("BST On")
+    end
 end, function()
     SET_PLAYER_WEAPON_DAMAGE_MODIFIER(players.user(), 0.72)
 	SET_PLAYER_MELEE_WEAPON_DAMAGE_MODIFIER(players.user(), 1.0)
