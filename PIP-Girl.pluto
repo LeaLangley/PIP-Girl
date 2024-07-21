@@ -3186,10 +3186,7 @@ end
 local function espOnPlayer(pid, namesync)
     local targetpos = players.get_position(pid)
     local targetcampos = players.get_cam_pos(pid)
-    local target_and_cam = targetcampos:distance(targetpos)
-    if target_and_cam > 50 then
-        targetpos = targetcampos
-    end
+    local target_and_cam = v3.distance(v3.new(targetpos:getX(), targetpos:getY(), 0), v3.new(targetcampos:getX(), targetcampos:getY(), 0))
     local mypos = players.get_cam_pos(players.user())
     local vdist = mypos:distance(targetpos)
     local show_distance = 0
@@ -3198,8 +3195,7 @@ local function espOnPlayer(pid, namesync)
     else
         show_distance = 666
     end
-    local weapon = math.abs(GET_SELECTED_PED_WEAPON(players.user_ped()))
-    if weapon ~= 1122011548 and weapon ~= 1569615261 then
+    if IS_PLAYER_FREE_AIMING(players.user()) then
         show_distance = show_distance + 666
     end
     if vdist <= show_distance then
@@ -3218,7 +3214,7 @@ local function espOnPlayer(pid, namesync)
                     a = blipColor.a
                 }
             end
-            local txtscale = 0.42
+            local txtscale = 0.40
             local detectionCOLOR
             local rank = players.get_rank(pid)
             local playerName = players.get_name(pid)
@@ -3250,16 +3246,17 @@ local function espOnPlayer(pid, namesync)
             else
                 detectionCOLOR = colText
             end
-            if target_and_cam > 50 then
-                if classificationESP == "" then
-                    classificationESP = "(CAM)"
-                else
-                    classificationESP = "(CAM)"..classificationESP
-                end
-                detectionCOLOR = { r = 255.0/255, g = 13.0/255, b = 13.0/255, a = 1.0 }
-            end
             local fixedYOffset = -0.03 -- Increased spacing between the lines to move them higher
-            
+
+            local screenCamName
+            if target_and_cam > 50 then
+                screenCamName = worldToScreen(targetcampos)
+                if screenCamName.success then
+                    local vdist_cam = mypos:distance(targetcampos)
+                    drawESPText(screenCamName, fixedYOffset, "(CAM) "..playerName.." ("..math.floor(vdist_cam).."m)", txtscale, colText)
+                end
+            end
+
             drawESPText(screenName, fixedYOffset, "("..rank..") "..playerName.." ("..math.floor(vdist).."m)", txtscale, colText)
 
             local targetped = GET_PLAYER_PED_SCRIPT_INDEX(pid)
