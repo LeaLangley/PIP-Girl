@@ -2822,8 +2822,8 @@ end)
 path_bst_info = menu.toggle_loop(Combat, "BST User Info Overlay", {}, "shows a list of all bst users", function()
     local bst_users = ""
     for pid in players.list() do
-        if math.abs(players.get_weapon_damage_modifier(pid) - 1.44) < 0.001 then
-            if math.abs(players.get_melee_weapon_damage_modifier(pid) - 2.0) < 0.01 then
+        if math.abs(players.get_weapon_damage_modifier(pid) - 1.44) < 0.03 then
+            if math.abs(players.get_melee_weapon_damage_modifier(pid) - 2.0) < 0.05 then
                 if bst_users == "" then
                     bst_users = players.get_name(pid)
                 else
