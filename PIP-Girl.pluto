@@ -5336,7 +5336,7 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
     end)
 end
 
-menu.action(menu.my_root(), "Activate Everyday Goodies", {"pggoodies"}, "Activates all the Everyday Goodies.", function()
+menu.action(menu.my_root(), "Activate 17 Goodies", {"pggoodies"}, "NC pop, fill up on session join, auto armor, regen health 100%, regen armor 100%, oxygen, heal on enter vehicle, asuka tech!, asuka repair stops, skip conversation, skip cutscene, auto accept warning, anti admin, smart script host, ghost god mode, asuka's shrine.", function()
     menu.show_warning(menu.my_root(), 2, 'Want to activate some goodies?', function()
         menu.trigger_commands("ncpop on")
         menu.trigger_commands("pgfmu on")
@@ -5353,10 +5353,7 @@ menu.action(menu.my_root(), "Activate Everyday Goodies", {"pggoodies"}, "Activat
         menu.trigger_commands("antiadmin on")
         menu.trigger_commands("pgssh on")
         menu.trigger_commands("ghostgod on")
-        menu.trigger_commands("blockorb on")
-        menu.trigger_commands("blockkosatka on")
-        menu.trigger_commands("blockterror on")
-        --menu.trigger_commands("asukasshrine on")
+        menu.trigger_commands("asukasshrine on")
     end)
 end)
 
