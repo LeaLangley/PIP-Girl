@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local script_version = "1.177"
+local script_version = "24.07.27"
 
 local lust_upDate = {year = 2024, month = 7, day = 25, hour = 6, min = 6, sec = 6}
 
