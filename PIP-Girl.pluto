@@ -8,7 +8,7 @@ __________._____________    ________.__       .__
 
 local lust_upDate = {year = 2024, month = 7, day = 28, hour = 6, min = 6, sec = 6}
 
-local script_version = lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
+local script_version = "V."..lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
 local startupmsg = "PIP Girl remembers your settings! :D\n\n\n\nReport bugs in the discord.\nAsuka Tech on top!"
 
