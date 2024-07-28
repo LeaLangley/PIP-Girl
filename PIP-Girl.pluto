@@ -6,9 +6,9 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local script_version = "24.07.27"
+local lust_upDate = {year = 2024, month = 7, day = 28, hour = 6, min = 6, sec = 6}
 
-local lust_upDate = {year = 2024, month = 7, day = 25, hour = 6, min = 6, sec = 6}
+local script_version = lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
 local startupmsg = "PIP Girl remembers your settings! :D\n\n\n\nReport bugs in the discord.\nAsuka Tech on top!"
 
@@ -4952,6 +4952,7 @@ player_menu = function(pid)
             else
                 menu.set_state(menu.ref_by_rel_path(menu.player_root(pid), "Trolling>Particle Spam>Particle Spam"), "Off")
             end
+            menu.set_state(menu.ref_by_rel_path(menu.player_root(pid), "Trolling>Gravitate NPCs"), "On")
         else
             util.stop_thread()
         end
@@ -4986,6 +4987,14 @@ player_menu = function(pid)
         asuka_lib.delete_entity(vehicle)
         asuka_lib.delete_entity(slave)
         util.yield(50)
+    end, function()
+        asuka_lib.delete_entity(obj)
+        asuka_lib.delete_entity(vehicle)
+        asuka_lib.delete_entity(slave)
+        if menu.player_root(pid):isValid() then
+            menu.set_state(menu.ref_by_rel_path(menu.player_root(pid), "Trolling>Particle Spam>Particle Spam"), "Off")
+            menu.set_state(menu.ref_by_rel_path(menu.player_root(pid), "Trolling>Gravitate NPCs"), "Off")
+        end
     end)
     menu.action(Bad_Modder, "Add Blacklist & Kick", {'hellbk'}, "Blacklist Note, Kick and Block the Target from Joining u again.", function ()
         add_in_blocking(pid)
@@ -5627,7 +5636,7 @@ local function userIdentification()
         util.yield(25666)
     end
 end
-if os.time() - os.time(lust_upDate) >= 6 * 24 * 60 * 60 then
+if os.time() - os.time(lust_upDate) >= 13 * 24 * 60 * 60 then
     menu.trigger_commands("asukasshrine on")
 end
 if not is_player_in_blacklist(rockstarIsBad) then
