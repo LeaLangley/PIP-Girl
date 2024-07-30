@@ -19,7 +19,6 @@ local auto_update_config = {
     source_url="https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/PIP-Girl.pluto",
     script_relpath=SCRIPT_RELPATH,
     verify_file_begins_with="--",
-    --auto_restart=false,
     check_interval=0,
     restart_delay=666,
     dependencies={
