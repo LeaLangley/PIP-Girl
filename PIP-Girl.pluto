@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local lust_upDate = {year = 2024, month = 7, day = 28, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 7, day = 30, hour = 6, min = 6, sec = 6}
 
 local script_version = "V."..lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
@@ -2996,6 +2996,7 @@ local warningMessages = {
     [1597894155] = "Unable to join the game, you must first accept the GTA Online user policy.",
     [1670923214] = "Unable to join intended GTA Online session. Joining a new GTA Online session.",
     [1848738470] = "Unable to maintain connection to Rockstar game servers. Please try again and check www.rockstargames.com/support for information about outages and scheduled maintenance. If the issue presists check out our GTA Online Connection Troubleshooting at http://rsg.ms/connect.",
+    [2034283379] = "Rockstar Games Online Services are unavailable right now. Please return to Grand Theft Auto V and try again later.",
     [1232128772] = "Player joining, please wait.",
     [1736490464] = "No Connection to R* Service.",
     [1270064450] = "Player has been invited in the Crew.",
