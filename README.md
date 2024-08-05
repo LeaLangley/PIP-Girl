@@ -1,8 +1,6 @@
-# PIP Girl script for Stand Mod Menu.
-PIP Girl is a script made for my and friends privat use.
-But it's Public and everyone can use it, but ill leave here not much explanation since it is in heavy developent and subject to change.
-Yet u can already enjoy all the features included , with many of them being quality of life improvments and more!
-(no toxic features , 100% improvements for you and others :3 )
+# PIP-Girl script for Stand Mod Menu.
+PIP-Girl main focus is blocking known bad modder, bad modder are who crash/kick/break sessions on purpose and some other good reasons.
+But besides that, it offers alot of Quality of life features for a range of preference.
 
 # Download via powershell!
 open powershell , paste in the code , it will download into stands scripts folder if everything went good. credits to Maddy
