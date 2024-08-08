@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local lust_upDate = {year = 2024, month = 7, day = 30, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 8, day = 9, hour = 6, min = 6, sec = 6}
 
 local script_version = "V."..lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
@@ -2868,77 +2868,61 @@ end)
 
 menu.divider(Game, "<3")
 
+local interactions = {
+    {label = "FXR_INTER_C", control = 51, delay = 113},
+    {label = "ACID_BOOST_P", control = 51, delay = 113},
+    {label = "CLUB_SAFE_OPEN", control = 51, delay = 113},
+    {label = "OF_VAULT_SAFE_1", control = 51, delay = 113},
+    {label = "ARCADE_SAFE_O", control = 51, delay = 113},
+    {label = "NC_TRBL_EJECT", control = 51, delay = 113},
+    {label = "LW_PLAY", control = 51, delay = 113},
+    {label = "ASD_HT_INT", control = 51, delay = 113},
+    {label = "DSH_H_INP", control = 51, delay = 113},
+    {label = "PPF_TRIGGER", control = 51, delay = 113},
+    {label = "RE_SR_IN_CSH", control = 51, delay = 113},
+    {label = "FMMC_INT_P6", control = 51, delay = 113},
+    {label = "CBR2_DVCE_1", control = 51, delay = 113},
+    {label = "CBR2_PFTP_4", control = 51, delay = 113},
+    {label = "TR_MD_CONTXT_2", control = 51, delay = 113},
+    {label = "GG_CONTEXT", control = 51, delay = 113},
+    {label = "RE_CS_INTER", control = 51, delay = 113},
+    {label = "FXR_INT_RP_SC", control = 51, delay = 113},
+    {label = "FXR_INT_RP_C2", control = 51, delay = 113},
+    {label = "SMH_SEDPADAREA", control = 51, delay = 113},
+    {label = "SMH_SEDPADSRT", control = 51, delay = 113},
+    {label = "GRT_DRP_HA", control = 51, delay = 113},
+    {label = "AT_INT_COL", control = 51, delay = 113},
+    
+    {label = "MBS_DPAD_DROPB", control = 73, delay = 113},
+    {label = "GRT_DRP_HB", control = 73, delay = 113},
+
+    {label = "SBIKER_DROP", control = 190, delay = 113},
+
+    {label = "SMH_STDPADDEL", control = nil, delay = 113},
+    {label = "ARCADE_PAY_ENTER_M", control = nil, delay = 113},
+    {label = "SBIKERT_HREAR", control = nil, delay = 113},
+
+    {label = "LUCK_WHEEL_SPIN", control = 33, delay = 113},
+    {label = "LUCK_W_SPIN_PC", control = 33, delay = 113},
+}
+
 path_auto_interact = menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'}, "Auto Interact with E in some situations and time warp the animation.", function ()
-    if IS_HELP_MESSAGE_BEING_DISPLAYED() then
-        local interactionsE = {
-            "FXR_INTER_C",
-            "ACID_BOOST_P",
-            "CLUB_SAFE_OPEN",
-            "OF_VAULT_SAFE_1",
-            "ARCADE_SAFE_O",
-            "NC_TRBL_EJECT",
-            "LW_PLAY",
-            "ASD_HT_INT",
-            "DSH_H_INP",
-            "PPF_TRIGGER",
-            "RE_SR_IN_CSH",
-            "FMMC_INT_P6",
-            "CBR2_DVCE_1",
-            "CBR2_PFTP_4",
-            "TR_MD_CONTXT_2",
-            "GG_CONTEXT",
-            "RE_CS_INTER",
-            "FXR_INT_RP_SC",
-            "FXR_INT_RP_C2",
-            "SMH_SEDPADAREA",
-            "SMH_SEDPADSRT",
-            "GRT_DRP_HA",
-            "AT_INT_COL",
-        }
-        for ipairs(interactionsE) as label do
-            if IS_HELP_MSG_DISPLAYED(label) then
-                SET_CONTROL_VALUE_NEXT_FRAME(2, 51, 1)
-                util.yield(113)
-                break
-            end
-        end
-        local interactionsX = {
-            "MBS_DPAD_DROPb",
-            "GRT_DRP_Hb",
-        }
-        for ipairs(interactionsX) as label do
-            if IS_HELP_MSG_DISPLAYED(label) then
-                SET_CONTROL_VALUE_NEXT_FRAME(2, 73, 1)
-                util.yield(113)
-                break
-            end
-        end
-        local interactionsRight = {
-            "SBIKER_DROP",
-        }
-        for ipairs(interactionsRight) as label do
-            if IS_HELP_MSG_DISPLAYED(label) then
-                SET_CONTROL_VALUE_NEXT_FRAME(2, 190, 1)
-                util.yield(113)
-                break
-            end
-        end
-        local interactionsRemove = {
-            "SMH_SEDPADSRT",
-            "SMH_STDPADDEL",
-            "ARCADE_PAY_ENTER_M",
-            "SBIKERT_HREAR",
-        }
-        for ipairs(interactionsRemove) as label do
-            if IS_HELP_MSG_DISPLAYED(label) then
+if IS_HELP_MESSAGE_BEING_DISPLAYED() then
+    for _, interaction in ipairs(interactions) do
+        if IS_HELP_MSG_DISPLAYED(interaction.label) then
+            if not interaction.control then
                 CLEAR_ALL_HELP_MESSAGES()
-                util.yield(113)
-                break
+            else
+                SET_CONTROL_VALUE_NEXT_FRAME(2, interaction.control, 1)
             end
+            util.yield(interaction.delay)
+            break
         end
-    else
-        util.yield(66)
     end
+else
+    util.yield(66)
+end
+
 end)
 
 path_auto_skip_conversation = menu.toggle_loop(Game, "Auto Skip Conversation",{"pgascon"},"Automatically skip all conversations.",function()
@@ -4893,41 +4877,31 @@ player_menu = function(pid)
 		delayPly = val
 	end)
     local PGLEVELBOOST
-    PGLEVELBOOST = menu.toggle(FriendlyPIPGirl, "Boost LVL", {"pgboostlevel"}, "Boost them to lvl.", function()
-        if menu.player_root(pid):isValid() and players.get_rank(pid) >= levelPly and PGLEVELBOOST.value then
+    menu.toggle(FriendlyPIPGirl, "Boost LVL", {"pgboostlevel"}, "Boost them to lvl.", function()
+        if menu.player_root(pid):isValid() and players.get_rank(pid) >= levelPly then
             notify(name.." is already "..players.get_rank(pid))
-            PGLEVELBOOST.value = false
             return
         end
-        if menu.player_root(pid):isValid() and not players.are_stats_ready(pid) and PGLEVELBOOST.value then
+        if menu.player_root(pid):isValid() and not players.are_stats_ready(pid) then
             notify(name.." is still loading in , please wait.")
-            PGLEVELBOOST.value = false
             return
         end
-        if menu.player_root(pid):isValid() and asuka_lib.player_exist(pid) and players.get_rank(pid) < levelPly and PGLEVELBOOST.value then
+        if menu.player_root(pid):isValid() and asuka_lib.player_exist(pid) and players.get_rank(pid) < levelPly then
             menu.trigger_command(menu.ref_by_rel_path(menu.player_root(pid), "Friendly>Give Collectibles>All"))
         end
-        while menu.player_root(pid):isValid() and asuka_lib.player_exist(pid) and players.get_rank(pid) < levelPly and PGLEVELBOOST.value do
-            if not menu.player_root(pid):isValid() then
-                break
-            end
+        while menu.player_root(pid):isValid() and asuka_lib.player_exist(pid) and players.get_rank(pid) < levelPly do
             menu.trigger_commands("rp " .. name)
             util.yield(delayPly)
             if not asuka_lib.player_exist(pid) or not menu.player_root(pid):isValid() then
-                break
+                return
             end
         end
-        if menu.player_root(pid):isValid() and not asuka_lib.player_exist(pid) and PGLEVELBOOST.value then
-            PGLEVELBOOST.value = false
-            return
-        end
-        if menu.player_root(pid):isValid() and players.get_rank(pid) >= levelPly and PGLEVELBOOST.value then
+        if menu.player_root(pid):isValid() and players.get_rank(pid) >= levelPly then
             notify(name.." Reached "..players.get_rank(pid))
-            PGLEVELBOOST.value = false
             util.yield(113)
             return
         end
-        if not menu.player_root(pid):isValid() then
+        if not asuka_lib.player_exist(pid) or not menu.player_root(pid):isValid() then
             return
         end
     end)
