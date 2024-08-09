@@ -2907,22 +2907,21 @@ local interactions = {
 }
 
 path_auto_interact = menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'}, "Auto Interact with E in some situations and time warp the animation.", function ()
-if IS_HELP_MESSAGE_BEING_DISPLAYED() then
-    for _, interaction in ipairs(interactions) do
-        if IS_HELP_MSG_DISPLAYED(interaction.label) then
-            if not interaction.control then
-                CLEAR_ALL_HELP_MESSAGES()
-            else
-                SET_CONTROL_VALUE_NEXT_FRAME(2, interaction.control, 1)
+    if IS_HELP_MESSAGE_BEING_DISPLAYED() then
+        for _, interaction in ipairs(interactions) do
+            if IS_HELP_MSG_DISPLAYED(interaction.label) then
+                if not interaction.control then
+                    CLEAR_ALL_HELP_MESSAGES()
+                else
+                    SET_CONTROL_VALUE_NEXT_FRAME(2, interaction.control, 1)
+                end
+                util.yield(interaction.delay)
+                break
             end
-            util.yield(interaction.delay)
-            break
         end
+    else
+        util.yield(66)
     end
-else
-    util.yield(66)
-end
-
 end)
 
 path_auto_skip_conversation = menu.toggle_loop(Game, "Auto Skip Conversation",{"pgascon"},"Automatically skip all conversations.",function()
