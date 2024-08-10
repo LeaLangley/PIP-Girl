@@ -5515,6 +5515,7 @@ util.on_transition_finished(function ()
                         end
                     end
                 end
+                util.yield(1313)
             end
         end
         local pv = asuka_lib.get_user_vehicle()
