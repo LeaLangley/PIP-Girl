@@ -3491,7 +3491,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             --  If Session remains in a Claim-able state.
             --  <3
             if sessionWorthy() then
-                while asuka_lib.transition_state(true) ~= 1 do
+                while asuka_lib.transition_state(true) < 3 do
                     if asuka_lib.session_type() == "Singleplayer" or not sessionWorthy() then
                         findAnewHome()
                         goto sessionclaimerShortcut
@@ -3534,22 +3534,30 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                 --  Is session under controll?
                 --  <3
                 if GET_NUMBER_OF_PLAYERS() ~= 1 and (players.get_host() == players.user() or is_trusted(players.get_host())) then
-                    warnify("Found u a new Home <3")
-                    menu.trigger_commands("helibackup")
-                    session_claimer_players_range = session_claimer_players
-                    for path, original_state in pairs(SessionClaimerOriginal_states) do
-                        menu.set_state(menu.ref_by_path(path), original_state)
+                    notify("Likely Found a new home.")
+                    util.yield(13666)
+                    if GET_NUMBER_OF_PLAYERS() ~= 1 and (players.get_host() == players.user() or is_trusted(players.get_host())) then
+                        warnify("Found u a new Home <3")
+                        menu.trigger_commands("helibackup")
+                        session_claimer_players_range = session_claimer_players
+                        for path, original_state in pairs(SessionClaimerOriginal_states) do
+                            menu.set_state(menu.ref_by_path(path), original_state)
+                        end
+                        SessionClaimerOriginal_states = {}
+                        menu.trigger_commands("resetheadshots")
+                        fillUpEverything()
+                        buff_asuka_tech(asuka_lib.get_user_vehicle())
+                        menu.trigger_commands("claimsession off")
+                        allow_Join_back(host_name)
+                        if thunderMin ~= 0 then
+                            thunderForMin(thunderMin)
+                        end
+                        menu.trigger_commands("claimsession off")
+                    else
+                        warnify("The host was modding and removed you.")
+                        findAnewHome()
+                        goto sessionclaimerShortcut
                     end
-                    SessionClaimerOriginal_states = {}
-                    menu.trigger_commands("resetheadshots")
-                    fillUpEverything()
-                    buff_asuka_tech(asuka_lib.get_user_vehicle())
-                    menu.trigger_commands("claimsession off")
-                    allow_Join_back(host_name)
-                    if thunderMin ~= 0 then
-                        thunderForMin(thunderMin)
-                    end
-                    menu.trigger_commands("claimsession off")
                 else
                     findAnewHome()
                     goto sessionclaimerShortcut
