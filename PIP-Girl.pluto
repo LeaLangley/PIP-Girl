@@ -3498,6 +3498,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                     end
                     util.yield(666)
                 end
+                util.yield(6666)
                 menu.trigger_commands("sclean")
                 --  <3
                 --  Claim Session.
