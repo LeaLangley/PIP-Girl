@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local lust_upDate = {year = 2024, month = 8, day = 10, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 8, day = 12, hour = 6, min = 6, sec = 6}
 
 local script_version = "V."..lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
@@ -5090,15 +5090,13 @@ end)
 
 menu.divider(Credits, "Other Script Dev's. <3")
 
-menu.hyperlink(Credits, "mehScript by akat0zi", "https://discord.gg/uUNRn6xgw5", "For (Specially First) inspiration , little skid.\nSince i was (and still am) new/noob to lua.")
+menu.hyperlink(Credits, "mehScript by akat0zi", "https://discord.gg/uUNRn6xgw5", "For (Specially First) inspiration , little skid.\nSince i was new/noob to lua.")
 
-menu.hyperlink(Credits, "Heist Control by IceDoomfist", "https://discord.gg/KTFAYQn5Xz", "For (Specially First) inspiration , some skid.\nSince i was (and still am) new/noob to lua.")
+menu.hyperlink(Credits, "Heist Control by IceDoomfist", "https://discord.gg/KTFAYQn5Xz", "For (Specially First) inspiration , some skid.\nSince i was new/noob to lua.")
 
 menu.hyperlink(Credits, "AcjokerScript by acjoker8818", "https://discord.gg/fn4uBbFNnA", "For inspiration. <3")
 
-menu.hyperlink(Credits, "JinxScript by Prisuhm", "https://discord.gg/hjs5S93kQv", "For (Specially First) inspiration , little skid.\nSince i was (and still am) new/noob to lua.")
-
-menu.hyperlink(Credits, "LanceScript by Lance", "https://github.com/xSetrox", "For inspiration , little skid.\nSince i was (and still am) new/noob to lua.")
+menu.hyperlink(Credits, "JinxScript by Prisuhm", "https://discord.gg/hjs5S93kQv", "For (Specially First) inspiration , little skid.\nSince i was new/noob to lua.")
 
 menu.hyperlink(Credits, "Undefined by Undefined Pony", "https://gitlab.com/undefinedscripts", "For inspiration.")
 
