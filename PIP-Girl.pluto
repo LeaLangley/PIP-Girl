@@ -4906,10 +4906,12 @@ player_menu = function(pid)
     menu.toggle(FriendlyPIPGirl, "Boost LVL", {"pgboostlevel"}, "Boost them to lvl.", function()
         if menu.player_root(pid):isValid() and players.get_rank(pid) >= levelPly then
             notify(name.." is already "..players.get_rank(pid))
+            util.stop_thread()
             return
         end
         if menu.player_root(pid):isValid() and not players.are_stats_ready(pid) then
             notify(name.." is still loading in , please wait.")
+            util.stop_thread()
             return
         end
         if menu.player_root(pid):isValid() and asuka_lib.player_exist(pid) and players.get_rank(pid) < levelPly then
@@ -4919,15 +4921,18 @@ player_menu = function(pid)
             menu.trigger_commands("rp " .. name)
             util.yield(delayPly)
             if not asuka_lib.player_exist(pid) or not menu.player_root(pid):isValid() then
+                util.stop_thread()
                 return
             end
         end
         if menu.player_root(pid):isValid() and players.get_rank(pid) >= levelPly then
             notify(name.." Reached "..players.get_rank(pid))
             util.yield(113)
+            util.stop_thread()
             return
         end
         if not asuka_lib.player_exist(pid) or not menu.player_root(pid):isValid() then
+            util.stop_thread()
             return
         end
     end)
@@ -4941,6 +4946,7 @@ player_menu = function(pid)
         local ped = GET_PLAYER_PED_SCRIPT_INDEX(pid)
         if not asuka_lib.does_entity_exist(ped) then
             notify(name .. " is too far. :/")
+            util.stop_thread()
             return
         else
             local pos = players.get_position(pid)
