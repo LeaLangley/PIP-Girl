@@ -1810,6 +1810,24 @@ path_asuka_tech_armor = menu.list_select(Asuka_Tech, "Asuka Tech Armor", {""}, "
     {3, "Only Mission Vehicle"},
 }, 2, function(value, menu_name, prev_value, click_type)
     asuka_tech_armor = value
+    local vehicle = asuka_lib.get_user_vehicle()
+    local vehicle_pointer = entities.handle_to_pointer(vehicle)
+    if vehicle_pointer ~= 0 then
+        local wheel = entities.vehicle_get_handling(vehicle_pointer) + 0x128
+        if asuka_tech_armor > 1 then
+            if asuka_tech_armor == 2 then
+                memory.write_int(wheel, memory.read_int(wheel) | (1 << 26))
+            else
+                if IS_ENTITY_A_MISSION_ENTITY(vehicle) and DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 then
+                    memory.write_int(wheel, memory.read_int(wheel) | (1 << 26))
+                else
+                    memory.write_int(wheel, memory.read_int(wheel) & ~(1 << 26))
+                end
+            end
+        else
+            memory.write_int(wheel, memory.read_int(wheel) & ~(1 << 26))
+        end
+    end
 end)
 
 path_asuka_tech_dirt = menu.list_select(Asuka_Tech, "Asuka Tech Vehicle Dirt", {""}, "Vanilla: Games Default, does nothing.\n\nGain: Gain Dirt every repair tick.\n\nClean: Removes Dirt every repair tick.\n\nIt Does not Add or Remove Dirt all in one, just a little every tick, to give the illusion of pollution/cleaning duo to repairs.", {
