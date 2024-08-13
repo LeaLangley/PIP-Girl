@@ -4950,41 +4950,27 @@ player_menu = function(pid)
             return
         else
             local pos = players.get_position(pid)
-            if menu.player_root(pid):isValid() then
-                set_as_illusion(pid, sussy_god, true)
-                if not players.is_marked_as_modder(pid) then
-                    --menu.trigger_command(menu.ref_by_rel_path(menu.player_root(pid), "Trolling>Particle Spam>Particle>blood_fall"))
-                    --menu.set_state(menu.ref_by_rel_path(menu.player_root(pid), "Trolling>Particle Spam>Scale"), "10.00")
-                    --menu.set_state(menu.ref_by_rel_path(menu.player_root(pid), "Trolling>Particle Spam>Particle Spam"), "On")
-                    --menu.set_state(menu.ref_by_rel_path(menu.player_root(pid), "Trolling>Gravitate NPCs"), "On")
-                    menu.set_state(menu.ref_by_rel_path(menu.player_root(pid), "Trolling>Sound Spam"), "On")
-                else
-                    --menu.set_state(menu.ref_by_rel_path(menu.player_root(pid), "Trolling>Particle Spam>Particle Spam"), "Off")
-                    --menu.set_state(menu.ref_by_rel_path(menu.player_root(pid), "Trolling>Gravitate NPCs"), "Off")
-                    menu.set_state(menu.ref_by_rel_path(menu.player_root(pid), "Trolling>Sound Spam"), "Off")
-                end
-            else
-                return
-            end
+            set_as_illusion(pid, sussy_god, true)
             local glitchObjMdl = mad_objects[math.random(#mad_objects)][1]
             util.request_model(glitchObjMdl)
             local obj = entities.create_object(glitchObjMdl, pos)
+            SET_ENTITY_VISIBLE(obj, false)
             entities.set_can_migrate(obj, false)
             SET_ENTITY_INVINCIBLE(obj, true)
-            SET_ENTITY_VISIBLE(obj, false)
             SET_ENTITY_NO_COLLISION_ENTITY(obj, players.user_ped(), false)
             SET_ENTITY_COLLISION(obj, true, true)
             util.request_model(rallytruck)
             local vehicle = entities.create_vehicle(rallytruck, pos, 0)
-            entities.set_can_migrate(vehicle, false)
             SET_ENTITY_VISIBLE(vehicle, false)
+            entities.set_can_migrate(vehicle, false)
             SET_ENTITY_NO_COLLISION_ENTITY(vehicle, players.user_ped(), false)
             SET_ENTITY_COLLISION(vehicle, true, true)
+            local slave
             if IS_PED_IN_ANY_VEHICLE(ped) then
                 local ped_vehicle = GET_VEHICLE_PED_IS_USING(ped)
                 if ARE_ANY_VEHICLE_SEATS_FREE(ped_vehicle) then
                     util.request_model(MP_F_DeadHooker)
-                    local slave = entities.create_ped(26, MP_F_DeadHooker, pos, 0)
+                    slave = entities.create_ped(26, MP_F_DeadHooker, pos, 0)
                     entities.set_can_migrate(slave, false)
                     SET_ENTITY_INVINCIBLE(slave, true)
                     SET_ENTITY_NO_COLLISION_ENTITY(slave, players.user_ped(), false)
@@ -5007,10 +4993,6 @@ player_menu = function(pid)
         asuka_lib.delete_entity(obj)
         asuka_lib.delete_entity(vehicle)
         asuka_lib.delete_entity(slave)
-        if menu.player_root(pid):isValid() then
-            menu.set_state(menu.ref_by_rel_path(menu.player_root(pid), "Trolling>Particle Spam>Particle Spam"), "Off")
-            menu.set_state(menu.ref_by_rel_path(menu.player_root(pid), "Trolling>Gravitate NPCs"), "Off")
-        end
     end)
     menu.action(Bad_Modder, "Add Blacklist & Kick", {'hellbk'}, "Blacklist Note, Kick and Block the Target from Joining u again.", function ()
         add_in_blocking(pid)
