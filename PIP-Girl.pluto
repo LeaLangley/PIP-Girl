@@ -4120,7 +4120,7 @@ end)
 --    end
 --end)
 
-menu.action(SessionMisc, "Create \"Admin\" Group", {""}, "Create a group called \"Admin\"", function()
+menu.action(SessionMisc, "Create \"Admin\" Group", {"pgadminlist"}, "Create a group called \"Admin\"", function()
     menu.trigger_commands("adminsupdate")
     util.yield(666)
     menu.trigger_commands("adminsnote Admin")
