@@ -3501,7 +3501,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             --  If Session remains in a Claim-able state.
             --  <3
             if sessionWorthy() then
-                while asuka_lib.transition_state(true) < 3 do
+                while asuka_lib.transition_state(true) < 2 do
                     if asuka_lib.session_type() == "Singleplayer" or not sessionWorthy() then
                         findAnewHome()
                         goto sessionclaimerShortcut
