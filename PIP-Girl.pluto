@@ -1935,7 +1935,7 @@ menu.action(Vehicle, "Teleport and Enter Asuka Tech Vehicle", {"tpenterasuka"}, 
         request_control(target_vehicle)
         if not asuka_lib.is_vehicle_free_for_use(target_vehicle) then
             if target_vehicle == entities.get_user_personal_vehicle_as_handle() then
-                local personal_vehicle_id = DECOR_GET_INT(personal_vehicle, "PV_Slot")
+                local personal_vehicle_id = DECOR_GET_INT(target_vehicle, "PV_Slot")
                 asuka_lib.delete_entity(target_vehicle)
                 util.yield(113)
                 menu.trigger_commands("pv"..personal_vehicle_id.."request")
