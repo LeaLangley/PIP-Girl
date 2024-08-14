@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local lust_upDate = {year = 2024, month = 8, day = 12, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 8, day = 14, hour = 6, min = 6, sec = 6}
 
 local script_version = "V."..lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
@@ -1795,7 +1795,7 @@ path_asuka_tech_lockon_jammer = menu.toggle(Asuka_Tech, "Lockon Jammer for Missi
     end
 end)
 
-path_asuka_tech_armor = menu.list_select(Asuka_Tech, "Asuka Tech Armor", {""}, "Very much like Imani tech and for every vehicle , but may a little weaker.", {
+path_asuka_tech_armor = menu.list_select(Asuka_Tech, "Asuka Tech Armor", {""}, "Might now work on cars that already have somekind of \"extra\" armor.\nVery much like Imani tech and for every vehicle , but may a little weaker.", {
     {1, "Vanilla"},
     {2, "Active"},
     {3, "Only Mission Vehicle"},
@@ -3347,14 +3347,6 @@ menu.divider(SessionClaimer, "Misc")
 local thunderMin = 0
 path_thunder_for_minutes = menu.slider(SessionClaimer, 'Thunder for X min', {''}, 'After u claimed a session show Thunder for X amount of min.', 0, 6, thunderMin, 1, function (new_value)
     thunderMin = new_value
-end)
-local session_claimer_here = false
-path_claim_current_session = menu.toggle(SessionClaimer, "Claim current session, or else", {""}, "Not Working! Has been temporally disabled , have to recode it.\ninstead of seartching for a new session, check first if the current session is any good.", function(on)
-    if on then
-        session_claimer_here = true
-    else
-        session_claimer_here = false
-    end
 end)
 
 local session_claimer_players_range = session_claimer_players
@@ -5421,7 +5413,6 @@ local data_cfg = {
     --Session
     store_session_size = path_session_size,
     store_thunder_for_minutes = path_thunder_for_minutes,
-    store_claim_current_session = path_claim_current_session,
     store_custom_spawn = path_custom_spawn,
     store_use_custom_spawn = path_use_custom_spawn,
     store_custom_vehicle_spawn = path_custom_vehicle_spawn,
