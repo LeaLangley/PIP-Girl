@@ -4336,8 +4336,11 @@ path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"
                     util.yield(13666)
                 end
             end
-            if (players.get_host() == players.user() or not (is_sc_friend(players.get_host()))) and not is_trusted(players.get_script_host()) then
+            if (players.get_host() == players.user() or not is_trusted(players.get_host())) and not is_trusted(players.get_script_host()) then
                 if not players.are_stats_ready(players.get_script_host()) and is_Modder(players.get_script_host()) then
+                    get_ScriptHost()
+                end
+                if not asuka_lib.player_exist(players.get_script_host()) then
                     get_ScriptHost()
                 end
             end
