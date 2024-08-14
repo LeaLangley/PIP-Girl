@@ -597,7 +597,7 @@ local function selfSafe()
     return false
 end
 
-local function SuperClean(fix, ignoreMission)
+local function SuperClean(ignoreMission)
     local ct = 0
     menu.trigger_commands("deleterope")
     util.yield(13)
@@ -605,7 +605,7 @@ local function SuperClean(fix, ignoreMission)
         if asuka_lib.does_entity_exist(ent) then
             local driver = GET_PED_IN_VEHICLE_SEAT(ent, -1)
             if not IS_PED_A_PLAYER(driver) then
-                if not fix or (fix and DECOR_GET_INT(ent, "Player_Vehicle") == 0) then
+                if DECOR_GET_INT(ent, "Player_Vehicle") == 0 then
                     if not ignoreMission or (ignoreMission and not IS_ENTITY_A_MISSION_ENTITY(ent)) then
                         entities.delete(ent)
                         ct += 1
@@ -2858,22 +2858,12 @@ end)
 
 menu.divider(Game, "Exclude Mission.")
 
-menu.action(Game, 'Super Cleanse No yacht fix', {"scleannysave"}, 'BCS R* is a mess.', function()
-    SuperClean(false, true)
+menu.action(Game, 'Super Cleanse', {"sclean"}, 'BCS R* is a mess.', function()
+    SuperClean(true)
 end)
 
-menu.action(Game, 'Super Cleanse', {"scleansave"}, 'BCS R* is a mess.', function(click_type)
-    SuperClean(true, true)
-end)
-
-menu.divider(Game, "Regular")
-
-menu.action(Game, 'Super Cleanse No yacht fix', {"scleanny"}, 'BCS R* is a mess.', function()
-    SuperClean(false, false)
-end)
-
-menu.action(Game, 'Super Cleanse', {"sclean"}, 'BCS R* is a mess.', function(click_type)
-    SuperClean(true, false)
+menu.action(Game, 'Super Cleanse No Mission Ent', {"scleanny"}, 'BCS R* is a mess.', function()
+    SuperClean(false)
 end)
 
 menu.divider(Game, "<3")
