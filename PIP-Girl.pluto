@@ -4342,6 +4342,9 @@ path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"
                 end
                 if not asuka_lib.player_exist(players.get_script_host()) then
                     get_ScriptHost()
+                    if asuka_lib.player_exist(players.get_script_host()) then
+                        notify("Saved the script host.") --Hopefully
+                    end
                 end
             end
         else
