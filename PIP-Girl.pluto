@@ -4970,8 +4970,8 @@ player_menu = function(pid)
 	menu.slider(FriendlyPIPGirl, "Stop At Level...", {"pgmaxlevel"}, "", 1, 8000, 120, 1, function(val)
 		levelPly = val
 	end)
-	local delayPly = 113
-	menu.slider(FriendlyPIPGirl, "Loop Delay", {"pgloopdelay"}, "in ms", 0, 2500, 113, 10, function(val)
+	local delayPly = 13
+	menu.slider(FriendlyPIPGirl, "Loop Delay", {"pgloopdelay"}, "in ms", 0, 2500, 13, 10, function(val)
 		delayPly = val
 	end)
     local PGLEVELBOOST
@@ -4999,8 +4999,8 @@ player_menu = function(pid)
         end
         if menu.player_root(pid):isValid() and players.get_rank(pid) >= levelPly then
             notify(name.." Reached "..players.get_rank(pid))
-            util.yield(113)
             PGLEVELBOOST.value = false
+            util.yield(113)
             return
         end
         if not asuka_lib.player_exist(pid) or not menu.player_root(pid):isValid() then
