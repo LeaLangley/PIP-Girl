@@ -4667,7 +4667,6 @@ local function startupConfig()
                 rat_target:refByRelPath("Player Join Reactions>Notification").value = true
                 rat_target:refByRelPath("Player Join Reactions>Write To Console").value = true
                 rat_target:refByRelPath("Player Join Reactions>Crash").value = false
-                rat_target:refByRelPath("Player Join Reactions>Block Join").value = noexceptions
                 rat_target:refByRelPath("Player Join Reactions>Timeout").value = noexceptions
                 rat_target:refByRelPath("Player Join Reactions>Block Their Network Events").value = noexceptions
                 rat_target:refByRelPath("Player Join Reactions>Block Incoming Syncs").value = noexceptions
@@ -4694,7 +4693,7 @@ local function crashlistConfig()
 end
 
 local function add_in_blocking(pid)
-    if not is_trusted(pid) then
+    if not is_sc_friend(pid) then
         local name = players.get_name(pid)
         local rid = players.get_rockstar_id(pid)
         if rid ~= players.get_rockstar_id(players.user()) then
