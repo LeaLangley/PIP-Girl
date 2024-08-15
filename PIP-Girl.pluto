@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local lust_upDate = {year = 2024, month = 8, day = 14, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 8, day = 15, hour = 6, min = 6, sec = 6}
 
 local script_version = "V."..lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
@@ -463,12 +463,14 @@ end
 local in_orb_room = {}
 local sussy_god = {}
 local set_passive = {}
+local ghost_modder = {}
 
 local function set_as_illusion(pid, tbl, state)
     if is_trusted(pid) and tbl ~= in_orb_room then
         in_orb_room[pid] = nil
         sussy_god[pid] = nil
         set_passive[pid] = nil
+        ghost_modder[pid] = nil
         SET_REMOTE_PLAYER_AS_GHOST(pid, false)
     else
         if state then
@@ -479,7 +481,7 @@ local function set_as_illusion(pid, tbl, state)
         else
             tbl[pid] = nil
             local playerInOtherTables = false
-            for ipairs({in_orb_room, sussy_god, set_passive}) as otherTbl do
+            for ipairs({in_orb_room, sussy_god, set_passive, ghost_modder}) as otherTbl do
                 if otherTbl ~= tbl then
                     if otherTbl[pid] then
                         playerInOtherTables = true
@@ -4076,9 +4078,6 @@ end)
 
 path_kick_aggressive_as_host = menu.toggle_loop(SessionMisc, "Block Aggressive Host Token as Host", {""}, "", function()
     if players.user() == players.get_host() then
-        --if menu.is_ref_valid(menu.ref_by_path("Online>Protections>Detections>Spoofed Host Token (Aggressive)>Kick>Strangers")) then
-        --    menu.trigger_command(menu.ref_by_path("Online>Protections>Detections>Spoofed Host Token (Aggressive)>Kick>Strangers"))
-        --end
         for players.list() as pid do
             if asuka_lib.has_detection(pid, "Spoofed Host Token (Aggressive)") and not is_trusted(pid) then
                 StrategicKick(pid, nil)
@@ -4086,21 +4085,10 @@ path_kick_aggressive_as_host = menu.toggle_loop(SessionMisc, "Block Aggressive H
         end
         util.yield(3666)
     else
-        --if menu.is_ref_valid(menu.ref_by_path("Online>Protections>Detections>Spoofed Host Token (Aggressive)>Kick>Disabled")) then
-        --    menu.trigger_command(menu.ref_by_path("Online>Protections>Detections>Spoofed Host Token (Aggressive)>Kick>Disabled"))
-        --end
         util.yield(13666)
     end
 end)
 
---menu.action(SessionMisc, "de-Ghost entire Session", {""}, "", function()
---    if asuka_lib.transition_state(true) == 1 then
---        for players.list() as pid do
---            SET_REMOTE_PLAYER_AS_GHOST(pid, false)
---        end
---        sussy_god = {}
---    end
---end)
 
 menu.action(SessionMisc, "Create \"Admin\" Group", {"pgadminlist"}, "Create a group called \"Admin\"", function()
     menu.trigger_commands("adminsupdate")
@@ -4331,9 +4319,12 @@ path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"
                     get_ScriptHost()
                 end
                 if not asuka_lib.player_exist(players.get_script_host()) then
-                    get_ScriptHost()
-                    if asuka_lib.player_exist(players.get_script_host()) then
-                        notify("Saved the script host.") --Hopefully
+                    util.yield(100)
+                    if not asuka_lib.player_exist(players.get_script_host()) then
+                        get_ScriptHost()
+                        if asuka_lib.player_exist(players.get_script_host()) then
+                            notify("Saved the script host.") --Hopefully
+                        end
                     end
                 end
             end
@@ -4354,12 +4345,16 @@ path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"
     util.yield(666)
 end)
 
-local in_self_god = false
-path_ghost_god_mode = menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"}, "Ghost everyone who is a god mode except Friends.\nIf they are not god anymore , it will de-ghost", function()
-    if asuka_lib.transition_state(true) <3 then
-        if not selfSafe() then
-            for players.list_except(true) as pid do
-                if not is_trusted(pid) and not players.is_using_rc_vehicle(pid) and not players.is_in_interior(pid)then
+local auto_ghost_players = menu.list(Session, 'Auto Ghost Players', {}, '', function(); end)
+
+local should_ghost_god = false
+local should_ghost_modder = false
+
+path_auto_ghost_modder = menu.toggle_loop(auto_ghost_players, "Auto Ghost Players", {"ghostplayers"}, "Ghost who u select in the setting below.", function()
+    if asuka_lib.transition_state(true) <3 and not selfSafe() then
+        for players.list(false, false, true) as pid do
+            if should_ghost_god then
+                if not players.is_using_rc_vehicle(pid) and not players.is_in_interior(pid)then
                     if players.is_godmode(pid) then
                         set_as_illusion(pid, sussy_god, true)
                     else
@@ -4374,7 +4369,16 @@ path_ghost_god_mode = menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"},
                     set_as_illusion(pid, sussy_god, false)
                 end
             end
-        else
+            if should_ghost_modder then
+                if is_Modder(pid) then
+                    set_as_illusion(pid, ghost_modder, true)
+                else
+                    set_as_illusion(pid, ghost_modder, false)
+                end
+            end
+        end
+    else
+        if should_ghost_god then
             for pid in pairs(sussy_god) do
                 if asuka_lib.player_exist(pid) then
                     set_as_illusion(pid, sussy_god, false)
@@ -4382,7 +4386,18 @@ path_ghost_god_mode = menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"},
             end
             sussy_god = {}
         end
-    else
+        if should_ghost_modder then
+            for pid in pairs(ghost_modder) do
+                if asuka_lib.player_exist(pid) then
+                    set_as_illusion(pid, ghost_modder, false)
+                end
+            end
+            ghost_modder = {}
+        end
+    end
+    util.yield(1666)
+end, function()
+    if should_ghost_god then
         for pid in pairs(sussy_god) do
             if asuka_lib.player_exist(pid) then
                 set_as_illusion(pid, sussy_god, false)
@@ -4390,15 +4405,90 @@ path_ghost_god_mode = menu.toggle_loop(Session, "Ghost God Modes", {"ghostgod"},
         end
         sussy_god = {}
     end
-    util.yield(1666)
-end, function()
-    for pid in pairs(sussy_god) do
-        if asuka_lib.player_exist(pid) then
-            set_as_illusion(pid, sussy_god, false)
+    if should_ghost_modder then
+        for pid in pairs(ghost_modder) do
+            if asuka_lib.player_exist(pid) then
+                set_as_illusion(pid, ghost_modder, false)
+            end
         end
+        ghost_modder = {}
     end
+end)
+
+menu.divider(auto_ghost_players, "Options")
+
+path_ghost_god_mode = menu.toggle(auto_ghost_players, "Ghost God Modes",{"ghostgod"},"",function(on)
+    if on then
+        should_ghost_god = true
+    else
+        should_ghost_god = false
+        for pid in pairs(sussy_god) do
+            if asuka_lib.player_exist(pid) then
+                set_as_illusion(pid, sussy_god, false)
+            end
+        end
+        sussy_god = {}
+    end
+end)
+
+path_ghost_modder = menu.toggle(auto_ghost_players, "Ghost Modder",{"ghostmodder"},"",function(on)
+    if on then
+        should_ghost_modder = true
+    else
+        should_ghost_modder = false
+        for pid in pairs(ghost_modder) do
+            if asuka_lib.player_exist(pid) then
+                set_as_illusion(pid, ghost_modder, false)
+            end
+        end
+        ghost_modder = {}
+    end
+end)
+
+menu.divider(auto_ghost_players, "Debug")
+
+menu.action(auto_ghost_players, "Ghost Players Debug", {""}, "", function()
+    local reportString = "Players in all tables:\n"
+    
+    reportString = reportString .. "Table: in_orb_room\n"
+    for pid in pairs(in_orb_room) do
+        local playerName = players.get_name_with_tags(pid)
+        reportString = reportString .. " Name: " .. playerName .. "\n"
+    end
+
+    reportString = reportString .. "Table: sussy_god\n"
+    for pid in pairs(sussy_god) do
+        local playerName = players.get_name_with_tags(pid)
+        reportString = reportString .. " Name: " .. playerName .. "\n"
+    end
+
+    reportString = reportString .. "Table: ghost_modder\n"
+    for pid in pairs(ghost_modder) do
+        local playerName = players.get_name_with_tags(pid)
+        reportString = reportString .. " Name: " .. playerName .. "\n"
+    end
+
+    reportString = reportString .. "Table: set_passive\n"
+    for pid in pairs(set_passive) do
+        local playerName = players.get_name_with_tags(pid)
+        reportString = reportString .. " Name: " .. playerName .. "\n"
+    end
+    
+    notify(reportString)  
+end)
+
+menu.action(auto_ghost_players, "De-Ghost all Debug", {""}, "", function()
+    for players.list_except(true) as pid do
+        in_orb_room[pid] = nil
+        sussy_god[pid] = nil
+        ghost_modder[pid] = nil
+        set_passive[pid] = nil
+        SET_REMOTE_PLAYER_AS_GHOST(pid, false)
+    end
+    in_orb_room = {}
     sussy_god = {}
-    in_self_god = false
+    ghost_modder = {}
+    set_passive = {}
 end)
 
 local pop_multiplier_free = nil
@@ -4466,42 +4556,6 @@ path_soft_clear_traffic = menu.toggle_loop(Session, "Soft Clear Traffic", {"soft
     else
         util.yield(666)
     end
-end)
-
-menu.action(Session, "Ghost God Debug", {""}, "", function()
-    local reportString = "Players in all tables:\n"
-    
-    reportString = reportString .. "Table: in_orb_room\n"
-    for pid in pairs(in_orb_room) do
-        local playerName = players.get_name_with_tags(pid)
-        reportString = reportString .. " Name: " .. playerName .. "\n"
-    end
-
-    reportString = reportString .. "Table: sussy_god\n"
-    for pid in pairs(sussy_god) do
-        local playerName = players.get_name_with_tags(pid)
-        reportString = reportString .. " Name: " .. playerName .. "\n"
-    end
-
-    reportString = reportString .. "Table: set_passive\n"
-    for pid in pairs(set_passive) do
-        local playerName = players.get_name_with_tags(pid)
-        reportString = reportString .. " Name: " .. playerName .. "\n"
-    end
-    
-    notify(reportString)  
-end)
-
-menu.action(Session, "De-Ghost all Debug", {""}, "", function()
-    for players.list_except(true) as pid do
-        in_orb_room[pid] = nil
-        sussy_god[pid] = nil
-        set_passive[pid] = nil
-        SET_REMOTE_PLAYER_AS_GHOST(pid, false)
-    end
-    in_orb_room = {}
-    sussy_god = {}
-    set_passive = {}
 end)
 
 menu.action(Session, "Race Countdown", {"racestart"}, "10 Sec , Countdown.\nVisible for the whole session, but with a nice effect for ppl close by.", function()
@@ -4824,6 +4878,7 @@ local function removeFromTable(pid)
     in_orb_room[pid] = nil
     sussy_god[pid] = nil
     set_passive[pid] = nil
+    ghost_modder[pid] = nil
     mk2noob[pid] = nil
     IdentificationTimeout[pid] = nil
 end
@@ -4882,15 +4937,15 @@ player_menu = function(pid)
 		delayPly = val
 	end)
     local PGLEVELBOOST
-    menu.toggle(FriendlyPIPGirl, "Boost LVL", {"pgboostlevel"}, "Boost them to lvl.", function()
+    PGLEVELBOOST = menu.toggle(FriendlyPIPGirl, "Boost LVL", {"pgboostlevel"}, "Boost them to lvl.", function()
         if menu.player_root(pid):isValid() and players.get_rank(pid) >= levelPly then
             notify(name.." is already "..players.get_rank(pid))
-            util.stop_thread()
+            PGLEVELBOOST.value = false
             return
         end
         if menu.player_root(pid):isValid() and not players.are_stats_ready(pid) then
             notify(name.." is still loading in , please wait.")
-            util.stop_thread()
+            PGLEVELBOOST.value = false
             return
         end
         if menu.player_root(pid):isValid() and asuka_lib.player_exist(pid) and players.get_rank(pid) < levelPly then
@@ -4900,18 +4955,18 @@ player_menu = function(pid)
             menu.trigger_commands("rp " .. name)
             util.yield(delayPly)
             if not asuka_lib.player_exist(pid) or not menu.player_root(pid):isValid() then
-                util.stop_thread()
+                PGLEVELBOOST.value = false
                 return
             end
         end
         if menu.player_root(pid):isValid() and players.get_rank(pid) >= levelPly then
             notify(name.." Reached "..players.get_rank(pid))
             util.yield(113)
-            util.stop_thread()
+            PGLEVELBOOST.value = false
             return
         end
         if not asuka_lib.player_exist(pid) or not menu.player_root(pid):isValid() then
-            util.stop_thread()
+            PGLEVELBOOST.value = false
             return
         end
     end)
@@ -4921,15 +4976,16 @@ player_menu = function(pid)
         return
     end
     local Bad_Modder = menu.list(menu.player_root(pid), 'Bad Modder?', {""}, '', function() end)
-    menu.toggle_loop(Bad_Modder, "Fuck'em up™", {"fuckup"}, "go crazy, go stupid.", function()
+    local Fuck_em_up
+    Fuck_em_up = menu.toggle_loop(Bad_Modder, "Fuck'em up™", {"fuckup"}, "go crazy, go stupid.", function()
         local ped = GET_PLAYER_PED_SCRIPT_INDEX(pid)
         if not asuka_lib.does_entity_exist(ped) then
             notify(name .. " is too far. :/")
-            util.stop_thread()
+            Fuck_em_up.value = false
             return
         else
             local pos = players.get_position(pid)
-            set_as_illusion(pid, sussy_god, true)
+            set_as_illusion(pid, ghost_modder, true)
             local glitchObjMdl = mad_objects[math.random(#mad_objects)][1]
             util.request_model(glitchObjMdl)
             local obj = entities.create_object(glitchObjMdl, pos)
@@ -5427,7 +5483,9 @@ local data_cfg = {
     store_post_webhook_if_friendly = path_post_webhook_if_friendly,
     store_invite_all_friends_on_webhook = path_invite_all_friends_on_webhook,
     store_smart_script_host = path_smart_script_host,
+    store_auto_ghost_modder = path_auto_ghost_modder,
     store_ghost_god_mode = path_ghost_god_mode,
+    store_ghost_modder = path_ghost_modder,
     store_clear_traffic = path_clear_traffic,
     store_soft_clear_traffic = path_soft_clear_traffic,
 }
