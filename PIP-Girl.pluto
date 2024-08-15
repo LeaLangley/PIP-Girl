@@ -638,7 +638,7 @@ local function SuperClean(ignoreMission)
     menu.trigger_commands("clearpeds on")
     menu.trigger_commands("clearpickups on")
     if ignoreMission then
-        menu.trigger_commands("clearnomissions on")
+        menu.trigger_commands("clearnomission on")
     end
     util.yield(13)
     menu.trigger_commands("cleararea")
