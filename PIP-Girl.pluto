@@ -3562,6 +3562,12 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
                         menu.trigger_commands("claimsession off")
                     else
                         warnify("The host was modding and removed you.")
+                        local desynctimeout = os.time()
+                        while asuka_lib.session_type() ~= "Singleplayer" or asuka_lib.transition_state(true) ~= 1 do
+                            if os.time() - desynctimeout > 25 then
+                                break
+                            end
+                        end
                         findAnewHome()
                         goto sessionclaimerShortcut
                     end
