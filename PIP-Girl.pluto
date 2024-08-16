@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local lust_upDate = {year = 2024, month = 8, day = 15, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 8, day = 16, hour = 6, min = 6, sec = 6}
 
 local script_version = "V."..lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
@@ -3752,7 +3752,7 @@ local orbRoomDoorDMG = nil
 
 local orbital_cannon_room = v3.new(328.47, 4828.87, -58.54)
 
-path_block_orb_room = menu.toggle_loop(SessionWorld, "Block Orb Room", {"blockorb"}, "Blocks the Entrance for the Orb Room", function()
+path_block_orb_room = menu.toggle_loop(SessionWorld, "Block Orbital Cannon Room", {"blockorb"}, "Blocks the Entrance for the Orbital Cannon Room", function()
     if asuka_lib.allow_spawn_check() then
         orbRoomGlass = asuka_lib.spawn_and_check_object(orbRoomGlass, "prop_showroom_glass_1b", v3.new(335.882996, 4833.833008, -59.023998), 0, 0, 125, nil, 13, true, true, true)
         orbRoomTable = asuka_lib.spawn_and_check_object(orbRoomTable, "xs_prop_arena_flipper_large_01a_sf", v3.new(328.2, 4829, -58.9), 0, 0, 0, nil, 13, true, true, true)
@@ -4377,7 +4377,7 @@ path_auto_ghost_modder = menu.toggle_loop(auto_ghost_players, "Auto Ghost Player
                     set_as_illusion(pid, ghost_modder, false)
                 end
             end
-            if should_ghost_orbital_cannon then
+            if should_ghost_orbital_cannon and not menu.get_value(path_block_orb_room) then
                 if orbital_cannon_room:distance(players.get_position(pid)) <= 9 then
                     set_as_illusion(pid, in_orb_room, true)
                 else
@@ -4784,18 +4784,21 @@ local function crashlistConfig()
     end
 end
 
-local function add_in_blocking(pid)
+local function add_in_blocking(pid, bool)
     if not is_sc_friend(pid) then
         local name = players.get_name(pid)
-        local rid = players.get_rockstar_id(pid)
-        if rid ~= players.get_rockstar_id(players.user()) then
-            if asuka_lib.session_type() == "Public" then
+        if asuka_lib.session_type() == "Public" then
+            local rid = players.get_rockstar_id(pid)
+            if rid ~= players.get_rockstar_id(players.user()) then
                 sc_block(rid)
             end
         end
         if name ~= players.get_name(players.user()) and not asuka_lib.has_detection(pid, "Blacklist") then
             players.add_detection(pid, "Blacklist", TOAST_DEFAULT, 100)
             menu.trigger_commands("historynote ".. name .." Blacklist")
+            if bool then
+                menu.trigger_commands("historyblock ".. name .." On")
+            end
         end
     end
 end
@@ -4864,7 +4867,7 @@ local function SessionCheck(pid)
                     end
                     local notification = ""
                     if asuka_lib.session_type() == "Public" and not asuka_lib.has_detection(pid, "Blacklist") then
-                        add_in_blocking(pid)
+                        add_in_blocking(pid, false)
                     end
                     if is_Modder(pid) and pid == players.get_host() then
                         notification = "This Blacklist is Host, we don't kick them until they attack."
@@ -5068,14 +5071,14 @@ player_menu = function(pid)
         asuka_lib.delete_entity(slave)
     end)
     menu.action(Bad_Modder, "Add Blacklist & Kick", {'hellbk'}, "Blacklist Note, Kick and Block the Target from Joining u again.", function ()
-        add_in_blocking(pid)
+        add_in_blocking(pid, true)
         StrategicKick(pid, rid)
         if not is_player_in_blacklist(rid) then
             add_player_to_blacklist(rid)
         end
     end)
     menu.action(Bad_Modder, "Add Blacklist ,Crash & Kick", {'hellc'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
-        add_in_blocking(pid)
+        add_in_blocking(pid, true)
         menu.trigger_commands("crash ".. name)
         util.yield(666)
         StrategicKick(pid, rid)
@@ -5084,7 +5087,7 @@ player_menu = function(pid)
         end
     end)
     menu.action(Bad_Modder, "Add Blacklist Only", {'helln'}, "Blacklist Note and Block the Target from Joining u again.", function ()
-        add_in_blocking(pid)
+        add_in_blocking(pid, true)
         if not is_player_in_blacklist(rid) then
             add_player_to_blacklist(rid)
         end
@@ -5112,7 +5115,7 @@ player_menu = function(pid)
     ---end)
     menu.toggle_loop(Bad_Modder, "Blacklist Kick on Atack", {"hellaab"}, "Auto kick if they atack you, and add them to blacklist.", function()
         if players.is_marked_as_attacker(pid) then
-            add_in_blocking(pid)
+            add_in_blocking(pid, true)
             StrategicKick(pid, rid)
             if not is_player_in_blacklist(rid) then
                 add_player_to_blacklist(rid)
