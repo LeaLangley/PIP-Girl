@@ -3179,16 +3179,16 @@ local function espOnPlayer(pid, namesync)
     local vdist = mypos:distance(targetpos)
     local show_distance = 0
     if not IS_PED_IN_ANY_VEHICLE(players.user_ped(), true) then
-        show_distance = 420
+        show_distance = 200
     else
-        show_distance = 666
+        show_distance = 300
     end
     local weapon = math.abs(GET_SELECTED_PED_WEAPON(players.user_ped()))
     if weapon ~= 1122011548 and weapon ~= 1569615261 then
         if IS_PLAYER_FREE_AIMING(players.user()) then
-            show_distance = show_distance + 666
+            show_distance = show_distance + 200
         else
-            show_distance = show_distance + 420
+            show_distance = show_distance + 300
         end
     end
     if vdist <= show_distance then
