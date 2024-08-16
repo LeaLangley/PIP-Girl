@@ -2702,6 +2702,9 @@ path_demon_horns = menu.toggle_loop(outfit_decoration, "Demon Horns", {"demonhor
             if asuka_lib.request_model(demon_horn_hash, 3) then
                 demon_horn1 = entities.create_object(demon_horn_hash, players.get_position(players.user()))
                 entities.set_can_migrate(demon_horn1, false)
+                if GET_ENTITY_LOD_DIST(demon_horn1) > 66 then
+                    SET_ENTITY_LOD_DIST(demon_horn1, 66)
+                end
                 SET_ENTITY_COLLISION(demon_horn1, false, false)
                 SET_ENTITY_INVINCIBLE(demon_horn1, true)
                 ATTACH_ENTITY_TO_ENTITY(demon_horn1, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -1 / 50.0, 0, 78, 0, 122, false, true, false, false, 0, true, 1)
@@ -2715,6 +2718,9 @@ path_demon_horns = menu.toggle_loop(outfit_decoration, "Demon Horns", {"demonhor
             if asuka_lib.request_model(demon_horn_hash, 3) then
                 demon_horn2 = entities.create_object(demon_horn_hash, players.get_position(players.user()))
                 entities.set_can_migrate(demon_horn2, false)
+                if GET_ENTITY_LOD_DIST(demon_horn2) > 66 then
+                    SET_ENTITY_LOD_DIST(demon_horn2, 66)
+                end
                 SET_ENTITY_COLLISION(demon_horn2, false, false)
                 SET_ENTITY_INVINCIBLE(demon_horn2, true)
                 ATTACH_ENTITY_TO_ENTITY(demon_horn2, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -1 / 50.0, 0, 102, 0, 122, false, true, false, false, 0, true, 1)
@@ -2760,6 +2766,9 @@ path_demon_horns_color = menu.list_select(outfit_decoration, "Demon Horns Color"
         if not asuka_lib.does_entity_exist(demon_horn1) then
             demon_horn1 = entities.create_object(value, pos)
             entities.set_can_migrate(demon_horn1, false)
+            if GET_ENTITY_LOD_DIST(demon_horn1) > 66 then
+                SET_ENTITY_LOD_DIST(demon_horn1, 66)
+            end
             SET_ENTITY_COLLISION(demon_horn1, false, false)
             SET_ENTITY_INVINCIBLE(demon_horn1, true)
             ATTACH_ENTITY_TO_ENTITY(demon_horn1, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -1 / 50.0, 0, 78, 0, 122, false, true, false, false, 0, true, 1)
@@ -2767,6 +2776,9 @@ path_demon_horns_color = menu.list_select(outfit_decoration, "Demon Horns Color"
         if not asuka_lib.does_entity_exist(demon_horn2) then
             demon_horn2 = entities.create_object(value, pos)
             entities.set_can_migrate(demon_horn2, false)
+            if GET_ENTITY_LOD_DIST(demon_horn2) > 66 then
+                SET_ENTITY_LOD_DIST(demon_horn2, 66)
+            end
             SET_ENTITY_COLLISION(demon_horn2, false, false)
             SET_ENTITY_INVINCIBLE(demon_horn2, true)
             ATTACH_ENTITY_TO_ENTITY(demon_horn2, pup, GET_PED_BONE_INDEX(pup, 31086), -3 / 50.0, -1 / 50.0, 0, 102, 0, 122, false, true, false, false, 0, true, 1)
