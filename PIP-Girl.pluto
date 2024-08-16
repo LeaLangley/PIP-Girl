@@ -4974,7 +4974,7 @@ player_menu = function(pid)
 		levelPly = val
 	end)
 	local delayPly = 13
-	menu.slider(FriendlyPIPGirl, "Loop Delay", {"pgloopdelay"}, "in ms", 0, 2500, 13, 10, function(val)
+	menu.slider(FriendlyPIPGirl, "Loop Delay", {"pgloopdelay"}, "in ms", 1, 2500, 13, 10, function(val)
 		delayPly = val
 	end)
     local PGLEVELBOOST
