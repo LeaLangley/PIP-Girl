@@ -2873,11 +2873,11 @@ end)
 menu.divider(Game, "Exclude Mission.")
 
 menu.action(Game, 'Super Cleanse', {"sclean"}, 'BCS R* is a mess.', function()
-    SuperClean(true)
+    SuperClean(false)
 end)
 
 menu.action(Game, 'Super Cleanse No Mission Ent', {"scleanny"}, 'BCS R* is a mess.', function()
-    SuperClean(false)
+    SuperClean(true)
 end)
 
 menu.divider(Game, "<3")
