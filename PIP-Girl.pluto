@@ -4970,12 +4970,7 @@ local mad_objects = {
 }
 
 local function player_menu(pid)
-    if not menu.player_root(pid):isValid() do
-        return
-    end
-    if not asuka_lib.player_exist(pid) then
-        return
-    end
+    if not menu.player_root(pid):isValid() then return end
     for menu.get_children(menu.player_root(pid)) as player_child do
         if menu.get_menu_name(player_child) == "PIP Girl" then
             return
@@ -4997,35 +4992,39 @@ local function player_menu(pid)
 		delayPly = val
 	end)
     local PGLEVELBOOST
-    PGLEVELBOOST = menu.toggle(FriendlyPIPGirl, "Boost LVL", {"pgboostlevel"}, "Boost them to lvl.", function()
-        if menu.player_root(pid):isValid() and players.get_rank(pid) >= levelPly then
+    PGLEVELBOOST = menu.toggle_loop(FriendlyPIPGirl, "Boost LVL", {"pgboostlevel"}, "Boost them to lvl.", function()
+        if not menu.player_root(pid):isValid() then return end
+        if players.get_rank(pid) >= levelPly then
             notify(name.." is already "..players.get_rank(pid))
             PGLEVELBOOST.value = false
             return
         end
-        if menu.player_root(pid):isValid() and not players.are_stats_ready(pid) then
+        if not players.are_stats_ready(pid) then
             notify(name.." is still loading in , please wait.")
             PGLEVELBOOST.value = false
             return
         end
-        if menu.player_root(pid):isValid() and asuka_lib.player_exist(pid) and players.get_rank(pid) < levelPly then
+        if asuka_lib.player_exist(pid) and players.get_rank(pid) < levelPly then
             menu.trigger_command(menu.ref_by_rel_path(menu.player_root(pid), "Friendly>Give Collectibles>All"))
         end
         while menu.player_root(pid):isValid() and asuka_lib.player_exist(pid) and players.get_rank(pid) < levelPly do
-            menu.trigger_commands("rp " .. name)
-            util.yield(delayPly)
-            if not asuka_lib.player_exist(pid) or not menu.player_root(pid):isValid() then
-                PGLEVELBOOST.value = false
+            if not asuka_lib.player_exist(pid) then
+                if menu.player_root(pid):isValid() then
+                    PGLEVELBOOST.value = false
+                end
                 return
+            else
+                menu.trigger_commands("rp " .. name)
+                util.yield(delayPly)
             end
         end
-        if menu.player_root(pid):isValid() and players.get_rank(pid) >= levelPly then
+        if players.get_rank(pid) >= levelPly then
             notify(name.." Reached "..players.get_rank(pid))
             PGLEVELBOOST.value = false
             util.yield(113)
             return
         end
-        if not asuka_lib.player_exist(pid) or not menu.player_root(pid):isValid() then
+        if not menu.player_root(pid):isValid() then
             PGLEVELBOOST.value = false
             return
         end
@@ -5038,6 +5037,7 @@ local function player_menu(pid)
     local Bad_Modder = menu.list(menu.player_root(pid), 'Bad Modder?', {""}, '', function() end)
     local Fuck_em_up
     Fuck_em_up = menu.toggle_loop(Bad_Modder, "Fuck'em up™", {"fuckup"}, "go crazy, go stupid.", function()
+        if not menu.player_root(pid):isValid() then return end
         local ped = GET_PLAYER_PED_SCRIPT_INDEX(pid)
         if not asuka_lib.does_entity_exist(ped) then
             notify(name .. " is too far. :/")
@@ -5133,6 +5133,7 @@ local function player_menu(pid)
     ---    end
     ---end)
     menu.toggle_loop(Bad_Modder, "Blacklist Kick on Atack", {"hellaab"}, "Auto kick if they atack you, and add them to blacklist.", function()
+        if not menu.player_root(pid):isValid() then return end
         if players.is_marked_as_attacker(pid) then
             add_in_blocking(pid, true)
             StrategicKick(pid, rid)
@@ -5147,6 +5148,7 @@ local function player_menu(pid)
         util.yield(13)
     end)
     menu.toggle_loop(Bad_Modder, "Kick on Atack", {"hellaa"}, "Auto kick if they atack you.", function()
+        if not menu.player_root(pid):isValid() then return end
         if players.is_marked_as_attacker(pid) then
             StrategicKick(pid, rid)
             notify("Attempting to kick " .. name .. " bcs they atacked you.")
