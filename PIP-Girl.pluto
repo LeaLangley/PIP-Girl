@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local lust_upDate = {year = 2024, month = 8, day = 24, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 8, day = 26, hour = 6, min = 6, sec = 6}
 
 local script_version = "V."..lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
@@ -4923,6 +4923,7 @@ local function SessionCheck(pid)
 end
 
 players.on_join(SessionCheck)
+players.dispatch_on_join()
 
 local IdentificationTimeout = {}
 
@@ -4968,9 +4969,9 @@ local mad_objects = {
     {util.joaat("xm_prop_x17_sub_damage")},
 }
 
-player_menu = function(pid)
-    while asuka_lib.player_exist(pid) and not menu.player_root(pid):isValid() do
-        util.yield()
+local function player_menu(pid)
+    if not menu.player_root(pid):isValid() do
+        return
     end
     if not asuka_lib.player_exist(pid) then
         return
@@ -5165,8 +5166,7 @@ player_menu = function(pid)
     menu.player_root(pid):divider('~=^.^=~')
 end
 
-players.on_join(player_menu)
-players.dispatch_on_join()
+players.add_command_hook(player_menu)
 
 menu.action(Credits, "Statement about skidding.", {""}, "99% of the skidded code has been modifyed or changed, i specially did that since i was new to lua, and i am a noob. It helpt me getting started and understanding the code i was messing around with.", function()
     notify("99% of the skidded code has been modifyed or changed, i specially did that since i was new to lua, and i am a noob. It helpt me getting started and understanding the code i was messing around with.")
