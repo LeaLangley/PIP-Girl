@@ -2797,7 +2797,7 @@ local function float_to_int_color(color)
 end
 local thermal_color = { r = 1.0, g = 0.0, b = 1.0, a = 1.0 }
 
-path_thermal_color = menu.colour(Thermal_Vision, "Color", {"thermalcolor"}, "Label help_text", 1.0, 0.0, 1.0, 1.0, false, function(color, click_type)
+path_thermal_color = menu.colour(Thermal_Vision, "Color", {"pgthermalcolor"}, "Label help_text", 1.0, 0.0, 1.0, 1.0, false, function(color, click_type)
     local r, g, b = float_to_int_color(color)
     thermal_color = color
     SEETHROUGH_SET_COLOR_NEAR(r, g, b)
@@ -2805,12 +2805,12 @@ end)
 
 menu.rainbow(path_thermal_color)
 
-path_thermal_highlight = menu.slider(Thermal_Vision, "Highlight Intensity", {"thermalhighlight"}, "", -100, 100, 1, 1, function (new_value)
+path_thermal_highlight = menu.slider(Thermal_Vision, "Highlight Intensity", {"pgthermalhighlight"}, "", -100, 100, 1, 1, function (new_value)
     SEETHROUGH_SET_HILIGHT_INTENSITY(new_value)
 end)
 
 local thermal_command = menu.ref_by_path('Game>Rendering>Thermal Vision')
-menu.toggle(Combat, "Better Thermal Vision",{},"",function(on)
+menu.toggle(Combat, "Better Thermal Vision",{"pgthermal"},"",function(on)
     if on then
         menu.trigger_command(thermal_command,"on")
         SEETHROUGH_SET_FADE_ENDDISTANCE(13666.0)
