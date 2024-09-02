@@ -5142,20 +5142,15 @@ local function player_menu(pid)
             end
             notify("Attempting to kick " .. name .. " bcs they atacked you.")
             hellaab.value = false
-            util.yield(13)
-        else
-            util.yield(1666)
         end
         util.yield(13)
     end)
-    menu.toggle_loop(Bad_Modder, "Kick on Atack", {"hellaa"}, "Auto kick if they atack you.", function()
+    hellaa = menu.toggle_loop(Bad_Modder, "Kick on Atack", {"hellaa"}, "Auto kick if they atack you.", function()
         if not menu.player_root(pid):isValid() then return end
         if players.is_marked_as_attacker(pid) then
             StrategicKick(pid, rid)
             notify("Attempting to kick " .. name .. " bcs they atacked you.")
-            util.yield(66666)
-        else
-            util.yield(1666)
+            hellaa.value = false
         end
         util.yield(13)
     end)
