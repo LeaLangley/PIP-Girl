@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local lust_upDate = {year = 2024, month = 9, day = 2, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 9, day = 4, hour = 6, min = 6, sec = 6}
 
 local script_version = "V."..lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
@@ -521,7 +521,7 @@ local function StrategicKick(pid, rid)
                     menu.trigger_commands("kick " .. name)
                 end
             else
-                menu.trigger_commands("hellaab " .. name .. " on")
+                menu.trigger_commands("hellaa " .. name .. " on")
                 menu.trigger_commands("desync " .. name .. " on")
             end
         end
@@ -4813,10 +4813,10 @@ local function add_in_blocking(pid, bool)
         end
         if name ~= players.get_name(players.user()) and not asuka_lib.has_detection(pid, "Blacklist") then
             players.add_detection(pid, "Blacklist", TOAST_DEFAULT, 100)
-            menu.trigger_commands("historynote ".. name .." Blacklist")
-            if bool then
-                menu.trigger_commands("historyblock ".. name .." On")
-            end
+            --menu.trigger_commands("historynote ".. name .." Blacklist")
+            --if bool then
+            --    menu.trigger_commands("historyblock ".. name .." On")
+            --end
         end
     end
 end
@@ -4887,19 +4887,19 @@ local function SessionCheck(pid)
                     if asuka_lib.session_type() == "Public" and not asuka_lib.has_detection(pid, "Blacklist") then
                         add_in_blocking(pid, false)
                     end
-                    if is_Modder(pid) and pid == players.get_host() then
+                    if pid == players.get_host() then
                         notification = "This Blacklist is Host, we don't kick them until they attack."
-                        menu.trigger_commands("hellaab " .. name .. " on")
+                        menu.trigger_commands("hellaa " .. name .. " on")
                         menu.trigger_commands("ghostplayer " .. name .. " on")
                     elseif asuka_lib.has_detection(pid, "Stand User") then
                         notification = "This Blacklist is a Stand User, we don't kick them until they attack."
-                        menu.trigger_commands("hellaab " .. name .. " on")
+                        menu.trigger_commands("hellaa " .. name .. " on")
                         menu.trigger_commands("ghostplayer " .. name .. " on")
                     else
                         if asuka_lib.session_type() == "Public" then
                             StrategicKick(pid, rid)
                         else
-                            menu.trigger_commands("hellaab " .. name .. " on")
+                            menu.trigger_commands("hellaa " .. name .. " on")
                             menu.trigger_commands("ghostplayer " .. name .. " on")
                         end
                     end
