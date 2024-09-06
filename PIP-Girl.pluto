@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local lust_upDate = {year = 2024, month = 9, day = 4, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 9, day = 6, hour = 6, min = 6, sec = 6}
 
 local script_version = "V."..lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
@@ -188,26 +188,9 @@ local function allow_Join_back(name)
     end
 end
 
-local function hasAnyDetection(pid)
-    util.yield(13)
-    if asuka_lib.player_exist(pid) and menu.player_root(pid):isValid() then
-        for menu.player_root(pid):getChildren() as cmd do
-            if cmd:getType() == COMMAND_LIST_CUSTOM_SPECIAL_MEANING then
-                return true
-            end
-        end
-    end
-    return false
-end
-
-local function is_Modder(pid, bool)
+local function is_Modder(pid)
     if players.is_marked_as_modder(pid) or players.is_marked_as_modder_or_admin(pid) then
         return true
-    end
-    if bool then
-        if hasAnyDetection(pid) then
-            return true
-        end
     end
     return false
 end
@@ -4764,23 +4747,18 @@ local function startupConfig()
     end
     menu.trigger_command(menu.ref_by_path("Online>Session>Block Joins>Message>Your Account Has A Bad Reputation"))
     if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Blacklist")) then
-        local noexceptions = true
-        if asuka_lib.session_type() == "Public" then
-            noexceptions = true
-        else
-            noexceptions = false
-        end
         for menu.ref_by_path("Online>Player History>Noted Players>Blacklist"):getChildren() as rat do
             util.yield(13)
             if rat:isValid() then
                 local rat_target = rat.target
                 rat_target:refByRelPath("Player Join Reactions>Notification").value = true
                 rat_target:refByRelPath("Player Join Reactions>Write To Console").value = true
+                rat_target:refByRelPath("Player Join Reactions>Block Join").value = false
                 rat_target:refByRelPath("Player Join Reactions>Crash").value = false
-                rat_target:refByRelPath("Player Join Reactions>Timeout").value = noexceptions
-                rat_target:refByRelPath("Player Join Reactions>Block Their Network Events").value = noexceptions
-                rat_target:refByRelPath("Player Join Reactions>Block Incoming Syncs").value = noexceptions
-                rat_target:refByRelPath("Player Join Reactions>Block Outgoing Syncs").value = noexceptions
+                rat_target:refByRelPath("Player Join Reactions>Timeout").value = false
+                rat_target:refByRelPath("Player Join Reactions>Block Their Network Events").value = false
+                rat_target:refByRelPath("Player Join Reactions>Block Incoming Syncs").value = false
+                rat_target:refByRelPath("Player Join Reactions>Block Outgoing Syncs").value = false
             end
             util.yield()
         end
@@ -4871,10 +4849,6 @@ local function SessionCheck(pid)
         util.yield(666)
     end
     util.yield(113)
-    if asuka_lib.session_type() ~= current_session_type then
-        current_session_type = asuka_lib.session_type()
-        startupConfig()
-    end
     if asuka_lib.player_exist(pid) then
         if is_player_in_blacklist(rid) then
             if not is_sc_friend(pid) then
@@ -5195,13 +5169,13 @@ end)
 
 menu.divider(Credits, "Other Script Dev's. <3")
 
-menu.hyperlink(Credits, "mehScript by akat0zi", "https://discord.gg/uUNRn6xgw5", "For (Specially First) inspiration , little skid.\nSince i was new/noob to lua.")
+menu.hyperlink(Credits, "mehScript by akat0zi", "https://discord.gg/uUNRn6xgw5", "For (Specially First) inspiration , little skid.\nSince i'm still learning.")
 
-menu.hyperlink(Credits, "Heist Control by IceDoomfist", "https://discord.gg/KTFAYQn5Xz", "For (Specially First) inspiration , some skid.\nSince i was new/noob to lua.")
+menu.hyperlink(Credits, "Heist Control by IceDoomfist", "https://discord.gg/KTFAYQn5Xz", "For (Specially First) inspiration , some skid.\nSince i'm still learning.")
 
 menu.hyperlink(Credits, "AcjokerScript by acjoker8818", "https://discord.gg/fn4uBbFNnA", "For inspiration. <3")
 
-menu.hyperlink(Credits, "JinxScript by Prisuhm", "https://discord.gg/hjs5S93kQv", "For (Specially First) inspiration , little skid.\nSince i was new/noob to lua.")
+menu.hyperlink(Credits, "JinxScript by Prisuhm", "https://discord.gg/hjs5S93kQv", "For (Specially First) inspiration , little skid.\nSince i'm still learning.")
 
 menu.hyperlink(Credits, "Undefined by Undefined Pony", "https://gitlab.com/undefinedscripts", "For inspiration.")
 
