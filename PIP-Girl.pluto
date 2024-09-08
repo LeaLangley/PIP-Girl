@@ -496,11 +496,11 @@ local function StrategicKick(pid, rid)
                     end
                     Wait_for_transitionState()
                 else
-                    if not is_trusted(players.get_host()) and players.get_host() ~= pid then
-                        menu.trigger_commands("timeout " .. name .. " on")
-                        menu.trigger_commands("desync " .. name .. " on")
-                        util.yield()
-                    end
+                    --if not is_trusted(players.get_host()) and players.get_host() ~= pid then
+                    --    menu.trigger_commands("timeout " .. name .. " on")
+                    --    menu.trigger_commands("desync " .. name .. " on")
+                    --    util.yield()
+                    --end
                     menu.trigger_commands("kick " .. name)
                 end
             else
