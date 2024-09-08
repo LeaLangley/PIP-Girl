@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local lust_upDate = {year = 2024, month = 9, day = 6, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 9, day = 8, hour = 6, min = 6, sec = 6}
 
 local script_version = "V."..lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
@@ -188,9 +188,16 @@ local function allow_Join_back(name)
     end
 end
 
-local function is_Modder(pid)
+local function is_modder(pid, bool)
     if players.is_marked_as_modder(pid) or players.is_marked_as_modder_or_admin(pid) then
         return true
+    end
+    if bool then
+        for players.list_only(false, false, false, false, false, true) as plid do
+            if plid == pid then
+                return true
+            end
+        end
     end
     return false
 end
@@ -227,7 +234,7 @@ local function check_CEO_Color()
                     if players.get_boss(players.user()) ~= -1 then
                             --if pid ~= players.user() then
                             --    local pidorgColor = players.get_org_colour(pid)
-                            --    if pidorgColor == ceo_color and not is_Modder(pid) and not is_trusted(pid) then
+                            --    if pidorgColor == ceo_color and not is_modder(pid) and not is_trusted(pid) then
                             --        if fallback_color == ceo_color then
                             --            fallback_color = fallback_color - 1
                             --        end
@@ -489,23 +496,25 @@ local function StrategicKick(pid, rid)
             menu.trigger_commands("ghostplayer " .. name)
             menu.trigger_commands("blocksync " .. name .. " on")
             util.yield()
-            if players.is_marked_as_attacker(pid) or is_trusted(players.get_host()) or not is_Modder(players.get_host()) then
+            if players.get_host() ~= pid then
                 if asuka_lib.transition_state(true) ~= 1 then
-                    if asuka_lib.transition_state(true) < 3 then
-                        menu.trigger_commands("kick " .. name)
-                    end
                     Wait_for_transitionState()
                 else
-                    if not is_trusted(players.get_host()) and players.get_host() ~= pid then
+                    if not is_trusted(players.get_host()) then
                         menu.trigger_commands("timeout " .. name .. " on")
                         menu.trigger_commands("desync " .. name .. " on")
                         util.yield()
+                        menu.trigger_commands("loveletterkick " .. name)
+                    else
+                        menu.trigger_commands("kick " .. name)
                     end
-                    menu.trigger_commands("kick " .. name)
                 end
             else
-                menu.trigger_commands("hellaa " .. name .. " on")
-                menu.trigger_commands("desync " .. name .. " on")
+                if is_modder(players.get_host(), true) then
+                    menu.trigger_commands("desync " .. name .. " on")
+                else
+                    menu.trigger_commands("kick " .. name)
+                end
             end
         end
     end
@@ -3213,7 +3222,7 @@ local function espOnPlayer(pid, namesync)
             elseif players.is_marked_as_attacker(pid) then
                 classificationESP = "(ATK)"
                 detectionCOLOR = { r = 255.0/255, g = 13.0/255, b = 13.0/255, a = 1.0 }
-            elseif is_Modder(pid) then
+            elseif is_modder(pid) then
                 classificationESP = "(MOD)"
                 detectionCOLOR = { r = 255.0/255, g = 13.0/255, b = 13.0/255, a = 1.0 }
             elseif players.is_in_interior(pid) then
@@ -3299,7 +3308,7 @@ end
 local function ReportSessionKD(numPlayers)
     local topPlayers = {}
     for players.list(false, false, true) as pid do
-        if not is_Modder(pid) then
+        if not is_modder(pid, true) then
             local kd = players.get_kd(pid)
             local playerRank = players.get_rank(pid)
             
@@ -3343,7 +3352,7 @@ if session_claimer_players_range < 3 then
 end
 
 local function sessionWorthy()
-    if (not is_Modder(players.get_host()) and players.get_host_queue_position(players.user()) <= 1) or is_trusted(players.get_host()) then
+    if (not is_modder(players.get_host(), true) and players.get_host_queue_position(players.user()) <= 1) or is_trusted(players.get_host()) then
         if GET_NUMBER_OF_PLAYERS() >= session_claimer_players or (session_claimer_players_range < session_claimer_players and GET_NUMBER_OF_PLAYERS() > 3) then
             return true
         end
@@ -3360,7 +3369,7 @@ local function findAnewHome()
             findAnewHomeMSG = "Not worth it."
         elseif GET_NUMBER_OF_PLAYERS() <= session_claimer_players then
             findAnewHomeMSG = "Not Enoght Players."
-        elseif is_Modder(players.get_host()) then
+        elseif is_modder(players.get_host(), true) then
             findAnewHomeMSG = "Host is a Modder."
         else
             findAnewHomeMSG = "error."
@@ -3445,7 +3454,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
             if os.time() - join_timeout_start > join_timeout_time then
                 break
             end
-            if is_Modder(players.get_host()) and not is_trusted(players.get_host()) then
+            if is_modder(players.get_host(), true) and not is_trusted(players.get_host()) then
                 break
             else
                 if asuka_lib.session_type() == "Singleplayer" then
@@ -3767,7 +3776,7 @@ path_block_orb_room = menu.toggle_loop(SessionWorld, "Block Orbital Cannon Room"
                         if not menu.is_ref_valid(menu.ref_by_path("Stand>Lua Scripts>JinxScript>Detections>Normal Detections>Orbital Cannon")) or menu.get_state(menu.ref_by_path("Stand>Lua Scripts>JinxScript>Detections>Normal Detections>Orbital Cannon")) == "Off" then
                             notify_only(players.get_name(pid).." is in Orb Room.")
                         end
-                        --if not is_Modder(pid, true) then
+                        --if not is_modder(pid, true) then
                         --    menu.trigger_commands("interiorkick "..players.get_name(pid))
                         --end
                         if not asuka_lib.has_detection(pid, "Glitched Orb Room Access") then
@@ -3936,7 +3945,7 @@ end)
 
 path_nerf_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Nerf Oppressor MK2s", {""}, "Nerf Oppressor mk2 weapons, except Modder and Friend's", function()
     for players.list_except(true) as pid do
-        if players.get_vehicle_model(pid) == 2069146067 and not is_trusted(pid) and not is_Modder(pid) then
+        if players.get_vehicle_model(pid) == 2069146067 and not is_trusted(pid) and not is_modder(pid) then
             local vehicle = GET_VEHICLE_PED_IS_IN(GET_PLAYER_PED_SCRIPT_INDEX(pid))
             if GET_VEHICLE_MOD(vehicle, 10) ~= -1 then
                 request_control(vehicle)
@@ -3958,7 +3967,7 @@ end)
 
 path_downgrade_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Downgrade Oppressor MK2s", {""}, "Downgrade Oppressor mk2, except Modder and Friend's", function()
     for players.list_except(true) as pid do
-        if players.get_vehicle_model(pid) == 2069146067 and not is_trusted(pid) and not is_Modder(pid) then
+        if players.get_vehicle_model(pid) == 2069146067 and not is_trusted(pid) and not is_modder(pid) then
             local vehicle = GET_VEHICLE_PED_IS_IN(GET_PLAYER_PED_SCRIPT_INDEX(pid))
             for vehModNum = 0, 100 do
                 if GET_VEHICLE_MOD(vehicle, vehModNum) ~= -1 then
@@ -3981,7 +3990,7 @@ local mk2noob = {}
 path_spinning_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Spinning Oppressor MK2s", {""}, "Spin all MK2's, except Modder and Friend's", function()
     for players.list_except(true) as pid do
         if players.get_vehicle_model(pid) == 2069146067 and not is_trusted(pid) then
-            if not is_Modder(pid) then 
+            if not is_modder(pid) then 
                 if not mk2noob[pid] then
                     mk2noob[pid] = true
                     local playerName = players.get_name(pid)
@@ -4153,7 +4162,7 @@ path_post_session_code_via_webhook = menu.toggle_loop(SessionInvite, "Post Sessi
                         if is_trusted(pid) then
                             playerInfo = playerInfo.."(Friendly)"
                         end
-                        if is_Modder(pid) then
+                        if is_modder(pid) then
                             playerInfo = playerInfo.."(Modder)"
                         end
                         sessionPlayers = sessionPlayers .. playerInfo
@@ -4316,7 +4325,7 @@ path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"
                 end
             end
             if (players.get_host() == players.user() or not is_trusted(players.get_host())) and not is_trusted(players.get_script_host()) then
-                if not players.are_stats_ready(players.get_script_host()) and is_Modder(players.get_script_host()) then
+                if not players.are_stats_ready(players.get_script_host()) and is_modder(players.get_script_host(), true) then
                     get_ScriptHost()
                 end
                 if not asuka_lib.player_exist(players.get_script_host()) then
@@ -4372,7 +4381,7 @@ path_auto_ghost_modder = menu.toggle_loop(auto_ghost_players, "Auto Ghost Player
                 end
             end
             if should_ghost_modder then
-                if is_Modder(pid) then
+                if is_modder(pid) then
                     set_as_illusion(pid, ghost_modder, true)
                 else
                     set_as_illusion(pid, ghost_modder, false)
@@ -5673,9 +5682,9 @@ local function userIdentification()
                                     players.add_detection(pid, "PIP Girl User", TOAST_DEFAULT, 0)
                                 end
                             else
-                                if is_trusted(pid) and is_Modder(pid) then
+                                if is_trusted(pid) and is_modder(pid) then
                                     IdentificationTimeout[pid] = 1
-                                elseif is_trusted(pid) or is_Modder(pid) then
+                                elseif is_trusted(pid) or is_modder(pid) then
                                     IdentificationTimeout[pid] = 3
                                 else
                                     IdentificationTimeout[pid] = 6
