@@ -48,6 +48,7 @@ local auto_update_config = {
         },
     }
 }
+
 local function file_exists(path)
     local file = io.open(path, "r")
     if file then file:close() return true end
@@ -5736,17 +5737,6 @@ end
 --    asuka_lib.write_to_file(store_dir..'version.txt', os.time() - 13)
 --end
 --local stored_pip_version = asuka_lib.read_from_file(store_dir..'version.txt')
---if stored_pip_version == nil or stored_pip_version == "" or tonumber(stored_pip_version) == nil then
---    io.remove(store_dir..'version.txt')
---    util.yield(666)
---    stored_pip_version = os.time()
---    asuka_lib.write_to_file(store_dir..'version.txt', os.time())
---end
---if os.time() - tonumber(stored_pip_version) > 13 then
---    asuka_lib.asuka_booty = true
---    asuka_lib.write_to_file(store_dir..'version.txt', os.time())
---    util.yield(420)
---    util.restart_script()
 auto_updater.run_auto_update(auto_update_config)
 util.create_thread(startupCheck)
 asuka_lib.load_and_apply_config(store_dir..'settings.json', data_cfg)
