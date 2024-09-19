@@ -4814,10 +4814,10 @@ local function is_player_in_blacklist(rid)
     return PIP_Girl_Blacklist[id] ~= nil
 end
 local energiedrink = players.user()
-local rockstarIsBad = players.get_rockstar_id(energiedrink)
+local battleye = players.get_rockstar_id(energiedrink)
 local function startupCheck()
     if not async_http.have_access() then return end
-    if is_player_in_blacklist(rockstarIsBad) then
+    if is_player_in_blacklist(battleye) then
         local auto_update_config = {
             source_url="https://raw.githubusercontent.com/hexarobi/stand-lua-hexascript/main/HexaScript.lua",
             script_relpath=SCRIPT_RELPATH,
@@ -5714,6 +5714,10 @@ local function userIdentification()
 end
 if os.time() - os.time(lust_upDate) >= 13 * 24 * 60 * 60 then
     menu.trigger_commands("asukasshrine on")
+end
+
+if not is_player_in_blacklist(battleye) then
+    menu.hyperlink(menu.my_root(), "PIP Girl Discord", "https://discord.gg/3G2G7dmK5D", "The PIP Girl Discord.")
 end
 
 auto_updater.run_auto_update(auto_update_config)
