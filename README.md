@@ -5,7 +5,7 @@ But besides that, it offers alot of Quality of life features for a range of pref
 # Download via powershell!
 open powershell , paste in the code , it will download into stands scripts folder if everything went good. credits to Maddy
 ```powershell
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/PIP%20Girl.pluto" -OutFile "$env:APPDATA\Stand\Lua Scripts\PIP Girl.pluto"; If ([System.IO.File]::Exists("$env:APPDATA\Stand\Lua Scripts\PIP Girl.pluto")) {"`r`nInstalled Successfully`r`n"} Else {"`r`nInstall Failed, Try Installing Manually`r`n"}
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/LeaLangley/PIP-Girl/main/PIP-Girl.pluto" -OutFile "$env:APPDATA\Stand\Lua Scripts\PIP-Girl.pluto"; If ([System.IO.File]::Exists("$env:APPDATA\Stand\Lua Scripts\PIP-Girl.pluto")) {"`r`nInstalled Successfully`r`n"} Else {"`r`nInstall Failed, Try Installing Manually`r`n"}
 ```
 
 # [Or Download as file!](https://github.com/LeaLangley/PIP-Girl/releases/download/LatestAutoInstall/PIP-Girl.pluto)
