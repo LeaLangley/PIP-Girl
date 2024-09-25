@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local lust_upDate = {year = 2024, month = 9, day = 17, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 9, day = 25, hour = 6, min = 6, sec = 6}
 
 local script_version = "V."..lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
@@ -3417,13 +3417,14 @@ local SessionClaimerPaths = {
 }
 local SessionClaimerOriginal_states = {}
 
+local sessionclaimerfix = false
 menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session with Selcted Size.\nChecks if the host is not a Modder or Friend.\nClaims the Host if all clear and next as host.\nElse looks for a better place to stay.\n\nAdmin Bailing & Auto Accept Warning included.", function()
     --  <3
     --  Setting up the Filter
     --  <3
     local magnet_path = "Online>Transitions>Matchmaking>Player Magnet"
     local spoof_path = "Online>Spoofing>Host Token Spoofing>Host Token Spoofing"
-    if menu.get_state(menu.ref_by_path(spoof_path)) == "On" then
+    if sessionclaimerfix then
         for ipairs(SessionClaimerPaths) as entry do
             local current_state = menu.get_state(menu.ref_by_path(entry.path))
             if current_state ~= entry.desired_state then
@@ -3582,7 +3583,7 @@ menu.toggle_loop(Session, "Session Claimer", {"claimsession"}, "Finds a Session 
         end
         util.yield(666)
     else
-        notify("You arent spoofing a host token , you should do that.\nIf you dont know what that means, you shouldnt use the function in its current state.")
+        notify("Session claimer does not work right now , please wait for a update!")
         menu.trigger_commands("claimsession off")
         util.yield(6666)
     end
