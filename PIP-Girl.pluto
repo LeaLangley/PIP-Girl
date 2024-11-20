@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local lust_upDate = {year = 2024, month = 9, day = 25, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 11, day = 20, hour = 6, min = 6, sec = 6}
 
 local script_version = "V."..lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
@@ -4048,7 +4048,6 @@ menu.action(SessionMisc, "Cleanup \"Friend's\" Group", {"cleanupfriends"}, "remo
         for _, friend in ipairs(friends) do
             local friend_target = friend.target
             if friend_target and friend_target:isValid() then
-                local name = friend_target.menu_name:gsub("%s?%[.*%]", "")
                 local children = menu.get_children(friend_target)
                 for i = 1, math.min(3, #children) do
                     local child = children[i]
@@ -4072,6 +4071,31 @@ menu.action(SessionMisc, "Cleanup \"Friend's\" Group", {"cleanupfriends"}, "remo
     else
         notify("You dont have a \"Friend's\" Group. so we created one for you.")
         menu.trigger_commands("createfriendsgroup")
+    end
+end)
+
+menu.action(SessionMisc, "Import \"Friend's\" Group", {"importfriends"}, "Import all friends from the stand friend's group.", function()
+    if asuka_lib.session_type() ~= "Singleplayer" then
+        if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Friend's")) then
+            menu.trigger_commands("findplayer Friend's")
+            local friends = menu.ref_by_path("Online>Player History>Noted Players>Friend's"):getChildren()
+            local num_friends = #friends
+            local total_time_ms = (66 * num_friends) + 666
+            local total_time_s = total_time_ms / 1000
+            notify(string.format("The process will take approximately %.2f seconds.", total_time_s))
+            for _, friend in ipairs(friends) do
+                local friend_target = friend.target
+                if friend_target and friend_target:isValid() then
+                    menu.trigger_command(friend_target:refByRelPath("Send Friend Request"))
+                end
+                util.yield(66)
+            end
+            notify("Hopefully added "..num_friends.." Friends".)
+        else
+            notify("You dont have a \"Friend's\" Group.")
+        end
+    else
+        notify("You need to be in any kind of online session.")
     end
 end)
 
