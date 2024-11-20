@@ -4090,7 +4090,7 @@ menu.action(SessionMisc, "Import \"Friend's\" Group", {"importfriends"}, "Import
                 end
                 util.yield(66)
             end
-            notify("Hopefully added "..num_friends.." Friends".)
+            notify("Hopefully added "..num_friends.." Friends.")
         else
             notify("You dont have a \"Friend's\" Group.")
         end
