@@ -4074,7 +4074,7 @@ menu.action(SessionMisc, "Cleanup \"Friend's\" Group", {"cleanupfriends"}, "remo
     end
 end)
 
-menu.action(SessionMisc, "Import \"Friend's\" Group", {"importfriends"}, "Import all friends from the stand friend's group.", function()
+menu.action(SessionMisc, "Import \"Friend's\" Group", {"importfriends"}, "Import all friends from the stand friend's group.\nPress Escape once the Social Club menu opens.", function()
     if asuka_lib.session_type() ~= "Singleplayer" then
         if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Friend's")) then
             menu.trigger_commands("findplayer Friend's")
@@ -4088,7 +4088,7 @@ menu.action(SessionMisc, "Import \"Friend's\" Group", {"importfriends"}, "Import
                 if friend_target and friend_target:isValid() then
                     menu.trigger_command(friend_target:refByRelPath("Send Friend Request"))
                 end
-                util.yield(66)
+                util.yield(1313)
             end
             notify("Hopefully added "..num_friends.." Friends.")
         else
