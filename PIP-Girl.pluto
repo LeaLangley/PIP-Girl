@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local lust_upDate = {year = 2024, month = 12, day = 7, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 12, day = 8, hour = 6, min = 6, sec = 6}
 
 local script_version = "V."..lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
@@ -724,6 +724,7 @@ local Outfit = menu.list(menu.my_root(), 'Outfit', {}, 'Look pretty and nice.', 
 local Combat = menu.list(menu.my_root(), 'Combat', {}, 'Very combat today.', function(); end)
 local Game = menu.list(menu.my_root(), 'Game', {}, 'Very gaming today.', function(); end)
 local Session = menu.list(menu.my_root(), 'Online', {}, '.enilnO', function(); end)
+local SessionManager = menu.list(Session, 'Session Manager', {}, '.enilnO', function(); end)
 local Settings = menu.list(menu.my_root(), 'Settings/Misc', {}, 'Basement.', function(); end)
 local Credits = menu.list(Settings, 'Credits', {}, '<3', function(); end)
 
@@ -3366,6 +3367,22 @@ end
 --    end
 --end, group_name)
 
+local Player_Magnet_Amount = 30
+path_player_magnet_amount_slider = menu.slider(SessionManager, "Player Magnet Amount", {}, "", 1, 30, 30, 1, function(value)
+    Player_Magnet_Amount = value
+end)
+
+path_player_magnet_amount_toggle = menu.toggle_loop(SessionManager, "Player Magnet Amount", {}, "Player Magnet Amount", function()
+    if asuka_lib.transition_state(true) <3 then
+        if GET_NUMBER_OF_PLAYERS() < Player_Magnet_Amount then
+            menu.trigger_commands("playermagnet on")
+        else
+            menu.trigger_commands("playermagnet off")
+        end
+    end
+    util.yield(13666)
+end)
+
 local SessionJoin = menu.list(Session, 'Join Settings', {}, 'Session Join Settings.', function(); end)
 
 local customspawned
@@ -5265,8 +5282,8 @@ local data_cfg = {
     store_name_esp = path_name_esp,
     store_bone_esp_while_armed = path_bone_esp_while_armed,
     --Session
-    store_session_size = path_session_size,
-    store_thunder_for_minutes = path_thunder_for_minutes,
+    store_player_magnet_amount_slider = path_player_magnet_amount_slider,
+    store_player_magnet_amount_toggle = path_player_magnet_amount_toggle,
     store_custom_spawn = path_custom_spawn,
     store_use_custom_spawn = path_use_custom_spawn,
     store_custom_vehicle_spawn = path_custom_vehicle_spawn,
