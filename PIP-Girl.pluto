@@ -3368,7 +3368,7 @@ end
 --end, group_name)
 
 local Player_Magnet_Amount = 30
-path_player_magnet_amount_slider = menu.slider(SessionManager, "Player Magnet Amount", {}, "", 1, 30, 30, 1, function(value)
+path_player_magnet_amount_slider = menu.slider(SessionManager, "Player Magnet Amount Value", {}, "", 1, 30, 30, 1, function(value)
     Player_Magnet_Amount = value
 end)
 
