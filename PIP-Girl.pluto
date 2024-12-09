@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local lust_upDate = {year = 2024, month = 12, day = 9, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 12, day = 10, hour = 6, min = 6, sec = 6}
 
 local script_version = "V."..lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
@@ -5448,6 +5448,9 @@ local function userIdentification()
             if GET_PED_HEAD_OVERLAY(players.user_ped(), 12) ~= moonCircle then
                 SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
             end
+            if menu.get_state(menu.ref_by_path("Online>Enhancements>Block Background Script")) == "Off" then
+                menu.set_state(menu.ref_by_path("Online>Enhancements>Block Background Script"), "On")
+            end
             for players.list_except(true) as pid do
                 if not asuka_lib.has_detection(pid, "PIP Girl User") then
                     if players.are_stats_ready(pid) then
@@ -5506,5 +5509,6 @@ util.create_thread(startupConfig)
 util.create_thread(crashlistConfig)
 util.create_thread(userIdentification)
 menu.trigger_commands("antiadmin on")
+menu.trigger_commands("nobgscript on")
 menu.set_state(menu.ref_by_path("Online>Session>Stand User Identification>For Strangers"), "Off")
 util.keep_running()
