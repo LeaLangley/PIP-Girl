@@ -4636,7 +4636,7 @@ local function SessionCheck(pid)
     while asuka_lib.player_exist(pid) and not menu.player_root(pid):isValid() do
         util.yield(666)
     end
-    util.yield(113)
+    util.yield(420)
     if asuka_lib.player_exist(pid) then
         if is_player_in_blacklist(rid) then
             if not is_sc_friend(pid) then
