@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local lust_upDate = {year = 2024, month = 12, day = 8, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2024, month = 12, day = 9, hour = 6, min = 6, sec = 6}
 
 local script_version = "V."..lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
@@ -3503,7 +3503,7 @@ menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join 
             util.yield(666)
             menu.trigger_commands("unstuck")
             util.yield(666)
-            menu.trigger_commands("go inviteonly")
+            menu.trigger_commands("go solopublic")
         end
     end
 end)
