@@ -717,7 +717,7 @@ menu.divider(menu.my_root(), script_version)
 local PIP_Girl = menu.list(menu.my_root(), 'PIP Girl', {}, 'Personal Information Processor Girl.', function(); end)
 menu.focus(menu.ref_by_path("Stand>Lua Scripts>"..SCRIPT_NAME..">PIP Girl"))
 local PIP_Girl_APPS = menu.list(PIP_Girl, 'PIP Girl Apps', {}, 'Personal Information Processor Girl apps.', function(); end)
---local PIP_Girl_Heist = menu.list(PIP_Girl, 'PIP Girl Heists', {}, 'Personal Information Processor Girl Heist Presets.', function(); end)
+local PIP_Girl_Heist = menu.list(PIP_Girl, 'PIP Girl Heists (FSL!)', {}, 'I only consider it save if used with FSL, its intended use is for FSL, if u still use it without FSL u r going to risk.\nPersonal Information Processor Girl Heist Presets.', function(); end)
 local Stimpak = menu.list(menu.my_root(), 'Stimpak', {}, 'Take a breath.', function(); end)
 local Vehicle = menu.list(menu.my_root(), 'Vehicle', {}, 'Drive pretty and nice.', function(); end)
 local Outfit = menu.list(menu.my_root(), 'Outfit', {}, 'Look pretty and nice.', function(); end)
@@ -789,6 +789,297 @@ local function fillUpEverything()
     menu.trigger_commands("clubpopularity 100")
     menu.trigger_commands("removebounty")
 end
+
+local function CayoBasics()
+    fillUpEverything()
+    STAT_SET_INT("H4_MISSIONS", -1)
+    STAT_SET_INT("H4CNF_APPROACH", -1)
+    STAT_SET_INT("H4CNF_BS_ENTR", 63)
+    STAT_SET_INT("H4CNF_BS_GEN", 126975)
+    STAT_SET_INT("H4CNF_BS_ABIL", -1)
+    STAT_SET_INT("H4CNF_WEAPONS", 2)
+    STAT_SET_INT("H4CNF_WEP_DISRP", 3)
+    STAT_SET_INT("H4CNF_ARM_DISRP", 3)
+    STAT_SET_INT("H4CNF_HEL_DISRP", 3)
+    STAT_SET_INT("H4CNF_BOLTCUT", 4424)
+    STAT_SET_INT("H4CNF_UNIFORM", 5256)
+    STAT_SET_INT("H4CNF_GRAPPEL", 5156)
+    STAT_SET_INT("H4CNF_TROJAN", 5)
+    STAT_SET_INT("H4_PROGRESS", 131055)
+    STAT_SET_INT("H4_PLAYTHROUGH_STATUS", 100)
+end
+
+local function CayoNotify()
+    warnify("Note that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.")
+    warnify("With this setup, every player gets 2m, so they can do 2 runs and reach the hourly limit.")
+    warnify("The Cayo heist with a sweet legit-like preset.\nIf you're inside the submarine, go manually out and in again to refresh the board.")
+    util.yield(1666)
+    notify("The Cayo heist with a sweet legit-like preset.\nIf you're inside the submarine, go manually out and in again to refresh the board.")    
+end
+
+menu.action(PIP_Girl_Heist, 'Cayo 1 Player Preset (!)', {}, "", function (click_type)
+    menu.show_warning(PIP_Girl, click_type, 'DO ONLY USE WITH FSL, Continue ?', function()
+        if transitionState(true) == 1 then
+            CayoBasics()
+            STAT_SET_INT("H4LOOT_CASH_I", 4227216)
+            STAT_SET_INT("H4LOOT_CASH_I_SCOPED", 4227216)
+            STAT_SET_INT("H4LOOT_CASH_C", 20)
+            STAT_SET_INT("H4LOOT_CASH_C_SCOPED", 20)
+            STAT_SET_INT("H4LOOT_COKE_I", 131336)
+            STAT_SET_INT("H4LOOT_COKE_I_SCOPED", 131336)
+            STAT_SET_INT("H4LOOT_COKE_C", 0)
+            STAT_SET_INT("H4LOOT_COKE_C_SCOPED", 0)
+            STAT_SET_INT("H4LOOT_GOLD_I", 0)
+            STAT_SET_INT("H4LOOT_GOLD_I_SCOPED", 0)
+            STAT_SET_INT("H4LOOT_GOLD_C", 192)
+            STAT_SET_INT("H4LOOT_GOLD_C_SCOPED", 192)
+            STAT_SET_INT("H4LOOT_WEED_I", 1067010)
+            STAT_SET_INT("H4LOOT_WEED_I_SCOPED", 1067010)
+            STAT_SET_INT("H4LOOT_WEED_C", 0)
+            STAT_SET_INT("H4LOOT_WEED_C_SCOPED", 0)
+            STAT_SET_INT("H4LOOT_PAINT", 9)
+            STAT_SET_INT("H4LOOT_PAINT_SCOPED", 9)
+            local randomTarget = math.random(1, 4)
+            if randomTarget == 1 then
+                STAT_SET_INT("H4LOOT_CASH_V", 29886)
+                STAT_SET_INT("H4LOOT_COKE_V", 59772)
+                STAT_SET_INT("H4LOOT_GOLD_V", 79696)
+                STAT_SET_INT("H4LOOT_PAINT_V", 59772)
+                STAT_SET_INT("H4LOOT_WEED_V", 39848)
+                STAT_SET_INT("H4CNF_TARGET", 5) -- Panther
+                warnify("You'r Cayo Target is the a Panther Statue. >:D")
+            end
+            if randomTarget == 2 then
+                STAT_SET_INT("H4LOOT_CASH_V", 304886)
+                STAT_SET_INT("H4LOOT_COKE_V", 609772)
+                STAT_SET_INT("H4LOOT_GOLD_V", 813029)
+                STAT_SET_INT("H4LOOT_PAINT_V", 609772)
+                STAT_SET_INT("H4LOOT_WEED_V", 406514)
+                STAT_SET_INT("H4CNF_TARGET", 0) -- Tequilla
+                warnify("You'r Cayo Target is the Sinsimito Tequilla. :S")
+            end
+            if randomTarget == 3 then
+                STAT_SET_INT("H4LOOT_CASH_V", 277386)
+                STAT_SET_INT("H4LOOT_COKE_V", 554772)
+                STAT_SET_INT("H4LOOT_GOLD_V", 739696)
+                STAT_SET_INT("H4LOOT_PAINT_V", 554772)
+                STAT_SET_INT("H4LOOT_WEED_V", 369848)                
+                STAT_SET_INT("H4CNF_TARGET", 1) -- Ruby
+                warnify("You'r Cayo Target is a Ruby Necklace. :3")
+            end
+            if randomTarget == 4 then
+                STAT_SET_INT("H4LOOT_CASH_V", 194886)
+                STAT_SET_INT("H4LOOT_COKE_V", 389772)
+                STAT_SET_INT("H4LOOT_GOLD_V", 519696)
+                STAT_SET_INT("H4LOOT_PAINT_V", 389772)
+                STAT_SET_INT("H4LOOT_WEED_V", 259848)                            
+                STAT_SET_INT("H4CNF_TARGET", 3) -- Pink
+                warnify("You'r Cayo Target is a Pink Diamond. *.*")
+            end
+            CayoNotify()
+        end
+    end, function()
+        notify("Aborted.")
+    end, true)
+end)
+
+menu.action(PIP_Girl_Heist, 'Cayo 2 Player 50/50 Preset (!)', {}, "", function (click_type)
+    menu.show_warning(PIP_Girl, click_type, 'DO ONLY USE WITH FSL, Continue ?', function()
+        if transitionState(true) == 1 then
+            CayoBasics()
+            STAT_SET_INT("H4LOOT_CASH_I", 4227216)
+            STAT_SET_INT("H4LOOT_CASH_I_SCOPED", 4227216)
+            STAT_SET_INT("H4LOOT_CASH_C", 16)
+            STAT_SET_INT("H4LOOT_CASH_C_SCOPED", 16)
+            STAT_SET_INT("H4LOOT_COKE_I", 131336)
+            STAT_SET_INT("H4LOOT_COKE_I_SCOPED", 131336)
+            STAT_SET_INT("H4LOOT_COKE_C", 0)
+            STAT_SET_INT("H4LOOT_COKE_C_SCOPED", 0)
+            STAT_SET_INT("H4LOOT_GOLD_I", 0)
+            STAT_SET_INT("H4LOOT_GOLD_I_SCOPED", 0)
+            STAT_SET_INT("H4LOOT_GOLD_C", 204)
+            STAT_SET_INT("H4LOOT_GOLD_C_SCOPED", 204)
+            STAT_SET_INT("H4LOOT_WEED_I", 1067010)
+            STAT_SET_INT("H4LOOT_WEED_I_SCOPED", 1067010)
+            STAT_SET_INT("H4LOOT_WEED_C", 0)
+            STAT_SET_INT("H4LOOT_WEED_C_SCOPED", 0)
+            STAT_SET_INT("H4LOOT_PAINT", 9)
+            STAT_SET_INT("H4LOOT_PAINT_SCOPED", 9)
+            local randomTarget = math.random(1, 4)
+            if randomTarget == 1 then
+                STAT_SET_INT("H4LOOT_CASH_V", 306136)
+                STAT_SET_INT("H4LOOT_COKE_V", 612272)
+                STAT_SET_INT("H4LOOT_GOLD_V", 816363)
+                STAT_SET_INT("H4LOOT_PAINT_V", 612272)
+                STAT_SET_INT("H4LOOT_WEED_V", 408181)
+                STAT_SET_INT("H4CNF_TARGET", 5) -- Panther
+                warnify("You'r Cayo Target is the a Panther Statue. >:D")
+            end
+            if randomTarget == 2 then
+                STAT_SET_INT("H4LOOT_CASH_V", 443636)
+                STAT_SET_INT("H4LOOT_COKE_V", 887272)
+                STAT_SET_INT("H4LOOT_GOLD_V", 1183029)
+                STAT_SET_INT("H4LOOT_PAINT_V", 887272)
+                STAT_SET_INT("H4LOOT_WEED_V", 591514)                
+                STAT_SET_INT("H4CNF_TARGET", 0) -- Tequilla
+                warnify("You'r Cayo Target is the Sinsimito Tequilla. :S")
+            end
+            if randomTarget == 3 then
+                STAT_SET_INT("H4LOOT_CASH_V", 429886)
+                STAT_SET_INT("H4LOOT_COKE_V", 859772)
+                STAT_SET_INT("H4LOOT_GOLD_V", 1146363)
+                STAT_SET_INT("H4LOOT_PAINT_V", 859772)
+                STAT_SET_INT("H4LOOT_WEED_V", 573181)                             
+                STAT_SET_INT("H4CNF_TARGET", 1) -- Ruby
+                warnify("You'r Cayo Target is a Ruby Necklace. :3")
+            end
+            if randomTarget == 4 then
+                STAT_SET_INT("H4LOOT_CASH_V", 388636)
+                STAT_SET_INT("H4LOOT_COKE_V", 777272)
+                STAT_SET_INT("H4LOOT_GOLD_V", 1036363)
+                STAT_SET_INT("H4LOOT_PAINT_V", 777272)
+                STAT_SET_INT("H4LOOT_WEED_V", 518181)                                         
+                STAT_SET_INT("H4CNF_TARGET", 3) -- Pink
+                warnify("You'r Cayo Target is a Pink Diamond. *.*")
+            end
+            CayoNotify()
+        end
+    end, function()
+        notify("Aborted.")
+    end, true)
+end)
+
+menu.action(PIP_Girl_Heist, 'Cayo 3 Player 30/35/35 Preset (!)', {}, "", function (click_type)
+    menu.show_warning(PIP_Girl, click_type, 'DO ONLY USE WITH FSL, Continue ?', function()
+        if transitionState(true) == 1 then
+            CayoBasics()
+            STAT_SET_INT("H4LOOT_CASH_I", 4227216)
+            STAT_SET_INT("H4LOOT_CASH_I_SCOPED", 4227216)
+            STAT_SET_INT("H4LOOT_CASH_C", 16)
+            STAT_SET_INT("H4LOOT_CASH_C_SCOPED", 16)
+            STAT_SET_INT("H4LOOT_COKE_I", 131336)
+            STAT_SET_INT("H4LOOT_COKE_I_SCOPED", 131336)
+            STAT_SET_INT("H4LOOT_COKE_C", 0)
+            STAT_SET_INT("H4LOOT_COKE_C_SCOPED", 0)
+            STAT_SET_INT("H4LOOT_GOLD_I", 0)
+            STAT_SET_INT("H4LOOT_GOLD_I_SCOPED", 0)
+            STAT_SET_INT("H4LOOT_GOLD_C", 207)
+            STAT_SET_INT("H4LOOT_GOLD_C_SCOPED", 207)
+            STAT_SET_INT("H4LOOT_WEED_I", 1067010)
+            STAT_SET_INT("H4LOOT_WEED_I_SCOPED", 1067010)
+            STAT_SET_INT("H4LOOT_WEED_C", 0)
+            STAT_SET_INT("H4LOOT_WEED_C_SCOPED", 0)
+            STAT_SET_INT("H4LOOT_PAINT", 12)
+            STAT_SET_INT("H4LOOT_PAINT_SCOPED", 12)
+            local randomTarget = math.random(1, 4)
+            if randomTarget == 1 then
+                STAT_SET_INT("H4LOOT_CASH_V", 370486)
+                STAT_SET_INT("H4LOOT_COKE_V", 740973)
+                STAT_SET_INT("H4LOOT_GOLD_V", 987965)
+                STAT_SET_INT("H4LOOT_PAINT_V", 740973)
+                STAT_SET_INT("H4LOOT_WEED_V", 493982)                
+                STAT_SET_INT("H4CNF_TARGET", 5) -- Panther
+                warnify("You'r Cayo Target is the a Panther Statue. >:D")
+            end
+            if randomTarget == 2 then
+                STAT_SET_INT("H4LOOT_CASH_V", 443636)
+                STAT_SET_INT("H4LOOT_COKE_V", 887272)
+                STAT_SET_INT("H4LOOT_GOLD_V", 1183029)
+                STAT_SET_INT("H4LOOT_PAINT_V", 887272)
+                STAT_SET_INT("H4LOOT_WEED_V", 591514)                
+                STAT_SET_INT("H4CNF_TARGET", 0) -- Tequilla
+                warnify("You'r Cayo Target is the Sinsimito Tequilla. :S")
+            end
+            if randomTarget == 3 then
+                STAT_SET_INT("H4LOOT_CASH_V", 452986)
+                STAT_SET_INT("H4LOOT_COKE_V", 905973)
+                STAT_SET_INT("H4LOOT_GOLD_V", 1207964)
+                STAT_SET_INT("H4LOOT_PAINT_V", 905973)
+                STAT_SET_INT("H4LOOT_WEED_V", 603982)                                        
+                STAT_SET_INT("H4CNF_TARGET", 1) -- Ruby
+                warnify("You'r Cayo Target is a Ruby Necklace. :3")
+            end
+            if randomTarget == 4 then
+                STAT_SET_INT("H4LOOT_CASH_V", 425486)
+                STAT_SET_INT("H4LOOT_COKE_V", 850973)
+                STAT_SET_INT("H4LOOT_GOLD_V", 1134631)
+                STAT_SET_INT("H4LOOT_PAINT_V", 850973)
+                STAT_SET_INT("H4LOOT_WEED_V", 567315)                                                       
+                STAT_SET_INT("H4CNF_TARGET", 3) -- Pink
+                warnify("You'r Cayo Target is a Pink Diamond. *.*")
+            end
+            CayoNotify()
+        end
+    end, function()
+        notify("Aborted.")
+    end, true)
+end)
+
+menu.action(PIP_Girl_Heist, 'Cayo 4 Player 25/25/25/25 Preset (!)', {}, "", function (click_type)
+    menu.show_warning(PIP_Girl, click_type, 'DO ONLY USE WITH FSL, Continue ?', function()
+        if transitionState(true) == 1 then
+            CayoBasics()
+            STAT_SET_INT("H4LOOT_CASH_I", 4227216)
+            STAT_SET_INT("H4LOOT_CASH_I_SCOPED", 4227216)
+            STAT_SET_INT("H4LOOT_CASH_C", 0)
+            STAT_SET_INT("H4LOOT_CASH_C_SCOPED", 0)
+            STAT_SET_INT("H4LOOT_COKE_I", 131336)
+            STAT_SET_INT("H4LOOT_COKE_I_SCOPED", 131336)
+            STAT_SET_INT("H4LOOT_COKE_C", 0)
+            STAT_SET_INT("H4LOOT_COKE_C_SCOPED", 0)
+            STAT_SET_INT("H4LOOT_GOLD_I", 0)
+            STAT_SET_INT("H4LOOT_GOLD_I_SCOPED", 0)
+            STAT_SET_INT("H4LOOT_GOLD_C", 255)
+            STAT_SET_INT("H4LOOT_GOLD_C_SCOPED", 255)
+            STAT_SET_INT("H4LOOT_WEED_I", 1067010)
+            STAT_SET_INT("H4LOOT_WEED_I_SCOPED", 1067010)
+            STAT_SET_INT("H4LOOT_WEED_C", 0)
+            STAT_SET_INT("H4LOOT_WEED_C_SCOPED", 0)
+            STAT_SET_INT("H4LOOT_PAINT", 0)
+            STAT_SET_INT("H4LOOT_PAINT_SCOPED", 0)
+            local randomTarget = math.random(1, 4)
+            if randomTarget == 1 then
+                STAT_SET_INT("H4LOOT_CASH_V", 444261)
+                STAT_SET_INT("H4LOOT_COKE_V", 888522)
+                STAT_SET_INT("H4LOOT_GOLD_V", 1184696)
+                STAT_SET_INT("H4LOOT_PAINT_V", 740973)
+                STAT_SET_INT("H4LOOT_WEED_V", 592348)
+                STAT_SET_INT("H4CNF_TARGET", 5) -- Panther
+                warnify("You'r Cayo Target is the a Panther Statue. >:D")
+            end
+            if randomTarget == 2 then
+                STAT_SET_INT("H4LOOT_CASH_V", 513011)
+                STAT_SET_INT("H4LOOT_COKE_V", 1026022)
+                STAT_SET_INT("H4LOOT_GOLD_V", 1368030)
+                STAT_SET_INT("H4LOOT_PAINT_V", 740973)
+                STAT_SET_INT("H4LOOT_WEED_V", 684015)                             
+                STAT_SET_INT("H4CNF_TARGET", 0) -- Tequilla
+                warnify("You'r Cayo Target is the Sinsimito Tequilla. :S")
+            end
+            if randomTarget == 3 then
+                STAT_SET_INT("H4LOOT_CASH_V", 506136)
+                STAT_SET_INT("H4LOOT_COKE_V", 1012272)
+                STAT_SET_INT("H4LOOT_GOLD_V", 1349696)
+                STAT_SET_INT("H4LOOT_PAINT_V", 740973)
+                STAT_SET_INT("H4LOOT_WEED_V", 674848)                                                    
+                STAT_SET_INT("H4CNF_TARGET", 1) -- Ruby
+                warnify("You'r Cayo Target is a Ruby Necklace. :3")
+            end
+            if randomTarget == 4 then
+                STAT_SET_INT("H4LOOT_CASH_V", 485511)
+                STAT_SET_INT("H4LOOT_COKE_V", 971022)
+                STAT_SET_INT("H4LOOT_GOLD_V", 1294696)
+                STAT_SET_INT("H4LOOT_PAINT_V", 740973)
+                STAT_SET_INT("H4LOOT_WEED_V", 647348)                                                                   
+                STAT_SET_INT("H4CNF_TARGET", 3) -- Pink
+                warnify("You'r Cayo Target is a Pink Diamond. *.*")
+            end
+            CayoNotify()
+        end
+    end, function()
+        notify("Aborted.")
+    end, true)
+end)
 
 path_nc_pop = menu.toggle_loop(PIP_Girl, "Nightclub Party Never Stops!", {'ncpop'}, "The hottest NC in whole LS.\nKeeps you pop at 85-100%", function ()
     if asuka_lib.transition_state(true) == 1 then
