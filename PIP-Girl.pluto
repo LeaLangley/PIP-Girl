@@ -819,7 +819,7 @@ end
 
 menu.action(PIP_Girl_Heist, 'Cayo 1 Player Preset (!)', {}, "", function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'DO ONLY USE WITH FSL, Continue ?', function()
-        if transitionState(true) == 1 then
+        if asuka_lib.transition_state(true) == 1 then
             CayoBasics()
             STAT_SET_INT("H4LOOT_CASH_I", 4227216)
             STAT_SET_INT("H4LOOT_CASH_I_SCOPED", 4227216)
@@ -885,7 +885,7 @@ end)
 
 menu.action(PIP_Girl_Heist, 'Cayo 2 Player 50/50 Preset (!)', {}, "", function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'DO ONLY USE WITH FSL, Continue ?', function()
-        if transitionState(true) == 1 then
+        if asuka_lib.transition_state(true) == 1 then
             CayoBasics()
             STAT_SET_INT("H4LOOT_CASH_I", 4227216)
             STAT_SET_INT("H4LOOT_CASH_I_SCOPED", 4227216)
@@ -951,7 +951,7 @@ end)
 
 menu.action(PIP_Girl_Heist, 'Cayo 3 Player 30/35/35 Preset (!)', {}, "", function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'DO ONLY USE WITH FSL, Continue ?', function()
-        if transitionState(true) == 1 then
+        if asuka_lib.transition_state(true) == 1 then
             CayoBasics()
             STAT_SET_INT("H4LOOT_CASH_I", 4227216)
             STAT_SET_INT("H4LOOT_CASH_I_SCOPED", 4227216)
@@ -1017,7 +1017,7 @@ end)
 
 menu.action(PIP_Girl_Heist, 'Cayo 4 Player 25/25/25/25 Preset (!)', {}, "", function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'DO ONLY USE WITH FSL, Continue ?', function()
-        if transitionState(true) == 1 then
+        if asuka_lib.transition_state(true) == 1 then
             CayoBasics()
             STAT_SET_INT("H4LOOT_CASH_I", 4227216)
             STAT_SET_INT("H4LOOT_CASH_I_SCOPED", 4227216)
