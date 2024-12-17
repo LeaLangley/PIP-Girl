@@ -3650,8 +3650,13 @@ end
 --end, group_name)
 
 local Player_Magnet_value = 25
-path_player_magnet_slider = menu.slider(SessionManager, "Player Magnet Value", {}, "", 0, 30, 25, 1, function(value)
+local player_VIP_slots = 3
+path_player_magnet_slider = menu.slider(SessionManager, "Player Magnet Value", {"pgmagnetvalue"}, "", 0, 30, 25, 1, function(value)
     Player_Magnet_value = value
+    local sence = Player_Magnet_value + player_VIP_slots - 30
+    if sence > 0 then
+        menu.trigger_commands("pgvipslotvalue "..player_VIP_slots - sence)
+    end
 end)
 
 path_player_magnet_toggle = menu.toggle_loop(SessionManager, "Player Magnet Toggle", {}, "Player Magnet", function()
@@ -3665,14 +3670,17 @@ path_player_magnet_toggle = menu.toggle_loop(SessionManager, "Player Magnet Togg
     util.yield(3666)
 end)
 
-local player_VIP_slots = 3
-path_player_VIP_slots = menu.slider(SessionManager, "VIP Slots Value", {}, "", 1, 29, 3, 1, function(value)
+path_player_VIP_slots = menu.slider(SessionManager, "VIP Slots Value", {"pgvipslotvalue"}, "How many VIP Join slots to hold free.", 1, 29, 3, 1, function(value)
     player_VIP_slots = value
+    local sence = Player_Magnet_value + player_VIP_slots - 30
+    if sence > 0 then
+        menu.trigger_commands("pgmagnetvalue "..Player_Magnet_value - sence)
+    end
 end)
 
 local player_VIP_slots_method = 1
 
-path_player_VIP_method = menu.list_select(SessionManager, "VIP Slots method", {""}, "", {
+path_player_VIP_method = menu.list_select(SessionManager, "VIP Slots method", {""}, "The method how the VIP Join slots are getting hold free.", {
     {1, "Block Joins: Stranger"},
     {2, "Session Type: Closed Friends"},
     {3, "Session Type: Invite Only"},
@@ -3680,7 +3688,7 @@ path_player_VIP_method = menu.list_select(SessionManager, "VIP Slots method", {"
     player_VIP_slots_method = value
 end)
 
-path_player_VIP_toggle = menu.toggle_loop(SessionManager, "VIP Slots Toggle", {}, "Player limit", function()
+path_player_VIP_toggle = menu.toggle_loop(SessionManager, "VIP Slots Toggle", {}, "Toggle of the VIP Join slots function.", function()
     if asuka_lib.transition_state(true) < 3 then
         local is_full_value = GET_NUMBER_OF_PLAYERS() + player_VIP_slots >= 30
 
