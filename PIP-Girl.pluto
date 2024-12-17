@@ -3698,7 +3698,11 @@ path_player_VIP_toggle = menu.toggle_loop(SessionManager, "VIP Slots Toggle", {}
             menu.trigger_command(menu.ref_by_path(is_full_value and "Online>Session>Set Session Type>Invite Only" or "Online>Session>Set Session Type>Public"))
         end
     end
-    util.yield(3666)
+    util.yield(666)
+end, function()
+    menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Strangers"), "Off")
+    menu.trigger_command(menu.ref_by_path("Online>Session>Set Session Type>Public"))
+    menu.trigger_command(message_bad_rep)
 end)
 
 local SessionJoin = menu.list(Session, 'Join Settings', {}, 'Session Join Settings.', function(); end)
