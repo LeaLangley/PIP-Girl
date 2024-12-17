@@ -809,13 +809,8 @@ local function CayoBasics()
     PIP_STAT_SET_INT("H4_PLAYTHROUGH_STATUS", 100)
 end
 
-local function CayoNotify()
-    warnify("Note that R* has implemented a limit that prevents you from earning more than $2.550.000 per run or more than $4.100.000 per hour from this heist per person.")
-    warnify("With this setup, every player gets 2m, so they can do 2 runs and reach the hourly limit.")
-    warnify("The Cayo heist with a sweet legit-like preset.\nIf you're inside the submarine, go manually out and in again to refresh the board.")
-    util.yield(1666)
-    notify("The Cayo heist with a sweet legit-like preset.\nIf you're inside the submarine, go manually out and in again to refresh the board.")    
-end
+local message_bad_rep = menu.ref_by_path("Online>Session>Block Joins>Message>Your Account Has A Bad Reputation")
+local message_vip_slot = menu.ref_by_path("Online>Session>Block Joins>Message>Not Intended Session")
 
 menu.action(PIP_Girl_Heist, 'Cayo 1 Player Preset (!)', {}, "", function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'DO ONLY USE WITH FSL, Continue ?', function()
@@ -876,7 +871,6 @@ menu.action(PIP_Girl_Heist, 'Cayo 1 Player Preset (!)', {}, "", function (click_
                 PIP_STAT_SET_INT("H4CNF_TARGET", 3) -- Pink
                 warnify("You'r Cayo Target is a Pink Diamond. *.*")
             end
-            CayoNotify()
         end
     end, function()
         notify("Aborted.")
@@ -942,7 +936,6 @@ menu.action(PIP_Girl_Heist, 'Cayo 2 Player 50/50 Preset (!)', {}, "", function (
                 PIP_STAT_SET_INT("H4CNF_TARGET", 3) -- Pink
                 warnify("You'r Cayo Target is a Pink Diamond. *.*")
             end
-            CayoNotify()
         end
     end, function()
         notify("Aborted.")
@@ -1008,7 +1001,6 @@ menu.action(PIP_Girl_Heist, 'Cayo 3 Player 30/35/35 Preset (!)', {}, "", functio
                 PIP_STAT_SET_INT("H4CNF_TARGET", 3) -- Pink
                 warnify("You'r Cayo Target is a Pink Diamond. *.*")
             end
-            CayoNotify()
         end
     end, function()
         notify("Aborted.")
@@ -1074,7 +1066,6 @@ menu.action(PIP_Girl_Heist, 'Cayo 4 Player 25/25/25/25 Preset (!)', {}, "", func
                 PIP_STAT_SET_INT("H4CNF_TARGET", 3) -- Pink
                 warnify("You'r Cayo Target is a Pink Diamond. *.*")
             end
-            CayoNotify()
         end
     end, function()
         notify("Aborted.")
@@ -3658,20 +3649,56 @@ end
 --    end
 --end, group_name)
 
-local Player_Magnet_Amount = 30
-path_player_magnet_amount_slider = menu.slider(SessionManager, "Player Magnet Amount Value", {}, "", 1, 30, 30, 1, function(value)
-    Player_Magnet_Amount = value
+local Player_Magnet_value = 25
+path_player_magnet_slider = menu.slider(SessionManager, "Player Magnet Value", {}, "", 0, 30, 25, 1, function(value)
+    Player_Magnet_value = value
 end)
 
-path_player_magnet_amount_toggle = menu.toggle_loop(SessionManager, "Player Magnet Amount", {}, "Player Magnet Amount", function()
+path_player_magnet_toggle = menu.toggle_loop(SessionManager, "Player Magnet Toggle", {}, "Player Magnet", function()
     if asuka_lib.transition_state(true) <3 then
-        if GET_NUMBER_OF_PLAYERS() < Player_Magnet_Amount then
+        if GET_NUMBER_OF_PLAYERS() < Player_Magnet_value then
             menu.trigger_commands("playermagnet on")
         else
             menu.trigger_commands("playermagnet off")
         end
     end
-    util.yield(13666)
+    util.yield(3666)
+end)
+
+local player_VIP_slots = 3
+path_player_VIP_slots = menu.slider(SessionManager, "VIP Slots Value", {}, "", 1, 29, 3, 1, function(value)
+    player_VIP_slots = value
+end)
+
+local player_VIP_slots_method = 1
+
+path_player_VIP_method = menu.list_select(SessionManager, "VIP Slots method", {""}, "", {
+    {1, "Block Joins: Stranger"},
+    {2, "Session Type: Closed Friends"},
+    {3, "Session Type: Invite Only"},
+}, 1, function(value)
+    player_VIP_slots_method = value
+end)
+
+path_player_VIP_toggle = menu.toggle_loop(SessionManager, "VIP Slots Toggle", {}, "Player limit", function()
+    if asuka_lib.transition_state(true) < 3 then
+        local is_full_value = GET_NUMBER_OF_PLAYERS() + player_VIP_slots >= 30
+
+        if is_full_value then
+            menu.trigger_command(message_vip_slot)
+        else
+            menu.trigger_command(message_bad_rep)
+        end
+        
+        if player_VIP_slots_method == 1 then
+            menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Strangers"), is_full_value and "On" or "Off")
+        elseif player_VIP_slots_method == 2 then
+            menu.trigger_command(menu.ref_by_path(is_full_value and "Online>Session>Set Session Type>Closed Friend" or "Online>Session>Set Session Type>Public"))
+        elseif player_VIP_slots_method == 3 then
+            menu.trigger_command(menu.ref_by_path(is_full_value and "Online>Session>Set Session Type>Invite Only" or "Online>Session>Set Session Type>Public"))
+        end
+    end
+    util.yield(3666)
 end)
 
 local SessionJoin = menu.list(Session, 'Join Settings', {}, 'Session Join Settings.', function(); end)
@@ -4825,23 +4852,6 @@ local function startupConfig()
         menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Removed Players"), "On")
     end
     menu.trigger_command(menu.ref_by_path("Online>Session>Block Joins>Message>Your Account Has A Bad Reputation"))
-    if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Blacklist")) then
-        for menu.ref_by_path("Online>Player History>Noted Players>Blacklist"):getChildren() as rat do
-            util.yield(13)
-            if rat:isValid() then
-                local rat_target = rat.target
-                rat_target:refByRelPath("Player Join Reactions>Notification").value = true
-                rat_target:refByRelPath("Player Join Reactions>Write To Console").value = true
-                rat_target:refByRelPath("Player Join Reactions>Block Join").value = false
-                rat_target:refByRelPath("Player Join Reactions>Crash").value = false
-                rat_target:refByRelPath("Player Join Reactions>Timeout").value = false
-                rat_target:refByRelPath("Player Join Reactions>Block Their Network Events").value = false
-                rat_target:refByRelPath("Player Join Reactions>Block Incoming Syncs").value = false
-                rat_target:refByRelPath("Player Join Reactions>Block Outgoing Syncs").value = false
-            end
-            util.yield()
-        end
-    end
 end
 
 local function crashlistConfig()
@@ -5573,8 +5583,11 @@ local data_cfg = {
     store_name_esp = path_name_esp,
     store_bone_esp_while_armed = path_bone_esp_while_armed,
     --Session
-    store_player_magnet_amount_slider = path_player_magnet_amount_slider,
-    store_player_magnet_amount_toggle = path_player_magnet_amount_toggle,
+    store_player_magnet_amount_slider = path_player_magnet_slider,
+    store_player_magnet_amount_toggle = path_player_magnet_toggle,
+    store_player_VIP_slots = path_player_VIP_slots,
+    store_player_VIP_method = path_player_VIP_method,
+    store_player_VIP_toggle = path_player_VIP_toggle,
     store_custom_spawn = path_custom_spawn,
     store_use_custom_spawn = path_use_custom_spawn,
     store_custom_vehicle_spawn = path_custom_vehicle_spawn,
