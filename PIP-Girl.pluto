@@ -1306,7 +1306,7 @@ local money_hashish = {
 local vehicle_money_hashish = {
     1745876935, --underwater money xD
     -1249748547, --Smugler money
-    --1916353237, --Christmas money
+    1916353237, --Christmas money
 }
 path_collect_money = menu.toggle_loop(PIP_Girl, "Collect all local money pickups", {}, "Collect all NPC money.", function()
     if asuka_lib.transition_state(true) == 1 and GET_ENTITY_HEALTH(players.user_ped()) ~= 0 then
