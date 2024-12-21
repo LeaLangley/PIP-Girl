@@ -1337,9 +1337,7 @@ path_collect_money = menu.toggle_loop(PIP_Girl, "Collect all local money pickups
                     SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
                 end
                 ::we_aint_need_that_pickup::
-                util.yield(113)
             end
-            util.yield(113)
         end
         util.yield(1313)
     else
