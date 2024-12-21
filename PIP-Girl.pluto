@@ -1296,7 +1296,7 @@ local money_hashish = {
     1745876935, --underwater money xD
     -1448063107, --save money
     -1249748547, --Smugler money
-    191635323, --Christmas money
+    1916353237, --Christmas money
     --1308176012, --ceo mission
     ---779874356, --usb1 USB are not a pickup
     ---1746470518, --usb2
@@ -1307,6 +1307,7 @@ local money_hashish = {
 local vehicle_money_hashish = {
     1745876935, --underwater money xD
     -1249748547, --Smugler money
+    1916353237, --Christmas money
 }
 path_collect_money = menu.toggle_loop(PIP_Girl, "Collect all local money pickups", {}, "Collect all NPC money.", function()
     if asuka_lib.transition_state(true) == 1 and GET_ENTITY_HEALTH(players.user_ped()) ~= 0 then
@@ -2810,9 +2811,9 @@ local function save_temp_outfit()
                 menu.set_value(clothing_things, true)
             end
         end
-        util.yield(13)
+
         menu.trigger_commands("saveoutfit xyzPIPGirlTemp")
-        util.yield(13)
+
         for path, value in pairs(temp_storage) do
             menu.set_value(path, value)
         end
