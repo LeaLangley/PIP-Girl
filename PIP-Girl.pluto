@@ -1339,7 +1339,7 @@ path_collect_money = menu.toggle_loop(PIP_Girl, "Collect all local money pickups
                 ::we_aint_need_that_pickup::
             end
         end
-        util.yield(1313)
+        util.yield(4666)
     else
         util.yield(6666)
     end
