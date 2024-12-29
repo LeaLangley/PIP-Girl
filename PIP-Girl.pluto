@@ -3728,6 +3728,8 @@ path_player_VIP_toggle = menu.toggle_loop(SessionManager, "VIP Slots Toggle", {}
         elseif player_VIP_slots_method == 4 then
             menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Strangers"), is_full_value and "On" or "Off")
         end
+    else
+        whitelist_update = false
     end
     util.yield(666)
 end, function()
