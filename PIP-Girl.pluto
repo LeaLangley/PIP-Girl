@@ -3659,7 +3659,7 @@ path_player_magnet_slider = menu.slider(SessionManager, "Player Magnet Value", {
 end)
 
 path_player_magnet_toggle = menu.toggle_loop(SessionManager, "Player Magnet Toggle", {}, "Player Magnet", function()
-    if asuka_lib.transition_state(true) <3 then
+    if asuka_lib.transition_state(true) <3 and players.user() == players.get_host() then
         if GET_NUMBER_OF_PLAYERS() < Player_Magnet_value then
             menu.trigger_commands("playermagnet on")
         else
@@ -3668,6 +3668,8 @@ path_player_magnet_toggle = menu.toggle_loop(SessionManager, "Player Magnet Togg
     end
     util.yield(3666)
 end)
+
+menu.divider(SessionManager, '~=^.^=~')
 
 path_player_VIP_slots = menu.slider(SessionManager, "VIP Slots Value", {"pgvipslotvalue"}, "How many VIP Join slots to hold free.", 1, 29, 3, 1, function(value)
     player_VIP_slots = value
@@ -3685,24 +3687,26 @@ path_player_VIP_method = menu.list_select(SessionManager, "VIP Slots method", {"
     {4, "Block: Stranger"},
 }, 1, function(value)
     player_VIP_slots_method = value
-    if player_VIP_slots_method == 1 then
-        menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Non-Whitelisted"), "Off")
-        menu.set_state(menu.ref_by_path("Online>Session>Block Joins>Notifications>From Non-Whitelisted>Notification"), "Off")
-        menu.trigger_commands("createfriendsgroup")
-    elseif player_VIP_slots_method == 2 then
-        menu.trigger_command(menu.ref_by_path("Online>Session>Set Session Type>Public"))
-    elseif player_VIP_slots_method == 3 then
-        menu.trigger_command(menu.ref_by_path("Online>Session>Set Session Type>Public"))
-    elseif player_VIP_slots_method == 4 then
-        menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Strangers"), "Off")
-        menu.set_state(menu.ref_by_path("Online>Session>Block Joins>Notifications>From Strangers>Notification"), "Off")
-        menu.trigger_command(menu.ref_by_path("Online>Session>Set Session Type>Public"))
+    if players.user() == players.get_host() then
+        if player_VIP_slots_method == 1 then
+            menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Non-Whitelisted"), "Off")
+            menu.set_state(menu.ref_by_path("Online>Session>Block Joins>Notifications>From Non-Whitelisted>Notification"), "Off")
+            menu.trigger_commands("createfriendsgroup")
+        elseif player_VIP_slots_method == 2 then
+            menu.trigger_command(menu.ref_by_path("Online>Session>Set Session Type>Public"))
+        elseif player_VIP_slots_method == 3 then
+            menu.trigger_command(menu.ref_by_path("Online>Session>Set Session Type>Public"))
+        elseif player_VIP_slots_method == 4 then
+            menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Strangers"), "Off")
+            menu.set_state(menu.ref_by_path("Online>Session>Block Joins>Notifications>From Strangers>Notification"), "Off")
+            menu.trigger_command(menu.ref_by_path("Online>Session>Set Session Type>Public"))
+        end
     end
 end)
 
 local whitelist_update = false
 path_player_VIP_toggle = menu.toggle_loop(SessionManager, "VIP Slots Toggle", {}, "Toggle of the VIP Join slots function.", function()
-    if asuka_lib.transition_state(true) < 3 then
+    if asuka_lib.transition_state(true) <3 and players.user() == players.get_host() then
         local is_full_value = GET_NUMBER_OF_PLAYERS() + player_VIP_slots >= 30
 
         if is_full_value then
