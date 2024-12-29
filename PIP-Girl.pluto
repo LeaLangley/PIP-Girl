@@ -4139,8 +4139,8 @@ menu.action(SessionMisc, "Create \"Friend's\" Group", {"createfriendsgroup"}, "C
     menu.trigger_commands("friendsupdate")
     util.yield(13)
     menu.trigger_commands("friendsnote Friend's")
-    util.yield(13)
-    menu.trigger_commands("friendstrack")
+    --util.yield(13)
+    --menu.trigger_commands("friendstrack")
     util.yield(13)
     menu.trigger_commands("friendswhitelist")
 end)
@@ -4164,9 +4164,9 @@ menu.action(SessionMisc, "Cleanup \"Friend's\" Group", {"cleanupfriends"}, "remo
                 if friend_target:refByRelPath("Whitelist Join"):isValid() then
                     friend_target:refByRelPath("Whitelist Join").value = false
                 end
-                if friend_target:refByRelPath("Tracking>Disabled"):isValid() then
-                    menu.trigger_command(friend_target:refByRelPath("Tracking>Disabled"))
-                end
+                --if friend_target:refByRelPath("Tracking>Disabled"):isValid() then
+                --    menu.trigger_command(friend_target:refByRelPath("Tracking>Disabled"))
+                --end
                 if friend_target:refByRelPath("Note"):isValid() then
                     menu.apply_default_state(friend_target:refByRelPath("Note"))
                 end
