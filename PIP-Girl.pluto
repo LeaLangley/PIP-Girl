@@ -3659,7 +3659,7 @@ path_player_magnet_slider = menu.slider(SessionManager, "Player Magnet Value", {
 end)
 
 path_player_magnet_toggle = menu.toggle_loop(SessionManager, "Player Magnet Toggle", {}, "Player Magnet", function()
-    if asuka_lib.transition_state(true) <3 and players.user() == players.get_host() then
+    if asuka_lib.transition_state(true) <3 and players.user() == players.get_host() and asuka_lib.session_type() == "Public" then
         if GET_NUMBER_OF_PLAYERS() < Player_Magnet_value then
             menu.trigger_commands("playermagnet on")
         else
@@ -3687,7 +3687,7 @@ path_player_VIP_method = menu.list_select(SessionManager, "VIP Slots method", {"
     {2, "Ses Type: Closed Friends"},
     {3, "Ses Type: Invite Only"},
     {4, "Block: Stranger"},
-}, 2, function(value)
+}, 1, function(value)
     player_VIP_slots_method = value
     if players.user() == players.get_host() then
         if player_VIP_slots_method == 1 then
@@ -3708,7 +3708,7 @@ end)
 
 local whitelist_update = false
 path_player_VIP_toggle = menu.toggle_loop(SessionManager, "VIP Slots Toggle", {}, "Toggle of the VIP Join slots function.", function()
-    if asuka_lib.transition_state(true) <3 and players.user() == players.get_host() then
+    if asuka_lib.transition_state(true) == 1 and players.user() == players.get_host() then
         local is_full_value = GET_NUMBER_OF_PLAYERS() + player_VIP_slots >= 30
 
         if is_full_value then
