@@ -3681,8 +3681,8 @@ end)
 
 local player_VIP_slots_method = 1
 path_player_VIP_method = menu.list_select(SessionManager, "VIP Slots method", {""}, "The method how the VIP Join slots are getting hold free.", {
-    {1, "Ses Type: Closed Friends"},
-    {2, "Block: Non-Whitelisted"},
+    {1, "Block: Non-Whitelisted"},
+    {2, "Ses Type: Closed Friends"},
     {3, "Ses Type: Invite Only"},
     {4, "Block: Stranger"},
 }, 1, function(value)
