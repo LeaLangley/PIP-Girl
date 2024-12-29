@@ -3685,7 +3685,7 @@ path_player_VIP_method = menu.list_select(SessionManager, "VIP Slots method", {"
     {2, "Ses Type: Closed Friends"},
     {3, "Ses Type: Invite Only"},
     {4, "Block: Stranger"},
-}, 1, function(value)
+}, 2, function(value)
     player_VIP_slots_method = value
     if players.user() == players.get_host() then
         if player_VIP_slots_method == 1 then
