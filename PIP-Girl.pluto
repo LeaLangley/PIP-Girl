@@ -3665,6 +3665,8 @@ path_player_magnet_toggle = menu.toggle_loop(SessionManager, "Player Magnet Togg
         else
             menu.trigger_commands("playermagnet off")
         end
+    else
+        menu.trigger_commands("playermagnet off")
     end
     util.yield(3666)
 end)
