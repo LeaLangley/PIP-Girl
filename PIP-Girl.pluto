@@ -3741,6 +3741,22 @@ end, function()
     whitelist_update = false
 end)
 
+menu.divider(SessionManager, '~=^.^=~')
+
+local love_letter_block_path = menu.ref_by_path("Online>Reactions>Love Letter Kick Reactions>Block")
+path_calm_love_letters = menu.toggle_loop(SessionManager, "Calm Love Letters", {}, "TBA", function()
+    if asuka_lib.transition_state(true) <3 then
+        if #players.list_only(false, true, false, false) > 0 then
+            menu.trigger_command(menu.ref_by_path("Online>Reactions>Love Letter Kick Reactions>Block>Strangers"))
+        else
+            menu.trigger_command(menu.ref_by_path("Online>Reactions>Love Letter Kick Reactions>Block>Disabled"))
+        end
+    end
+    util.yield(3666)
+end, function()
+    menu.apply_default_state(love_letter_block_path)
+end)
+
 local SessionJoin = menu.list(Session, 'Join Settings', {}, 'Session Join Settings.', function(); end)
 local customspawned
 local customspawnedvehicle
@@ -5627,6 +5643,7 @@ local data_cfg = {
     store_player_VIP_slots = path_player_VIP_slots,
     store_player_VIP_method = path_player_VIP_method,
     store_player_VIP_toggle = path_player_VIP_toggle,
+    store_calm_love_letters = path_calm_love_letters,
     store_custom_spawn = path_custom_spawn,
     store_use_custom_spawn = path_use_custom_spawn,
     store_custom_vehicle_spawn = path_custom_vehicle_spawn,
