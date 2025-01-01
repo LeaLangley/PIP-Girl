@@ -3682,6 +3682,7 @@ path_player_VIP_slots = menu.slider(SessionManager, "VIP Slots Value", {"pgvipsl
 end)
 
 local player_VIP_slots_method = 0
+local path_player_VIP_toggle
 path_player_V1P_method = menu.list_select(SessionManager, "VIP Slots method", {""}, "The method how the VIP Join slots are getting hold free.", {
     {0, "Hide from Session Pool"},
     {1, "Block: Non-Whitelisted"},
@@ -3690,6 +3691,17 @@ path_player_V1P_method = menu.list_select(SessionManager, "VIP Slots method", {"
     {4, "Block: Stranger"},
 }, 0, function(value)
     player_VIP_slots_method = value
+    if path_player_VIP_toggle then
+        if player_VIP_slots_method == 1 then
+            menu.set_state(menu.ref_by_path("Online>Session>Block Joins>Notifications>From Non-Whitelisted>Notification"), "Off")
+            menu.set_state(menu.ref_by_path("Online>Session>Block Joins>Notifications>From Strangers>Notification"), "Off")
+            menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Non-Whitelisted"), "Off")
+            menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Strangers"), "Off")
+            menu.trigger_command(menu.ref_by_path("Online>Session>Set Session Type>Public"))
+            menu.trigger_commands("createfriendsgroup")
+            NETWORK_SESSION_MARK_VISIBLE(1)
+        end
+    end
 end)
 
 local whitelist_update = false
@@ -3727,6 +3739,7 @@ path_player_VIP_toggle = menu.toggle_loop(SessionManager, "VIP Slots Toggle", {}
     end
     util.yield(666)
 end, function()
+    menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Non-Whitelisted"), "Off")
     menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Strangers"), "Off")
     menu.trigger_command(menu.ref_by_path("Online>Session>Set Session Type>Public"))
     menu.trigger_command(message_bad_rep)
