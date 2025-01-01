@@ -6,11 +6,11 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local lust_upDate = {year = 2024, month = 12, day = 30, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2025, month = 1, day = 1, hour = 6, min = 6, sec = 6}
 
 local script_version = "V."..lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
-local startupmsg = "PIP Girl remembers your settings! :D\n\n\n\nReport bugs in the discord.\nAsuka Tech on top!"
+local startupmsg = "Happy new year!\nReport bugs in the discord.\nAsuka Tech on top!"
 
 util.ensure_package_is_installed("lua/auto-updater")
 local auto_updater = require("auto-updater")
@@ -3681,29 +3681,15 @@ path_player_VIP_slots = menu.slider(SessionManager, "VIP Slots Value", {"pgvipsl
     end
 end)
 
-local player_VIP_slots_method = 1
-path_player_VIP_method = menu.list_select(SessionManager, "VIP Slots method", {""}, "The method how the VIP Join slots are getting hold free.", {
+local player_VIP_slots_method = 0
+path_player_V1P_method = menu.list_select(SessionManager, "VIP Slots method", {""}, "The method how the VIP Join slots are getting hold free.", {
+    {0, "Hide from Session Pool"},
     {1, "Block: Non-Whitelisted"},
     {2, "Ses Type: Closed Friends"},
     {3, "Ses Type: Invite Only"},
     {4, "Block: Stranger"},
-}, 1, function(value)
+}, 0, function(value)
     player_VIP_slots_method = value
-    if players.user() == players.get_host() then
-        if player_VIP_slots_method == 1 then
-            menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Non-Whitelisted"), "Off")
-            menu.set_state(menu.ref_by_path("Online>Session>Block Joins>Notifications>From Non-Whitelisted>Notification"), "Off")
-            menu.trigger_commands("createfriendsgroup")
-        elseif player_VIP_slots_method == 2 then
-            menu.trigger_command(menu.ref_by_path("Online>Session>Set Session Type>Public"))
-        elseif player_VIP_slots_method == 3 then
-            menu.trigger_command(menu.ref_by_path("Online>Session>Set Session Type>Public"))
-        elseif player_VIP_slots_method == 4 then
-            menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Strangers"), "Off")
-            menu.set_state(menu.ref_by_path("Online>Session>Block Joins>Notifications>From Strangers>Notification"), "Off")
-            menu.trigger_command(menu.ref_by_path("Online>Session>Set Session Type>Public"))
-        end
-    end
 end)
 
 local whitelist_update = false
@@ -3716,19 +3702,25 @@ path_player_VIP_toggle = menu.toggle_loop(SessionManager, "VIP Slots Toggle", {}
         else
             menu.trigger_command(message_bad_rep)
         end
-        
-        if player_VIP_slots_method == 1 then
-            menu.trigger_command(menu.ref_by_path("Online>Session>Block Joins>From Non-Whitelisted"), is_full_value and "On" or "Off")
-            if not whitelist_update then
-                menu.trigger_commands("createfriendsgroup")
-                whitelist_update = true
+
+        if NETWORK_SESSION_IS_VISIBLE() == is_full_value then
+            NETWORK_SESSION_MARK_VISIBLE(is_full_value and false or true)
+        end
+
+        if player_VIP_slots_method > 0 then
+            if player_VIP_slots_method == 1 then
+                menu.trigger_command(menu.ref_by_path("Online>Session>Block Joins>From Non-Whitelisted"), is_full_value and "On" or "Off")
+                if not whitelist_update then
+                    menu.trigger_commands("createfriendsgroup")
+                    whitelist_update = true
+                end
+            elseif player_VIP_slots_method == 2 then
+                menu.trigger_command(menu.ref_by_path(is_full_value and "Online>Session>Set Session Type>Closed Friend" or "Online>Session>Set Session Type>Public"))
+            elseif player_VIP_slots_method == 3 then
+                menu.trigger_command(menu.ref_by_path(is_full_value and "Online>Session>Set Session Type>Invite Only" or "Online>Session>Set Session Type>Public"))
+            elseif player_VIP_slots_method == 4 then
+                menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Strangers"), is_full_value and "On" or "Off")
             end
-        elseif player_VIP_slots_method == 2 then
-            menu.trigger_command(menu.ref_by_path(is_full_value and "Online>Session>Set Session Type>Closed Friend" or "Online>Session>Set Session Type>Public"))
-        elseif player_VIP_slots_method == 3 then
-            menu.trigger_command(menu.ref_by_path(is_full_value and "Online>Session>Set Session Type>Invite Only" or "Online>Session>Set Session Type>Public"))
-        elseif player_VIP_slots_method == 4 then
-            menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Strangers"), is_full_value and "On" or "Off")
         end
     else
         whitelist_update = false
@@ -3738,23 +3730,8 @@ end, function()
     menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Strangers"), "Off")
     menu.trigger_command(menu.ref_by_path("Online>Session>Set Session Type>Public"))
     menu.trigger_command(message_bad_rep)
+    NETWORK_SESSION_MARK_VISIBLE(1)
     whitelist_update = false
-end)
-
-menu.divider(SessionManager, '~=^.^=~')
-
-local love_letter_block_path = menu.ref_by_path("Online>Reactions>Love Letter Kick Reactions>Block")
-path_calm_love_letters = menu.toggle_loop(SessionManager, "Calm Love Letters", {}, "TBA", function()
-    if asuka_lib.transition_state(true) <3 then
-        if #players.list_only(false, true, false, false) > 0 then
-            menu.trigger_command(menu.ref_by_path("Online>Reactions>Love Letter Kick Reactions>Block>Strangers"))
-        else
-            menu.trigger_command(menu.ref_by_path("Online>Reactions>Love Letter Kick Reactions>Block>Disabled"))
-        end
-    end
-    util.yield(3666)
-end, function()
-    menu.apply_default_state(love_letter_block_path)
 end)
 
 local SessionJoin = menu.list(Session, 'Join Settings', {}, 'Session Join Settings.', function(); end)
@@ -5641,9 +5618,8 @@ local data_cfg = {
     store_player_magnet_amount_slider = path_player_magnet_slider,
     store_player_magnet_amount_toggle = path_player_magnet_toggle,
     store_player_VIP_slots = path_player_VIP_slots,
-    store_player_VIP_method = path_player_VIP_method,
+    store_player_V1P_method = path_player_V1P_method,
     store_player_VIP_toggle = path_player_VIP_toggle,
-    store_calm_love_letters = path_calm_love_letters,
     store_custom_spawn = path_custom_spawn,
     store_use_custom_spawn = path_use_custom_spawn,
     store_custom_vehicle_spawn = path_custom_vehicle_spawn,
