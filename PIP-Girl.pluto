@@ -3683,7 +3683,7 @@ end)
 
 local player_VIP_slots_method = 0
 local path_player_VIP_toggle
-path_player_V1P_method = menu.list_select(SessionManager, "VIP Slots method", {""}, "The method how the VIP Join slots are getting hold free.", {
+path_player_VIP_method = menu.list_select(SessionManager, "VIP Slots method", {""}, "The method how the VIP Join slots are getting hold free.", {
     {0, "Hide from Session Pool"},
     {1, "Block: Non-Whitelisted"},
     {2, "Ses Type: Closed Friends"},
@@ -5631,7 +5631,7 @@ local data_cfg = {
     store_player_magnet_amount_slider = path_player_magnet_slider,
     store_player_magnet_amount_toggle = path_player_magnet_toggle,
     store_player_VIP_slots = path_player_VIP_slots,
-    store_player_V1P_method = path_player_V1P_method,
+    store_player_VIP_method = path_player_VIP_method,
     store_player_VIP_toggle = path_player_VIP_toggle,
     store_custom_spawn = path_custom_spawn,
     store_use_custom_spawn = path_use_custom_spawn,
