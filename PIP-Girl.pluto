@@ -3704,7 +3704,7 @@ path_player_VIP_toggle = menu.toggle_loop(SessionManager, "VIP Slots Toggle", {}
         end
 
         if NETWORK_SESSION_IS_VISIBLE() == is_full_value then
-            NETWORK_SESSION_MARK_VISIBLE(is_full_value and false or true)
+            NETWORK_SESSION_MARK_VISIBLE(is_full_value and 0 or 1)
         end
 
         if player_VIP_slots_method > 0 then
