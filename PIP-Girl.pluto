@@ -1903,7 +1903,7 @@ path_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly
 
         local vehicle = asuka_lib.get_user_vehicle()
         if vehicle then
-            if not asuka_lib.is_vehicle_free_for_use(vehicle) and current_asuka_tech_vehicle and asuka_lib.does_entity_exist(current_asuka_tech_vehicle) then
+            if not asuka_lib.is_vehicle_free_for_use(vehicle) and asuka_lib.does_entity_exist(current_asuka_tech_vehicle) then
                 vehicle = current_asuka_tech_vehicle
             end
             if asuka_lib.is_vehicle_free_for_use(vehicle) then
@@ -2040,6 +2040,11 @@ path_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly
                     end
                 else
                     NETWORK_SET_NO_LONGER_NEEDED(vehicle, true)
+                end
+            else
+                local driver_pid = asuka_lib.ped_to_pid(GET_PED_IN_VEHICLE_SEAT(vehicle, -1))
+                if driver_pid and entities.get_owner(vehicle) ~= driver_pid then
+                    entities.give_control(vehicle, driver_pid)
                 end
             end
             util.yield(1000)
