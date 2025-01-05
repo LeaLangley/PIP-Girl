@@ -1890,6 +1890,7 @@ end
 local current_asuka_tech_vehicle = nil
 local saved_trailer_id = nil
 local saved_towing_vehicle = nil
+local saved_air_crane_vehicle = nil
 local isInVehicleAT = false
 local isInInteriorAT = false
 local asuka_tech_protection = 1
@@ -1989,6 +1990,19 @@ path_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly
                         end
                     else
                         saved_towing_vehicle = nil
+                    end
+
+                    local air_crane_vehicle = GET_ENTITY_ATTACHED_TO_TOW_TRUCK(vehicle)
+                    if air_crane_vehicle ~= 0 and asuka_lib.does_entity_exist(air_crane_vehicle) then
+                        if asuka_tech_repair_amount > 0 or asuka_tech_mission_repair_amount > 0 then
+                            repair_asuka_tech(air_crane_vehicle)
+                        end
+                        if saved_air_crane_vehicle == nil or saved_air_crane_vehicle ~= air_crane_vehicle then
+                            saved_air_crane_vehicle = air_crane_vehicle
+                            buff_asuka_tech(air_crane_vehicle)
+                        end
+                    else
+                        saved_air_crane_vehicle = nil
                     end
 
                     if asukaTechBlipVeh ~= current_asuka_tech_vehicle or (asukaTechBlip and not DOES_BLIP_EXIST(asukaTechBlip)) then
