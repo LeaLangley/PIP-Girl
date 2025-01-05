@@ -4146,11 +4146,8 @@ local SessionMisc = menu.list(Session, 'Misc', {}, 'Session Misc.', function(); 
 
 menu.action(SessionMisc, "Create \"Friend's\" Group", {"createfriendsgroup"}, "Create a group called \"Friend's\" , turns on Whitelist and Tracking.", function()
     menu.trigger_commands("friendsupdate")
-    util.yield(13)
     menu.trigger_commands("friendsnote Friend's")
-    --util.yield(13)
     --menu.trigger_commands("friendstrack")
-    util.yield(13)
     menu.trigger_commands("friendswhitelist")
 end)
 
