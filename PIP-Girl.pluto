@@ -3449,17 +3449,8 @@ end)
 local function drawESPText(coord, Yoffset, text, scale, color)
     local shadowColor = { r = 0, g = 0, b = 0, a = 0.666 }
     local shadowOffset = 0.001
-    directx.draw_text(coord.x + shadowOffset, coord.y + Yoffset + shadowOffset, text, ALIGN_CENTRE, scale, shadowColor.r, shadowColor.g, shadowColor.b, shadowColor.a)
-    directx.draw_text(coord.x, coord.y + Yoffset, text, ALIGN_CENTRE, scale, color.r, color.g, color.b, color.a)
-end
-
-local sx_worldToScreen = memory.alloc()
-local sy_worldToScreen = memory.alloc()
-local function worldToScreen(coords)
-    local success = GET_SCREEN_COORD_FROM_WORLD_COORD(coords.x, coords.y, coords.z, sx_worldToScreen, sy_worldToScreen)
-    local screenx = memory.read_float(sx_worldToScreen)
-    local screeny = memory.read_float(sy_worldToScreen)
-    return { x = screenx, y = screeny, success = success }
+    directx.draw_text(memory.read_float(coord) + shadowOffset, memory.read_float(coord + 4) + Yoffset + shadowOffset, text, ALIGN_CENTRE, scale, shadowColor.r, shadowColor.g, shadowColor.b, shadowColor.a)
+    directx.draw_text(memory.read_float(coord), memory.read_float(coord + 4) + Yoffset, text, ALIGN_CENTRE, scale, color.r, color.g, color.b, color.a)
 end
 
 local r, g, b, a = memory.alloc(1), memory.alloc(1), memory.alloc(1), memory.alloc(1)
@@ -3478,6 +3469,8 @@ function getOrgColor(pid)
     }
     return color
 end
+
+local v2 = memory.alloc(8)
 
 local function espOnPlayer(pid, namesync)
     local targetpos = players.get_position(pid)
@@ -3501,9 +3494,8 @@ local function espOnPlayer(pid, namesync)
         end
     end
     if vdist <= show_distance then
-        local screenName = worldToScreen(targetpos)
 
-        if screenName.success then
+        if util.get_screen_coord_from_world_coord_no_adjustment(targetpos:getX(), targetpos:getY(), targetpos:getZ(), v2, v2 + 4) then
             local blipColor = getOrgColor(pid)
             local colText
             if blipColor == -1 then
@@ -3548,18 +3540,9 @@ local function espOnPlayer(pid, namesync)
             else
                 detectionCOLOR = colText
             end
-            local fixedYOffset = -0.03 -- Increased spacing between the lines to move them higher
-
-            local screenCamName
-            if target_and_cam > 50 then
-                screenCamName = worldToScreen(targetcampos)
-                if screenCamName.success then
-                    local vdist_cam = mypos:distance(targetcampos)
-                    drawESPText(screenCamName, fixedYOffset, "(CAM) "..playerName.." ("..math.floor(vdist_cam).."m)", txtscale, colText)
-                end
-            end
-
-            drawESPText(screenName, fixedYOffset, "("..rank..") "..playerName.." ("..math.floor(vdist).."m)", txtscale, colText)
+            local fixedYOffset = -0.03
+            
+            drawESPText(v2, fixedYOffset, "("..rank..") "..playerName.." ("..math.floor(vdist).."m)", txtscale, colText)
 
             local targetped = GET_PLAYER_PED_SCRIPT_INDEX(pid)
             local health = GET_ENTITY_HEALTH(targetped) - 100
@@ -3579,7 +3562,7 @@ local function espOnPlayer(pid, namesync)
                 table.insert(textSegments, classificationESP)
             end
             local infoText = table.concat(textSegments, " | ")
-            drawESPText(screenName, fixedYOffset - 0.02, infoText, txtscale, detectionCOLOR)
+            drawESPText(v2, fixedYOffset - 0.02, infoText, txtscale, detectionCOLOR)
         end
     end
 end
