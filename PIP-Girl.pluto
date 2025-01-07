@@ -5379,7 +5379,7 @@ menu.action(Settings, "Copy Location Name to Clipboard", {""}, "", function()
     notify("Location Name copied to clipboard!")
 end)
 
-path_custom_blacklist_check_delay = menu.slider(Settings, "Custom Blacklist Check Delay", {"pipblacklistdelay"}, "", 0, 13666, custom_blacklist_check_delay, 1, function (new_value)
+path_custom_blacklist_check_delay = menu.slider(Settings, "Custom Blacklist Check Delay (MS)", {"pipblacklistdelay"}, "Custom Blacklist Check Delay in milliseconds.", 0, 13666, custom_blacklist_check_delay, 1, function (new_value)
     custom_blacklist_check_delay = new_value
 end)
 
