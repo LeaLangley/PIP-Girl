@@ -4994,12 +4994,13 @@ local function startupCheck()
 end
 
 local current_session_type = nil
+local custom_blacklist_check_delay = 666
 local function SessionCheck(pid)
     local rid = players.get_rockstar_id(pid)
     while asuka_lib.player_exist(pid) and not menu.player_root(pid):isValid() do
         util.yield(666)
     end
-    util.yield(420)
+    util.yield(custom_blacklist_check_delay)
     if asuka_lib.player_exist(pid) then
         if is_player_in_blacklist(rid) then
             if not is_sc_friend(pid) then
@@ -5378,6 +5379,10 @@ menu.action(Settings, "Copy Location Name to Clipboard", {""}, "", function()
     notify("Location Name copied to clipboard!")
 end)
 
+path_custom_blacklist_check_delay = menu.slider(Settings, "Custom Blacklist Check Delay", {"pipblacklistdelay"}, "", 0, 13666, custom_blacklist_check_delay, 1, function (new_value)
+    custom_blacklist_check_delay = new_value
+end)
+
 if filesystem.exists(store_dir..'/gta_rpc.json') then
     interior_Names = {
         [""] = {234497},
@@ -5661,6 +5666,8 @@ local data_cfg = {
     store_ghost_orbital_cannon = path_ghost_orbital_cannon,
     store_clear_traffic = path_clear_traffic,
     store_soft_clear_traffic = path_soft_clear_traffic,
+    --Settings
+    store_custom_blacklist_check_delay = path_custom_blacklist_check_delay,
 }
 
 util.on_stop(function()
