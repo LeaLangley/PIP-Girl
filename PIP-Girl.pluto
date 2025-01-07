@@ -4087,6 +4087,30 @@ path_nerf_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Nerf Oppressor MK2s", 
     util.yield(1666)
 end)
 
+path_weaken_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Weaken Oppressor MK2s", {""}, "Weaken Oppressor mk2, except Modder and Friend's", function()
+    for players.list_except(true) as pid do
+        if players.get_vehicle_model(pid) == 2069146067 and not is_trusted(pid) and not is_modder(pid) then
+            local vehicle = GET_VEHICLE_PED_IS_IN(GET_PLAYER_PED_SCRIPT_INDEX(pid))
+            if GET_VEHICLE_MOD(vehicle, 16) ~= -1 then
+                request_control(vehicle)
+                SET_VEHICLE_MOD(vehicle, 16, -1)
+            end
+            if GET_VEHICLE_COUNTERMEASURE_AMMO(vehicle) ~= 0 then
+                request_control(vehicle)
+                SET_VEHICLE_COUNTERMEASURE_AMMO(vehicle, 0)
+                SET_VEHICLE_CAN_ENGINE_MISSFIRE(vehicle, true)
+                SET_VEHICLE_CAN_LEAK_PETROL(vehicle, true)
+                SET_VEHICLE_CAN_LEAK_OIL(vehicle, true)
+                SET_DISABLE_VEHICLE_PETROL_TANK_FIRES(vehicle, false)
+                SET_DISABLE_VEHICLE_PETROL_TANK_DAMAGE(vehicle, false)
+                SET_DISABLE_VEHICLE_ENGINE_FIRES(vehicle, false)
+                SET_VEHICLE_ENGINE_CAN_DEGRADE(vehicle, true)
+            end
+        end
+    end
+    util.yield(1666)
+end)
+
 path_downgrade_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Downgrade Oppressor MK2s", {""}, "Downgrade Oppressor mk2, except Modder and Friend's", function()
     for players.list_except(true) as pid do
         if players.get_vehicle_model(pid) == 2069146067 and not is_trusted(pid) and not is_modder(pid) then
@@ -4915,21 +4939,13 @@ local function crashlistConfig()
     end
 end
 
-local function add_in_blocking(pid, bool)
-    if not is_sc_friend(pid) then
-        local name = players.get_name(pid)
+local function add_in_blocking(pid, rid)
+    if not is_sc_friend(pid) and players.get_rockstar_id(pid) == rid then
         if asuka_lib.session_type() == "Public" then
-            local rid = players.get_rockstar_id(pid)
-            if rid ~= players.get_rockstar_id(players.user()) then
-                sc_block(rid)
-            end
+            sc_block(rid)
         end
-        if name ~= players.get_name(players.user()) and not asuka_lib.has_detection(pid, "Blacklist") then
+        if not asuka_lib.has_detection(pid, "Blacklist") then
             players.add_detection(pid, "Blacklist", TOAST_DEFAULT, 100)
-            --menu.trigger_commands("historynote ".. name .." Blacklist")
-            --if bool then
-            --    menu.trigger_commands("historyblock ".. name .." On")
-            --end
         end
     end
 end
@@ -4993,9 +5009,7 @@ local function SessionCheck(pid)
                         name = "N/A"
                     end
                     local notification = ""
-                    if asuka_lib.session_type() == "Public" and not asuka_lib.has_detection(pid, "Blacklist") then
-                        add_in_blocking(pid, false)
-                    end
+                    add_in_blocking(pid, rid)
                     if pid == players.get_host() then
                         notification = "This Blacklist is Host, we don't kick them until they attack."
                         menu.trigger_commands("hellaa " .. name .. " on")
@@ -5022,12 +5036,6 @@ local function SessionCheck(pid)
                 end
             end
         end
-    else
-        if players.get_host() == players.user() then
-            if is_trusted(pid) then
-                menu.trigger_command(menu.ref_by_path("Online>Session>Clear Blacklist"))
-            end
-        end
     end
 end
 
@@ -5037,13 +5045,6 @@ players.dispatch_on_join()
 local IdentificationTimeout = {}
 
 local function removeFromTable(pid)
-    if asuka_lib.transition_state(true) == 1 then
-        if players.get_host() == players.user() then
-            if is_trusted(pid) then
-                menu.trigger_command(menu.ref_by_path("Online>Session>Clear Blacklist"))
-            end
-        end
-    end
     in_orb_room[pid] = nil
     sussy_god[pid] = nil
     set_passive[pid] = nil
@@ -5199,14 +5200,14 @@ local function player_menu(pid)
         asuka_lib.delete_entity(slave)
     end)
     menu.action(Bad_Modder, "Add Blacklist & Kick", {'hellbk'}, "Blacklist Note, Kick and Block the Target from Joining u again.", function ()
-        add_in_blocking(pid, true)
+        add_in_blocking(pid, rid)
         StrategicKick(pid, rid)
         if not is_player_in_blacklist(rid) then
             add_player_to_blacklist(rid)
         end
     end)
     menu.action(Bad_Modder, "Add Blacklist ,Crash & Kick", {'hellc'}, "Blacklist Note, Crash, Kick and Block the Target from Joining u again.", function ()
-        add_in_blocking(pid, true)
+        add_in_blocking(pid, rid)
         menu.trigger_commands("crash ".. name)
         util.yield(666)
         StrategicKick(pid, rid)
@@ -5215,7 +5216,7 @@ local function player_menu(pid)
         end
     end)
     menu.action(Bad_Modder, "Add Blacklist Only", {'helln'}, "Blacklist Note and Block the Target from Joining u again.", function ()
-        add_in_blocking(pid, true)
+        add_in_blocking(pid, rid)
         if not is_player_in_blacklist(rid) then
             add_player_to_blacklist(rid)
         end
@@ -5245,7 +5246,7 @@ local function player_menu(pid)
     hellaab = menu.toggle_loop(Bad_Modder, "Blacklist Kick on Atack", {"hellaab"}, "Auto kick if they atack you, and add them to blacklist.", function()
         if not menu.player_root(pid):isValid() then return end
         if players.is_marked_as_attacker(pid) then
-            add_in_blocking(pid, true)
+            add_in_blocking(pid, rid)
             StrategicKick(pid, rid)
             if not is_player_in_blacklist(rid) then
                 add_player_to_blacklist(rid)
@@ -5645,6 +5646,7 @@ local data_cfg = {
     store_anit_terrorbyte = path_anit_terrorbyte,
     store_asukas_shrine = path_asukas_shrine,
     store_nerf_oppressor_mk2 = path_nerf_oppressor_mk2,
+    store_weaken_oppressor_mk2 = path_weaken_oppressor_mk2,
     store_downgrade_oppressor_mk2 = path_downgrade_oppressor_mk2,
     store_spinning_oppressor_mk2 = path_spinning_oppressor_mk2,
     store_kick_aggressive_on_attack = path_kick_aggressive_on_attack,
