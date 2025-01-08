@@ -2885,7 +2885,7 @@ path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit", {"Smartoutfit"
                 temp_holding_outfit = false
             end
             if IS_PED_IN_ANY_VEHICLE(players.user_ped(), false) then
-                if menu.get_state(menu.ref_by_path("Self>Appearance>Outfit>Hat")) == "-1" then
+                if menu.get_state(menu.ref_by_path("Self>Appearance>Outfit>Hat")) == "-1" and not menu.get_state(menu.ref_by_path("Self>Appearance>Outfit>Top 2")) == "238" then
                     local cat = GET_VEHICLE_PED_IS_IN(players.user_ped(), true)
                     local vehicleClass = GET_VEHICLE_CLASS(cat)
                     if bike_OutfitLockHelmet ~= -1 and vehicleClass == 8 and asuka_lib.is_user_inside_vehicle(cat) then
