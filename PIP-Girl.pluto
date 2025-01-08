@@ -65,6 +65,7 @@ local asuka_lib = require("Asuka_Library/asuka_lib")
 asuka_lib.asuka_booty = true
 local json = require("json")
 util.require_natives("3095a", "g")
+local data_cfg = {}
 
 local current_gta_version = tonumber(GET_ONLINE_VERSION())
 local supported_gta_version = 1.68
@@ -255,8 +256,8 @@ end
 local urceoname = ""
 local function organization_control(org)
     if not NETWORK_IS_ACTIVITY_SESSION() then
-        if path_org_name:isValid() then
-            urceoname = menu.get_value(path_org_name)
+        if store_org_name:isValid() then
+            urceoname = menu.get_value(store_org_name)
         end
         if players.get_boss(players.user()) ~= -1 then
             if players.get_org_type(players.user()) == 0 then
@@ -1072,7 +1073,7 @@ menu.action(PIP_Girl_Heist, 'Cayo 4 Player 25/25/25/25 Preset (!)', {}, "", func
     end, true)
 end)
 
-path_nc_pop = menu.toggle_loop(PIP_Girl, "Nightclub Party Never Stops!", {'ncpop'}, "The hottest NC in whole LS.\nKeeps you pop at 85-100%", function ()
+store_nc_pop = menu.toggle_loop(PIP_Girl, "Nightclub Party Never Stops!", {'ncpop'}, "The hottest NC in whole LS.\nKeeps you pop at 85-100%", function ()
     if asuka_lib.transition_state(true) == 1 then
         local ncpop = math.floor(STAT_GET_INT('CLUB_POPULARITY') / 10)
         if ncpop < 88 then
@@ -1088,11 +1089,11 @@ end)
 
 menu.divider(PIP_Girl, "Org Options")
 
-path_org_name = menu.text_input(PIP_Girl, "CEO Name", {"pgceoname"}, "(Also works for MC) You can press Ctrl+U and select colors, but no special GTA icons, sadly.", function(input_str, click_type)
+store_org_name = menu.text_input(PIP_Girl, "CEO Name", {"pgceoname"}, "(Also works for MC) You can press Ctrl+U and select colors, but no special GTA icons, sadly.", function(input_str, click_type)
     urceoname = input_str
 end)
 local organization_type = "CEO"
-path_org_type = menu.list_select(PIP_Girl, "Org Type", {}, "", {
+store_org_type = menu.list_select(PIP_Girl, "Org Type", {}, "", {
     {1, "CEO"},
     {2, "MC"},
 }, 1, function(value, menu_name, prev_value, click_type)
@@ -1103,7 +1104,7 @@ local joinfriendsceo = 1
 local invitefriendsinceo = false
 local ceo_ses_code = nil
 local lastCeoName = nil
-path_auto_org = menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yourself as CEO and auto switches you to MC/CEO in most situations needed.", function()
+store_auto_org = menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yourself as CEO and auto switches you to MC/CEO in most situations needed.", function()
     if not NETWORK_IS_ACTIVITY_SESSION() and asuka_lib.transition_state(true) == 1 then
         if joinfriendsceo ~= 3 then
             if players.get_boss(players.user()) == -1 then
@@ -1218,11 +1219,11 @@ path_auto_org = menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "
     util.yield(666)
 end)
 
-path_auto_org_color = menu.slider(PIP_Girl, 'Auto Org Color', {'favorgcolor'}, "Enter the Color ID of your org.\nThe color will be used when u auto register as Org.", -1, 14, ceo_color, 1, function (new_value)
+store_auto_org_color = menu.slider(PIP_Girl, 'Auto Org Color', {'favorgcolor'}, "Enter the Color ID of your org.\nThe color will be used when u auto register as Org.", -1, 14, ceo_color, 1, function (new_value)
     ceo_color = new_value
 end)
 
---path_auto_org_color_check = menu.toggle_loop(PIP_Girl, "Additional Org Color Checks.", {""}, "If u use \"Auto Become a CEO/MC\" it will check for u color on register.\nIf u dont use \"Auto Become a CEO/MC\" u can use Additinal Checks.", function(on)
+--store_auto_org_color_check = menu.toggle_loop(PIP_Girl, "Additional Org Color Checks.", {""}, "If u use \"Auto Become a CEO/MC\" it will check for u color on register.\nIf u dont use \"Auto Become a CEO/MC\" u can use Additinal Checks.", function(on)
 --    if asuka_lib.transition_state(true) == 1 and players.get_boss(players.user()) ~= -1 and players.user() == players.get_script_host() then
 --        if ceo_color ~= -1 then
 --            check_CEO_Color()
@@ -1231,7 +1232,7 @@ end)
 --    util.yield(13666)
 --end)
 
-path_join_friends_org = menu.list_select(PIP_Girl, "Auto Join Friends Org (!)", {""}, "Uses \"Auto Become a CEO/MC\"", {
+store_join_friends_org = menu.list_select(PIP_Girl, "Auto Join Friends Org (!)", {""}, "Uses \"Auto Become a CEO/MC\"", {
     {1, "Don't"},
     {2, "Also"},
     {3, "Only"},
@@ -1308,7 +1309,7 @@ local vehicle_money_hashish = {
     -1249748547, --Smugler money
     1916353237, --Christmas money
 }
-path_collect_money = menu.toggle_loop(PIP_Girl, "Collect valueable pickups", {}, "Collect valueable pickups.", function()
+store_collect_money = menu.toggle_loop(PIP_Girl, "Collect valueable pickups", {}, "Collect valueable pickups.", function()
     if asuka_lib.transition_state(true) == 1 and GET_ENTITY_HEALTH(players.user_ped()) ~= 0 then
         local pos = players.get_position(players.user())
         for entities.get_all_pickups_as_handles() as pickup do
@@ -1440,7 +1441,7 @@ menu.action(Stimpak, "Refill Health & Armour",{"newborn"},"Regenerate to max you
 end)
 
 local filled_up = false
-path_fill_me_up = menu.toggle(Stimpak, "Fill me up! On session join", {"pgfmu"}, "Fill you up with health, armor, snacks, and ammo on session join.", function(on)
+store_fill_me_up = menu.toggle(Stimpak, "Fill me up! On session join", {"pgfmu"}, "Fill you up with health, armor, snacks, and ammo on session join.", function(on)
     if on then
         filled_up = true
     else
@@ -1449,7 +1450,7 @@ path_fill_me_up = menu.toggle(Stimpak, "Fill me up! On session join", {"pgfmu"},
 end)
 
 local dead = 0
-path_auto_armor = menu.toggle_loop(Stimpak, "Auto Armor after Death",{"pgblessing"},"A body armor will be applied automatically when respawning.", function()
+store_auto_armor = menu.toggle_loop(Stimpak, "Auto Armor after Death",{"pgblessing"},"A body armor will be applied automatically when respawning.", function()
     if asuka_lib.transition_state(true) <3 then
         local health = GET_ENTITY_HEALTH(players.user_ped())
         if health == 0 and dead == 0 then
@@ -1464,7 +1465,7 @@ path_auto_armor = menu.toggle_loop(Stimpak, "Auto Armor after Death",{"pgblessin
     end
 end)
 
-path_recharge_health = menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehicle", {"pghealth"}, "Will recharge health when in cover or vehicle quickly.\nBUT also slowly, almost legit-like, otherwise to 100%.", function()
+store_recharge_health = menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehicle", {"pghealth"}, "Will recharge health when in cover or vehicle quickly.\nBUT also slowly, almost legit-like, otherwise to 100%.", function()
     if asuka_lib.transition_state(true) <3 then
         local in_vehicle = asuka_lib.is_user_inside_vehicle(true)
         local playerPed = players.user_ped()
@@ -1485,7 +1486,7 @@ end, function()
     SET_PLAYER_HEALTH_RECHARGE_MULTIPLIER(players.user(), 0.1)
 end)
 
-path_recharge_armor = menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle", {"pgarmor"}, "Will Recharge Armor when in Cover or Vehicle quickly.\nBUT also slowly otherwise to 100%.", function()
+store_recharge_armor = menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicle", {"pgarmor"}, "Will Recharge Armor when in Cover or Vehicle quickly.\nBUT also slowly otherwise to 100%.", function()
     local cmd_path = "Self>Regeneration Rate>Armour"
     if asuka_lib.transition_state(true) <3 then
         local in_vehicle = asuka_lib.is_user_inside_vehicle(true)
@@ -1522,7 +1523,7 @@ end, function()
 end)
 
 local was_user_in_vehicle = false
-path_first_aid_kit = menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {"pgvaid"}, "Using your First Aid kit provided in your ", function()
+store_first_aid_kit = menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle Interaction", {"pgvaid"}, "Using your First Aid kit provided in your ", function()
     if asuka_lib.transition_state(true) <3 then
         local in_vehicle = asuka_lib.is_user_inside_vehicle(false)
         local health = GET_ENTITY_HEALTH(players.user_ped())
@@ -1540,7 +1541,7 @@ path_first_aid_kit = menu.toggle_loop(Stimpak, "Refill Health/Armor with Vehicle
     end
 end)
 
-path_oxygen = menu.toggle_loop(Stimpak, "Oxygen", {"pgbreath"}, "Just breath.\nAlso gives u Movement and light from Scuba gear without having one equi", function()
+store_oxygen = menu.toggle_loop(Stimpak, "Oxygen", {"pgbreath"}, "Just breath.\nAlso gives u Movement and light from Scuba gear without having one equi", function()
     if asuka_lib.transition_state(true) <3 then
         if IS_ENTITY_IN_WATER(players.user_ped()) then
             SET_ENABLE_SCUBA(players.user_ped(), true)
@@ -1659,13 +1660,18 @@ local function checkVehMod(vehicle, mod)
     end
     return false
 end
+
+unlikely_mission_vehicles = {
+    "AM_VEHICLE_SPAWN"
+}
+
 local function buff_asuka_tech(vehicle)
     if asuka_lib.is_vehicle_free_for_use(vehicle) then
         request_control(vehicle)
     end
     menu.trigger_commands("smoothflight on")
     if protectMissionVehicles and not players.is_in_interior(players.user()) and not players.is_using_rc_vehicle(players.user()) then
-        if IS_ENTITY_A_MISSION_ENTITY(vehicle) and DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 then
+        if IS_ENTITY_A_MISSION_ENTITY(vehicle) and DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 and table.contains(unlikely_mission_vehicles, GET_ENTITY_SCRIPT(vehicle)) then
             local vehicle_name = util.reverse_joaat(entities.get_model_hash(vehicle))
             local vehicle_label = util.get_label_text(vehicle_name)
             if vehicle_label ~= "NULL" then
@@ -1895,7 +1901,7 @@ local isInVehicleAT = false
 local isInInteriorAT = false
 local asuka_tech_protection = 1
 local asukaTechBlipVeh = nil
-path_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly repairs your vehicle, and gives it some modern enhancements.", function()
+store_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowly repairs your vehicle, and gives it some modern enhancements.", function()
     local cmd_path = "Vehicle>Light Signals>Use Brake Lights When Stopped"
     if asuka_lib.transition_state(true) == 1 and not asuka_lib.is_loading(players.user()) then
         if menu.get_state(menu.ref_by_path(cmd_path)) ~= "On" then
@@ -2077,15 +2083,15 @@ end)
 
 local Asuka_Tech = menu.list(Vehicle, 'Asuka Tech Settings', {}, 'Settings for Asuka Tech.', function(); end)
 
-path_asuka_tech_repair = menu.slider(Asuka_Tech, "Asuka Tech Repair Amount", {"asukatechrepairamount"}, "The amount that should be repaired per second, default 1.", 0, 66, asuka_tech_repair_amount, 1, function (new_value)
+store_asuka_tech_repair = menu.slider(Asuka_Tech, "Asuka Tech Repair Amount", {"asukatechrepairamount"}, "The amount that should be repaired per second, default 1.", 0, 66, asuka_tech_repair_amount, 1, function (new_value)
     asuka_tech_repair_amount = new_value
 end)
 
-path_asuka_tech_mission_repair = menu.slider(Asuka_Tech, "Asuka Tech Mission Repair Amount", {"asukatechmissionrepairamount"}, "The amount that should be repaired per second if the vehicle is a mission entity, default 3.", 0, 66, asuka_tech_mission_repair_amount, 1, function (new_value)
+store_asuka_tech_mission_repair = menu.slider(Asuka_Tech, "Asuka Tech Mission Repair Amount", {"asukatechmissionrepairamount"}, "The amount that should be repaired per second if the vehicle is a mission entity, default 3.", 0, 66, asuka_tech_mission_repair_amount, 1, function (new_value)
     asuka_tech_mission_repair_amount = new_value
 end)
 
-path_asuka_tech_lockon_jammer = menu.toggle(Asuka_Tech, "Lockon Jammer for Mission Vehicles", {""}, "if you asuka tech vehicle is a mission entity , it will gain a lock on jammer.", function(on)
+store_asuka_tech_lockon_jammer = menu.toggle(Asuka_Tech, "Lockon Jammer for Mission Vehicles", {""}, "if you asuka tech vehicle is a mission entity , it will gain a lock on jammer.", function(on)
     if on then
         protectMissionVehicles = true
     else
@@ -2093,13 +2099,13 @@ path_asuka_tech_lockon_jammer = menu.toggle(Asuka_Tech, "Lockon Jammer for Missi
     end
 end)
 
-path_asuka_tech_armor = menu.list_select(Asuka_Tech, "Asuka Tech Armor", {""}, "Might now work on cars that already have somekind of \"extra\" armor.\nVery much like Imani tech and for every vehicle , but may a little weaker.", {
+store_asuka_tech_armor = menu.list_select(Asuka_Tech, "Asuka Tech Armor", {""}, "Might now work on cars that already have somekind of \"extra\" armor.\nVery much like Imani tech and for every vehicle , but may a little weaker.", {
     {1, "Vanilla"},
     {2, "Active"},
     {3, "Only Mission Vehicle"},
 }, 2, function(value, menu_name, prev_value, click_type)
     asuka_tech_armor = value
-    if menu.get_value(path_asuka_tech) then
+    if menu.get_value(store_asuka_tech) then
         local vehicle = asuka_lib.get_user_vehicle()
         local vehicle_pointer = entities.handle_to_pointer(vehicle)
         if vehicle_pointer ~= 0 then
@@ -2121,7 +2127,7 @@ path_asuka_tech_armor = menu.list_select(Asuka_Tech, "Asuka Tech Armor", {""}, "
     end
 end)
 
-path_asuka_tech_dirt = menu.list_select(Asuka_Tech, "Asuka Tech Vehicle Dirt", {""}, "Vanilla: Games Default, does nothing.\n\nGain: Gain Dirt every repair tick.\n\nClean: Removes Dirt every repair tick.\n\nIt Does not Add or Remove Dirt all in one, just a little every tick, to give the illusion of pollution/cleaning duo to repairs.", {
+store_asuka_tech_dirt = menu.list_select(Asuka_Tech, "Asuka Tech Vehicle Dirt", {""}, "Vanilla: Games Default, does nothing.\n\nGain: Gain Dirt every repair tick.\n\nClean: Removes Dirt every repair tick.\n\nIt Does not Add or Remove Dirt all in one, just a little every tick, to give the illusion of pollution/cleaning duo to repairs.", {
     {1, "Vanilla"},
     {2, "Gain"},
     {3, "Clean"},
@@ -2129,7 +2135,7 @@ path_asuka_tech_dirt = menu.list_select(Asuka_Tech, "Asuka Tech Vehicle Dirt", {
     asuka_tech_dirt = value
 end)
 
-path_asuka_tech_lights = menu.list_select(Asuka_Tech, "Asuka Tech Vehicle lights", {""}, "", {
+store_asuka_tech_lights = menu.list_select(Asuka_Tech, "Asuka Tech Vehicle lights", {""}, "", {
     {0, "Vanilla"},
     {1, "Always off"},
     {2, "Always on"},
@@ -2144,7 +2150,7 @@ path_asuka_tech_lights = menu.list_select(Asuka_Tech, "Asuka Tech Vehicle lights
     end
 end)
 
-path_asuka_tech_protection = menu.list_select(Asuka_Tech, "Asuka Tech AMPP", {""}, "Anti-Modder Parking Protection.\nOnly active while car is empty.\nPrevents modder from deleting/messing with you vehicle, in addition u can freeze the vehicle.", {
+store_asuka_tech_protection = menu.list_select(Asuka_Tech, "Asuka Tech AMPP", {""}, "Anti-Modder Parking Protection.\nOnly active while car is empty.\nPrevents modder from deleting/messing with you vehicle, in addition u can freeze the vehicle.", {
     {1, "Off"},
     {2, "Anti Delete"},
 }, 1, function(value, menu_name, prev_value, click_type)
@@ -2157,7 +2163,7 @@ function draw_bar(value, maxValue, x, y, width, height, barColor, backColor)
     directx.draw_rect(x, y - height, barWidth, height, barColor)
 end
 
-path_asuka_tech_hp_bar = menu.toggle_loop(Asuka_Tech, "Asuka Tech HP Bar", {""}, "", function()
+store_asuka_tech_hp_bar = menu.toggle_loop(Asuka_Tech, "Asuka Tech HP Bar", {""}, "", function()
     if asuka_lib.transition_state(true) <3 then
         local target_vehicle = asuka_lib.get_user_vehicle()
         if asuka_lib.does_entity_exist(current_asuka_tech_vehicle) then
@@ -2182,7 +2188,7 @@ path_asuka_tech_hp_bar = menu.toggle_loop(Asuka_Tech, "Asuka Tech HP Bar", {""},
     end
 end)
 
-path_asuka_tech_info_overlay = menu.toggle_loop(Asuka_Tech, "Asuka Tech Info Overlay", {""}, "", function()
+store_asuka_tech_info_overlay = menu.toggle_loop(Asuka_Tech, "Asuka Tech Info Overlay", {""}, "", function()
     if asuka_lib.transition_state(true) < 3 then
         local target_vehicle = asuka_lib.get_user_vehicle()
         if asuka_lib.does_entity_exist(current_asuka_tech_vehicle) then
@@ -2306,11 +2312,73 @@ menu.action(Vehicle, "Detonate Asuka Tech Vehicle", {"boomasuka"}, "", function(
     NETWORK_SET_NO_LONGER_NEEDED(target_vehicle, true)
 end)
 
+menu.divider(Vehicle, "FSD (Full Self Driving)")
+
+local fsd_settings_menu_list = menu.list(Vehicle, 'FSD Settings', {}, '', function(); end)
+
+local fsd_style_menu_list = menu.list(fsd_settings_menu_list, 'FSD Driving Style', {}, 'You can combine as u wish.\nStyle gets applied on start.', function(); end)
+
+menu.divider(fsd_style_menu_list, "You can combine as u wish.")
+menu.divider(fsd_style_menu_list, "Style gets applied on start.")
+
+local FSD_style_bitmask = 0
+
+local function set_FSD_style(flagValue, state)
+    if state then
+        FSD_style_bitmask = FSD_style_bitmask | flagValue
+    else
+        FSD_style_bitmask = FSD_style_bitmask & ~flagValue
+    end
+end
+
+local fsd_toggles = {
+    {bit = 1, default = true, name = "Stop before vehicles", description = "Stop before vehicles"},
+    {bit = 2, default = false, name = "Stop before peds", description = "Stop before peds"},
+    {bit = 4, default = true, name = "Avoid vehicles", description = "Avoid vehicles"},
+    {bit = 8, default = true, name = "Avoid empty vehicles", description = "Avoid empty vehicles"},
+    {bit = 16, default = false, name = "Avoid peds", description = "Avoid peds"},
+    {bit = 32, default = true, name = "Avoid objects", description = "Avoid objects"},
+    {bit = 64, default = false, name = "DontSteerAroundPlayerPed", description = "DontSteerAroundPlayerPed"},
+    {bit = 128, default = false, name = "Stop at traffic lights", description = "Stop at traffic lights"},
+    {bit = 256, default = true, name = "Use blinkers", description = "Use blinkers"},
+    {bit = 512, default = true, name = "Allow going wrong way", description = "Allow going wrong way (only does it if the correct lane is full, will try to reach the correct lane again a.s.a.p.)"},
+    {bit = 1024, default = false, name = "Drive in reverse gear", description = "Drive in reverse gear"},
+    {bit = 2048, default = false, name = "UseWanderFallbackInsteadOfStraightLine", description = "UseWanderFallbackInsteadOfStraightLine"},
+    {bit = 4096, default = false, name = "AvoidRestrictedAreas", description = "AvoidRestrictedAreas"},
+    {bit = 8192, default = false, name = "PreventBackgroundPathfinding", description = "PreventBackgroundPathfinding"},
+    {bit = 16384, default = true, name = "AdjustCruiseSpeedBasedOnRoadSpeed", description = "AdjustCruiseSpeedBasedOnRoadSpeed"},
+    {bit = 32768, default = false, name = "Unknown", description = "Unknown"},
+    {bit = 65536, default = false, name = "Unknown", description = "Unknown"},
+    {bit = 131072, default = false, name = "Unknown", description = "Unknown"},
+    {bit = 262144, default = true, name = "Take shortest path", description = "Take shortest path (Removes most pathing limits, the driver even goes on dirt roads)"},
+    {bit = 524288, default = true, name = "Reckless", description = "Reckless (Previously named: Allow overtaking vehicles if possible)"},
+    {bit = 1048576, default = false, name = "Unknown", description = "Unknown"},
+    {bit = 2097152, default = true, name = "UseSwitchedOffNodes", description = "UseSwitchedOffNodes"},
+    {bit = 4194304, default = false, name = "Ignore roads", description = "Ignore roads (Uses local pathing, only works within 200~ meters around the player)"},
+    {bit = 8388608, default = false, name = "PlaneTaxiMode", description = "PlaneTaxiMode"},
+    {bit = 16777216, default = false, name = "Ignore all pathing", description = "Ignore all pathing (Goes straight to destination)"},
+    {bit = 33554432, default = true, name = "UseStringPullingAtJunctions", description = "UseStringPullingAtJunctions"},
+    {bit = 67108864, default = false, name = "Unknown", description = "Unknown"},
+    {bit = 134217728, default = false, name = "Unknown", description = "Unknown"},
+    {bit = 268435456, default = false, name = "Unknown", description = "Unknown"},
+    {bit = 536870912, default = false, name = "Avoid highways when possible", description = "Avoid highways when possible (will use the highway if there is no other way to get to the destination)"},
+    {bit = 1073741824, default = false, name = "ForceJoinInRoadDirection", description = "ForceJoinInRoadDirection"},
+    {bit = 2147483648, default = true, name = "StopAtDestination", description = "StopAtDestination"}
+}
+
+for _, toggle in ipairs(fsd_toggles) do
+    local store_FSD_style_name = "store_FSD_style_" .. toggle.bit
+    local store_FSD_style = menu.toggle(fsd_style_menu_list, toggle.name, {""}, toggle.description, function(on)
+        set_FSD_style(toggle.bit, on)
+    end, toggle.default)
+    data_cfg[store_FSD_style_name] = store_FSD_style
+end
+
 menu.divider(Vehicle, "Lights")
 
 local Vehicle_Light = menu.list(Vehicle, 'Vehicle Light Modes', {}, 'Flash the lights pretty and nice.', function(); end)
 
-path_vehicle_light_rhythm_sos = menu.toggle_loop(Vehicle_Light, "S.O.S. Morse",{"sosmorse"},"Uses asuka tech lights as default state.",function()
+store_vehicle_light_rhythm_sos = menu.toggle_loop(Vehicle_Light, "S.O.S. Morse",{"sosmorse"},"Uses asuka tech lights as default state.",function()
     local vehicle = asuka_lib.get_user_vehicle()
     if vehicle then
         SET_VEHICLE_LIGHTS(vehicle, 1)
@@ -2379,7 +2447,7 @@ end, function()
     end
 end)
 
-path_vehicle_light_rhythm_rapid_slowdown = menu.toggle_loop(Vehicle_Light, "Flash on Rapid slowdown",{"rapidslowdownwarn"},"Uses asuka tech lights as default state.",function()
+store_vehicle_light_rhythm_rapid_slowdown = menu.toggle_loop(Vehicle_Light, "Flash on Rapid slowdown",{"rapidslowdownwarn"},"Uses asuka tech lights as default state.",function()
     local vehicle = asuka_lib.get_user_vehicle()
     if asuka_lib.is_user_inside_vehicle(true) then
         local speedVector = GET_ENTITY_SPEED_VECTOR(vehicle, true)
@@ -2413,11 +2481,11 @@ end)
 
 local vehicleFavColor = 2
 
-path_vehicle_light_color = menu.slider(Vehicle, "Vehicle light color", {"favheadlights"}, "Default lights: 0 & 1 | Color lights: 2-14", 2, 14, vehicleFavColor, 1, function (new_value)
+store_vehicle_light_color = menu.slider(Vehicle, "Vehicle light color", {"favheadlights"}, "Default lights: 0 & 1 | Color lights: 2-14", 2, 14, vehicleFavColor, 1, function (new_value)
     vehicleFavColor = new_value - 2
 end)
 
-path_auto_vehicle_light_color = menu.toggle_loop(Vehicle, "Auto Vehicle Light Color",{"autocarlights"},"Automatically set your favorite vehicle color for vehicles with default lights that u drive and are mission ent.\nDefault lights: 0 & 1 | Color lights: 2-14",function()
+store_auto_vehicle_light_color = menu.toggle_loop(Vehicle, "Auto Vehicle Light Color",{"autocarlights"},"Automatically set your favorite vehicle color for vehicles with default lights that u drive and are mission ent.\nDefault lights: 0 & 1 | Color lights: 2-14",function()
     util.yield(420)
     if vehicleFavColor ~= 0 then
         if asuka_lib.transition_state(true) <3 then
@@ -2440,7 +2508,7 @@ end)
 
 menu.divider(Vehicle, "Else")
 
-path_asukas_repair_stops = menu.toggle_loop(Vehicle, "Asuka's Repair Stop's", {"asukars"}, "", function()
+store_asukas_repair_stops = menu.toggle_loop(Vehicle, "Asuka's Repair Stop's", {"asukars"}, "", function()
     if asuka_lib.transition_state(true) == 1 then
         local playerPosition = players.get_position(players.user())
         if not blipsCreated then
@@ -2497,7 +2565,7 @@ end, function()
 end)
 
 local sparrowHandeling = nil
-path_heli_sparrow_handling = menu.toggle_loop(Vehicle, "Heli Sparrow Handling",{""},"All helicopters you enter fly like a sparrow.",function()
+store_heli_sparrow_handling = menu.toggle_loop(Vehicle, "Heli Sparrow Handling",{""},"All helicopters you enter fly like a sparrow.",function()
     if not players.is_in_interior(players.user()) and asuka_lib.transition_state(true) <3 then
         local vehicle = asuka_lib.get_user_vehicle()
         if vehicle then
@@ -2625,7 +2693,7 @@ path_heli_sparrow_handling = menu.toggle_loop(Vehicle, "Heli Sparrow Handling",{
 end)
 
 local oppressorHandeling = nil
-path_easy_opmk2ud_handling = menu.toggle_loop(Vehicle, "Easier Oppressor MK2 UD Handling",{""},"Makes Upside down little easier, good for lea(-rning).",function()
+store_easy_opmk2ud_handling = menu.toggle_loop(Vehicle, "Easier Oppressor MK2 UD Handling",{""},"Makes Upside down little easier, good for lea(-rning).",function()
     if asuka_lib.transition_state(true) <3 then
         local vehicle = asuka_lib.get_user_vehicle()
         if vehicle then
@@ -2664,7 +2732,7 @@ menu.action(Vehicle, "Repair the meet", {"cmrepair"}, "", function()
      DELETE_WAYPOINTS_FROM_THIS_PLAYER()
     end
 
-    if menu.get_state(path_auto_vehicle_light_color) == "On" then
+    if menu.get_state(store_auto_vehicle_light_color) == "On" then
         menu.trigger_commands("autocarlights off")
         temp_auto_light = true
     end
@@ -2759,7 +2827,7 @@ menu.action(Vehicle, "Claim all MMI", {"claimmmi"}, "", function()
 end)
 
 local on_join_claim_mmi = false
-path_claim_all_mmi_on_join = menu.toggle(Vehicle, "Claim all MMI on session join", {"onjoinclaimmmi"}, "", function(on)
+store_claim_all_mmi_on_join = menu.toggle(Vehicle, "Claim all MMI on session join", {"onjoinclaimmmi"}, "", function(on)
     if on then
         on_join_claim_mmi = true
     else
@@ -2783,7 +2851,7 @@ local foreverYoung = false
 
 local moonCircle = 255
 
-path_vampire_young = menu.toggle(Outfit, "Forever young", {"foreveryoung"}, "Prevents you Char from getting old, destroyed and infected Skin.", function(on)
+store_vampire_young = menu.toggle(Outfit, "Forever young", {"foreveryoung"}, "Prevents you Char from getting old, destroyed and infected Skin.", function(on)
     if on then
         foreverYoung = true
         SET_PED_HEAD_OVERLAY(players.user_ped(), 12, moonCircle, 1.0) --Remove random Dots on your skin , chest area.
@@ -2857,7 +2925,7 @@ local function is_outfit_corrupted()
     return false
 end
 
-path_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit", {"Smartoutfit"}, "This will lock you outfit only if u dont have interaction menu open or in some critical mission.\nalso chang ehte appearance of u outfit depending on situations.", function()
+store_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit", {"Smartoutfit"}, "This will lock you outfit only if u dont have interaction menu open or in some critical mission.\nalso chang ehte appearance of u outfit depending on situations.", function()
     if should_not_lock_outfit() then
         if ChangedHelmet then
             menu.trigger_commands("hat -1")
@@ -2951,7 +3019,7 @@ end)
 local smart_outfit_settings = menu.list(Outfit, 'Smart Outfit Settings', {}, 'Smart Outfit Settings.', function(); end)
 
 menu.divider(smart_outfit_settings, "Dont lock outfit when:")
-path_interaction_menu_outfit_lock = menu.toggle(smart_outfit_settings, "interaction menu open", {""}, "", function(on)
+store_interaction_menu_outfit_lock = menu.toggle(smart_outfit_settings, "interaction menu open", {""}, "", function(on)
     if on then
         dont_lock_interaction_outfit = true
     else
@@ -2959,7 +3027,7 @@ path_interaction_menu_outfit_lock = menu.toggle(smart_outfit_settings, "interact
     end
 end, true)
 
-path_clothing_shop_outfit_lock = menu.toggle(smart_outfit_settings, "in clothing shop", {""}, "", function(on)
+store_clothing_shop_outfit_lock = menu.toggle(smart_outfit_settings, "in clothing shop", {""}, "", function(on)
     if on then
         dont_lock_clothing_shop_outfit = true
     else
@@ -2969,19 +3037,19 @@ end)
 
 menu.divider(smart_outfit_settings, "(leave -1 = off) Helmets:")
 
-path_bike_helmet_var = menu.slider(smart_outfit_settings, 'Smart Outfit Bike Helmet', {'pgsobh'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet.', -1, 201, bike_OutfitLockHelmet, 1, function (new_value)
+store_bike_helmet_var = menu.slider(smart_outfit_settings, 'Smart Outfit Bike Helmet', {'pgsobh'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet.', -1, 201, bike_OutfitLockHelmet, 1, function (new_value)
     bike_OutfitLockHelmet = new_value
 end)
 
-path_bike_helmet_color = menu.slider(smart_outfit_settings, 'Smart Outfit Bike Helmet Color', {'pgsobhc'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet Color.', -1, 50, bike_OutfitLockHelmetColor, 1, function (new_value)
+store_bike_helmet_color = menu.slider(smart_outfit_settings, 'Smart Outfit Bike Helmet Color', {'pgsobhc'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet Color.', -1, 50, bike_OutfitLockHelmetColor, 1, function (new_value)
     bike_OutfitLockHelmetColor = new_value
 end)
 
-path_Aircraft_helmet_var = menu.slider(smart_outfit_settings, 'Smart Outfit Aircraft Helmet', {'pgsoah'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet.', -1, 201, bike_OutfitLockHelmet, 1, function (new_value)
+store_Aircraft_helmet_var = menu.slider(smart_outfit_settings, 'Smart Outfit Aircraft Helmet', {'pgsoah'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet.', -1, 201, bike_OutfitLockHelmet, 1, function (new_value)
     Aircraft_OutfitLockHelmet = new_value
 end)
 
-path_Aircraft_helmet_color = menu.slider(smart_outfit_settings, 'Smart Outfit Aircraft Helmet Color', {'pgsoahc'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet Color.', -1, 50, bike_OutfitLockHelmetColor, 1, function (new_value)
+store_Aircraft_helmet_color = menu.slider(smart_outfit_settings, 'Smart Outfit Aircraft Helmet Color', {'pgsoahc'}, 'If u Enter a Vehicle that requires a helmet, use this ID as helmet.\nWill Only be used if u dont already use a Hat/Helmet Color.', -1, 50, bike_OutfitLockHelmetColor, 1, function (new_value)
     Aircraft_OutfitLockHelmetColor = new_value
 end)
 
@@ -2992,7 +3060,7 @@ local demon_horn1 = nil
 local demon_horn2 = nil
 local demon_horn_hash = util.joaat("w_me_knife_01")
 
-path_demon_horns = menu.toggle_loop(outfit_decoration, "Demon Horns", {"demonhorns"}, "", function()
+store_demon_horns = menu.toggle_loop(outfit_decoration, "Demon Horns", {"demonhorns"}, "", function()
     if asuka_lib.allow_spawn_check() then
         local pup = players.user_ped()
         if not asuka_lib.does_entity_exist(demon_horn1) then
@@ -3041,7 +3109,7 @@ end, function()
     asuka_lib.delete_entity(demon_horn2)
 end)
 
-path_demon_horns_color = menu.list_select(outfit_decoration, "Demon Horns Color", {}, "", {
+store_demon_horns_color = menu.list_select(outfit_decoration, "Demon Horns Color", {}, "", {
     {util.joaat("w_me_knife_01"), "Default"},
     {util.joaat("w_me_knife_xm3"), "Eyes"},
     {util.joaat("w_me_knife_xm3_01"), "Spatter"},
@@ -3055,7 +3123,7 @@ path_demon_horns_color = menu.list_select(outfit_decoration, "Demon Horns Color"
     {util.joaat("w_me_knife_xm3_09"), "Orang-O-Tang"},
 }, demon_horn_hash, function(value, menu_name, prev_value, click_type)
     demon_horn_hash = value
-    if asuka_lib.allow_spawn_check() and menu.get_value(path_demon_horns) and asuka_lib.request_model(value, 3) then
+    if asuka_lib.allow_spawn_check() and menu.get_value(store_demon_horns) and asuka_lib.request_model(value, 3) then
         asuka_lib.delete_entity(demon_horn1)
         asuka_lib.delete_entity(demon_horn2)
         local pos = players.get_position(players.user())
@@ -3102,7 +3170,7 @@ end)
 
 menu.rainbow(path_thermal_color)
 
-path_thermal_highlight = menu.slider(Thermal_Vision, "Highlight Intensity", {"pgthermalhighlight"}, "", -100, 100, 1, 1, function (new_value)
+store_thermal_highlight = menu.slider(Thermal_Vision, "Highlight Intensity", {"pgthermalhighlight"}, "", -100, 100, 1, 1, function (new_value)
     SEETHROUGH_SET_HILIGHT_INTENSITY(new_value)
 end)
 
@@ -3120,7 +3188,7 @@ menu.toggle(Combat, "Better Thermal Vision",{"pgthermal"},"",function(on)
         SEETHROUGH_SET_MAX_THICKNESS(10000.0)
         SEETHROUGH_SET_NOISE_MIN(0.0)
         SEETHROUGH_SET_NOISE_MAX(0.0)
-        SEETHROUGH_SET_HILIGHT_INTENSITY(menu.get_value(path_thermal_highlight))
+        SEETHROUGH_SET_HILIGHT_INTENSITY(menu.get_value(store_thermal_highlight))
         SEETHROUGH_SET_HIGHLIGHT_NOISE(0.0)
     else
         menu.trigger_command(thermal_command,"off")
@@ -3141,7 +3209,7 @@ end, function()
 	SET_PLAYER_MELEE_WEAPON_DEFENSE_MODIFIER(players.user(), 1.0)
 end)
 
-path_bst_info = menu.toggle_loop(Combat, "BST User Info Overlay", {}, "shows a list of all bst users", function()
+store_bst_info = menu.toggle_loop(Combat, "BST User Info Overlay", {}, "shows a list of all bst users", function()
     local bst_users = ""
     for pid in players.list() do
         if math.abs(players.get_weapon_damage_modifier(pid) - 1.44) < 0.03 then
@@ -3160,7 +3228,7 @@ path_bst_info = menu.toggle_loop(Combat, "BST User Info Overlay", {}, "shows a l
     end
 end)
 
-path_weapon_light = menu.toggle_loop(Combat, "Weapon light default on", {}, "", function()
+store_weapon_light = menu.toggle_loop(Combat, "Weapon light default on", {}, "", function()
     SET_FLASH_LIGHT_ACTIVE_HISTORY(players.user_ped(), true)
     util.yield(666)
 end, function()
@@ -3217,7 +3285,7 @@ local interactions = {
     {label = "LUCK_W_SPIN_PC", control = 33, delay = 113},
 }
 
-path_auto_interact = menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'}, "Auto Interact with E in some situations and time warp the animation.", function ()
+store_auto_interact = menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'}, "Auto Interact with E in some situations and time warp the animation.", function ()
     if IS_HELP_MESSAGE_BEING_DISPLAYED() then
         for _, interaction in ipairs(interactions) do
             if IS_HELP_MSG_DISPLAYED(interaction.label) then
@@ -3235,7 +3303,7 @@ path_auto_interact = menu.toggle_loop(Game, "Auto Interact", {'pgautointeract'},
     end
 end)
 
-path_auto_skip_conversation = menu.toggle_loop(Game, "Auto Skip Conversation",{"pgascon"},"Automatically skip all conversations.",function()
+store_auto_skip_conversation = menu.toggle_loop(Game, "Auto Skip Conversation",{"pgascon"},"Automatically skip all conversations.",function()
     if IS_SCRIPTED_CONVERSATION_ONGOING() then
         SKIP_TO_NEXT_SCRIPTED_CONVERSATION_LINE()
     end
@@ -3249,7 +3317,7 @@ local avoidCutsceneSkipHere = {
     { x = 5054.02, y = -5773.01, z = -3.76 }, -- Cayo Drainage
     { x = 819.66, y = -2206.27, z = 30.95 }, -- Cassino Hatch
 }
-path_auto_skip_cutscene = menu.toggle_loop(Game, "Auto Skip Cutscene", {"pgascut"}, "Automatically skip all cutscenes.", function()
+store_auto_skip_cutscene = menu.toggle_loop(Game, "Auto Skip Cutscene", {"pgascut"}, "Automatically skip all cutscenes.", function()
     if asuka_lib.transition_state(true) <3 and IS_CUTSCENE_PLAYING() then
         local playerPosition = players.get_position(players.user())
         local skipCutscene = true
@@ -3343,7 +3411,7 @@ local avoidWarningSkipHere = {
     { x = 1561.05, y = 385.90, z = -49.69 }, -- Cayo Outfit Selection
 }
 local lastWarnifyTime = {}
-path_auto_accept_warning = menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warnings in the game.", function()
+store_auto_accept_warning = menu.toggle_loop(Game, "Auto Accept Warning", {"pgaaw"}, "Auto accepts most warnings in the game.", function()
     local mess_hash = math.abs(GET_WARNING_SCREEN_MESSAGE_HASH())
 
     if mess_hash ~= 0 and (mess_hash ~= 976109292 and mess_hash ~= 1642168465) then
@@ -3406,7 +3474,7 @@ end)
 menu.divider(Game, "<3")
 
 local playerthingy = {}
-path_enhanced_name_tags = menu.toggle_loop(Game, "Enhanced Name Tag's", {""}, "hai", function()
+store_enhanced_name_tags = menu.toggle_loop(Game, "Enhanced Name Tag's", {""}, "hai", function()
     if not menu.is_in_screenshot_mode() then
         for players.list_except(true) as pid do
             local playerthing
@@ -3568,7 +3636,7 @@ local function espOnPlayer(pid, namesync)
     end
 end
 
-path_name_esp = menu.toggle_loop(Game, "Name ESP", {"pgesp"}, "ESP", function ()
+store_name_esp = menu.toggle_loop(Game, "Name ESP", {"pgesp"}, "ESP", function ()
     if asuka_lib.transition_state(true) == 1 and not menu.is_in_screenshot_mode() then
         local playerlist = players.list(false, true, true)
         for i = 1, #playerlist do
@@ -3580,7 +3648,7 @@ path_name_esp = menu.toggle_loop(Game, "Name ESP", {"pgesp"}, "ESP", function ()
 end)
 
 if menu.get_edition() > 1 then
-    path_bone_esp_while_armed = menu.toggle_loop(Game,"Bone ESP While Armed", {"aimboneesp"}, "Also counts for armed vehicles.", function()
+    store_bone_esp_while_armed = menu.toggle_loop(Game,"Bone ESP While Armed", {"aimboneesp"}, "Also counts for armed vehicles.", function()
         local weapon = math.abs(GET_SELECTED_PED_WEAPON(players.user_ped()))
         if not menu.is_in_screenshot_mode() and weapon ~= 1122011548 and weapon ~= 1569615261 then
             menu.trigger_command(menu.ref_by_path("World>Inhabitants>Player ESP>Bone ESP>Low Latency Rendering"))
@@ -3656,7 +3724,7 @@ end
 
 local Player_Magnet_value = 25
 local player_VIP_slots = 3
-path_player_magnet_slider = menu.slider(SessionManager, "Player Magnet Value", {"pgmagnetvalue"}, "", 0, 30, 25, 1, function(value)
+store_player_magnet_amount_slider = menu.slider(SessionManager, "Player Magnet Value", {"pgmagnetvalue"}, "", 0, 30, 25, 1, function(value)
     Player_Magnet_value = value
     local sence = Player_Magnet_value + player_VIP_slots - 30
     if sence > 0 then
@@ -3664,7 +3732,7 @@ path_player_magnet_slider = menu.slider(SessionManager, "Player Magnet Value", {
     end
 end)
 
-path_player_magnet_toggle = menu.toggle_loop(SessionManager, "Player Magnet Toggle", {}, "Player Magnet", function()
+store_player_magnet_amount_toggle = menu.toggle_loop(SessionManager, "Player Magnet Toggle", {}, "Player Magnet", function()
     if asuka_lib.transition_state(true) <3 and players.user() == players.get_host() and asuka_lib.session_type() == "Public" then
         if GET_NUMBER_OF_PLAYERS() < Player_Magnet_value then
             menu.trigger_commands("playermagnet on")
@@ -3679,7 +3747,7 @@ end)
 
 menu.divider(SessionManager, '~=^.^=~')
 
-path_player_VIP_slots = menu.slider(SessionManager, "VIP Slots Value", {"pgvipslotvalue"}, "How many VIP Join slots to hold free.", 1, 29, 3, 1, function(value)
+store_player_VIP_slots = menu.slider(SessionManager, "VIP Slots Value", {"pgvipslotvalue"}, "How many VIP Join slots to hold free.", 1, 29, 3, 1, function(value)
     player_VIP_slots = value
     local sence = Player_Magnet_value + player_VIP_slots - 30
     if sence > 0 then
@@ -3688,8 +3756,8 @@ path_player_VIP_slots = menu.slider(SessionManager, "VIP Slots Value", {"pgvipsl
 end)
 
 local player_VIP_slots_method = 0
-local path_player_VIP_toggle
-path_player_VIP_method = menu.list_select(SessionManager, "VIP Slots method", {""}, "The method how the VIP Join slots are getting hold free.", {
+local store_player_VIP_toggle
+store_player_VIP_method = menu.list_select(SessionManager, "VIP Slots method", {""}, "The method how the VIP Join slots are getting hold free.", {
     {0, "Hide from Session Pool"},
     {1, "Block: Non-Whitelisted"},
     {2, "Ses Type: Closed Friends"},
@@ -3697,7 +3765,7 @@ path_player_VIP_method = menu.list_select(SessionManager, "VIP Slots method", {"
     {4, "Block: Stranger"},
 }, 0, function(value)
     player_VIP_slots_method = value
-    if path_player_VIP_toggle then
+    if store_player_VIP_toggle then
         menu.set_state(menu.ref_by_path("Online>Session>Block Joins>Notifications>From Non-Whitelisted>Notification"), "Off")
         menu.set_state(menu.ref_by_path("Online>Session>Block Joins>Notifications>From Strangers>Notification"), "Off")
         menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Non-Whitelisted"), "Off")
@@ -3709,7 +3777,7 @@ path_player_VIP_method = menu.list_select(SessionManager, "VIP Slots method", {"
 end)
 
 local whitelist_update = false
-path_player_VIP_toggle = menu.toggle_loop(SessionManager, "VIP Slots Toggle", {}, "Toggle of the VIP Join slots function.", function()
+store_player_VIP_toggle = menu.toggle_loop(SessionManager, "VIP Slots Toggle", {}, "Toggle of the VIP Join slots function.", function()
     if asuka_lib.transition_state(true) == 1 and players.user() == players.get_host() then
         local is_full_value = GET_NUMBER_OF_PLAYERS() + player_VIP_slots >= 30
 
@@ -3764,7 +3832,7 @@ end
 
 menu.divider(SessionJoin, "Custom Player Spawn")
 
-path_custom_spawn = menu.text_input(SessionJoin, "Spawn", {"customspawnpos"}, "", function(input)
+store_custom_spawn = menu.text_input(SessionJoin, "Spawn", {"customspawnpos"}, "", function(input)
     local clean_spawn_cords = extractCoordinatesFromString(input)
     if clean_spawn_cords then
         customspawn = clean_spawn_cords
@@ -3781,7 +3849,7 @@ menu.action(SessionJoin, "Set Custom Spawn", {""}, "", function()
     menu.trigger_commands("customspawnpos " .. new_spawn)
 end)
 
-path_use_custom_spawn = menu.toggle(SessionJoin, "Use Custom Spawn", {""}, "", function(on)
+store_use_custom_spawn = menu.toggle(SessionJoin, "Use Custom Spawn", {""}, "", function(on)
     if on then
         customspawned = true
         --PIP_STAT_SET_INT("SPAWN_LOCATION_SETTING", 4)
@@ -3792,7 +3860,7 @@ end)
 
 menu.divider(SessionJoin, "Custom Vehicle Spawn")
 
-path_custom_vehicle_spawn = menu.text_input(SessionJoin, "Vehicle Spawn", {"customspawnvehpos"}, "", function(input)
+store_custom_vehicle_spawn = menu.text_input(SessionJoin, "Vehicle Spawn", {"customspawnvehpos"}, "", function(input)
     local clean_spawn_cords = extractCoordinatesFromString(input)
     if clean_spawn_cords then
         customVehiclespawn = clean_spawn_cords
@@ -3814,7 +3882,7 @@ menu.action(SessionJoin, "Set Custom Vehicle Spawn", {""}, "", function()
     menu.trigger_commands("customspawnvehpos " .. new_vehicle_spawn)
 end)
 
-path_use_custom_vehicle_spawn = menu.toggle(SessionJoin, "Use Custom Vehicle Spawn", {""}, "", function(on)
+store_use_custom_vehicle_spawn = menu.toggle(SessionJoin, "Use Custom Vehicle Spawn", {""}, "", function(on)
     if on then
         customspawnedvehicle = true
         --PIP_STAT_SET_INT("SPAWN_LOCATION_SETTING", 4)
@@ -3828,7 +3896,7 @@ menu.divider(SessionJoin, "(This is in development, could be buggy)")
 
 local favoritevehid = -1
 
-path_favorite_vehicle_spawn = menu.slider(SessionJoin, "Favorite Veh ID", {"favoritevehicleid"}, "", -1, 1666, favoritevehid, 1, function (new_value)
+store_favorite_vehicle_spawn = menu.slider(SessionJoin, "Favorite Veh ID", {"favoritevehicleid"}, "", -1, 1666, favoritevehid, 1, function (new_value)
     favoritevehid = new_value
 end)
 
@@ -3848,7 +3916,7 @@ menu.action(SessionJoin, "Set Favorite Vehicle", {""}, "", function()
     end
 end)
 
-path_use_favorite_vehicle_spawn = menu.toggle(SessionJoin, "Spawn Favorite Vehicle", {""}, "On join.", function(on)
+store_use_favorite_vehicle_spawn = menu.toggle(SessionJoin, "Spawn Favorite Vehicle", {""}, "On join.", function(on)
     if on then
         customspawnedvehiclefav = true
     else
@@ -3881,7 +3949,7 @@ local orb_room_objects = {
 
 local orbital_cannon_room = v3.new(328.47, 4828.87, -58.54)
 
-path_block_orb_room = menu.toggle_loop(SessionWorld, "Block Orbital Cannon Room", {"blockorb"}, "Blocks the Entrance for the Orbital Cannon Room", function()
+store_block_orb_room = menu.toggle_loop(SessionWorld, "Block Orbital Cannon Room", {"blockorb"}, "Blocks the Entrance for the Orbital Cannon Room", function()
     if asuka_lib.allow_spawn_check() then
         for ipairs(orb_room_objects) as obj do
             obj.var = asuka_lib.spawn_and_check_object(
@@ -3928,7 +3996,7 @@ local kosatka_objects = {
     {var = nil, params = {util.joaat("hei_prop_heist_weed_pallet_02"), v3.new(1558.9, 387.111, -50.666), 0, 0, 0, nil, 13, true, true, true}},
     {var = nil, params = {util.joaat("hei_prop_heist_weed_pallet_02"), v3.new(1558.9, 388.777, -50.666), 0, 0, 0, nil, 13, true, true, true}},
 }
-path_block_kosatka_missile_terminal = menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {"blockkosatka"}, "Blocks the Missile terminal", function()
+store_block_kosatka_missile_terminal = menu.toggle_loop(SessionWorld, "Block Kosatka Missile Terminal", {"blockkosatka"}, "Blocks the Missile terminal", function()
     if asuka_lib.allow_spawn_check() then
         for ipairs(kosatka_objects) as obj do
             obj.var = asuka_lib.spawn_and_check_object(
@@ -3949,7 +4017,7 @@ local terrorbyte_objects = {
     {var = nil, params = {1870961552, v3.new(-1420.8349609375, -3016.2561035156, -76.113542541504), 180, 0, 90, nil, 13, true, false}},
     {var = nil, params = {util.joaat("prop_beach_fire"), v3.new(-1420.8349609375, -3016.2561035156, -80.066642541504), 0, 0, 90, nil, 13, true, true}},
 }
-path_anit_terrorbyte = menu.toggle_loop(SessionWorld, "Anti Terrorbyte", {"blockterror"}, "Blocks the MK2 acces", function()
+store_anit_terrorbyte = menu.toggle_loop(SessionWorld, "Anti Terrorbyte", {"blockterror"}, "Blocks the MK2 acces", function()
     if asuka_lib.allow_spawn_check() then
         for ipairs(terrorbyte_objects) as obj do
             obj.var = asuka_lib.spawn_and_check_object(
@@ -4008,7 +4076,7 @@ local shrine_Elements = {
 }
 
 local Asuka_shrine_blip = nil
-path_asukas_shrine = menu.toggle_loop(SessionWorld, "Asuka's Shrine", {"asukasshrine"}, "Shows Asuka's Shrine, Perfect for a hangout spot or Deep thinking.\nNormal its a calm and mystical place only lit by fire and candles , once entering a arcade u unlock the bright neon lights of the city~", function()
+store_asukas_shrine = menu.toggle_loop(SessionWorld, "Asuka's Shrine", {"asukasshrine"}, "Shows Asuka's Shrine, Perfect for a hangout spot or Deep thinking.\nNormal its a calm and mystical place only lit by fire and candles , once entering a arcade u unlock the bright neon lights of the city~", function()
     if asuka_lib.allow_spawn_check() then
         if asuka_lib.transition_state(true) == 1 then
             if not Asuka_shrine_blip or not DOES_BLIP_EXIST(Asuka_shrine_blip) then
@@ -4066,7 +4134,7 @@ end)
 --    REMOVE_AIR_DEFENCE_SPHERE(save_zone)
 --end)
 
-path_nerf_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Nerf Oppressor MK2s", {""}, "Nerf Oppressor mk2 weapons, except Modder and Friend's", function()
+store_nerf_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Nerf Oppressor MK2s", {""}, "Nerf Oppressor mk2 weapons, except Modder and Friend's", function()
     for players.list_except(true) as pid do
         if players.get_vehicle_model(pid) == 2069146067 and not is_trusted(pid) and not is_modder(pid) then
             local vehicle = GET_VEHICLE_PED_IS_IN(GET_PLAYER_PED_SCRIPT_INDEX(pid))
@@ -4088,7 +4156,7 @@ path_nerf_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Nerf Oppressor MK2s", 
     util.yield(1666)
 end)
 
-path_weaken_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Weaken Oppressor MK2s", {""}, "Weaken Oppressor mk2, except Modder and Friend's", function()
+store_weaken_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Weaken Oppressor MK2s", {""}, "Weaken Oppressor mk2, except Modder and Friend's", function()
     for players.list_except(true) as pid do
         if players.get_vehicle_model(pid) == 2069146067 and not is_trusted(pid) and not is_modder(pid) then
             local vehicle = GET_VEHICLE_PED_IS_IN(GET_PLAYER_PED_SCRIPT_INDEX(pid))
@@ -4112,7 +4180,7 @@ path_weaken_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Weaken Oppressor MK2
     util.yield(1666)
 end)
 
-path_downgrade_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Downgrade Oppressor MK2s", {""}, "Downgrade Oppressor mk2, except Modder and Friend's", function()
+store_downgrade_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Downgrade Oppressor MK2s", {""}, "Downgrade Oppressor mk2, except Modder and Friend's", function()
     for players.list_except(true) as pid do
         if players.get_vehicle_model(pid) == 2069146067 and not is_trusted(pid) and not is_modder(pid) then
             local vehicle = GET_VEHICLE_PED_IS_IN(GET_PLAYER_PED_SCRIPT_INDEX(pid))
@@ -4134,7 +4202,7 @@ end)
 
 local mk2noob = {}
 
-path_spinning_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Spinning Oppressor MK2s", {""}, "Spin all MK2's, except Modder and Friend's", function()
+store_spinning_oppressor_mk2 = menu.toggle_loop(SessionWorld, "Spinning Oppressor MK2s", {""}, "Spin all MK2's, except Modder and Friend's", function()
     for players.list_except(true) as pid do
         if players.get_vehicle_model(pid) == 2069146067 and not is_trusted(pid) then
             if not is_modder(pid) then 
@@ -4241,7 +4309,7 @@ menu.action(SessionMisc, "Import \"Friend's\" Group", {"importfriends"}, "Import
     end
 end)
 
-path_kick_aggressive_on_attack = menu.toggle_loop(SessionMisc, "Kick Aggressive Host Token on Attack", {""}, "", function()
+store_kick_aggressive_on_attack = menu.toggle_loop(SessionMisc, "Kick Aggressive Host Token on Attack", {""}, "", function()
     if asuka_lib.transition_state(true) <3 then
         for players.list() as pid do
             if players.is_marked_as_attacker(pid) and asuka_lib.has_detection(pid, "Spoofed Host Token (Aggressive)") and not is_trusted(pid) then
@@ -4254,7 +4322,7 @@ path_kick_aggressive_on_attack = menu.toggle_loop(SessionMisc, "Kick Aggressive 
     end
 end)
 
-path_kick_aggressive_as_host = menu.toggle_loop(SessionMisc, "Block Aggressive Host Token as Host", {""}, "", function()
+store_kick_aggressive_as_host = menu.toggle_loop(SessionMisc, "Block Aggressive Host Token as Host", {""}, "", function()
     if players.user() == players.get_host() then
         for players.list() as pid do
             if asuka_lib.has_detection(pid, "Spoofed Host Token (Aggressive)") and not is_trusted(pid) then
@@ -4301,7 +4369,7 @@ discord_webhook = asuka_lib.read_from_file(store_dir..'do_not_share_webhook.txt'
 local posted_session_code = asuka_lib.read_from_file(store_dir..'session_code.txt')
 local onlyPostasFriendlyHost = false
 local inviteAllFriendsOnWebhook = false
-path_post_session_code_via_webhook = menu.toggle_loop(SessionInvite, "Post Session Code via Webhook", {""}, "Never share you webhook ever!", function()
+store_post_session_code_via_webhook = menu.toggle_loop(SessionInvite, "Post Session Code via Webhook", {""}, "Never share you webhook ever!", function()
     if discord_webhook then
         if asuka_lib.transition_state(true) == 1 then
             local code = asuka_lib.get_session_code()
@@ -4378,13 +4446,13 @@ path_post_session_code_via_webhook = menu.toggle_loop(SessionInvite, "Post Sessi
         end
     else
         notify("Please Create a Webhook first.")
-        menu.set_value(path_post_session_code_via_webhook, false)
+        menu.set_value(store_post_session_code_via_webhook, false)
     end
     ::webhookSkip::
     util.yield(13666)
 end)
 
-path_post_webhook_if_friendly = menu.toggle(SessionInvite, "Only Post if Host or Host is Friendly", {""}, "", function(on)
+store_post_webhook_if_friendly = menu.toggle(SessionInvite, "Only Post if Host or Host is Friendly", {""}, "", function(on)
     if on then
         onlyPostasFriendlyHost = true
     else
@@ -4392,7 +4460,7 @@ path_post_webhook_if_friendly = menu.toggle(SessionInvite, "Only Post if Host or
     end
 end)
 
-path_invite_all_friends_on_webhook = menu.toggle(SessionInvite, "Invite all Friends on webhook send", {""}, "", function(on)
+store_invite_all_friends_on_webhook = menu.toggle(SessionInvite, "Invite all Friends on webhook send", {""}, "", function(on)
     if on then
         inviteAllFriendsOnWebhook = true
     else
@@ -4477,7 +4545,7 @@ menu.action(SessionInvite, "Copy Discord Session invite link.", {"invitelink"}, 
     end
 end)
 
-path_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
+store_smart_script_host = menu.toggle_loop(Session, "Smart Script Host", {"pgssh"}, "A Smart Script host that will help YOU if stuck in loading screens etc.", function()
     if asuka_lib.transition_state(true) == 1 then
         if not IS_CUTSCENE_PLAYING() then
             if asuka_lib.is_loading(players.user()) then
@@ -4529,7 +4597,7 @@ local should_ghost_god = false
 local should_ghost_modder = false
 local should_ghost_orbital_cannon = false
 
-path_auto_ghost_modder = menu.toggle_loop(auto_ghost_players, "Auto Ghost Players", {"ghostplayers"}, "Ghost who u select in the setting below.", function()
+store_auto_ghost_modder = menu.toggle_loop(auto_ghost_players, "Auto Ghost Players", {"ghostplayers"}, "Ghost who u select in the setting below.", function()
     if asuka_lib.transition_state(true) <3 and not selfSafe() then
         for players.list(false) as pid do
             if should_ghost_god then
@@ -4555,7 +4623,7 @@ path_auto_ghost_modder = menu.toggle_loop(auto_ghost_players, "Auto Ghost Player
                     set_as_illusion(pid, ghost_modder, false)
                 end
             end
-            if should_ghost_orbital_cannon and not menu.get_value(path_block_orb_room) then
+            if should_ghost_orbital_cannon and not menu.get_value(store_block_orb_room) then
                 if orbital_cannon_room:distance(players.get_position(pid)) <= 9 then
                     set_as_illusion(pid, in_orb_room, true)
                 else
@@ -4619,7 +4687,7 @@ end)
 
 menu.divider(auto_ghost_players, "Options")
 
-path_ghost_god_mode = menu.toggle(auto_ghost_players, "Ghost God Modes",{"ghostgod"},"",function(on)
+store_ghost_god_mode = menu.toggle(auto_ghost_players, "Ghost God Modes",{"ghostgod"},"",function(on)
     if on then
         should_ghost_god = true
     else
@@ -4633,7 +4701,7 @@ path_ghost_god_mode = menu.toggle(auto_ghost_players, "Ghost God Modes",{"ghostg
     end
 end)
 
-path_ghost_modder = menu.toggle(auto_ghost_players, "Ghost Modder",{"ghostmodder"},"",function(on)
+store_ghost_modder = menu.toggle(auto_ghost_players, "Ghost Modder",{"ghostmodder"},"",function(on)
     if on then
         should_ghost_modder = true
     else
@@ -4647,7 +4715,7 @@ path_ghost_modder = menu.toggle(auto_ghost_players, "Ghost Modder",{"ghostmodder
     end
 end)
 
-path_ghost_orbital_cannon = menu.toggle(auto_ghost_players, "Ghost Orbital Cannon",{"ghostorbital"},"",function(on)
+store_ghost_orbital_cannon = menu.toggle(auto_ghost_players, "Ghost Orbital Cannon",{"ghostorbital"},"",function(on)
     if on then
         should_ghost_orbital_cannon = true
     else
@@ -4710,7 +4778,7 @@ end)
 local pop_multiplier_free = nil
 local pop_multiplier_repair = nil
 
-path_clear_traffic = menu.toggle_loop(Session, "Clear Traffic", {"antitraffic"}, "Clears the traffic on the session for everyone.", function()
+store_clear_traffic = menu.toggle_loop(Session, "Clear Traffic", {"antitraffic"}, "Clears the traffic on the session for everyone.", function()
     pop_multiplier_repair = remove_pop_multiplier(pop_multiplier_repair)
     if menu.get_state(menu.ref_by_path("World>Inhabitants>Traffic>Disable")) == "Disabled" then
         menu.trigger_command(menu.ref_by_path("World>Inhabitants>Traffic>Disable>Enabled, Including Parked Cars"))
@@ -4760,7 +4828,7 @@ end, function()
     pop_multiplier_repair = create_pop_multiplier(pop_multiplier_repair, 1.0, 1.0)
 end)
 
-path_soft_clear_traffic = menu.toggle_loop(Session, "Soft Clear Traffic", {"softantitrafic"}, "Clears the traffic around you localy in close range.\nDosnt work with many players in close range.", function()
+store_soft_clear_traffic = menu.toggle_loop(Session, "Soft Clear Traffic", {"softantitrafic"}, "Clears the traffic around you localy in close range.\nDosnt work with many players in close range.", function()
     if asuka_lib.is_user_inside_vehicle(false) and asuka_lib.transition_state(true) == 1 then
         if GET_ENTITY_HEIGHT_ABOVE_GROUND(players.user_ped()) < 13 then
             local pos = players.get_position(players.user())
@@ -5575,101 +5643,98 @@ menu.action(menu.my_root(), "Update Notes", {""}, startupmsg, function()
     notify(startupmsg)
 end)
 
-local data_cfg = {
-    --PIP Girl
-    store_nc_pop = path_nc_pop,
-    store_org_name = path_org_name,
-    store_org_type = path_org_type,
-    store_auto_org = path_auto_org,
-    store_auto_org_color = path_auto_org_color,
-    --store_auto_org_color_check = path_auto_org_color_check,
-    store_join_friends_org = path_join_friends_org,
-    store_collect_money = path_collect_money,
-    --Stimpak
-    store_fill_me_up = path_fill_me_up,
-    store_auto_armor = path_auto_armor,
-    store_recharge_health = path_recharge_health,
-    store_recharge_armor = path_recharge_armor,
-    store_first_aid_kit = path_first_aid_kit,
-    store_oxygen = path_oxygen,
-    --Vehicle
-    store_asuka_tech = path_asuka_tech,
-    store_asuka_tech_repair = path_asuka_tech_repair,
-    store_asuka_tech_mission_repair = path_asuka_tech_mission_repair,
-    store_asuka_tech_lockon_jammer = path_asuka_tech_lockon_jammer,
-    store_asuka_tech_hp_bar = path_asuka_tech_hp_bar,
-    store_asuka_tech_info_overlay = path_asuka_tech_info_overlay,
-    store_asuka_tech_dirt = path_asuka_tech_dirt,
-    store_asuka_tech_armor = path_asuka_tech_armor,
-    store_asuka_tech_lights = path_asuka_tech_lights,
-    store_asuka_tech_protection = path_asuka_tech_protection,
-    store_vehicle_light_rhythm_sos = path_vehicle_light_rhythm_sos,
-    store_vehicle_light_rhythm_rapid_slowdown = path_vehicle_light_rhythm_rapid_slowdown,
-    store_vehicle_light_color = path_vehicle_light_color,
-    store_auto_vehicle_light_color = path_auto_vehicle_light_color,
-    store_asukas_repair_stops = path_asukas_repair_stops,
-    store_heli_sparrow_handling = path_heli_sparrow_handling,
-    store_easy_opmk2ud_handling = path_easy_opmk2ud_handling,
-    store_claim_all_mmi_on_join = path_claim_all_mmi_on_join,
-    --Outfit
-    store_vampire_young = path_vampire_young,
-    store_smart_outfit_lock = path_smart_outfit_lock,
-    store_interaction_menu_outfit_lock = path_interaction_menu_outfit_lock,
-    store_clothing_shop_outfit_lock = path_clothing_shop_outfit_lock,
-    store_bike_helmet_var = path_bike_helmet_var,
-    store_bike_helmet_color = path_bike_helmet_color,
-    store_Aircraft_helmet_var = path_Aircraft_helmet_var,
-    store_Aircraft_helmet_color = path_Aircraft_helmet_color,
-    store_demon_horns_color = path_demon_horns_color,
-    store_demon_horns = path_demon_horns,
-    --Combat
-    store_thermal_highlight = path_thermal_highlight,
-    store_bst_info = path_bst_info,
-    store_weapon_light = path_weapon_light,
-
-    --Game
-    store_auto_interact = path_auto_interact,
-    store_auto_skip_conversation = path_auto_skip_conversation,
-    store_auto_skip_cutscene = path_auto_skip_cutscene,
-    store_auto_accept_warning = path_auto_accept_warning,
-    store_enhanced_name_tags = path_enhanced_name_tags,
-    store_name_esp = path_name_esp,
-    store_bone_esp_while_armed = path_bone_esp_while_armed,
-    --Session
-    store_player_magnet_amount_slider = path_player_magnet_slider,
-    store_player_magnet_amount_toggle = path_player_magnet_toggle,
-    store_player_VIP_slots = path_player_VIP_slots,
-    store_player_VIP_method = path_player_VIP_method,
-    store_player_VIP_toggle = path_player_VIP_toggle,
-    store_custom_spawn = path_custom_spawn,
-    store_use_custom_spawn = path_use_custom_spawn,
-    store_custom_vehicle_spawn = path_custom_vehicle_spawn,
-    store_use_custom_vehicle_spawn = path_use_custom_vehicle_spawn,
-    store_favorite_vehicle_spawn = path_favorite_vehicle_spawn,
-    store_use_favorite_vehicle_spawn = path_use_favorite_vehicle_spawn,
-    store_block_orb_room = path_block_orb_room,
-    store_block_kosatka_missile_terminal = path_block_kosatka_missile_terminal,
-    store_anit_terrorbyte = path_anit_terrorbyte,
-    store_asukas_shrine = path_asukas_shrine,
-    store_nerf_oppressor_mk2 = path_nerf_oppressor_mk2,
-    store_weaken_oppressor_mk2 = path_weaken_oppressor_mk2,
-    store_downgrade_oppressor_mk2 = path_downgrade_oppressor_mk2,
-    store_spinning_oppressor_mk2 = path_spinning_oppressor_mk2,
-    store_kick_aggressive_on_attack = path_kick_aggressive_on_attack,
-    store_kick_aggressive_as_host = path_kick_aggressive_as_host,
-    store_post_session_code_via_webhook = path_post_session_code_via_webhook,
-    store_post_webhook_if_friendly = path_post_webhook_if_friendly,
-    store_invite_all_friends_on_webhook = path_invite_all_friends_on_webhook,
-    store_smart_script_host = path_smart_script_host,
-    store_auto_ghost_modder = path_auto_ghost_modder,
-    store_ghost_god_mode = path_ghost_god_mode,
-    store_ghost_modder = path_ghost_modder,
-    store_ghost_orbital_cannon = path_ghost_orbital_cannon,
-    store_clear_traffic = path_clear_traffic,
-    store_soft_clear_traffic = path_soft_clear_traffic,
-    --Settings
-    store_custom_blacklist_check_delay = path_custom_blacklist_check_delay,
-}
+--PIP Girl
+data_cfg["store_nc_pop"] = store_nc_pop
+data_cfg["store_org_name"] = store_org_name
+data_cfg["store_org_type"] = store_org_type
+data_cfg["store_auto_org"] = store_auto_org
+data_cfg["store_auto_org_color"] = store_auto_org_color
+--store_auto_org_color_check = store_auto_org_color_check
+data_cfg["store_join_friends_org"] = store_join_friends_org
+data_cfg["store_collect_money"] = store_collect_money
+--Stimpak
+data_cfg["store_fill_me_up"] = store_fill_me_up
+data_cfg["store_auto_armor"] = store_auto_armor
+data_cfg["store_recharge_health"] = store_recharge_health
+data_cfg["store_recharge_armor"] = store_recharge_armor
+data_cfg["store_first_aid_kit"] = store_first_aid_kit
+data_cfg["store_oxygen"] = store_oxygen
+--Vehicle
+data_cfg["store_asuka_tech"] = store_asuka_tech
+data_cfg["store_asuka_tech_repair"] = store_asuka_tech_repair
+data_cfg["store_asuka_tech_mission_repair"] = store_asuka_tech_mission_repair
+data_cfg["store_asuka_tech_lockon_jammer"] = store_asuka_tech_lockon_jammer
+data_cfg["store_asuka_tech_hp_bar"] = store_asuka_tech_hp_bar
+data_cfg["store_asuka_tech_info_overlay"] = store_asuka_tech_info_overlay
+data_cfg["store_asuka_tech_dirt"] = store_asuka_tech_dirt
+data_cfg["store_asuka_tech_armor"] = store_asuka_tech_armor
+data_cfg["store_asuka_tech_lights"] = store_asuka_tech_lights
+data_cfg["store_asuka_tech_protection"] = store_asuka_tech_protection
+data_cfg["store_vehicle_light_rhythm_sos"] = store_vehicle_light_rhythm_sos
+data_cfg["store_vehicle_light_rhythm_rapid_slowdown"] = store_vehicle_light_rhythm_rapid_slowdown
+data_cfg["store_vehicle_light_color"] = store_vehicle_light_color
+data_cfg["store_auto_vehicle_light_color"] = store_auto_vehicle_light_color
+data_cfg["store_asukas_repair_stops"] = store_asukas_repair_stops
+data_cfg["store_heli_sparrow_handling"] = store_heli_sparrow_handling
+data_cfg["store_easy_opmk2ud_handling"] = store_easy_opmk2ud_handling
+data_cfg["store_claim_all_mmi_on_join"] = store_claim_all_mmi_on_join
+--Outfit
+data_cfg["store_vampire_young"] = store_vampire_young
+data_cfg["store_smart_outfit_lock"] = store_smart_outfit_lock
+data_cfg["store_interaction_menu_outfit_lock"] = store_interaction_menu_outfit_lock
+data_cfg["store_clothing_shop_outfit_lock"] = store_clothing_shop_outfit_lock
+data_cfg["store_bike_helmet_var"] = store_bike_helmet_var
+data_cfg["store_bike_helmet_color"] = store_bike_helmet_color
+data_cfg["store_Aircraft_helmet_var"] = store_Aircraft_helmet_var
+data_cfg["store_Aircraft_helmet_color"] = store_Aircraft_helmet_color
+data_cfg["store_demon_horns_color"] = store_demon_horns_color
+data_cfg["store_demon_horns"] = store_demon_horns
+--Combat
+data_cfg["store_thermal_highlight"] = store_thermal_highlight
+data_cfg["store_bst_info"] = store_bst_info
+data_cfg["store_weapon_light"] = store_weapon_light
+--Game
+data_cfg["store_auto_interact"] = store_auto_interact
+data_cfg["store_auto_skip_conversation"] = store_auto_skip_conversation
+data_cfg["store_auto_skip_cutscene"] = store_auto_skip_cutscene
+data_cfg["store_auto_accept_warning"] = store_auto_accept_warning
+data_cfg["store_enhanced_name_tags"] = store_enhanced_name_tags
+data_cfg["store_name_esp"] = store_name_esp
+data_cfg["store_bone_esp_while_armed"] = store_bone_esp_while_armed
+--Session
+data_cfg["store_player_magnet_amount_slider"] = store_player_magnet_amount_slider
+data_cfg["store_player_magnet_amount_toggle"] = store_player_magnet_amount_toggle
+data_cfg["store_player_VIP_slots"] = store_player_VIP_slots
+data_cfg["store_player_VIP_method"] = store_player_VIP_method
+data_cfg["store_player_VIP_toggle"] = store_player_VIP_toggle
+data_cfg["store_custom_spawn"] = store_custom_spawn
+data_cfg["store_use_custom_spawn"] = store_use_custom_spawn
+data_cfg["store_custom_vehicle_spawn"] = store_custom_vehicle_spawn
+data_cfg["store_use_custom_vehicle_spawn"] = store_use_custom_vehicle_spawn
+data_cfg["store_favorite_vehicle_spawn"] = store_favorite_vehicle_spawn
+data_cfg["store_use_favorite_vehicle_spawn"] = store_use_favorite_vehicle_spawn
+data_cfg["store_block_orb_room"] = store_block_orb_room
+data_cfg["store_block_kosatka_missile_terminal"] = store_block_kosatka_missile_terminal
+data_cfg["store_anit_terrorbyte"] = store_anit_terrorbyte
+data_cfg["store_asukas_shrine"] = store_asukas_shrine
+data_cfg["store_nerf_oppressor_mk2"] = store_nerf_oppressor_mk2
+data_cfg["store_weaken_oppressor_mk2"] = store_weaken_oppressor_mk2
+data_cfg["store_downgrade_oppressor_mk2"] = store_downgrade_oppressor_mk2
+data_cfg["store_spinning_oppressor_mk2"] = store_spinning_oppressor_mk2
+data_cfg["store_kick_aggressive_on_attack"] = store_kick_aggressive_on_attack
+data_cfg["store_kick_aggressive_as_host"] = store_kick_aggressive_as_host
+data_cfg["store_post_session_code_via_webhook"] = store_post_session_code_via_webhook
+data_cfg["store_post_webhook_if_friendly"] = store_post_webhook_if_friendly
+data_cfg["store_invite_all_friends_on_webhook"] = store_invite_all_friends_on_webhook
+data_cfg["store_smart_script_host"] = store_smart_script_host
+data_cfg["store_auto_ghost_modder"] = store_auto_ghost_modder
+data_cfg["store_ghost_god_mode"] = store_ghost_god_mode
+data_cfg["store_ghost_modder"] = store_ghost_modder
+data_cfg["store_ghost_orbital_cannon"] = store_ghost_orbital_cannon
+data_cfg["store_clear_traffic"] = store_clear_traffic
+data_cfg["store_soft_clear_traffic"] = store_soft_clear_traffic
+--Settings
+data_cfg["store_custom_blacklist_check_delay"] = path_custom_blacklist_check_delay    
 
 util.on_stop(function()
     remove_blips()
@@ -5685,7 +5750,7 @@ util.on_transition_finished(function ()
 	if customspawned then
         --PIP_STAT_SET_INT("SPAWN_LOCATION_SETTING", 4)
         if not NETWORK_IS_ACTIVITY_SESSION() then
-            up_customspawn = extractCoordinatesFromString(menu.get_value(path_custom_spawn))
+            up_customspawn = extractCoordinatesFromString(menu.get_value(store_custom_spawn))
             if up_customspawn then
                 customspawn = up_customspawn
             end
@@ -5701,7 +5766,7 @@ util.on_transition_finished(function ()
         menu.trigger_commands("pv"..favoritevehid.."request")
         CLEAR_ALL_HELP_MESSAGES()
     end
-    if menu.get_value(path_smart_outfit_lock) then
+    if menu.get_value(store_smart_outfit_lock) then
         if is_outfit_corrupted() then
             menu.trigger_commands("outfit xyzPIPGirlTemp")
             notify("Smart Outfit: The transition broke u locked outfit, restoring with last known working outfit.")
@@ -5717,7 +5782,7 @@ util.on_transition_finished(function ()
         SET_PED_HEAD_OVERLAY(players.user_ped(), 0, 255, 0.0) --Remove destroyed/infected skin in face.
     end
     asuka_lib.save_config(store_dir..'settings.json', data_cfg, true)
-    up_customVehiclespawn = extractCoordinatesFromString(menu.get_value(path_custom_vehicle_spawn))
+    up_customVehiclespawn = extractCoordinatesFromString(menu.get_value(store_custom_vehicle_spawn))
     if up_customVehiclespawn then
         customVehiclespawn = up_customVehiclespawn
     end
@@ -5844,7 +5909,7 @@ local function userIdentification()
                 util.yield(3666)
             end
             asuka_lib.save_config(store_dir..'settings.json', data_cfg, true)
-            if menu.get_value(path_smart_outfit_lock) then
+            if menu.get_value(store_smart_outfit_lock) then
                 if not is_outfit_corrupted() then
                     save_temp_outfit()
                 end
