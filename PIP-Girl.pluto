@@ -2332,7 +2332,7 @@ local fsd_toggles = {
     {bit = 256, default = true, name = "Use blinkers", description = "Use blinkers"},
     {bit = 512, default = true, name = "Allow going wrong way", description = "Allow going wrong way (only does it if the correct lane is full, will try to reach the correct lane again a.s.a.p.)"},
     {bit = 1024, default = false, name = "Drive in reverse gear", description = "Drive in reverse gear"},
-    {bit = 2048, default = false, name = "UseWanderFallbackInsteadOfStraightLine", description = "UseWanderFallbackInsteadOfStraightLine"},
+    {bit = 2048, default = true, name = "UseWanderFallbackInsteadOfStraightLine", description = "UseWanderFallbackInsteadOfStraightLine"},
     {bit = 4096, default = false, name = "AvoidRestrictedAreas", description = "AvoidRestrictedAreas"},
     {bit = 8192, default = false, name = "PreventBackgroundPathfinding", description = "PreventBackgroundPathfinding"},
     {bit = 16384, default = true, name = "AdjustCruiseSpeedBasedOnRoadSpeed", description = "AdjustCruiseSpeedBasedOnRoadSpeed"},
