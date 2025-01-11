@@ -2355,7 +2355,7 @@ local fsd_toggles = {
     {bit = 2147483648, default = true, name = "StopAtDestination", description = "StopAtDestination"}
 }
 
-store_FSD_bit = menu.text_input(fsd_style_menu_list, "FSD Style Bit", {"pipfsdbit"}, "", function(input_str, click_type)
+menu.text_input(fsd_style_menu_list, "FSD Style Bit", {"pipfsdbit"}, "", function(input_str, click_type)
     local bitmask = tonumber(input_str)
     if bitmask then
         FSD_style_bitmask = bitmask
