@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local lust_upDate = {year = 2025, month = 1, day = 6, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2025, month = 1, day = 11, hour = 6, min = 6, sec = 6}
 
 local script_version = "V."..lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
@@ -1671,7 +1671,7 @@ local function buff_asuka_tech(vehicle)
     end
     menu.trigger_commands("smoothflight on")
     if protectMissionVehicles and not players.is_in_interior(players.user()) and not players.is_using_rc_vehicle(players.user()) then
-        if IS_ENTITY_A_MISSION_ENTITY(vehicle) and DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 and table.contains(unlikely_mission_vehicles, GET_ENTITY_SCRIPT(vehicle)) then
+        if IS_ENTITY_A_MISSION_ENTITY(vehicle) and DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 and not table.contains(unlikely_mission_vehicles, GET_ENTITY_SCRIPT(vehicle, 0)) then
             local vehicle_name = util.reverse_joaat(entities.get_model_hash(vehicle))
             local vehicle_label = util.get_label_text(vehicle_name)
             if vehicle_label ~= "NULL" then
@@ -1841,7 +1841,7 @@ local asuka_tech_dirt_amount = 0.03
 local function repair_asuka_tech(vehicle)
     local repair_amount = 0
     local max_repair_limit = 1000
-    if IS_ENTITY_A_MISSION_ENTITY(vehicle) and DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 then
+    if IS_ENTITY_A_MISSION_ENTITY(vehicle) and DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 and not table.contains(unlikely_mission_vehicles, GET_ENTITY_SCRIPT(vehicle, 0)) then
         repair_amount = asuka_tech_mission_repair_amount
         max_repair_limit = max_repair_limit * asuka_tech_mission_repair_amount
     else
@@ -2316,21 +2316,10 @@ menu.divider(Vehicle, "FSD (Full Self Driving)")
 
 local fsd_settings_menu_list = menu.list(Vehicle, 'FSD Settings', {}, '', function(); end)
 
-local fsd_style_menu_list = menu.list(fsd_settings_menu_list, 'FSD Driving Style', {}, 'You can combine as u wish.\nStyle gets applied on start.', function(); end)
-
-menu.divider(fsd_style_menu_list, "You can combine as u wish.")
-menu.divider(fsd_style_menu_list, "Style gets applied on start.")
+local fsd_style_menu_list = menu.list(fsd_settings_menu_list, 'FSD Style', {}, 'You can combine as u wish.\nStyle gets applied on start.', function(); end)
 
 local FSD_style_bitmask = 0
-
-local function set_FSD_style(flagValue, state)
-    if state then
-        FSD_style_bitmask = FSD_style_bitmask | flagValue
-    else
-        FSD_style_bitmask = FSD_style_bitmask & ~flagValue
-    end
-end
-
+local MP_F_DeadHooker = util.joaat("MP_F_DeadHooker")
 local fsd_toggles = {
     {bit = 1, default = true, name = "Stop before vehicles", description = "Stop before vehicles"},
     {bit = 2, default = false, name = "Stop before peds", description = "Stop before peds"},
@@ -2357,22 +2346,201 @@ local fsd_toggles = {
     {bit = 4194304, default = false, name = "Ignore roads", description = "Ignore roads (Uses local pathing, only works within 200~ meters around the player)"},
     {bit = 8388608, default = false, name = "PlaneTaxiMode", description = "PlaneTaxiMode"},
     {bit = 16777216, default = false, name = "Ignore all pathing", description = "Ignore all pathing (Goes straight to destination)"},
-    {bit = 33554432, default = true, name = "UseStringPullingAtJunctions", description = "UseStringPullingAtJunctions"},
+    {bit = 33554432, default = false, name = "UseStringPullingAtJunctions", description = "UseStringPullingAtJunctions"},
     {bit = 67108864, default = false, name = "Unknown", description = "Unknown"},
     {bit = 134217728, default = false, name = "Unknown", description = "Unknown"},
     {bit = 268435456, default = false, name = "Unknown", description = "Unknown"},
     {bit = 536870912, default = false, name = "Avoid highways when possible", description = "Avoid highways when possible (will use the highway if there is no other way to get to the destination)"},
-    {bit = 1073741824, default = false, name = "ForceJoinInRoadDirection", description = "ForceJoinInRoadDirection"},
+    {bit = 1073741824, default = true, name = "ForceJoinInRoadDirection", description = "ForceJoinInRoadDirection"},
     {bit = 2147483648, default = true, name = "StopAtDestination", description = "StopAtDestination"}
 }
 
+store_FSD_bit = menu.text_input(fsd_style_menu_list, "FSD Style Bit", {"pipfsdbit"}, "", function(input_str, click_type)
+    local bitmask = tonumber(input_str)
+    if bitmask then
+        FSD_style_bitmask = bitmask
+        for _, toggle in ipairs(fsd_toggles) do
+            local is_bit_set = (bitmask & toggle.bit) ~= 0
+            local store_FSD_style_name = "store_FSD_style_" .. toggle.bit
+            if data_cfg[store_FSD_style_name] then
+                menu.set_value(data_cfg[store_FSD_style_name], is_bit_set)
+            end
+        end
+    else
+        menu.trigger_commands("pipfsdbit "..FSD_style_bitmask)
+    end
+end)
+
+menu.divider(fsd_style_menu_list, "You can combine as u wish.")
+menu.divider(fsd_style_menu_list, "Style gets applied on start.")
+
+local function set_FSD_bit(state, bit)
+    if state then
+        FSD_style_bitmask = FSD_style_bitmask | bit
+    else
+        FSD_style_bitmask = FSD_style_bitmask & ~bit
+    end
+    menu.trigger_commands("pipfsdbit "..FSD_style_bitmask)
+end
+
 for _, toggle in ipairs(fsd_toggles) do
     local store_FSD_style_name = "store_FSD_style_" .. toggle.bit
-    local store_FSD_style = menu.toggle(fsd_style_menu_list, toggle.name, {""}, toggle.description, function(on)
-        set_FSD_style(toggle.bit, on)
+    local store_FSD_style = menu.toggle(fsd_style_menu_list, toggle.name, {""}, toggle.description, function(state)
+        set_FSD_bit(state, toggle.bit)
     end, toggle.default)
+    if toggle.default then
+        set_FSD_bit(true, toggle.bit)
+    end
     data_cfg[store_FSD_style_name] = store_FSD_style
 end
+
+local FSD_Method = 0
+store_FSD_method = menu.list_select(fsd_settings_menu_list, "FSD Driver Seat", {""}, "Who is in Driver Seat while FSD is Active.", {
+    {0, "Auto (Player/NPC)"},
+    {1, "Player"},
+    {2, "NPC"},
+}, 0, function(value)
+    FSD_Method = value
+end)
+
+local FSD_Speed = 150
+store_FSD_speed = menu.slider(fsd_settings_menu_list, 'FSD Speed', {'pipfsdspeed'}, '', 1, 150, FSD_Speed, 1, function (new_value)
+    FSD_Speed = new_value
+end)
+
+local FSD_Stop_Range = 100
+store_FSD_Stop_Range  = menu.slider(fsd_settings_menu_list, 'FSD Stop Range', {'pipfsdstoprange'}, '', 10, 150, FSD_Stop_Range, 1, function (new_value)
+    FSD_Stop_Range = new_value
+end)
+
+local FSD_Driver = nil
+
+menu.action(Vehicle, "FSD Start", {"pgfsdcancel"}, "", function()
+    if asuka_lib.is_user_inside_vehicle() then
+        local x, y, z, bool = players.get_waypoint(players.user())
+        if bool then
+            local boolz, zz = util.get_ground_z(x, y, z)
+            if boolz then
+                z = zz
+            end
+            local vehicle = asuka_lib.get_user_vehicle()
+            local driver = GET_PED_IN_VEHICLE_SEAT(vehicle, -1)
+            if FSD_Method == 2 then
+                if asuka_lib.does_entity_exist(driver) then
+                    if IS_PED_A_PLAYER(driver) then
+                        if driver == players.user_ped() then
+                            local seat_int = GET_VEHICLE_MODEL_NUMBER_OF_SEATS(entities.get_model_hash(vehicle))
+                            local found_seat = false
+                            for seat = -1, seat_int do
+                                if seat ~= -1 then
+                                    local seater = GET_PED_IN_VEHICLE_SEAT(vehicle, seat, true)
+                                    if not asuka_lib.does_entity_exist(seater) then
+                                        SET_PED_INTO_VEHICLE(players.user_ped(), vehicle, seat)
+                                        local timeout = os.time()
+                                        while GET_PED_IN_VEHICLE_SEAT(vehicle, seat, true) ~= players.user_ped() do
+                                            util.yield()
+                                            if timeout - os.time() > 13 then
+                                                break
+                                            end
+                                        end
+                                        if GET_PED_IN_VEHICLE_SEAT(vehicle, seat, true) == players.user_ped() then
+                                            util.request_model(MP_F_DeadHooker)
+                                            driver = entities.create_ped(26, MP_F_DeadHooker, v3.new(0,0,0), 0)
+                                            SET_PED_INTO_VEHICLE(driver, vehicle, -1)
+                                            SET_ENTITY_INVINCIBLE(driver, true)
+                                            util.yield(13)
+                                            found_seat = true
+                                            break
+                                        end
+                                    end
+                                end
+                            end
+                            if not found_seat then
+                                notify("Error :C")
+                            end
+                        else
+                            notify("Unable to start, a player is blocking the driver seat.")
+                        end
+                    end
+                else
+                    util.request_model(MP_F_DeadHooker)
+                    driver = entities.create_ped(26, MP_F_DeadHooker, v3.new(0,0,0), 0)
+                    SET_PED_INTO_VEHICLE(driver, vehicle, -1)
+                    SET_ENTITY_INVINCIBLE(driver, true)
+                end
+                entities.set_can_migrate(driver, false)
+                FSD_Driver = driver
+            elseif FSD_Method == 1 then
+                if asuka_lib.does_entity_exist(driver) then
+                    if IS_PED_A_PLAYER(driver) then
+                        if driver ~= players.user_ped() then
+                            notify("Unable to start, a player is blocking the driver seat.")
+                            return
+                        end
+                    else
+                        asuka_lib.delete_entity(driver)
+                    end
+                end
+                SET_PED_INTO_VEHICLE(players.user_ped(), vehicle, -1)
+                FSD_Driver = players.user_ped()
+            else
+                if asuka_lib.does_entity_exist(driver) then
+                    if IS_PED_A_PLAYER(driver) then
+                        if driver ~= players.user_ped() then
+                            notify("Unable to start, a player is blocking the driver seat.")
+                            return
+                        end
+                    end
+                else
+                    driver = players.user_ped()
+                end
+                SET_PED_INTO_VEHICLE(driver, vehicle, -1)
+                FSD_Driver = driver
+            end
+            if FSD_Driver then
+                TASK_VEHICLE_DRIVE_TO_COORD_LONGRANGE(FSD_Driver, vehicle, x, y, z, FSD_Speed, FSD_style_bitmask, FSD_Stop_Range)
+                local cords = v3.new(x, y, z)
+                while FSD_Driver do
+                    if asuka_lib.does_entity_exist(FSD_Driver) then
+                        if cords:distance(GET_ENTITY_COORDS(FSD_Driver)) <= FSD_Stop_Range then
+                            if IS_PED_A_PLAYER(FSD_Driver) and FSD_Driver == players.user_ped() then
+                                CLEAR_PED_TASKS(FSD_Driver)
+                            else
+                                asuka_lib.delete_entity(FSD_Driver)
+                            end
+                            BRING_VEHICLE_TO_HALT(vehicle, 1, 1, false)
+                            notify("We have arived :D")
+                            FSD_Driver = nil
+                        end
+                        util.yield(1000)
+                    else
+                        FSD_Driver = nil
+                    end
+                end
+            end
+        else
+            notify("Create a Waypoint")
+        end
+    else
+        notify("To Start, Enter a vehicle first.")
+    end
+end)
+
+menu.action(Vehicle, "FSD Cancel", {"pgfsdcancel"}, "", function()
+    if FSD_Driver then
+        if asuka_lib.does_entity_exist(FSD_Driver) then
+            if IS_PED_A_PLAYER(FSD_Driver) and FSD_Driver == players.user_ped() then
+                CLEAR_PED_TASKS(FSD_Driver)
+            else
+                asuka_lib.delete_entity(FSD_Driver)
+            end
+            FSD_Driver = nil
+            notify("FSD Canceled Succesfully. :D")
+        end
+    else
+        notify("No Active FSD Found. :c")
+    end
+end)
 
 menu.divider(Vehicle, "Lights")
 
@@ -3377,6 +3545,7 @@ local warningMessages = {
     [988273680] = "Seting up Cayo.",
     [398982408] = "Targeting mode Changed.",
     [1767925417] = "Currently unavaiable.",
+    [128046729] = "GTA Online will be available once you have completed the Prologue.",
     [1290260622] = "Thanks for playing Grand Theft Auto Online. B)",
     [139087761] = "This session is full and you can't invite any more players at this time.",
     [1504249340] = "Close ur game, load Backup of ur game and Start again. :c\nUnable to joing the game as you save game failed to load. The R* game services unavailable right now, please try again later.",
@@ -3396,6 +3565,8 @@ local warningMessages = {
     [1910579138] = "The session you are trying to join is private and friends only. You must be invited by a friend to join this session. Joining a new GTA Online session.",
     [163296038] = "The session you are trying to join is private and friends only. You must be invited by a friend to join this session. Joining a new GTA Online session.",
     [1073504880] = "There is a slot available in the GTA Online session you are currently queuing for. Joining Session.",
+    [984367681] = "If u use FSL u can ignore it.^^\nYour attempt to purchase or redeem a Shark Card has failed due to an unknown error. Please try again later.",
+    [1071902385] = "Kicked from the session for being idle too long. Return too GTA Online.",
     [2053786350] = "A modder is *maybe* blocking you join.\nUnable to Connect.",
     [705668975] = "A modder is *likely* blocking you join.\nYou have already been voted out of this game session. Joining a new GTA Online session.",
     [1748022689] = "A modder is *likely* blocking you join.\nFailed to join intended GTA Online session. Please return to Grand Theft Auto V and try again later.",
@@ -3562,6 +3733,9 @@ local function espOnPlayer(pid, namesync)
             show_distance = show_distance + 200
         end
     end
+    if GET_INTERIOR_FROM_ENTITY(players.user_ped()) == 291585 then
+        show_distance = show_distance + 666
+    end
     if vdist <= show_distance then
 
         if util.get_screen_coord_from_world_coord_no_adjustment(targetpos:getX(), targetpos:getY(), targetpos:getZ(), v2, v2 + 4) then
@@ -3650,7 +3824,7 @@ end)
 if menu.get_edition() > 1 then
     store_bone_esp_while_armed = menu.toggle_loop(Game,"Bone ESP While Armed", {"aimboneesp"}, "Also counts for armed vehicles.", function()
         local weapon = math.abs(GET_SELECTED_PED_WEAPON(players.user_ped()))
-        if not menu.is_in_screenshot_mode() and weapon ~= 1122011548 and weapon ~= 1569615261 then
+        if not menu.is_in_screenshot_mode() and ((weapon ~= 1122011548 and weapon ~= 1569615261) or GET_INTERIOR_FROM_ENTITY(players.user_ped()) == 291585) then
             menu.trigger_command(menu.ref_by_path("World>Inhabitants>Player ESP>Bone ESP>Low Latency Rendering"))
         else
             menu.trigger_command(menu.ref_by_path("World>Inhabitants>Player ESP>Bone ESP>Disabled"))
@@ -4014,8 +4188,8 @@ end)
 
 local terrorbyte_objects = {
     {var = nil, params = {util.joaat("prop_showroom_glass_1b"), v3.new(-1420.666, -3014.579, -79.0), 0, 0, -20, nil, 13, true, true, true}},
-    {var = nil, params = {1870961552, v3.new(-1420.8349609375, -3016.2561035156, -76.113542541504), 180, 0, 90, nil, 13, true, false}},
-    {var = nil, params = {util.joaat("prop_beach_fire"), v3.new(-1420.8349609375, -3016.2561035156, -80.066642541504), 0, 0, 90, nil, 13, true, true}},
+    --{var = nil, params = {1870961552, v3.new(-1420.8349609375, -3016.2561035156, -76.113542541504), 180, 0, 90, nil, 13, true, false}},
+    --{var = nil, params = {util.joaat("prop_beach_fire"), v3.new(-1420.8349609375, -3016.2561035156, -80.066642541504), 0, 0, 90, nil, 13, true, true}},
 }
 store_anit_terrorbyte = menu.toggle_loop(SessionWorld, "Anti Terrorbyte", {"blockterror"}, "Blocks the MK2 acces", function()
     if asuka_lib.allow_spawn_check() then
@@ -5126,7 +5300,7 @@ end
 players.on_leave(removeFromTable)
 
 local rallytruck = util.joaat("rallytruck")
-local MP_F_DeadHooker = util.joaat("MP_F_DeadHooker")
+
 local mad_objects = {
     {util.joaat("prop_ld_ferris_wheel")},
     {util.joaat("p_spinning_anus_s")},
@@ -5465,6 +5639,7 @@ if filesystem.exists(store_dir..'/gta_rpc.json') then
         ["Apatment"] = {206081, 206337, 206593, 149761, 148225},
         ["Arcadius"] = {253441, 237313, 253697, 253953, 254209, 134657},
         ["Arcade"] = {278273},
+        ["Avenger"] = {291585},
         ["Bahama Mamas"] = {168961},
         ["Barber"] = {165377, 198657, 171009, 199937, 140545, 180225, 155905},
         ["Beeker"] = {179457},
@@ -5670,6 +5845,11 @@ data_cfg["store_asuka_tech_dirt"] = store_asuka_tech_dirt
 data_cfg["store_asuka_tech_armor"] = store_asuka_tech_armor
 data_cfg["store_asuka_tech_lights"] = store_asuka_tech_lights
 data_cfg["store_asuka_tech_protection"] = store_asuka_tech_protection
+--Vehicle FSD
+data_cfg["store_FSD_method"] = store_FSD_method
+data_cfg["store_FSD_speed"] = store_FSD_speed
+data_cfg["store_FSD_Stop_Range"] = store_FSD_Stop_Range
+--Vehicle Light
 data_cfg["store_vehicle_light_rhythm_sos"] = store_vehicle_light_rhythm_sos
 data_cfg["store_vehicle_light_rhythm_rapid_slowdown"] = store_vehicle_light_rhythm_rapid_slowdown
 data_cfg["store_vehicle_light_color"] = store_vehicle_light_color
