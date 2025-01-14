@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local lust_upDate = {year = 2025, month = 1, day = 11, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2025, month = 1, day = 12, hour = 6, min = 6, sec = 6}
 
 local script_version = "V."..lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
@@ -396,7 +396,7 @@ local function thunderForMin(min)
             if remainingTime == 1 then
                 notify("Thunder will stop in 1 minute.")
             else
-                notify("Thunder will stop in "..remainingTime.." minutes.")
+                notify("Thunder will stop in "..remainingTime.." min..")
             end
             util.yield(60000)
         end
@@ -718,7 +718,6 @@ menu.divider(menu.my_root(), script_version)
 local PIP_Girl = menu.list(menu.my_root(), 'PIP Girl', {}, 'Personal Information Processor Girl.', function(); end)
 menu.focus(menu.ref_by_path("Stand>Lua Scripts>"..SCRIPT_NAME..">PIP Girl"))
 local PIP_Girl_APPS = menu.list(PIP_Girl, 'PIP Girl Apps', {}, 'Personal Information Processor Girl apps.', function(); end)
-local PIP_Girl_Heist = menu.list(PIP_Girl, 'PIP Girl Heists (FSL!)', {}, 'I only consider it save if used with FSL, its intended use is for FSL, if u still use it without FSL u r going to risk.\nPersonal Information Processor Girl Heist Presets.', function(); end)
 local Stimpak = menu.list(menu.my_root(), 'Stimpak', {}, 'Take a breath.', function(); end)
 local Vehicle = menu.list(menu.my_root(), 'Vehicle', {}, 'Drive pretty and nice.', function(); end)
 local Outfit = menu.list(menu.my_root(), 'Outfit', {}, 'Look pretty and nice.', function(); end)
@@ -774,6 +773,11 @@ menu.action(PIP_Girl_APPS, "The Bail Office App", {}, "Your Bail Office screen."
     start_script("appbailoffice")
 end)
 
+menu.action(PIP_Girl_APPS, "Darnell Bros Garment Factory App", {}, "Your Darnell Bros Garment Factory screen.", function()
+    organization_control("CEO")
+    start_script("apphackerden")
+end)
+
 menu.action(PIP_Girl_APPS, "The Internet App", {}, "Your internet screen.", function()
     start_script("appinternet")
 end)
@@ -812,6 +816,7 @@ end
 
 local message_bad_rep = menu.ref_by_path("Online>Session>Block Joins>Message>Your Account Has A Bad Reputation")
 local message_vip_slot = menu.ref_by_path("Online>Session>Block Joins>Message>Not Intended Session")
+local PIP_Girl_Heist = menu.list(PIP_Girl, 'PIP Girl Heists (FSL!)', {}, 'I only consider it save if used with FSL, its intended use is for FSL, if u still use it without FSL u r going to risk.\nPersonal Information Processor Girl Heist Presets.', function(); end)
 
 menu.action(PIP_Girl_Heist, 'Cayo 1 Player Preset (!)', {}, "", function (click_type)
     menu.show_warning(PIP_Girl, click_type, 'DO ONLY USE WITH FSL, Continue ?', function()
@@ -1087,13 +1092,14 @@ store_nc_pop = menu.toggle_loop(PIP_Girl, "Nightclub Party Never Stops!", {'ncpo
     end
 end)
 
-menu.divider(PIP_Girl, "Org Options")
 
-store_org_name = menu.text_input(PIP_Girl, "CEO Name", {"pgceoname"}, "(Also works for MC) You can press Ctrl+U and select colors, but no special GTA icons, sadly.", function(input_str, click_type)
+local PIP_Girl_Org_Manager = menu.list(PIP_Girl, 'Org Manager', {}, '', function(); end)
+
+store_org_name = menu.text_input(PIP_Girl_Org_Manager, "CEO Name", {"pgorgname"}, "(Also works for MC) You can press Ctrl+U and select colors, but no special GTA icons, sadly.", function(input_str, click_type)
     urceoname = input_str
 end)
 local organization_type = "CEO"
-store_org_type = menu.list_select(PIP_Girl, "Org Type", {}, "", {
+store_org_type = menu.list_select(PIP_Girl_Org_Manager, "Org Type", {}, "", {
     {1, "CEO"},
     {2, "MC"},
 }, 1, function(value, menu_name, prev_value, click_type)
@@ -1104,7 +1110,7 @@ local joinfriendsceo = 1
 local invitefriendsinceo = false
 local ceo_ses_code = nil
 local lastCeoName = nil
-store_auto_org = menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, "Auto register yourself as CEO and auto switches you to MC/CEO in most situations needed.", function()
+store_auto_org = menu.toggle_loop(PIP_Girl_Org_Manager, "Auto Register", {"pgregister"}, "Auto register yourself as CEO and auto switches you to MC/CEO in most situations needed.", function()
     if not NETWORK_IS_ACTIVITY_SESSION() and asuka_lib.transition_state(true) == 1 then
         if joinfriendsceo ~= 3 then
             if players.get_boss(players.user()) == -1 then
@@ -1219,7 +1225,7 @@ store_auto_org = menu.toggle_loop(PIP_Girl, "Auto Become a CEO/MC", {"pgaceo"}, 
     util.yield(666)
 end)
 
-store_auto_org_color = menu.slider(PIP_Girl, 'Auto Org Color', {'favorgcolor'}, "Enter the Color ID of your org.\nThe color will be used when u auto register as Org.", -1, 14, ceo_color, 1, function (new_value)
+store_auto_org_color = menu.slider(PIP_Girl_Org_Manager, 'Auto Org Color', {'favorgcolor'}, "Enter the Color ID of your org.\nThe color will be used when u auto register as Org.", -1, 14, ceo_color, 1, function (new_value)
     ceo_color = new_value
 end)
 
@@ -1232,7 +1238,7 @@ end)
 --    util.yield(13666)
 --end)
 
-store_join_friends_org = menu.list_select(PIP_Girl, "Auto Join Friends Org (!)", {""}, "Uses \"Auto Become a CEO/MC\"", {
+store_join_friends_org = menu.list_select(PIP_Girl_Org_Manager, "Auto Join Friends Org (!)", {""}, "Uses \"Auto Become a CEO/MC\"", {
     {1, "Don't"},
     {2, "Also"},
     {3, "Only"},
@@ -1278,7 +1284,7 @@ local function inviteAllToCEO()
     end
 end
 
-menu.action(PIP_Girl, "Invite All Friends in Org", {"invorg"}, "Invites all your friends into your Org.", function()
+menu.action(PIP_Girl_Org_Manager, "Invite All Friends in Org", {"invorg"}, "Invites all your friends into your Org.", function()
     if asuka_lib.transition_state(true) == 1 then
         if players.get_boss(players.user()) ~= -1 then
             inviteAllToCEO()
@@ -1290,7 +1296,192 @@ menu.action(PIP_Girl, "Invite All Friends in Org", {"invorg"}, "Invites all your
     end
 end, nil, "invorg", COMMANDPERM_FRIENDLY)
 
-menu.divider(PIP_Girl, "Pickup Options")
+if menu.get_edition() > 2 then
+    local PIP_Girl_business_battles = menu.list(PIP_Girl, 'Business Battles Launcher', {}, '', function() end)
+    local business_battles_start_time = nil
+    local business_battles_end_time = nil
+    local business_battles_time_limit = 1500
+    local business_battles_cooldown = 300
+
+    store_business_battles_Launcher = menu.toggle_loop(PIP_Girl_business_battles, "Business Battles Launcher", {}, "", function()
+        if asuka_lib.transition_state(true) == 1 and players.user() == players.get_host() and GET_NUMBER_OF_PLAYERS() > 1 and asuka_lib.session_type() == "Public" and util.spoof_script("am_taxi", function() end) then
+            local spoof_result = util.spoof_script("business_battles", function()
+                if business_battles_start_time == nil then
+                    business_battles_start_time = os.time()
+                    notify_cmd("Found Business Battles.")
+                else
+                    local elapsed = os.difftime(os.time(), business_battles_start_time)
+                    if elapsed > business_battles_time_limit then
+                        for menu.ref_by_path("Online>Session>Session Scripts"):getChildren() as scripts do
+                            if scripts:isValid() then
+                                if string.find(scripts.menu_name, "Business Battle") then
+                                    menu.trigger_command(menu.ref_by_rel_path(scripts, "Stop Script"))
+                                    notify_cmd("Business Battles has exceeded time limit. Terminating script...")
+                                    business_battles_start_time = nil
+                                end
+                            end
+                        end
+                    end
+                end
+            end)
+    
+            if not spoof_result then
+                if business_battles_start_time ~= nil then
+                    notify_cmd("Business Battles is no longer active.")
+                    business_battles_start_time = nil
+                    business_battles_end_time = os.time()
+                end
+                if business_battles_end_time == nil or os.difftime(os.time(), business_battles_end_time) > business_battles_cooldown then
+                    menu.trigger_command(menu.ref_by_path("Online>Session>Session Scripts>Run Script>Freemode Activities>Business Battle 1"))
+                    local launch_time = os.time()
+                    while not util.spoof_script("business_battles", function() end) do
+                        if launch_time - os.time() > business_battles_cooldown then
+                            break
+                        end
+                        util.yield()
+                    end
+                    spoof_result = util.spoof_script("business_battles", function()
+                        notify_cmd("Business Battles Started.")
+                    end)
+                    business_battles_end_time = os.time()
+                end
+            end
+        end
+        util.yield(6666)
+    end, function()
+        business_battles_start_time = nil
+        business_battles_end_time = nil
+    end)    
+
+    store_business_battles_timeout = menu.slider(PIP_Girl_business_battles, 'BB Time Limit (Min.)', {''}, "Kills the business battles if they run too long.", 25, 60, business_battles_time_limit / 60, 1, function (new_value)
+        business_battles_time_limit = new_value * 60
+    end)
+
+    store_business_battles_cooldown = menu.slider(PIP_Girl_business_battles, 'BB Cooldown (Min.)', {''}, "Wait time between business battles.", 1, 60, business_battles_cooldown / 60, 1, function (new_value)
+        business_battles_cooldown = new_value * 60
+    end)
+    data_cfg["store_business_battles_Launcher"] = store_business_battles_Launcher
+    data_cfg["store_business_battles_timeout"] = store_business_battles_timeout
+    data_cfg["store_business_battles_cooldown"] = store_business_battles_cooldown
+end
+
+local function getblip(id) --From ACJoker script, i love it.
+    local blip = 0
+    if blip == 0 then
+        blip = GET_FIRST_BLIP_INFO_ID(id)
+    elseif blip == 0 then
+        blip = GET_NEXT_BLIP_INFO_ID(id)
+    elseif blip == 0 then
+        blip = GET_CLOSEST_BLIP_INFO_ID(id) 
+    end
+    while blip != 0 do
+        local blipColour = GET_BLIP_COLOUR(blip)
+        if DOES_BLIP_EXIST(blip) and blipColour != 55 and blipColour != 3 then return blip end
+        blip = GET_NEXT_BLIP_INFO_ID(id)
+    end
+end
+
+
+local PIP_Girl_mission_helper = menu.list(PIP_Girl, 'Mission Helper', {}, '', function() end)
+local MP_F_DeadHooker = util.joaat("MP_F_DeadHooker")
+local yohan_vehicle_blocking = {
+    {var = nil, pos = v3.new(32.55, -2429.65, 17.45)},
+    {var = nil, pos = v3.new(-234.38, -2695.97, 16.85)},
+    {var = nil, pos = v3.new(469.89, -2225.24, 21.85)},
+    {var = nil, pos = v3.new(434.51, -2771.97, 7.91)},
+    {var = nil, pos = v3.new(32.55, -2429.65, 17.45)},
+    {var = nil, pos = v3.new(-234.38, -2695.97, 16.85)},
+    {var = nil, pos = v3.new(469.89, -2225.24, 21.85)},
+    {var = nil, pos = v3.new(434.51, -2771.97, 7.91)},
+}
+yohan_helper = menu.toggle(PIP_Girl_mission_helper, "Yohan (NC) mission helper.", {""}, "", function(on)
+    if on then
+        util.request_model(1336872304)
+        for ipairs(yohan_vehicle_blocking) as kosatka do
+            kosatka.var = entities.create_vehicle(1336872304, kosatka.pos, asuka_lib.get_random_value(0, 360))
+            SET_ENTITY_VISIBLE(kosatka.var, false)
+            entities.set_can_migrate(kosatka.var, false)
+            SET_ENTITY_NO_COLLISION_ENTITY(kosatka.var, players.user_ped(), false)
+            SET_ENTITY_COLLISION(kosatka.var, true, true)
+        end
+        warnify("Mission area blocking active, call yohan now.")
+        local launch_time = os.time()
+        while not util.spoof_script("fm_content_club_source", function() end) do
+            if launch_time - os.time() > 60 then
+                break
+            end
+            util.yield()
+        end
+        if util.spoof_script("fm_content_club_source", function() end) then
+            notify("Started Mission.")
+            local truck_hash = 2053223216
+            local truck = nil
+            launch_time = os.time()
+            while truck == nil do
+                local vehicle_pointers = entities.get_all_vehicles_as_pointers()
+                for i = 1, #vehicle_pointers do
+                    if entities.get_model_hash(vehicle_pointers[i]) == truck_hash then
+                        local truck_handle = entities.pointer_to_handle(vehicle_pointers[i])
+                        if GET_ENTITY_SCRIPT(truck_handle, 0) == "fm_content_club_source" then
+                            truck = truck_handle
+                            notify("Found mission truck.")
+                            break
+                        end
+                    end
+                end
+                if launch_time - os.time() > 60 then
+                    break
+                end
+                util.yield()
+            end
+            for ipairs(yohan_vehicle_blocking) as kosatka do
+                asuka_lib.delete_entity(kosatka.var)
+            end
+            notify("Cleared Mission area blocking.")
+            if asuka_lib.does_entity_exist(truck) then
+                util.request_model(MP_F_DeadHooker)
+                entities.request_control(truck)
+                SET_ENTITY_LOAD_COLLISION_FLAG(truck, true, 0)
+                driver = GET_PED_IN_VEHICLE_SEAT(truck, -1)
+                asuka_lib.delete_entity(driver)
+                driver = entities.create_ped(26, MP_F_DeadHooker, v3.new(0,0,0), 0)
+                SET_PED_INTO_VEHICLE(driver, truck, -1)
+                entities.set_can_migrate(driver, false)
+                SET_ENTITY_INVINCIBLE(driver, true)
+                SET_PED_CONFIG_FLAG(driver, 171, false)
+                SET_PED_CONFIG_FLAG(driver, 398, true)
+                SET_BLOCKING_OF_NON_TEMPORARY_EVENTS(driver, true)
+                SET_ENTITY_LOAD_COLLISION_FLAG(driver, true, 0)
+                local cord = GET_BLIP_COORDS(getblip(614))
+                TASK_VEHICLE_DRIVE_TO_COORD_LONGRANGE(driver, truck, cord.x, cord.y, cord.z, 66.6, 2148287277, 50.05)
+                notify("Truck Hijacked, Driving to you NC.")
+                while driver do
+                    if asuka_lib.does_entity_exist(driver) then
+                        if cord:distance(GET_ENTITY_COORDS(driver)) <= 25 then
+                            asuka_lib.delete_entity(driver)
+                            BRING_VEHICLE_TO_HALT(truck, 1, 1, false)
+                            warnify("Yohan truck have arived at you NC. :D")
+                            driver = nil
+                        end
+                        util.yield(1000)
+                    else
+                        driver = nil
+                    end
+                end
+            end
+        end
+        for ipairs(yohan_vehicle_blocking) as kosatka do
+            asuka_lib.delete_entity(kosatka.var)
+        end
+        yohan_helper.value = false
+    else
+        for ipairs(yohan_vehicle_blocking) as kosatka do
+            asuka_lib.delete_entity(kosatka.var)
+        end
+    end
+end)
+
+local PIP_Girl_pickups = menu.list(PIP_Girl, 'Pickup Options', {}, '', function(); end)
 
 local money_hashish = {
     -295781225, --money
@@ -1309,7 +1500,7 @@ local vehicle_money_hashish = {
     -1249748547, --Smugler money
     1916353237, --Christmas money
 }
-store_collect_money = menu.toggle_loop(PIP_Girl, "Collect valueable pickups", {}, "Collect valueable pickups.", function()
+store_collect_money = menu.toggle_loop(PIP_Girl_pickups, "Collect valueable pickups", {}, "Collect valueable pickups.", function()
     if asuka_lib.transition_state(true) == 1 and GET_ENTITY_HEALTH(players.user_ped()) ~= 0 then
         local pos = players.get_position(players.user())
         for entities.get_all_pickups_as_handles() as pickup do
@@ -1350,7 +1541,7 @@ store_collect_money = menu.toggle_loop(PIP_Girl, "Collect valueable pickups", {}
 end)
 
 local carryingPickups = {}
-menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all pickups on you.\nNote this doesn't work in all situations.", function(on)
+menu.toggle(PIP_Girl_pickups, "Carry Pickups", {"carrypickup"}, "Carry all pickups on you.\nNote this doesn't work in all situations.", function(on)
     if on then
         local counter = 0
         local playerPed = players.user_ped()
@@ -1385,7 +1576,7 @@ menu.toggle(PIP_Girl, "Carry Pickups", {"carrypickup"}, "Carry all pickups on yo
     end
 end)
 
-menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a shower in all existing pickups.", function()
+menu.toggle_loop(PIP_Girl_pickups, "Pickup Shower", {}, "Take a shower in all existing pickups.", function()
     if asuka_lib.transition_state(true) == 1 then
         local pos = players.get_position(players.user())
         local in_vehicle = asuka_lib.is_user_inside_vehicle(true)
@@ -1410,7 +1601,7 @@ menu.toggle_loop(PIP_Girl, "Pickup Shower", {}, "Take a shower in all existing p
     end
 end)
 
-menu.action(PIP_Girl, "Teleport Pickups To Me", {"tppickups"}, "Teleports all pickups to you.\nNote this doesn't work in all situations.", function(click_type)
+menu.action(PIP_Girl_pickups, "Teleport Pickups To Me", {"tppickups"}, "Teleports all pickups to you.\nNote this doesn't work in all situations.", function(click_type)
     if asuka_lib.transition_state(true) == 1 then
         local counter = 0
         local pos = players.get_position(players.user())
@@ -2319,7 +2510,7 @@ local fsd_settings_menu_list = menu.list(Vehicle, 'FSD Settings', {}, '', functi
 local fsd_style_menu_list = menu.list(fsd_settings_menu_list, 'FSD Style', {}, 'You can combine as u wish.\nStyle gets applied on start.', function(); end)
 
 local FSD_style_bitmask = 0
-local MP_F_DeadHooker = util.joaat("MP_F_DeadHooker")
+
 local fsd_toggles = {
     {bit = 1, default = true, name = "Stop before vehicles", description = "Stop before vehicles"},
     {bit = 2, default = false, name = "Stop before peds", description = "Stop before peds"},
@@ -2403,12 +2594,12 @@ store_FSD_method = menu.list_select(fsd_settings_menu_list, "FSD Driver Seat", {
     FSD_Method = value
 end)
 
-local FSD_Speed = 150
+local FSD_Speed = 50
 store_FSD_speed = menu.slider(fsd_settings_menu_list, 'FSD Speed', {'pipfsdspeed'}, '', 1, 150, FSD_Speed, 1, function (new_value)
     FSD_Speed = new_value
 end)
 
-local FSD_Stop_Range = 100
+local FSD_Stop_Range = 25
 store_FSD_Stop_Range  = menu.slider(fsd_settings_menu_list, 'FSD Stop Range', {'pipfsdstoprange'}, '', 10, 150, FSD_Stop_Range, 1, function (new_value)
     FSD_Stop_Range = new_value
 end)
@@ -2468,7 +2659,9 @@ menu.action(Vehicle, "FSD Start", {"pgfsdcancel"}, "", function()
                     SET_PED_INTO_VEHICLE(driver, vehicle, -1)
                     SET_ENTITY_INVINCIBLE(driver, true)
                 end
-                entities.set_can_migrate(driver, false)
+                if not IS_PED_A_PLAYER(driver) then
+                    entities.set_can_migrate(driver, false)
+                end
                 FSD_Driver = driver
             elseif FSD_Method == 1 then
                 if asuka_lib.does_entity_exist(driver) then
@@ -2659,7 +2852,7 @@ store_auto_vehicle_light_color = menu.toggle_loop(Vehicle, "Auto Vehicle Light C
         if asuka_lib.transition_state(true) <3 then
             local vehicle = asuka_lib.get_user_vehicle()
             if asuka_lib.does_entity_exist(vehicle) and asuka_lib.is_vehicle_free_for_use(vehicle) and GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 then
-                if DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 or vehicle == entities.get_user_personal_vehicle_as_handle() then
+                if DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 or vehicle == entities.get_user_personal_vehicle_as_handle() and not GET_ENTITY_SCRIPT(vehicle, 0) == "freemode" then
                     TOGGLE_VEHICLE_MOD(vehicle, 22, true)
                     SET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle, vehicleFavColor)
                 end
@@ -4102,7 +4295,6 @@ menu.toggle_loop(Session, "Admin Bail", {"antiadmin"}, "Instantly Bail and Join 
     for players.list_except(true) as pid do
         if players.is_marked_as_admin(pid) or players.is_marked_as_modder_or_admin(pid) then
             menu.trigger_commands("quickbail")
-            util.yield()
             warnify("Admin Detected, We get you out of Here!")
             util.yield(666)
             menu.trigger_commands("unstuck")
@@ -5160,13 +5352,6 @@ local function add_player_to_blacklist(rid)
     end
 end
 
-local function startupConfig()
-    if menu.get_state(menu.ref_by_path("Online>Session>Block Joins>From Removed Players")) == "Off" then
-        menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Removed Players"), "On")
-    end
-    menu.trigger_command(menu.ref_by_path("Online>Session>Block Joins>Message>Your Account Has A Bad Reputation"))
-end
-
 local function crashlistConfig()
     if menu.is_ref_valid(menu.ref_by_path("Online>Player History>Noted Players>Crash :3")) then
         for menu.ref_by_path("Online>Player History>Noted Players>Crash :3"):getChildren() as rat do
@@ -5590,7 +5775,7 @@ menu.divider(Settings, "<3")
 menu.action(Settings, "Copy Position to Clipboard", {"pgcopypos"}, "", function()
     local playerPosition = players.get_position(players.user())
     local streetInfo = get_Street_Names(playerPosition.x, playerPosition.y, playerPosition.z)
-    local positionString = string.format("{ x = %.2f, y = %.2f, z = %.2f, zoneName = \"%s\", streetName = \"%s\", crossingName = \"%s\" },",
+    local positionString = string.format("{pos = v3.new(%.2f, %.2f, %.2f), zoneName = \"%s\", streetName = \"%s\", crossingName = \"%s\" },",
     playerPosition.x, playerPosition.y, playerPosition.z,
     streetInfo.zoneName, streetInfo.streetName, streetInfo.crossingName)
     util.copy_to_clipboard(positionString, false)
@@ -5824,6 +6009,7 @@ data_cfg["store_org_name"] = store_org_name
 data_cfg["store_org_type"] = store_org_type
 data_cfg["store_auto_org"] = store_auto_org
 data_cfg["store_auto_org_color"] = store_auto_org_color
+--Mission helper
 --store_auto_org_color_check = store_auto_org_color_check
 data_cfg["store_join_friends_org"] = store_join_friends_org
 data_cfg["store_collect_money"] = store_collect_money
@@ -6110,10 +6296,10 @@ auto_updater.run_auto_update(auto_update_config)
 util.create_thread(startupCheck)
 asuka_lib.load_and_apply_config(store_dir..'settings.json', data_cfg)
 asuka_lib.asuka_booty = false
-util.create_thread(startupConfig)
 util.create_thread(crashlistConfig)
 util.create_thread(userIdentification)
 menu.trigger_commands("antiadmin on")
 menu.trigger_commands("nobgscript on")
 menu.set_state(menu.ref_by_path("Online>Session>Stand User Identification>For Strangers"), "Off")
+menu.trigger_command(message_bad_rep)
 util.keep_running()
