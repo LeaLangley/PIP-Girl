@@ -4142,7 +4142,7 @@ end
 local Player_Magnet_value = 25
 local player_VIP_slots = 3
 store_player_magnet_amount_toggle = menu.toggle_loop(SessionManager, "Player Magnet Toggle", {}, "Player Magnet", function()
-    if asuka_lib.transition_state(true) <3 and players.user() == players.get_host() and asuka_lib.session_type() == "Public" then
+    if asuka_lib.transition_state(true) <3 and players.user() == players.get_host() and asuka_lib.session_type() == "Public" and NETWORK_SESSION_IS_VISIBLE() then
         if GET_NUMBER_OF_PLAYERS() < Player_Magnet_value then
             menu.trigger_commands("playermagnet on")
         else
