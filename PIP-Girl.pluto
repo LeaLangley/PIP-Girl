@@ -1300,6 +1300,7 @@ if menu.get_edition() > 2 then
     local PIP_Girl_business_battles = menu.list(PIP_Girl, 'Business Battles Launcher', {}, '', function() end)
     local business_battles_start_time = nil
     local business_battles_end_time = nil
+    local business_battles_block_2 = false
     local business_battles_time_limit = 1500
     local business_battles_cooldown = 300
 
@@ -1324,7 +1325,7 @@ if menu.get_edition() > 2 then
                     end
                 end
             end)
-    
+
             if not spoof_result then
                 if business_battles_start_time ~= nil then
                     notify_cmd("Business Battles is no longer active.")
@@ -1346,6 +1347,19 @@ if menu.get_edition() > 2 then
                     business_battles_end_time = os.time()
                 end
             end
+
+            if business_battles_block_2 then
+                spoof_result = util.spoof_script("fm_content_business_battles", function()
+                    for menu.ref_by_path("Online>Session>Session Scripts"):getChildren() as scripts do
+                        if scripts:isValid() then
+                            if string.find(scripts.menu_name, "Business Battle 2") then
+                                menu.trigger_command(menu.ref_by_rel_path(scripts, "Stop Script"))
+                                notify_cmd("Found Business Battles 2")
+                            end
+                        end
+                    end
+                end)
+            end
         end
         util.yield(6666)
     end, function()
@@ -1360,9 +1374,19 @@ if menu.get_edition() > 2 then
     store_business_battles_cooldown = menu.slider(PIP_Girl_business_battles, 'BB Cooldown (Min.)', {''}, "Wait time between business battles.", 1, 60, business_battles_cooldown / 60, 1, function (new_value)
         business_battles_cooldown = new_value * 60
     end)
+
+    store_business_battles_block_2 = menu.toggle(PIP_Girl_business_battles, "Block BB2", {""}, "Block Bussines Battles 2.", function(on)
+        if on then
+            business_battles_block_2 = true
+        else
+            business_battles_block_2 = false
+        end
+    end)
+
     data_cfg["store_business_battles_Launcher"] = store_business_battles_Launcher
     data_cfg["store_business_battles_timeout"] = store_business_battles_timeout
     data_cfg["store_business_battles_cooldown"] = store_business_battles_cooldown
+    data_cfg["store_business_battles_block_2"] = store_business_battles_block_2
 end
 
 local function getblip(id) --From ACJoker script, i love it.
@@ -1382,6 +1406,232 @@ local function getblip(id) --From ACJoker script, i love it.
 end
 
 
+local protectMissionVehicles = false
+local asuka_tech_armor = 2
+local asuka_tech_lights = 2
+local function checkVehMod(vehicle, mod)
+    if DOES_EXTRA_EXIST(vehicle, mod) then
+        return true
+    end
+    return false
+end
+
+unlikely_mission_vehicles = {
+    "AM_VEHICLE_SPAWN"
+}
+
+local function buff_asuka_tech(vehicle)
+    if asuka_lib.is_vehicle_free_for_use(vehicle) then
+        request_control(vehicle)
+    end
+    menu.trigger_commands("smoothflight on")
+    if protectMissionVehicles and not players.is_in_interior(players.user()) and not players.is_using_rc_vehicle(players.user()) then
+        if IS_ENTITY_A_MISSION_ENTITY(vehicle) and DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 and not table.contains(unlikely_mission_vehicles, GET_ENTITY_SCRIPT(vehicle, 0)) then
+            local vehicle_name = util.reverse_joaat(entities.get_model_hash(vehicle))
+            local vehicle_label = util.get_label_text(vehicle_name)
+            if vehicle_label ~= "NULL" then
+                vehicle_name = vehicle_label
+            end
+            notify("Installed Lockon Jammer on: "..vehicle_name)
+            SET_VEHICLE_ALLOW_HOMING_MISSLE_LOCKON(vehicle, false, false)
+            SET_VEHICLE_ALLOW_HOMING_MISSLE_LOCKON_SYNCED(vehicle, false, false)
+        end
+    end
+    if IS_ENTITY_A_MISSION_ENTITY(vehicle) and DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 then
+        SET_VEHICLE_STRONG(vehicle, true)
+    end
+    ----the_bone = GET_ENTITY_BONE_INDEX_BY_NAME(vehicle, "dashglow")
+    --the_bone = GET_ENTITY_BONE_INDEX_BY_NAME(vehicle, "bonnet")
+    --if the_bone ~= -1 then
+    --    usb_asuka_tech = entities.create_object(1112175411, players.get_position(players.user()))
+    --    --ATTACH_ENTITY_TO_ENTITY(usb_asuka_tech, vehicle, the_bone, -0.007, 0.03, -0.06, 0, 0, 90, false, false, false, false, 0, true, 1)
+    --    ATTACH_ENTITY_TO_ENTITY(usb_asuka_tech, vehicle, the_bone, 0, 0, 0, 90, 90, 0, false, false, false, false, 0, true, 1)
+    --end
+    if asuka_tech_armor > 1 then
+        local vehicle_pointer = entities.handle_to_pointer(vehicle)
+        if vehicle_pointer ~= 0 then
+            if asuka_tech_armor == 2 then
+                local wheel = entities.vehicle_get_handling(vehicle_pointer) + 0x128
+                memory.write_int(wheel, memory.read_int(wheel) | (1 << 26))
+            else
+                if IS_ENTITY_A_MISSION_ENTITY(vehicle) and DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 then
+                    local wheel = entities.vehicle_get_handling(vehicle_pointer) + 0x128
+                    memory.write_int(wheel, memory.read_int(wheel) | (1 << 26))
+                end
+            end
+        end
+    end
+    if DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 then
+        SET_VEHICLE_MOD_KIT(vehicle, 0)
+
+        local engine = GET_NUM_VEHICLE_MODS(vehicle, 11) - 1
+        if engine > -1 then
+            if GET_VEHICLE_MOD(vehicle, 11) ~= engine then
+                SET_VEHICLE_MOD(vehicle, 11, engine)
+            end
+        end
+        local breaks = GET_NUM_VEHICLE_MODS(vehicle, 12) - 1
+        if breaks > -1 then
+            if GET_VEHICLE_MOD(vehicle, 12) ~= breaks then
+                SET_VEHICLE_MOD(vehicle, 12, breaks)
+            end
+        end
+        local gearbox = GET_NUM_VEHICLE_MODS(vehicle, 13) - 1
+        if gearbox > -1 then
+            if GET_VEHICLE_MOD(vehicle, 13) ~= gearbox then
+                SET_VEHICLE_MOD(vehicle, 13, gearbox)
+            end
+        end
+        local suspension = GET_NUM_VEHICLE_MODS(vehicle, 15) - 1
+        if suspension > -1 then
+            if GET_VEHICLE_MOD(vehicle, 15) ~= suspension then
+                SET_VEHICLE_MOD(vehicle, 15, suspension)
+            end
+        end
+        local armor = GET_NUM_VEHICLE_MODS(vehicle, 16) - 1
+        if armor > -1 then
+            if GET_VEHICLE_MOD(vehicle, 16) ~= armor then
+                SET_VEHICLE_MOD(vehicle, 16, armor)
+            end
+        end
+        TOGGLE_VEHICLE_MOD(vehicle, 18, true)
+    end
+    if DOES_VEHICLE_HAVE_SEARCHLIGHT(vehicle) then
+        SET_VEHICLE_SEARCHLIGHT(vehicle, true, true)
+    end
+
+    local buffVehModel = GET_ENTITY_MODEL(vehicle)
+
+    if buffVehModel == 167522317 then
+        if GET_VEHICLE_MOD(vehicle, 10) == 1 then
+            if checkVehMod(vehicle, 1) then
+                SET_VEHICLE_EXTRA(vehicle, 1, 0)
+            end
+        end
+    end
+
+    if buffVehModel == 1770332643 then
+        if checkVehMod(vehicle, 1) then
+            SET_VEHICLE_EXTRA(vehicle, 1, 0)
+        end
+        if checkVehMod(vehicle, 10) then
+            SET_VEHICLE_EXTRA(vehicle, 10, 0)
+        end
+        if checkVehMod(vehicle, 11) then
+            SET_VEHICLE_EXTRA(vehicle, 11, 0)
+        end
+    end
+    
+    if buffVehModel == 2053223216 then
+        local random_extra = asuka_lib.get_random_value(1, 7)
+        for extra = 1, 7 do
+            if checkVehMod(vehicle, extra) then
+                if extra == random_extra then
+                    SET_VEHICLE_EXTRA(vehicle, extra, 0)
+                else
+                    SET_VEHICLE_EXTRA(vehicle, extra, -1)
+                end
+            end
+        end
+        if checkVehMod(vehicle, 10) then
+            SET_VEHICLE_EXTRA(vehicle, 10, 0)
+        end
+        if checkVehMod(vehicle, 11) then
+            SET_VEHICLE_EXTRA(vehicle, 11, -1)
+        end
+        if checkVehMod(vehicle, 12) then
+            SET_VEHICLE_EXTRA(vehicle, 11, 0)
+        end
+    end
+
+    SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
+    SET_VEHICLE_LIGHTS(vehicle, asuka_tech_lights)
+    SET_VEHICLE_INTERIORLIGHT(vehicle, false)
+    SET_HELI_TAIL_BOOM_CAN_BREAK_OFF(vehicle, false)
+    SET_VEHICLE_CAN_ENGINE_MISSFIRE(vehicle, false)
+    SET_VEHICLE_CAN_LEAK_PETROL(vehicle, false)
+    SET_VEHICLE_CAN_LEAK_OIL(vehicle, false)
+    SET_DISABLE_VEHICLE_PETROL_TANK_FIRES(vehicle, true)
+    SET_DISABLE_VEHICLE_PETROL_TANK_DAMAGE(vehicle, true)
+    SET_DISABLE_VEHICLE_ENGINE_FIRES(vehicle, true)
+    SET_VEHICLE_ENGINE_CAN_DEGRADE(vehicle, false)
+    --SET_VEHICLE_STRONG(vehicle, true)
+    SET_TRAILER_LEGS_RAISED(vehicle)
+    SET_INCREASE_WHEEL_CRUSH_DAMAGE(vehicle, true)
+    --ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(vehicle)
+    SET_VEHICLE_ACT_AS_IF_HAS_SIREN_ON(vehicle, true)
+    SET_VEHICLE_TYRES_CAN_BURST(vehicle, false)
+    SET_VEHICLE_NEEDS_TO_BE_HOTWIRED(vehicle, false)
+    SET_VEHICLE_HAS_BEEN_OWNED_BY_PLAYER(vehicle, true)
+    --SET_VEHICLE_FORCE_AFTERBURNER(vehicle, true)
+    ENABLE_VEHICLE_EXHAUST_POPS(vehicle, true)
+    NETWORK_SET_NO_LONGER_NEEDED(vehicle, false)
+    SET_VEHICLE_BROKEN_PARTS_DONT_AFFECT_AI_HANDLING(vehicle, true)
+end
+
+
+local asuka_tech_repair_amount = 1
+local asuka_tech_mission_repair_amount = 3
+local asukaTechBlip = nil
+local asuka_tech_dirt = 1
+local asuka_tech_dirt_amount = 0.03
+local function repair_asuka_tech(vehicle)
+    local repair_amount = 0
+    local max_repair_limit = 1000
+    if IS_ENTITY_A_MISSION_ENTITY(vehicle) and DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 and not table.contains(unlikely_mission_vehicles, GET_ENTITY_SCRIPT(vehicle, 0)) then
+        repair_amount = asuka_tech_mission_repair_amount
+        max_repair_limit = max_repair_limit * asuka_tech_mission_repair_amount
+    else
+        repair_amount = asuka_tech_repair_amount
+    end
+    local engineHealth = GET_VEHICLE_ENGINE_HEALTH(vehicle)
+    local bodyHealth = GET_VEHICLE_BODY_HEALTH(vehicle)
+    
+    if repair_amount > 0 and IS_VEHICLE_DRIVEABLE(vehicle) then
+        if engineHealth > 0 and engineHealth < max_repair_limit then
+            SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + repair_amount)
+        end
+        local petrolTankHealth = GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
+        if petrolTankHealth > 0 and petrolTankHealth < max_repair_limit then
+            SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + repair_amount)
+        end
+        if bodyHealth > 0 and bodyHealth < max_repair_limit then
+            SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + repair_amount)
+        end
+        local heliTailHealth = GET_HELI_TAIL_ROTOR_HEALTH(vehicle)
+        if heliTailHealth > 0 and heliTailHealth < max_repair_limit then
+            SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + repair_amount)
+        end
+        local heliRotorHealth = GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
+        if heliRotorHealth > 0 and heliRotorHealth < max_repair_limit then
+            SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + repair_amount)
+        end
+
+        if petrolTankHealth >= max_repair_limit and engineHealth >= max_repair_limit and bodyHealth >= max_repair_limit then
+            SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, false)
+            SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, false)
+        else
+            if asuka_tech_dirt ~= 1 then
+                local currentDirtLevel = GET_VEHICLE_DIRT_LEVEL(vehicle)
+                local theDirtyHoe = asuka_tech_dirt_amount * repair_amount
+                if asuka_tech_dirt == 2 then
+                    currentDirtLevel = math.min(currentDirtLevel + theDirtyHoe, 15.0)
+                elseif asuka_tech_dirt == 3 then
+                    currentDirtLevel = math.max(currentDirtLevel - theDirtyHoe, 0.0)
+                end
+                SET_VEHICLE_DIRT_LEVEL(vehicle, currentDirtLevel)
+            end
+            SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, true)
+            SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, true)
+        end
+    end
+
+    if (engineHealth <= 0 and bodyHealth <= 0) or not IS_VEHICLE_DRIVEABLE(vehicle) then
+        NETWORK_SET_NO_LONGER_NEEDED(vehicle, true)
+    end
+end
+
+
 local PIP_Girl_mission_helper = menu.list(PIP_Girl, 'Mission Helper', {}, '', function() end)
 local MP_F_DeadHooker = util.joaat("MP_F_DeadHooker")
 local yohan_vehicle_blocking = {
@@ -1389,10 +1639,13 @@ local yohan_vehicle_blocking = {
     {var = nil, pos = v3.new(-234.38, -2695.97, 16.85)},
     {var = nil, pos = v3.new(469.89, -2225.24, 21.85)},
     {var = nil, pos = v3.new(434.51, -2771.97, 7.91)},
+    {var = nil, pos = v3.new(1305.96, -3121.61, 6.35)},
+
     {var = nil, pos = v3.new(32.55, -2429.65, 17.45)},
     {var = nil, pos = v3.new(-234.38, -2695.97, 16.85)},
     {var = nil, pos = v3.new(469.89, -2225.24, 21.85)},
     {var = nil, pos = v3.new(434.51, -2771.97, 7.91)},
+    {var = nil, pos = v3.new(1305.96, -3121.61, 6.35)},
 }
 yohan_helper = menu.toggle(PIP_Girl_mission_helper, "Yohan (NC) mission helper.", {""}, "", function(on)
     if on then
@@ -1413,18 +1666,31 @@ yohan_helper = menu.toggle(PIP_Girl_mission_helper, "Yohan (NC) mission helper."
             util.yield()
         end
         if util.spoof_script("fm_content_club_source", function() end) then
-            notify("Started Mission.")
+            notify_cmd("Started Mission.")
             local truck_hash = 2053223216
+            local packet_hash = 1669585364
             local truck = nil
+            local packet = nil
             launch_time = os.time()
-            while truck == nil do
+            while truck == nil and packet == nil do
                 local vehicle_pointers = entities.get_all_vehicles_as_pointers()
                 for i = 1, #vehicle_pointers do
                     if entities.get_model_hash(vehicle_pointers[i]) == truck_hash then
                         local truck_handle = entities.pointer_to_handle(vehicle_pointers[i])
                         if GET_ENTITY_SCRIPT(truck_handle, 0) == "fm_content_club_source" then
                             truck = truck_handle
-                            notify("Found mission truck.")
+                            notify_cmd("Found mission truck.")
+                            break
+                        end
+                    end
+                end
+                local object_pointers = entities.get_all_objects_as_pointers()
+                for i = 1, #object_pointers do
+                    if entities.get_model_hash(object_pointers[i]) == packet_hash then
+                        local packet_handle = entities.pointer_to_handle(object_pointers[i])
+                        if GET_ENTITY_SCRIPT(packet_handle, 0) == "fm_content_club_source" then
+                            packet = packet_handle
+                            notify_cmd("Found mission packet.")
                             break
                         end
                     end
@@ -1432,7 +1698,7 @@ yohan_helper = menu.toggle(PIP_Girl_mission_helper, "Yohan (NC) mission helper."
                 if launch_time - os.time() > 60 then
                     break
                 end
-                util.yield()
+                util.yield(100)
             end
             for ipairs(yohan_vehicle_blocking) as kosatka do
                 asuka_lib.delete_entity(kosatka.var)
@@ -1455,19 +1721,27 @@ yohan_helper = menu.toggle(PIP_Girl_mission_helper, "Yohan (NC) mission helper."
                 local cord = GET_BLIP_COORDS(getblip(614))
                 TASK_VEHICLE_DRIVE_TO_COORD_LONGRANGE(driver, truck, cord.x, cord.y, cord.z, 66.6, 2148287277, 50.05)
                 notify("Truck Hijacked, Driving to you NC.")
+                buff_asuka_tech(truck)
                 while driver do
                     if asuka_lib.does_entity_exist(driver) then
                         if cord:distance(GET_ENTITY_COORDS(driver)) <= 25 then
                             asuka_lib.delete_entity(driver)
-                            BRING_VEHICLE_TO_HALT(truck, 1, 1, false)
+                            BRING_VEHICLE_TO_HALT(truck, 1, 3, false)
                             warnify("Yohan truck have arived at you NC. :D")
                             driver = nil
                         end
+                        repair_asuka_tech(truck)
                         util.yield(1000)
                     else
                         driver = nil
                     end
                 end
+            end
+            if asuka_lib.does_entity_exist(packet) then
+                entities.request_control(packet)
+                local cord = players.get_position(players.user())
+                SET_ENTITY_COORDS(packet, cord.x, cord.y, cord.z, false, false, false, false)
+                notify("Packet Hijacked, Teleportet to you.")
             end
         end
         for ipairs(yohan_vehicle_blocking) as kosatka do
@@ -1513,12 +1787,8 @@ store_collect_money = menu.toggle_loop(PIP_Girl_pickups, "Collect valueable pick
                     goto we_aint_need_that_pickup
                 end
                 if asuka_lib.is_user_inside_vehicle(true) then
-                    if contains(money_hashish, pickupHash) then
-                        request_control(pickup)
-                        SET_ENTITY_VISIBLE(pickup, false)
-                        SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z - 66, false, false, false, false)
-                    end
                     if contains(vehicle_money_hashish, pickupHash) then
+                        pickup = entities.pointer_to_handle(pickup)
                         request_control(pickup)
                         SET_ENTITY_VISIBLE(pickup, false)
                         SET_PICKUP_OBJECT_COLLECTABLE_IN_VEHICLE(pickup)
@@ -1526,8 +1796,8 @@ store_collect_money = menu.toggle_loop(PIP_Girl_pickups, "Collect valueable pick
                     end
                 else
                     if contains(money_hashish, pickupHash) then
+                        pickup = entities.pointer_to_handle(pickup)
                         SET_ENTITY_VISIBLE(pickup, false)
-                        SET_PICKUP_OBJECT_COLLECTABLE_IN_VEHICLE(pickup)
                         SET_ENTITY_COORDS(pickup, pos.x, pos.y, pos.z, false, false, false, false)
                     end
                 end
@@ -1842,168 +2112,7 @@ local repairRadius = 3
 local closestMarker = nil
 local closestDistance = math.huge
 local wasInZone = false
-local protectMissionVehicles = false
-local asuka_tech_armor = 2
-local asuka_tech_lights = 2
-local function checkVehMod(vehicle, mod)
-    if DOES_EXTRA_EXIST(vehicle, mod) then
-        return true
-    end
-    return false
-end
 
-unlikely_mission_vehicles = {
-    "AM_VEHICLE_SPAWN"
-}
-
-local function buff_asuka_tech(vehicle)
-    if asuka_lib.is_vehicle_free_for_use(vehicle) then
-        request_control(vehicle)
-    end
-    menu.trigger_commands("smoothflight on")
-    if protectMissionVehicles and not players.is_in_interior(players.user()) and not players.is_using_rc_vehicle(players.user()) then
-        if IS_ENTITY_A_MISSION_ENTITY(vehicle) and DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 and not table.contains(unlikely_mission_vehicles, GET_ENTITY_SCRIPT(vehicle, 0)) then
-            local vehicle_name = util.reverse_joaat(entities.get_model_hash(vehicle))
-            local vehicle_label = util.get_label_text(vehicle_name)
-            if vehicle_label ~= "NULL" then
-                vehicle_name = vehicle_label
-            end
-            notify("Installed Lockon Jammer on: "..vehicle_name)
-            SET_VEHICLE_ALLOW_HOMING_MISSLE_LOCKON(vehicle, false, false)
-            SET_VEHICLE_ALLOW_HOMING_MISSLE_LOCKON_SYNCED(vehicle, false, false)
-        end
-    end
-    if IS_ENTITY_A_MISSION_ENTITY(vehicle) and DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 then
-        SET_VEHICLE_STRONG(vehicle, true)
-    end
-    ----the_bone = GET_ENTITY_BONE_INDEX_BY_NAME(vehicle, "dashglow")
-    --the_bone = GET_ENTITY_BONE_INDEX_BY_NAME(vehicle, "bonnet")
-    --if the_bone ~= -1 then
-    --    usb_asuka_tech = entities.create_object(1112175411, players.get_position(players.user()))
-    --    --ATTACH_ENTITY_TO_ENTITY(usb_asuka_tech, vehicle, the_bone, -0.007, 0.03, -0.06, 0, 0, 90, false, false, false, false, 0, true, 1)
-    --    ATTACH_ENTITY_TO_ENTITY(usb_asuka_tech, vehicle, the_bone, 0, 0, 0, 90, 90, 0, false, false, false, false, 0, true, 1)
-    --end
-    if asuka_tech_armor > 1 then
-        local vehicle_pointer = entities.handle_to_pointer(vehicle)
-        if vehicle_pointer ~= 0 then
-            if asuka_tech_armor == 2 then
-                local wheel = entities.vehicle_get_handling(vehicle_pointer) + 0x128
-                memory.write_int(wheel, memory.read_int(wheel) | (1 << 26))
-            else
-                if IS_ENTITY_A_MISSION_ENTITY(vehicle) and DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 then
-                    local wheel = entities.vehicle_get_handling(vehicle_pointer) + 0x128
-                    memory.write_int(wheel, memory.read_int(wheel) | (1 << 26))
-                end
-            end
-        end
-    end
-    if DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 then
-        SET_VEHICLE_MOD_KIT(vehicle, 0)
-
-        local engine = GET_NUM_VEHICLE_MODS(vehicle, 11) - 1
-        if engine > -1 then
-            if GET_VEHICLE_MOD(vehicle, 11) ~= engine then
-                SET_VEHICLE_MOD(vehicle, 11, engine)
-            end
-        end
-        local breaks = GET_NUM_VEHICLE_MODS(vehicle, 12) - 1
-        if breaks > -1 then
-            if GET_VEHICLE_MOD(vehicle, 12) ~= breaks then
-                SET_VEHICLE_MOD(vehicle, 12, breaks)
-            end
-        end
-        local gearbox = GET_NUM_VEHICLE_MODS(vehicle, 13) - 1
-        if gearbox > -1 then
-            if GET_VEHICLE_MOD(vehicle, 13) ~= gearbox then
-                SET_VEHICLE_MOD(vehicle, 13, gearbox)
-            end
-        end
-        local suspension = GET_NUM_VEHICLE_MODS(vehicle, 15) - 1
-        if suspension > -1 then
-            if GET_VEHICLE_MOD(vehicle, 15) ~= suspension then
-                SET_VEHICLE_MOD(vehicle, 15, suspension)
-            end
-        end
-        local armor = GET_NUM_VEHICLE_MODS(vehicle, 16) - 1
-        if armor > -1 then
-            if GET_VEHICLE_MOD(vehicle, 16) ~= armor then
-                SET_VEHICLE_MOD(vehicle, 16, armor)
-            end
-        end
-        TOGGLE_VEHICLE_MOD(vehicle, 18, true)
-    end
-    if DOES_VEHICLE_HAVE_SEARCHLIGHT(vehicle) then
-        SET_VEHICLE_SEARCHLIGHT(vehicle, true, true)
-    end
-
-    local buffVehModel = GET_ENTITY_MODEL(vehicle)
-
-    if buffVehModel == 167522317 then
-        if GET_VEHICLE_MOD(vehicle, 10) == 1 then
-            if checkVehMod(vehicle, 1) then
-                SET_VEHICLE_EXTRA(vehicle, 1, 0)
-            end
-        end
-    end
-
-    if buffVehModel == 1770332643 then
-        if checkVehMod(vehicle, 1) then
-            SET_VEHICLE_EXTRA(vehicle, 1, 0)
-        end
-        if checkVehMod(vehicle, 10) then
-            SET_VEHICLE_EXTRA(vehicle, 10, 0)
-        end
-        if checkVehMod(vehicle, 11) then
-            SET_VEHICLE_EXTRA(vehicle, 11, 0)
-        end
-    end
-    
-    if buffVehModel == 2053223216 then
-        local random_extra = asuka_lib.get_random_value(1, 7)
-        for extra = 1, 7 do
-            if checkVehMod(vehicle, extra) then
-                if extra == random_extra then
-                    SET_VEHICLE_EXTRA(vehicle, extra, 0)
-                else
-                    SET_VEHICLE_EXTRA(vehicle, extra, -1)
-                end
-            end
-        end
-        if checkVehMod(vehicle, 10) then
-            SET_VEHICLE_EXTRA(vehicle, 10, 0)
-        end
-        if checkVehMod(vehicle, 11) then
-            SET_VEHICLE_EXTRA(vehicle, 11, -1)
-        end
-        if checkVehMod(vehicle, 12) then
-            SET_VEHICLE_EXTRA(vehicle, 11, 0)
-        end
-    end
-
-    SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
-    SET_VEHICLE_LIGHTS(vehicle, asuka_tech_lights)
-    SET_VEHICLE_INTERIORLIGHT(vehicle, false)
-    SET_HELI_TAIL_BOOM_CAN_BREAK_OFF(vehicle, false)
-    SET_VEHICLE_CAN_ENGINE_MISSFIRE(vehicle, false)
-    SET_VEHICLE_CAN_LEAK_PETROL(vehicle, false)
-    SET_VEHICLE_CAN_LEAK_OIL(vehicle, false)
-    SET_DISABLE_VEHICLE_PETROL_TANK_FIRES(vehicle, true)
-    SET_DISABLE_VEHICLE_PETROL_TANK_DAMAGE(vehicle, true)
-    SET_DISABLE_VEHICLE_ENGINE_FIRES(vehicle, true)
-    SET_VEHICLE_ENGINE_CAN_DEGRADE(vehicle, false)
-    --SET_VEHICLE_STRONG(vehicle, true)
-    SET_TRAILER_LEGS_RAISED(vehicle)
-    SET_INCREASE_WHEEL_CRUSH_DAMAGE(vehicle, true)
-    --ADD_VEHICLE_PHONE_EXPLOSIVE_DEVICE(vehicle)
-    SET_VEHICLE_ACT_AS_IF_HAS_SIREN_ON(vehicle, true)
-    SET_VEHICLE_TYRES_CAN_BURST(vehicle, false)
-    SET_VEHICLE_NEEDS_TO_BE_HOTWIRED(vehicle, false)
-    SET_VEHICLE_HAS_BEEN_OWNED_BY_PLAYER(vehicle, true)
-    --SET_VEHICLE_FORCE_AFTERBURNER(vehicle, true)
-    ENABLE_VEHICLE_EXHAUST_POPS(vehicle, true)
-    NETWORK_SET_NO_LONGER_NEEDED(vehicle, false)
-    SET_VEHICLE_BROKEN_PARTS_DONT_AFFECT_AI_HANDLING(vehicle, true)
-end
 local function SetInZoneTimer()
     wasInZone = true
     for blips as blip do
@@ -2024,66 +2133,6 @@ end
 
 menu.divider(Vehicle, "Asuka Tech")
 
-local asuka_tech_repair_amount = 1
-local asuka_tech_mission_repair_amount = 3
-local asukaTechBlip = nil
-local asuka_tech_dirt = 1
-local asuka_tech_dirt_amount = 0.03
-local function repair_asuka_tech(vehicle)
-    local repair_amount = 0
-    local max_repair_limit = 1000
-    if IS_ENTITY_A_MISSION_ENTITY(vehicle) and DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 and not table.contains(unlikely_mission_vehicles, GET_ENTITY_SCRIPT(vehicle, 0)) then
-        repair_amount = asuka_tech_mission_repair_amount
-        max_repair_limit = max_repair_limit * asuka_tech_mission_repair_amount
-    else
-        repair_amount = asuka_tech_repair_amount
-    end
-    local engineHealth = GET_VEHICLE_ENGINE_HEALTH(vehicle)
-    local bodyHealth = GET_VEHICLE_BODY_HEALTH(vehicle)
-    
-    if repair_amount > 0 and IS_VEHICLE_DRIVEABLE(vehicle) then
-        if engineHealth > 0 and engineHealth < max_repair_limit then
-            SET_VEHICLE_ENGINE_HEALTH(vehicle, engineHealth + repair_amount)
-        end
-        local petrolTankHealth = GET_VEHICLE_PETROL_TANK_HEALTH(vehicle)
-        if petrolTankHealth > 0 and petrolTankHealth < max_repair_limit then
-            SET_VEHICLE_PETROL_TANK_HEALTH(vehicle, petrolTankHealth + repair_amount)
-        end
-        if bodyHealth > 0 and bodyHealth < max_repair_limit then
-            SET_VEHICLE_BODY_HEALTH(vehicle, bodyHealth + repair_amount)
-        end
-        local heliTailHealth = GET_HELI_TAIL_ROTOR_HEALTH(vehicle)
-        if heliTailHealth > 0 and heliTailHealth < max_repair_limit then
-            SET_HELI_TAIL_ROTOR_HEALTH(vehicle, heliTailHealth + repair_amount)
-        end
-        local heliRotorHealth = GET_HELI_MAIN_ROTOR_HEALTH(vehicle)
-        if heliRotorHealth > 0 and heliRotorHealth < max_repair_limit then
-            SET_HELI_MAIN_ROTOR_HEALTH(vehicle, heliRotorHealth + repair_amount)
-        end
-
-        if petrolTankHealth >= max_repair_limit and engineHealth >= max_repair_limit and bodyHealth >= max_repair_limit then
-            SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, false)
-            SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, false)
-        else
-            if asuka_tech_dirt ~= 1 then
-                local currentDirtLevel = GET_VEHICLE_DIRT_LEVEL(vehicle)
-                local theDirtyHoe = asuka_tech_dirt_amount * repair_amount
-                if asuka_tech_dirt == 2 then
-                    currentDirtLevel = math.min(currentDirtLevel + theDirtyHoe, 15.0)
-                elseif asuka_tech_dirt == 3 then
-                    currentDirtLevel = math.max(currentDirtLevel - theDirtyHoe, 0.0)
-                end
-                SET_VEHICLE_DIRT_LEVEL(vehicle, currentDirtLevel)
-            end
-            SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 0, true)
-            SET_VEHICLE_INDICATOR_LIGHTS(vehicle, 1, true)
-        end
-    end
-
-    if (engineHealth <= 0 and bodyHealth <= 0) or not IS_VEHICLE_DRIVEABLE(vehicle) then
-        NETWORK_SET_NO_LONGER_NEEDED(vehicle, true)
-    end
-end
 local current_asuka_tech_vehicle = nil
 local saved_trailer_id = nil
 local saved_towing_vehicle = nil
@@ -2852,7 +2901,7 @@ store_auto_vehicle_light_color = menu.toggle_loop(Vehicle, "Auto Vehicle Light C
         if asuka_lib.transition_state(true) <3 then
             local vehicle = asuka_lib.get_user_vehicle()
             if asuka_lib.does_entity_exist(vehicle) and asuka_lib.is_vehicle_free_for_use(vehicle) and GET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle) == 255 then
-                if DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 or vehicle == entities.get_user_personal_vehicle_as_handle() and not GET_ENTITY_SCRIPT(vehicle, 0) == "freemode" then
+                if DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 or vehicle == entities.get_user_personal_vehicle_as_handle() then
                     TOGGLE_VEHICLE_MOD(vehicle, 22, true)
                     SET_VEHICLE_XENON_LIGHT_COLOR_INDEX(vehicle, vehicleFavColor)
                 end
@@ -3291,6 +3340,7 @@ store_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit", {"Smartoutfit
         if ChangedHelmet then
             menu.trigger_commands("hat -1")
             ChangedHelmet = false
+            SET_PED_CONFIG_FLAG(players.user_ped(), 35, false)
         end
         save_temp_outfit()
         menu.trigger_commands("lockoutfit off")
@@ -3314,7 +3364,7 @@ store_smart_outfit_lock = menu.toggle_loop(Outfit, "Smart Outfit", {"Smartoutfit
                 temp_holding_outfit = false
             end
             if IS_PED_IN_ANY_VEHICLE(players.user_ped(), false) then
-                if menu.get_state(menu.ref_by_path("Self>Appearance>Outfit>Hat")) == "-1" and not menu.get_state(menu.ref_by_path("Self>Appearance>Outfit>Top 2")) == "238" then
+                if menu.get_state(menu.ref_by_path("Self>Appearance>Outfit>Hat")) == "-1" and menu.get_state(menu.ref_by_path("Self>Appearance>Outfit>Top 2")) ~= "238" then
                     local cat = GET_VEHICLE_PED_IS_IN(players.user_ped(), true)
                     local vehicleClass = GET_VEHICLE_CLASS(cat)
                     if bike_OutfitLockHelmet ~= -1 and vehicleClass == 8 and asuka_lib.is_user_inside_vehicle(cat) then
@@ -4091,14 +4141,6 @@ end
 
 local Player_Magnet_value = 25
 local player_VIP_slots = 3
-store_player_magnet_amount_slider = menu.slider(SessionManager, "Player Magnet Value", {"pgmagnetvalue"}, "", 0, 30, 25, 1, function(value)
-    Player_Magnet_value = value
-    local sence = Player_Magnet_value + player_VIP_slots - 30
-    if sence > 0 then
-        menu.trigger_commands("pgvipslotvalue "..player_VIP_slots - sence)
-    end
-end)
-
 store_player_magnet_amount_toggle = menu.toggle_loop(SessionManager, "Player Magnet Toggle", {}, "Player Magnet", function()
     if asuka_lib.transition_state(true) <3 and players.user() == players.get_host() and asuka_lib.session_type() == "Public" then
         if GET_NUMBER_OF_PLAYERS() < Player_Magnet_value then
@@ -4112,9 +4154,60 @@ store_player_magnet_amount_toggle = menu.toggle_loop(SessionManager, "Player Mag
     util.yield(3666)
 end)
 
+store_player_magnet_amount_slider = menu.slider(SessionManager, "Player Magnet Value", {"pgmagnetvalue"}, "", 0, 30, 25, 1, function(value)
+    Player_Magnet_value = value
+    local sence = Player_Magnet_value + player_VIP_slots - 30
+    if sence > 0 then
+        menu.trigger_commands("pgvipslotvalue "..player_VIP_slots - sence)
+    end
+end)
+
 menu.divider(SessionManager, '~=^.^=~')
 
-store_player_VIP_slots = menu.slider(SessionManager, "VIP Slots Value", {"pgvipslotvalue"}, "How many VIP Join slots to hold free.", 1, 29, 3, 1, function(value)
+local player_VIP_slots_method = 0
+local store_player_VIP_toggle
+local whitelist_update = false
+local function handle_session_cloaking(bool) --true = close | false = open
+    if NETWORK_SESSION_IS_VISIBLE() == bool then
+        NETWORK_SESSION_MARK_VISIBLE(bool and 0 or 1)
+        menu.trigger_command(bool and message_vip_slot or message_bad_rep)
+
+        if player_VIP_slots_method > 0 then
+            if player_VIP_slots_method == 1 then
+                menu.trigger_command(menu.ref_by_path("Online>Session>Block Joins>From Non-Whitelisted"), bool and "On" or "Off")
+                if not whitelist_update then
+                    menu.trigger_commands("createfriendsgroup")
+                    whitelist_update = true
+                end
+            elseif player_VIP_slots_method == 2 then
+                menu.trigger_command(menu.ref_by_path(bool and "Online>Session>Set Session Type>Closed Friend" or "Online>Session>Set Session Type>Public"))
+            elseif player_VIP_slots_method == 3 then
+                menu.trigger_command(menu.ref_by_path(bool and "Online>Session>Set Session Type>Invite Only" or "Online>Session>Set Session Type>Public"))
+            elseif player_VIP_slots_method == 4 then
+                menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Strangers"), bool and "On" or "Off")
+            end
+        end
+    end
+end
+
+store_player_VIP_toggle = menu.toggle_loop(SessionManager, "VIP Slots Toggle", {}, "Toggle of the VIP Join slots function.", function()
+    if asuka_lib.transition_state(true) == 1 and players.user() == players.get_host() then
+        local is_full_value = GET_NUMBER_OF_PLAYERS() + player_VIP_slots >= 30
+        handle_session_cloaking(is_full_value)
+    else
+        whitelist_update = false
+    end
+    util.yield(1666)
+end, function()
+    menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Non-Whitelisted"), "Off")
+    menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Strangers"), "Off")
+    menu.trigger_command(menu.ref_by_path("Online>Session>Set Session Type>Public"))
+    menu.trigger_command(message_bad_rep)
+    NETWORK_SESSION_MARK_VISIBLE(1)
+    whitelist_update = false
+end)
+
+store_player_VIP_slots = menu.slider(SessionManager, "VIP Slots Value", {"pgvipslotvalue"}, "How many VIP Join slots to hold free.", 1, 29, player_VIP_slots, 1, function(value)
     player_VIP_slots = value
     local sence = Player_Magnet_value + player_VIP_slots - 30
     if sence > 0 then
@@ -4122,8 +4215,6 @@ store_player_VIP_slots = menu.slider(SessionManager, "VIP Slots Value", {"pgvips
     end
 end)
 
-local player_VIP_slots_method = 0
-local store_player_VIP_toggle
 store_player_VIP_method = menu.list_select(SessionManager, "VIP Slots method", {""}, "The method how the VIP Join slots are getting hold free.", {
     {0, "Hide from Session Pool"},
     {1, "Block: Non-Whitelisted"},
@@ -4143,42 +4234,24 @@ store_player_VIP_method = menu.list_select(SessionManager, "VIP Slots method", {
     end
 end)
 
-local whitelist_update = false
-store_player_VIP_toggle = menu.toggle_loop(SessionManager, "VIP Slots Toggle", {}, "Toggle of the VIP Join slots function.", function()
-    if asuka_lib.transition_state(true) == 1 and players.user() == players.get_host() then
-        local is_full_value = GET_NUMBER_OF_PLAYERS() + player_VIP_slots >= 30
+menu.divider(SessionManager, '~=^.^=~')
 
-        if NETWORK_SESSION_IS_VISIBLE() == is_full_value then
-            NETWORK_SESSION_MARK_VISIBLE(is_full_value and 0 or 1)
-            menu.trigger_command(is_full_value and message_vip_slot or message_bad_rep)
-
-            if player_VIP_slots_method > 0 then
-                if player_VIP_slots_method == 1 then
-                    menu.trigger_command(menu.ref_by_path("Online>Session>Block Joins>From Non-Whitelisted"), is_full_value and "On" or "Off")
-                    if not whitelist_update then
-                        menu.trigger_commands("createfriendsgroup")
-                        whitelist_update = true
-                    end
-                elseif player_VIP_slots_method == 2 then
-                    menu.trigger_command(menu.ref_by_path(is_full_value and "Online>Session>Set Session Type>Closed Friend" or "Online>Session>Set Session Type>Public"))
-                elseif player_VIP_slots_method == 3 then
-                    menu.trigger_command(menu.ref_by_path(is_full_value and "Online>Session>Set Session Type>Invite Only" or "Online>Session>Set Session Type>Public"))
-                elseif player_VIP_slots_method == 4 then
-                    menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Strangers"), is_full_value and "On" or "Off")
-                end
+local player_join_buffer = 3
+store_player_join_buffer_toggle = menu.toggle_loop(SessionManager, "Player Join Buffer Toggle", {}, "", function()
+    if asuka_lib.transition_state(true) == 1 and players.user() == players.get_host() and asuka_lib.session_type() == "Public" then
+        local joining_players = 0
+        for players.list(false, true, true) as pid do
+            if not players.are_stats_ready(pid) then
+                joining_players += 1
             end
         end
-    else
-        whitelist_update = false
+        handle_session_cloaking(joining_players > player_join_buffer)
     end
-    util.yield(666)
-end, function()
-    menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Non-Whitelisted"), "Off")
-    menu.set_state(menu.ref_by_path("Online>Session>Block Joins>From Strangers"), "Off")
-    menu.trigger_command(menu.ref_by_path("Online>Session>Set Session Type>Public"))
-    menu.trigger_command(message_bad_rep)
-    NETWORK_SESSION_MARK_VISIBLE(1)
-    whitelist_update = false
+    util.yield(6666)
+end)
+
+store_player_join_buffer_slider = menu.slider(SessionManager, "Player Join Buffer Value", {"pgjoinbuffervalue"}, "Uses VIP Slots method.", 0, 30, player_join_buffer, 1, function(value)
+    player_join_buffer = value
 end)
 
 local SessionJoin = menu.list(Session, 'Join Settings', {}, 'Session Join Settings.', function(); end)
@@ -6073,6 +6146,9 @@ data_cfg["store_player_magnet_amount_toggle"] = store_player_magnet_amount_toggl
 data_cfg["store_player_VIP_slots"] = store_player_VIP_slots
 data_cfg["store_player_VIP_method"] = store_player_VIP_method
 data_cfg["store_player_VIP_toggle"] = store_player_VIP_toggle
+data_cfg["store_player_join_buffer_toggle"] = store_player_join_buffer_toggle
+data_cfg["store_player_join_buffer_slider"] = store_player_join_buffer_slider
+
 data_cfg["store_custom_spawn"] = store_custom_spawn
 data_cfg["store_use_custom_spawn"] = store_use_custom_spawn
 data_cfg["store_custom_vehicle_spawn"] = store_custom_vehicle_spawn
