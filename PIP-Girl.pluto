@@ -1634,30 +1634,10 @@ end
 
 local PIP_Girl_mission_helper = menu.list(PIP_Girl, 'Mission Helper', {}, '', function() end)
 local MP_F_DeadHooker = util.joaat("MP_F_DeadHooker")
-local yohan_vehicle_blocking = {
-    {var = nil, pos = v3.new(32.55, -2429.65, 17.45)},
-    {var = nil, pos = v3.new(-234.38, -2695.97, 16.85)},
-    {var = nil, pos = v3.new(469.89, -2225.24, 21.85)},
-    {var = nil, pos = v3.new(434.51, -2771.97, 7.91)},
-    {var = nil, pos = v3.new(1305.96, -3121.61, 6.35)},
 
-    {var = nil, pos = v3.new(32.55, -2429.65, 17.45)},
-    {var = nil, pos = v3.new(-234.38, -2695.97, 16.85)},
-    {var = nil, pos = v3.new(469.89, -2225.24, 21.85)},
-    {var = nil, pos = v3.new(434.51, -2771.97, 7.91)},
-    {var = nil, pos = v3.new(1305.96, -3121.61, 6.35)},
-}
 yohan_helper = menu.toggle(PIP_Girl_mission_helper, "Yohan (NC) mission helper.", {""}, "", function(on)
     if on then
-        util.request_model(1336872304)
-        for ipairs(yohan_vehicle_blocking) as kosatka do
-            kosatka.var = entities.create_vehicle(1336872304, kosatka.pos, asuka_lib.get_random_value(0, 360))
-            SET_ENTITY_VISIBLE(kosatka.var, false)
-            entities.set_can_migrate(kosatka.var, false)
-            SET_ENTITY_NO_COLLISION_ENTITY(kosatka.var, players.user_ped(), false)
-            SET_ENTITY_COLLISION(kosatka.var, true, true)
-        end
-        warnify("Mission area blocking active, call yohan now.")
+        warnify("Call yohan now.")
         local launch_time = os.time()
         while not util.spoof_script("fm_content_club_source", function() end) do
             if launch_time - os.time() > 60 then
@@ -1700,10 +1680,6 @@ yohan_helper = menu.toggle(PIP_Girl_mission_helper, "Yohan (NC) mission helper."
                 end
                 util.yield(100)
             end
-            for ipairs(yohan_vehicle_blocking) as kosatka do
-                asuka_lib.delete_entity(kosatka.var)
-            end
-            notify("Cleared Mission area blocking.")
             if asuka_lib.does_entity_exist(truck) then
                 util.request_model(MP_F_DeadHooker)
                 entities.request_control(truck)
@@ -1741,17 +1717,10 @@ yohan_helper = menu.toggle(PIP_Girl_mission_helper, "Yohan (NC) mission helper."
                 entities.request_control(packet)
                 local cord = players.get_position(players.user())
                 SET_ENTITY_COORDS(packet, cord.x, cord.y, cord.z, false, false, false, false)
-                notify("Packet Hijacked, Teleportet to you.")
+                warnify("Packet Hijacked, Teleportet to you.")
             end
         end
-        for ipairs(yohan_vehicle_blocking) as kosatka do
-            asuka_lib.delete_entity(kosatka.var)
-        end
         yohan_helper.value = false
-    else
-        for ipairs(yohan_vehicle_blocking) as kosatka do
-            asuka_lib.delete_entity(kosatka.var)
-        end
     end
 end)
 
