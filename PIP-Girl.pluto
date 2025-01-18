@@ -1909,7 +1909,7 @@ store_recharge_health = menu.toggle_loop(Stimpak, "Recharge Health in Cover/Vehi
         local isPlayerInCover = IS_PED_IN_COVER(playerPed, false)
         if isPlayerInCover or in_vehicle then
             SET_PLAYER_HEALTH_RECHARGE_MAX_PERCENT(players.user(), 1.0)
-            SET_PLAYER_HEALTH_RECHARGE_MULTIPLIER(players.user(), 4.0)
+            SET_PLAYER_HEALTH_RECHARGE_MULTIPLIER(players.user(), 2.0)
         else
             SET_PLAYER_HEALTH_RECHARGE_MAX_PERCENT(players.user(), 1.0)
             SET_PLAYER_HEALTH_RECHARGE_MULTIPLIER(players.user(), 0.420)
@@ -1936,8 +1936,8 @@ store_recharge_armor = menu.toggle_loop(Stimpak, "Recharge Armor in Cover/Vehicl
             end
         else
             if isPlayerInCover or in_vehicle then
-                if menu.get_state(menu.ref_by_path(cmd_path)) ~= "2.13" then
-                    menu.trigger_commands("armourrate 2.13")
+                if menu.get_state(menu.ref_by_path(cmd_path)) ~= "1.13" then
+                    menu.trigger_commands("armourrate 1.13")
                     util.yield(666)
                 end
             else
