@@ -1639,20 +1639,26 @@ yohan_helper = menu.toggle(PIP_Girl_mission_helper, "Yohan (NC) mission helper."
     if on then
         warnify("Call yohan now.")
         local launch_time = os.time()
-        while not util.spoof_script("fm_content_club_source", function() end) do
+        local started = false
+        while not started and yohan_helper.value do
             if launch_time - os.time() > 60 then
                 break
             end
+            util.spoof_script("fm_content_club_source", function()
+                if NETWORK_IS_HOST_OF_THIS_SCRIPT() then
+                    started = true
+                end
+            end)
             util.yield()
         end
-        if util.spoof_script("fm_content_club_source", function() end) then
+        if util.spoof_script("fm_content_club_source", function() end) and started then
             notify_cmd("Started Mission.")
             local truck_hash = 2053223216
             local packet_hash = 1669585364
             local truck = nil
             local packet = nil
             launch_time = os.time()
-            while truck == nil and packet == nil do
+            while truck == nil and packet == nil and yohan_helper.value do
                 local vehicle_pointers = entities.get_all_vehicles_as_pointers()
                 for i = 1, #vehicle_pointers do
                     if entities.get_model_hash(vehicle_pointers[i]) == truck_hash then
@@ -1698,7 +1704,7 @@ yohan_helper = menu.toggle(PIP_Girl_mission_helper, "Yohan (NC) mission helper."
                 TASK_VEHICLE_DRIVE_TO_COORD_LONGRANGE(driver, truck, cord.x, cord.y, cord.z, 66.6, 2148287277, 50.05)
                 notify("Truck Hijacked, Driving to you NC.")
                 buff_asuka_tech(truck)
-                while driver do
+                while driver and yohan_helper.value do
                     if asuka_lib.does_entity_exist(driver) then
                         if cord:distance(GET_ENTITY_COORDS(driver)) <= 25 then
                             asuka_lib.delete_entity(driver)
@@ -2207,7 +2213,7 @@ store_asuka_tech = menu.toggle_loop(Vehicle, "Asuka Tech", {"asukatech"}, "Slowl
                         saved_towing_vehicle = nil
                     end
 
-                    local air_crane_vehicle = GET_ENTITY_ATTACHED_TO_TOW_TRUCK(vehicle)
+                    local air_crane_vehicle = GET_ENTITY_ATTACHED_TO_CARGOBOB(vehicle)
                     if air_crane_vehicle ~= 0 and asuka_lib.does_entity_exist(air_crane_vehicle) then
                         if asuka_tech_repair_amount > 0 or asuka_tech_mission_repair_amount > 0 then
                             repair_asuka_tech(air_crane_vehicle)
