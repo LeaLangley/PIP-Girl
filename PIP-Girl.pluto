@@ -1700,6 +1700,7 @@ yohan_helper = menu.toggle(PIP_Girl_mission_helper, "Yohan (NC) mission helper."
                 SET_PED_CONFIG_FLAG(driver, 171, false)
                 SET_PED_CONFIG_FLAG(driver, 398, true)
                 SET_BLOCKING_OF_NON_TEMPORARY_EVENTS(driver, true)
+                SET_DRIVER_ABILITY(driver, 1.0)
                 SET_ENTITY_LOAD_COLLISION_FLAG(driver, true, 0)
                 local cord = GET_BLIP_COORDS(getblip(614))
                 TASK_VEHICLE_DRIVE_TO_COORD_LONGRANGE(driver, truck, cord.x, cord.y, cord.z, 66.6, 2148287277, 50.05)
@@ -2716,6 +2717,7 @@ menu.action(Vehicle, "FSD Start", {"pgfsdcancel"}, "", function()
                 FSD_Driver = driver
             end
             if FSD_Driver then
+                SET_DRIVER_ABILITY(FSD_Driver, 1.0)
                 TASK_VEHICLE_DRIVE_TO_COORD_LONGRANGE(FSD_Driver, vehicle, x, y, z, FSD_Speed, FSD_style_bitmask, FSD_Stop_Range)
                 local cords = v3.new(x, y, z)
                 while FSD_Driver do
