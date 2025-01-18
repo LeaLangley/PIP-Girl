@@ -1319,6 +1319,7 @@ if menu.get_edition() > 2 then
                                     menu.trigger_command(menu.ref_by_rel_path(scripts, "Stop Script"))
                                     notify_cmd("Business Battles has exceeded time limit. Terminating script...")
                                     business_battles_start_time = nil
+                                    business_battles_end_time = os.time()
                                 end
                             end
                         end
