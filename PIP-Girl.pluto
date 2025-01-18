@@ -1721,7 +1721,7 @@ yohan_helper = menu.toggle(PIP_Girl_mission_helper, "Yohan (NC) mission helper."
                     end
                 end
             end
-            if asuka_lib.does_entity_exist(packet) then
+            if asuka_lib.does_entity_exist(packet) and yohan_helper.value then
                 entities.request_control(packet)
                 local cord = players.get_position(players.user())
                 SET_ENTITY_COORDS(packet, cord.x, cord.y, cord.z, false, false, false, false)
