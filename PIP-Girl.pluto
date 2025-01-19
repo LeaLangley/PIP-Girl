@@ -1703,7 +1703,7 @@ yohan_helper = menu.toggle(PIP_Girl_mission_helper, "Yohan (NC) mission helper."
                 SET_DRIVER_ABILITY(driver, 1.0)
                 SET_ENTITY_LOAD_COLLISION_FLAG(driver, true, 0)
                 local cord = GET_BLIP_COORDS(getblip(614))
-                TASK_VEHICLE_DRIVE_TO_COORD_LONGRANGE(driver, truck, cord.x, cord.y, cord.z, 66.6, 2148287277, 50.05)
+                TASK_VEHICLE_DRIVE_TO_COORD_LONGRANGE(driver, truck, cord.x, cord.y, cord.z, 166.6, 2148287277, 50.05)
                 notify("Truck Hijacked, Driving to you NC.")
                 buff_asuka_tech(truck)
                 while driver and yohan_helper.value do
@@ -2560,7 +2560,7 @@ local fsd_toggles = {
     {bit = 2048, default = true, name = "UseWanderFallbackInsteadOfStraightLine", description = "UseWanderFallbackInsteadOfStraightLine"},
     {bit = 4096, default = false, name = "AvoidRestrictedAreas", description = "AvoidRestrictedAreas"},
     {bit = 8192, default = false, name = "PreventBackgroundPathfinding", description = "PreventBackgroundPathfinding"},
-    {bit = 16384, default = true, name = "AdjustCruiseSpeedBasedOnRoadSpeed", description = "AdjustCruiseSpeedBasedOnRoadSpeed"},
+    {bit = 16384, default = false, name = "AdjustCruiseSpeedBasedOnRoadSpeed", description = "AdjustCruiseSpeedBasedOnRoadSpeed"},
     {bit = 32768, default = false, name = "Unknown", description = "Unknown"},
     {bit = 65536, default = false, name = "Unknown", description = "Unknown"},
     {bit = 131072, default = false, name = "Unknown", description = "Unknown"},
