@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local lust_upDate = {year = 2025, month = 1, day = 15, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2025, month = 1, day = 19, hour = 6, min = 6, sec = 6}
 
 local script_version = "V."..lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
@@ -1725,6 +1725,14 @@ yohan_helper = menu.toggle(PIP_Girl_mission_helper, "Yohan (NC) mission helper."
                 entities.request_control(packet)
                 local cord = players.get_position(players.user())
                 SET_ENTITY_COORDS(packet, cord.x, cord.y, cord.z, false, false, false, false)
+                util.yield(666)
+                cord = players.get_position(players.user())
+                menu.trigger_commands("spoofedposition "..cord.x..", "..cord.y..", "..cord.z)
+                menu.trigger_commands("spoofpos on")
+                menu.trigger_commands("tpobjective")
+                util.yield(666)
+                players.teleport_3d(players.user(), cord.x, cord.y, cord.z)
+                menu.trigger_commands("spoofpos off")
                 warnify("Packet Hijacked, Teleportet to you.")
             end
         end
