@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local lust_upDate = {year = 2025, month = 1, day = 19, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2025, month = 1, day = 20, hour = 6, min = 6, sec = 6}
 
 local script_version = "V."..lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
@@ -5579,59 +5579,12 @@ local function player_menu(pid)
     end
     local name = players.get_name(pid)
     local rid = players.get_rockstar_id(pid)
-    menu.player_root(pid):divider('PIP Girl')
-    local FriendlyPIPGirl = menu.list(menu.player_root(pid), 'Friendly', {""}, '', function() end)
-    local levelPly = 120
-	menu.slider(FriendlyPIPGirl, "Stop At Level...", {"pgmaxlevel"}, "", 1, 8000, 120, 1, function(val)
-		levelPly = val
-	end)
-	local delayPly = 13
-	menu.slider(FriendlyPIPGirl, "Loop Delay", {"pgloopdelay"}, "in ms", 1, 2500, 13, 10, function(val)
-		delayPly = val
-	end)
-    local PGLEVELBOOST
-    PGLEVELBOOST = menu.toggle_loop(FriendlyPIPGirl, "Boost LVL", {"pgboostlevel"}, "Boost them to lvl.", function()
-        if not menu.player_root(pid):isValid() then return end
-        if players.get_rank(pid) >= levelPly then
-            notify(name.." is already "..players.get_rank(pid))
-            PGLEVELBOOST.value = false
-            return
-        end
-        if not players.are_stats_ready(pid) then
-            notify(name.." is still loading in , please wait.")
-            PGLEVELBOOST.value = false
-            return
-        end
-        if asuka_lib.player_exist(pid) and players.get_rank(pid) < levelPly then
-            menu.trigger_command(menu.ref_by_rel_path(menu.player_root(pid), "Friendly>Give Collectibles>All"))
-        end
-        while menu.player_root(pid):isValid() and asuka_lib.player_exist(pid) and players.get_rank(pid) < levelPly do
-            if not asuka_lib.player_exist(pid) then
-                if menu.player_root(pid):isValid() then
-                    PGLEVELBOOST.value = false
-                end
-                return
-            else
-                menu.trigger_commands("rp " .. name)
-                util.yield(delayPly)
-            end
-        end
-        if players.get_rank(pid) >= levelPly then
-            notify(name.." Reached "..players.get_rank(pid))
-            PGLEVELBOOST.value = false
-            util.yield(113)
-            return
-        end
-        if not menu.player_root(pid):isValid() then
-            PGLEVELBOOST.value = false
-            return
-        end
-    end)
     if is_sc_friend(pid) then
         set_as_illusion(pid, set_passive, false)
-        menu.player_root(pid):divider('~=^.^=~')
+        --menu.player_root(pid):divider('~=^.^=~')
         return
     end
+    menu.player_root(pid):divider('PIP Girl')
     local Bad_Modder = menu.list(menu.player_root(pid), 'Bad Modder?', {""}, '', function() end)
     local Fuck_em_up
     Fuck_em_up = menu.toggle_loop(Bad_Modder, "Fuck'em up™", {"fuckup"}, "go crazy, go stupid.", function()
