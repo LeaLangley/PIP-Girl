@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local lust_upDate = {year = 2025, month = 1, day = 20, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2025, month = 2, day = 2, hour = 6, min = 6, sec = 6}
 
 local script_version = "V."..lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
@@ -1425,7 +1425,7 @@ local function buff_asuka_tech(vehicle)
     if asuka_lib.is_vehicle_free_for_use(vehicle) then
         request_control(vehicle)
     end
-    menu.trigger_commands("smoothflight on")
+    --menu.trigger_commands("smoothflight on")
     if protectMissionVehicles and not players.is_in_interior(players.user()) and not players.is_using_rc_vehicle(players.user()) then
         if IS_ENTITY_A_MISSION_ENTITY(vehicle) and DECOR_GET_INT(vehicle, "Player_Vehicle") == 0 and not table.contains(unlikely_mission_vehicles, GET_ENTITY_SCRIPT(vehicle, 0)) then
             local vehicle_name = util.reverse_joaat(entities.get_model_hash(vehicle))
@@ -1544,6 +1544,8 @@ local function buff_asuka_tech(vehicle)
             SET_VEHICLE_EXTRA(vehicle, 11, 0)
         end
     end
+
+    SET_PLANE_TURBULENCE_MULTIPLIER(vehicle, 0.0) --thx to davus post making me notice that stands no turbulence isnt workin
 
     SET_VEHICLE_HAS_UNBREAKABLE_LIGHTS(vehicle, true)
     SET_VEHICLE_LIGHTS(vehicle, asuka_tech_lights)
