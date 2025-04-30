@@ -5533,7 +5533,7 @@ players.on_join(SessionCheck)
 players.dispatch_on_join()
 
 local IdentificationTimeout = {}
-
+local Identificated = {}
 local function removeFromTable(pid)
     in_orb_room[pid] = nil
     sussy_god[pid] = nil
@@ -5541,6 +5541,7 @@ local function removeFromTable(pid)
     ghost_modder[pid] = nil
     mk2noob[pid] = nil
     IdentificationTimeout[pid] = nil
+    Identificated[pid] = nil
 end
 
 players.on_leave(removeFromTable)
@@ -5748,17 +5749,17 @@ end)
 
 menu.divider(Credits, "Other Script Dev's. <3")
 
-menu.hyperlink(Credits, "mehScript by akat0zi", "https://discord.gg/uUNRn6xgw5", "For (Specially First) inspiration , little skid.\nSince i'm still learning.")
+menu.hyperlink(Credits, "mehScript by akat0zi", "https://discord.gg/uUNRn6xgw5", "For (Specially First) inspiration , little skid.\nSince i was still learning.")
 
-menu.hyperlink(Credits, "Heist Control by IceDoomfist", "https://discord.gg/KTFAYQn5Xz", "For (Specially First) inspiration , some skid.\nSince i'm still learning.")
+menu.hyperlink(Credits, "Heist Control by IceDoomfist", "https://discord.gg/KTFAYQn5Xz", "For (Specially First) inspiration , some skid.\nSince i was still learning.")
 
 menu.hyperlink(Credits, "AcjokerScript by acjoker8818", "https://discord.gg/fn4uBbFNnA", "For inspiration. <3")
 
-menu.hyperlink(Credits, "JinxScript by Prisuhm", "https://discord.gg/hjs5S93kQv", "For (Specially First) inspiration , little skid.\nSince i'm still learning.")
+menu.hyperlink(Credits, "JinxScript by Prisuhm", "https://discord.gg/hjs5S93kQv", "For (Specially First) inspiration , little skid.\nSince i was still learning.")
 
 menu.hyperlink(Credits, "Undefined by Undefined Pony", "https://gitlab.com/undefinedscripts", "For inspiration.")
 
-menu.hyperlink(Credits, "CAT ESP by movemint. cat", "https://github.com/Keramis", "For inspiration , little skid.\nSince i hate math.")
+menu.hyperlink(Credits, "CAT ESP by movemint. cat", "https://github.com/Keramis", "For inspiration , little skid.\nSince i had no idea how to go about ESP.")
 
 menu.hyperlink(Credits, "Stand Lua Auto-Updater by hexarobi", "https://github.com/hexarobi", "For the wonderfull Auto-Updater. :D")
 
@@ -5770,14 +5771,14 @@ end)
 
 menu.hyperlink(Settings, "PIP Girl's GIT", "https://github.com/LeaLangley/PIP-Girl", "")
 
-menu.hyperlink(Settings, "Support me", "https://ko-fi.com/asuka666", "")
+--menu.hyperlink(Settings, "Support me", "https://ko-fi.com/asuka666", "")
 
 menu.divider(Settings, "<3")
 
 menu.action(Settings, "Check for Update", {}, "The script will automatically check for updates at most daily, but you can manually check using this option anytime.", function()
     auto_updater.run_auto_update(auto_update_config)
     util.yield(6666)
-    notify("no update =)")
+    notify("no update =) ig")
 end)
 
 menu.action(Settings, 'Open Export Blacklist Folder', {'oef'}, '', function()
