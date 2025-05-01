@@ -6,7 +6,7 @@ __________._____________    ________.__       .__
  |____|   |___||____|      \________/__||__|  |____/
 ]]--
 
-local lust_upDate = {year = 2025, month = 2, day = 2, hour = 6, min = 6, sec = 6}
+local lust_upDate = {year = 2025, month = 5, day = 1, hour = 6, min = 6, sec = 6}
 
 local script_version = "V."..lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
@@ -64,7 +64,7 @@ end
 local asuka_lib = require("Asuka_Library/asuka_lib")
 asuka_lib.asuka_booty = true
 local json = require("json")
-util.require_natives("3095a", "g")
+util.require_natives("3407a", "g")
 local data_cfg = {}
 
 local current_gta_version = tonumber(GET_ONLINE_VERSION())
@@ -720,7 +720,7 @@ menu.focus(menu.ref_by_path("Stand>Lua Scripts>"..SCRIPT_NAME..">PIP Girl"))
 local PIP_Girl_APPS = menu.list(PIP_Girl, 'PIP Girl Apps', {}, 'Personal Information Processor Girl apps.', function(); end)
 local Stimpak = menu.list(menu.my_root(), 'Stimpak', {}, 'Take a breath.', function(); end)
 local Vehicle = menu.list(menu.my_root(), 'Vehicle', {}, 'Drive pretty and nice.', function(); end)
-local Outfit = menu.list(menu.my_root(), 'Outfit', {}, 'Look pretty and nice.', function(); end)
+local Outfit = menu.list(menu.my_root(), 'Appearance', {}, 'Look pretty and nice.', function(); end)
 local Combat = menu.list(menu.my_root(), 'Combat', {}, 'Very combat today.', function(); end)
 local Game = menu.list(menu.my_root(), 'Game', {}, 'Very gaming today.', function(); end)
 local Session = menu.list(menu.my_root(), 'Online', {}, '.enilnO', function(); end)
@@ -3758,6 +3758,7 @@ local warningMessages = {
     [1670923214] = "Unable to join intended GTA Online session. Joining a new GTA Online session.",
     [1848738470] = "Unable to maintain connection to Rockstar game servers. Please try again and check www.rockstargames.com/support for information about outages and scheduled maintenance. If the issue presists check out our GTA Online Connection Troubleshooting at http://rsg.ms/connect.",
     [2034283379] = "Rockstar Games Online Services are unavailable right now. Please return to Grand Theft Auto V and try again later.",
+    [891675615] = "Unable to connect to Rockstar Games Online Services to authenticate. Please return to Grand Theft Auto V",
     [1232128772] = "Player joining, please wait.",
     [1736490464] = "No Connection to R* Service.",
     [1270064450] = "Player has been invited in the Crew.",
@@ -3799,6 +3800,7 @@ local warningMessages = {
     [984367681] = "If u use FSL u can ignore it.^^\nYour attempt to purchase or redeem a Shark Card has failed due to an unknown error. Please try again later.",
     [1071902385] = "Kicked from the session for being idle too long. Return too GTA Online.",
     [2053786350] = "A modder is *maybe* blocking you join.\nUnable to Connect.",
+    [1239855876] = "A modder is *maybe* blocking you join.\nExcept u installed mods.\nFailed to join session due to incompatible assets. Joining a new GTA Online session.",
     [705668975] = "A modder is *likely* blocking you join.\nYou have already been voted out of this game session. Joining a new GTA Online session.",
     [1748022689] = "A modder is *likely* blocking you join.\nFailed to join intended GTA Online session. Please return to Grand Theft Auto V and try again later.",
     [167092314] = "A modder is *likely* blocking you join.\nFailed to join intended GTA Online session. Joining a new GTA Online session.",
@@ -4804,7 +4806,7 @@ store_post_session_code_via_webhook = menu.toggle_loop(SessionInvite, "Post Sess
                 if code ~= posted_session_code then
                     posted_session_code = code
                     asuka_lib.write_to_file(store_dir..'/session_code.txt', code)
-                    if onlyPostasFriendlyHost and (not is_trusted(players.get_host()) or GET_NUMBER_OF_PLAYERS() == 1) then
+                    if onlyPostasFriendlyHost and not is_trusted(players.get_host()) then
                         goto webhookSkip
                     end
                     local sortedPlayers = {}
