@@ -10,7 +10,7 @@ local lust_upDate = {year = 2025, month = 5, day = 1, hour = 6, min = 6, sec = 6
 
 local script_version = "V."..lust_upDate.year.."."..lust_upDate.month.."."..lust_upDate.day
 
-local startupmsg = "New Year, New Me(ntal issues).\nReport bugs in the discord.\nAsuka Tech on top!"
+local startupmsg = "Report bugs in the discord.\nAsuka Tech on top!"
 
 util.ensure_package_is_installed("lua/auto-updater")
 local auto_updater = require("auto-updater")
